@@ -148,6 +148,7 @@ export default function DownloadPage() {
   const [inputLink, setInputLink] = useState("");
   const [isStartingDownload, setIsStartingDownload] = useState(false);
   const [useAscendara, setUseAscendara] = useState(false);
+  const [isDev, setIsDev] = useState(false);
   const [showNoDownloadPath, setShowNoDownloadPath] = useState(false);
   const [cachedImage, setCachedImage] = useState(null);
   const [isValidLink, setIsValidLink] = useState(true);
@@ -302,6 +303,15 @@ export default function DownloadPage() {
     };
     checkQbittorrent();
   }, [t, settings.torrentEnabled]);
+
+
+  useEffect(() => {
+    const checkDevMode = async () => {
+      const isDevMode = await window.electron.isDev()
+      setIsDev(isDevMode);
+    };
+    checkDevMode();
+  }, []);
 
   // Protocol URL listener effect
   useEffect(() => {
@@ -831,7 +841,7 @@ export default function DownloadPage() {
 
               <div className="flex items-center gap-2">
                 {gameData.emulator && (
-                  <span className="flex items-center gap-1 rounded bg-yellow-500/10 px-2 py-0.5 text-sm text-yellow-500">
+                  <span className="flex items-center gap-1 rounded bg-yellow-500/10 px-2 py-0.5 mb-2 text-sm text-yellow-500">
                     <CircleSlash className="mr-1 h-4 w-4" />{" "}
                     {t("download.gameNeedsEmulator")}&nbsp;
                     <a
@@ -848,7 +858,7 @@ export default function DownloadPage() {
                   </span>
                 )}
                 {gameData.category?.includes("Virtual Reality") && (
-                  <span className="flex items-center rounded bg-purple-500/10 px-2 py-0.5 text-sm text-foreground">
+                  <span className="flex items-center rounded bg-purple-500/10 px-2 py-0.5 mb-2 text-sm text-foreground">
                     <svg
                       className="p-0.5 text-foreground"
                       width="20"
@@ -879,7 +889,7 @@ export default function DownloadPage() {
                 )}
               </div>
 
-              <div className="mb-2 mt-4 flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 {gameData.version && (
                   <span className="flex items-center gap-1 rounded bg-primary/10 px-2 py-0.5 text-sm text-primary">
                     {gameData.version}
@@ -922,7 +932,7 @@ export default function DownloadPage() {
                   </TooltipProvider>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-2">
                 {t("download.size")}: {gameData.size}
               </p>
             </div>
@@ -1054,6 +1064,16 @@ export default function DownloadPage() {
                   <h2 className="text-xl font-semibold">
                     {t("download.downloadOptions.downloadOptions")}
                   </h2>
+                  {isDev && (
+                        <Button
+                        onClick={() => {
+                          window.electron.openURL(gameData.dirlink)
+                        }}
+                        className="h-12 w-full text-lg text-secondary"
+                      >
+                        (DEV) Open Direct Link
+                      </Button>
+                      )}
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>{t("download.downloadOptions.downloadSource")}</Label>
