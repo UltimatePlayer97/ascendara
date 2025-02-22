@@ -400,7 +400,11 @@ const Library = () => {
   const handlePlayGame = async (game, forcePlay = false) => {
     const gameName = game.game || game.name;
 
-
+    // Check if window.electron.isDev is true. Cannot run in developer mode
+    if (await window.electron.isDev()) {
+      toast.error(t("library.cannotRunDev"));
+      return;
+    }
 
     try {
       // First check if game is already running
