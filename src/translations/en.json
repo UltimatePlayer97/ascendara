@@ -109,6 +109,9 @@
     "allDlcTooltip": "Includes all downloadable content (DLC) available for this game",
     "gameNeedsEmulator": "This requires an emulator to run.",
     "gameNeedsVR": "This game may require a virtual reality headset to run.",
+    "ratingTooltip": "This game is rated {{rating}} out of 5 stars by others on Ascendara. Read comments about this game in the Discord server.",
+    "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
+    "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
     "dmcaNotice": "DMCA Notice: Ascendara uses outsourced links and files and does not host anything on its own servers.",
     "downloadInstructions": "Download Instructions",
     "downloadOptions": {
@@ -365,7 +368,7 @@
     "running": "Running",
     "searchGameCover": "Search Ascendara for an image cover",
     "searchGameCoverNotice": "Covers will be searched from the current indexed SteamRIP source.",
-    "searchLibrary": "Search library...",
+    "searchLibrary": "Search your games...",
     "shortcutCreated": "Shortcut created",
     "shortcutError": "Error creating shortcut. Maybe the executable path doesn't exist?",
     "uninstallGame": "Uninstall Game",
