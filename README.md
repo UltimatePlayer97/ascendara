@@ -217,24 +217,23 @@ Before building, ensure you have all required dependencies. [View full requireme
 ## 🗺️ Development Roadmap
 
 ### Current Goals
-- [ ] Game ratings and reliability system
 - [ ] Endpoint for known games that have weird installation paths, issues, etc.
+- [ ] Enhanced antivirus operation checks
+- [ ] Add semi-support for Linux, and macOS
 
 
 ### Future Goals
  > Want to suggest a feature you don't see here? [Contribute](https://ascendara.app/docs/getting-started/contributing) to Ascendara or [submit feedback](https://ascendara.app/feedback)!
 
 - [ ] Ascendara approved additional sources
-- [ ] Custom game sources
-- [ ] Add semi-support for Linux, and macOS
 - [ ] Debrid support for downloads
 - [ ] Retry Download & Extract functionality
 - [ ] Improved download management (pausing, resuming)
-- [ ] Enhanced antivirus operation checks
 
 ### Completed Features
 - [x] Complete UI overhaul (V7)
 - [x] Legacy game version support (Ascendara Timemachine)
+- [x] Game ratings and reliability system
 - [x] Steam workshop downloading page
 - [x] FitGirl and torrenting support
 - [x] Notification handling for desktop
