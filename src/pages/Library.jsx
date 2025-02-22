@@ -628,14 +628,14 @@ const Library = () => {
                 </div>
 
                 <div className="relative mr-12">
+                  <SearchIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder={t("library.searchLibrary")}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="pr-8"
+                    className="pl-10"
                   />
-                  <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
               </div>
 
