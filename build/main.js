@@ -124,9 +124,17 @@ app.whenReady().then(() => {
   });
 });
 
+
+const toolExecutables = {
+  torrent: 'AscendaraTorrentHandler.exe',
+  translator: 'AscendaraLanguageTranslation.exe'
+};
+
 function checkInstalledTools() {
   try {
-    if (!isDev) return;
+    if (isDev) {
+      return;
+    }
     const appDirectory = path.join(path.dirname(app.getPath("exe")));
     const toolsDirectory = path.join(appDirectory, 'resources');
     
@@ -135,7 +143,7 @@ function checkInstalledTools() {
       installedTools = timestampData.installedTools || [];
       console.log('Installed tools:', installedTools);
 
-      const missingTools = installedTools.filter(tool => !fs.existsSync(path.join(toolsDirectory, `${tool}.exe`)));
+      const missingTools = installedTools.filter(tool => !fs.existsSync(path.join(toolsDirectory, toolExecutables[tool])));
 
       if (missingTools.length > 0) {
         console.log('Missing tools:', missingTools);
@@ -170,8 +178,8 @@ async function installTool(tool) {
     translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe"
   };
 
-  const exeName = toolUrls[tool].split('/').pop();
-  const toolPath = path.join(appDirectory, "resources", exeName);
+  const toolExecutable = toolExecutables[tool];
+  const toolPath = path.join(appDirectory, "resources", toolExecutable);
   try {
     const response = await axios({
       method: 'get',
@@ -202,13 +210,13 @@ ipcMain.handle("install-tool", async (event, tool) => {
     translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe"
   };
 
-  const exeName = toolUrls[tool].split('/').pop();
-  const toolPath = path.join(appDirectory, "resources", exeName);
+  const toolExecutable = toolExecutables[tool];
+  const toolPath = path.join(appDirectory, "resources", toolExecutable);
 
   try {
     await electronDl.download(BrowserWindow.getFocusedWindow(), toolUrls[tool], {
       directory: path.dirname(toolPath),
-      filename: exeName,
+      filename: toolExecutable,
       onProgress: (progress) => {
         console.log(`Downloading ${tool}: ${Math.round(progress.percent * 100)}%`);
       }
