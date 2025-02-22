@@ -41,6 +41,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogCancel,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
@@ -142,6 +143,7 @@ const Library = () => {
   const [ratingGame, setRatingGame] = useState(null);
   const [showRateDialog, setShowRateDialog] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
+  const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
   const [showVrWarning, setShowVrWarning] = useState(false);
   const [uninstallingGame, setUninstallingGame] = useState(null);
   const [launchingGame, setLaunchingGame] = useState(null);
@@ -414,6 +416,21 @@ const Library = () => {
         setShowVrWarning(true);
         return;
       }
+
+      if (game.online && (game.launchCount < 1 || !game.launchCount)) {
+        // Check if warning has been shown before
+        const onlineFixWarningShown = localStorage.getItem('onlineFixWarningShown');
+        if (!onlineFixWarningShown) {
+          setSelectedGame(game);
+          setShowOnlineFixWarning(true);
+          // Save that warning has been shown
+          localStorage.setItem('onlineFixWarningShown', 'true');
+          return;
+        }
+      }
+
+      // Set launching state here after all checks pass
+      setLaunchingGame(gameName);
 
       // Set launching state here after all checks pass
       setLaunchingGame(gameName);
@@ -895,8 +912,10 @@ const Library = () => {
                         />
                     </div>
                     <p className="mt-2 text-center text-sm text-muted-foreground">
-                      {t("library.uninstallingGame")}{" "}
-                      {gameToDelete?.game || gameToDelete?.name}...
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader className="h-4 w-4 animate-spin" />
+                        {t("library.uninstallingGame")}
+                      </span>
                     </p>
                   </div>
                 ) : (
@@ -921,6 +940,35 @@ const Library = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          <AlertDialog open={showOnlineFixWarning}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                  {t("download.onlineFixWarningTitle")}
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-muted-foreground">
+                  {t("download.onlineFixWarningDescription")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowOnlineFixWarning(false);
+                    if (selectedGame) {
+                      handlePlayGame(selectedGame, true);
+                    }
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {t("common.ok")}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+
         </div>
       </div>
     </div>
