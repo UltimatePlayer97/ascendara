@@ -44,6 +44,7 @@ import {
   History,
   Zap,
   AlertTriangle,
+  Star,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -729,7 +730,7 @@ export default function DownloadPage() {
           style={{
             animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
           }}
-        >
+        > 
           {t("download.pressEscToGoBack")}
         </div>
 
@@ -743,7 +744,27 @@ export default function DownloadPage() {
             />
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">{gameData.game}</h1>
+                <h1 className="text-2xl font-bold flex items-center">
+                  {gameData.game}
+                  {gameData.rating && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="ml-2 flex cursor-help">
+                          {[...Array(Math.round(gameData.rating))].map((_, i) => (
+                            <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                          ))}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="font-semibold text-secondary max-w-[300px]">
+                          {t("download.ratingTooltip", { rating: gameData.rating })}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  )}
+                </h1>
                 {settings.gameSource == "fitigrl" && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -905,7 +926,7 @@ export default function DownloadPage() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="flex items-center gap-1 rounded bg-green-500/10 px-2 py-0.5 text-sm text-green-500">
+                        <span className="flex cursor-help items-center gap-1 rounded bg-green-500/10 px-2 py-0.5 text-sm text-green-500">
                           {t("download.online")}
                           <InfoIcon className="h-4 w-4" />
                         </span>
@@ -920,7 +941,7 @@ export default function DownloadPage() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="flex items-center gap-1 rounded bg-blue-500/10 px-2 py-0.5 text-sm text-blue-500">
+                        <span className="flex cursor-help items-center gap-1 rounded bg-blue-500/10 px-2 py-0.5 text-sm text-blue-500">
                           {t("download.allDlc")}
                           <InfoIcon className="h-4 w-4" />
                         </span>
