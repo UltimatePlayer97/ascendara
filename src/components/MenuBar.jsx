@@ -18,7 +18,8 @@ import {
   Flag, 
   FlaskConical, 
   Maximize, 
-  Minimize 
+  Minimize, 
+  ExternalLink
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { checkForUpdates } from "@/services/updateCheckingService";
@@ -499,19 +500,7 @@ const MenuBar = () => {
                   className="flex items-center gap-1 text-sm text-foreground hover:underline"
                 >
                   {t("server-status.visit-status-page")}
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
+                  <ExternalLink className="h-4 w-4" />
                 </button>
               </div>
             </div>
