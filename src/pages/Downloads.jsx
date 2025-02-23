@@ -89,6 +89,8 @@ const Downloads = () => {
             (downloadingData.downloading ||
               downloadingData.extracting ||
               downloadingData.updating ||
+              downloadingData.verifying ||
+              (downloadingData.verifyError && downloadingData.verifyError.length > 0) ||
               downloadingData.error)
           );
         });
@@ -205,7 +207,7 @@ const Downloads = () => {
           </h1>
             {downloadingGames.map((game) => (
               <DownloadCard
-                key={game.id}
+                key={`${game.game}-${game.executable}`}
                 game={game}
                 onStop={() => handleStopDownload(game)}
                 onRetry={() => handleRetryDownload(game)}
@@ -333,6 +335,7 @@ const Downloads = () => {
 
 const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
   const [isReporting, setIsReporting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -345,6 +348,24 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
     `;
     styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
   }, []);
+
+  const handleVerifyGame = async () => {
+    setIsVerifying(true);
+    try {
+      const result = await window.electron.verifyGame(game.game);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      toast.success(t("downloads.verificationSuccess"), {
+        description: t("downloads.verificationSuccessDesc"),
+      });
+    } catch (error) {
+      console.error("Verification failed:", error);
+      toast.error(t("downloads.verificationFailed"));
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const handleRemoveDownload = async game => {
     await window.electron.deleteGameDirectory(game.game);
@@ -501,11 +522,12 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
-                <StopCircle className="h-4 w-4" />
-                {t("downloads.actions.stopDownload")}
-              </DropdownMenuItem>
-            )}
+                <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
+                  <StopCircle className="h-4 w-4" />
+                  {t("downloads.actions.stopDownload")}
+                </DropdownMenuItem>
+              )
+            }
             {!isDownloading && (
               <DropdownMenuItem onClick={() => onOpenFolder(game)} className="gap-2">
                 <FolderOpen className="h-4 w-4" />
@@ -517,7 +539,50 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
       </CardHeader>
 
       <CardContent>
-        {hasError ? (
+        {downloadingData.verifying ? (
+          <div className="flex flex-col items-center justify-center py-2 bg-muted/40 rounded-lg">
+            <span className="flex items-center gap-2 text-lg font-semibold">
+              <Loader className="h-4 w-4 animate-spin" />
+              {t("downloads.verifying")}
+            </span>
+            <span className="text-sm text-muted-foreground mt-1">
+              {t("downloads.verifyingDescription")}
+            </span>
+          </div>
+        ) : downloadingData.verifyError && downloadingData.verifyError.length > 0 ? (
+          <div className="mt-2 space-y-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {downloadingData.verifyError.length === 1
+                  ? t("downloads.verificationFailed1", { numFailed: downloadingData.verifyError.length })
+                  : t("downloads.verificationFailed2", { numFailed: downloadingData.verifyError.length })}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">{t("downloads.verificationFailedDescription")}&nbsp;
+              <a className="inline-flex cursor-pointer items-center text-xs text-primary hover:underline" onClick={() => {window.electron.openURL("https://ascendara.app/docs/troubleshooting/common-issues#verification-issues")}}>
+                {t("common.learnMore")} <ExternalLink className="ml-1 h-3 w-3" />
+              </a>
+            </p>
+            <div className="max-h-32 overflow-y-auto rounded-md bg-muted/50 p-2">
+              {downloadingData.verifyError.map((error, index) => (
+                <div key={index} className="text-xs text-muted-foreground">
+                  <span className="font-medium">{error.file}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleVerifyGame}
+                disabled={isVerifying}
+              >
+                {isVerifying ? t("downloads.verifying") : t("downloads.verifyAgain")}
+              </Button>
+            </div>
+          </div>
+        ) : hasError ? (
           <div className="bg-destructive/5 border-destructive/20 space-y-4 rounded-lg border p-4 animate-in fade-in slide-in-from-top-1 duration-200">
             <div className="flex items-start space-x-3">
               <AlertCircle className="text-destructive mt-0.5 h-5 w-5 flex-shrink-0" />

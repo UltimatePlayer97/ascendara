@@ -33,6 +33,7 @@ import {
   SquareLibrary,
   Tag,
   PackageOpen,
+  FileCheck2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -60,6 +61,7 @@ import gameService from "@/services/gameService";
 import fs from "fs";
 import { toast } from "sonner";
 import UserSettingsDialog from "@/components/UserSettingsDialog";
+import VerifyingGameDialog from "@/components/VerifyingGameDialog";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -354,19 +356,11 @@ const Library = () => {
       const installedGames = await window.electron.getGames();
       const customGames = await window.electron.getCustomGames();
 
-      // Filter out games that are currently downloading
-      const filteredInstalledGames = installedGames.filter(game => {
-        const { downloadingData } = game;
-        return (
-          !downloadingData ||
-          !(
-            downloadingData.downloading ||
-            downloadingData.extracting ||
-            downloadingData.updating ||
-            downloadingData.error
-          )
-        );
-      });
+      // Filter out games that are being verified
+      const filteredInstalledGames = installedGames.filter(game => 
+        !game.downloadingData?.verifying && 
+        (!game.downloadingData?.verifyError || game.downloadingData.verifyError.length === 0)
+      );
 
       // Combine both types of games
       const allGames = [
@@ -972,7 +966,14 @@ const Library = () => {
             </AlertDialogContent>
           </AlertDialog>
 
-
+          {filteredGames.map(game => (
+            <VerifyingGameDialog
+              key={game.game || game.name}
+              game={game}
+              open={false}
+              onOpenChange={() => {}}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -1021,6 +1022,7 @@ const InstalledGameCard = ({
   const [imageData, setImageData] = useState(null);
   const [executableExists, setExecutableExists] = useState(null);
   const isFavorite = favorites.includes(game.game || game.name);
+  const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
 
   useEffect(() => {
     const checkExecutable = async () => {
@@ -1274,6 +1276,10 @@ const InstalledGameCard = ({
               <FolderOpen className="mr-2 h-4 w-4" />
               {t("library.openGameDirectory")}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsVerifyingOpen(true)}>
+              <FileCheck2 className="mr-2 h-4 w-4" />
+              {t("library.verifyGameFiles")}
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={async () => {
                 const success = await window.electron.createGameShortcut(
@@ -1320,6 +1326,11 @@ const InstalledGameCard = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <VerifyingGameDialog
+          game={game}
+          open={isVerifyingOpen}
+          onOpenChange={setIsVerifyingOpen}
+        />
       </CardFooter>
     </Card>
   );

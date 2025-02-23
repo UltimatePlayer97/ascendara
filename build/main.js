@@ -1011,6 +1011,67 @@ ipcMain.handle("delete-game-directory", async (event, game) => {
   }
 });
 
+ipcMain.handle("verify-game", async (event, game) => {
+  try {
+    const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+    const data = fs.readFileSync(filePath, "utf8");
+    const settings = JSON.parse(data);
+    if (!settings.downloadDirectory) {
+      throw new Error("Download directory not set");
+    }
+    const gameDirectory = path.join(settings.downloadDirectory, game);
+    const filemapPath = path.join(gameDirectory, "filemap.ascendara.json");
+    const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+    
+    const filemapData = fs.readFileSync(filemapPath, "utf8");
+    const filemap = JSON.parse(filemapData);
+    const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+    let gameInfo = JSON.parse(gameInfoData);
+
+    const verifyErrors = [];
+    for (const filePath in filemap) {
+      // Normalize path separators to match OS and convert to lowercase on Windows
+      const normalizedPath = filePath.replace(/[\/\\]/g, path.sep);
+      const fullPath = path.join(gameDirectory, normalizedPath);
+      
+      // On Windows, do case-insensitive path existence check
+      const pathExists = process.platform === 'win32' 
+        ? fs.existsSync(fullPath.toLowerCase()) || fs.existsSync(fullPath.toUpperCase()) || fs.existsSync(fullPath)
+        : fs.existsSync(fullPath);
+      
+      if (!pathExists) {
+        verifyErrors.push({
+          file: filePath,
+          error: "File not found",
+          expected_size: filemap[filePath].size
+        });
+      }
+    }
+
+    if (verifyErrors.length > 0) {
+      gameInfo.downloadingData = {
+        downloading: false,
+        verifying: false,
+        extracting: false,
+        updating: false,
+        progressCompleted: "100.00",
+        progressDownloadSpeeds: "0.00 B/s",
+        timeUntilComplete: "0s",
+        verifyError: verifyErrors
+      };
+      fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 4));
+      return { success: false, error: `${verifyErrors.length} files failed verification` };
+    } else {
+      delete gameInfo.downloadingData;
+      fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 4));
+      return { success: true };
+    }
+  } catch (error) {
+    console.error("Error verifying game:", error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle("stop-download", async (event, game) => {
   try {
     if (isWindows) {

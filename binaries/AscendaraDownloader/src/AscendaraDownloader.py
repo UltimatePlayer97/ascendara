@@ -407,31 +407,66 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
         archive_file_path, archive_ext = download_with_requests()
 
         try:
+            # Create watching file for tracking extracted files
+            watching_path = os.path.join(download_path, "filemap.ascendara.json")
+            watching_data = {}
+
             if sys.platform == "win32":
                 from unrar import rarfile
                 if archive_ext == "rar":
                     with rarfile.RarFile(archive_file_path, 'r') as fs:
+                        # Get file list before extraction
+                        for rar_info in fs.infolist():
+                            if not rar_info.filename.endswith('.url'):  # Skip .url files
+                                extracted_path = os.path.join(download_path, rar_info.filename)
+                                key = f"{os.path.relpath(extracted_path, download_path)}"
+                                watching_data[key] = {"size": rar_info.file_size}
+                        # Extract all files
                         fs.extractall(download_path)
                 elif archive_ext == "zip":
-                    shutil.unpack_archive(archive_file_path, download_path, format="zip")
+                    import zipfile
+                    with zipfile.ZipFile(archive_file_path, 'r') as zip_ref:
+                        # Get file list before extraction
+                        for zip_info in zip_ref.infolist():
+                            if not zip_info.filename.endswith('.url'):  # Skip .url files
+                                extracted_path = os.path.join(download_path, zip_info.filename)
+                                key = f"{os.path.relpath(extracted_path, download_path)}"
+                                watching_data[key] = {"size": zip_info.file_size}
+                        # Extract all files
+                        zip_ref.extractall(download_path)
             elif sys.platform == "darwin":
+                # For non-Windows, use patoolib and get file info after extraction
+                before_files = set()
+                for dirpath, _, filenames in os.walk(download_path):
+                    for fname in filenames:
+                        if not fname.endswith('.url'):  # Skip .url files
+                            before_files.add(os.path.join(dirpath, fname))
+                
                 patoolib.extract_archive(archive_file_path, download_path)
+                
+                # Find new files by comparing directory contents
+                for dirpath, _, filenames in os.walk(download_path):
+                    for fname in filenames:
+                        if not fname.endswith('.url'):  # Skip .url files
+                            full_path = os.path.join(dirpath, fname)
+                            if full_path not in before_files:
+                                key = f"{os.path.relpath(full_path, download_path)}"
+                                watching_data[key] = {"size": os.path.getsize(full_path)}
+
+            # Save watching data
+            safe_write_json(watching_path, watching_data)
 
             os.remove(archive_file_path)
             game_info["downloadingData"]["extracting"] = False
+            game_info["downloadingData"]["verifying"] = True
+            safe_write_json(game_info_path, game_info)
 
             # Clean up extracted files
             for file in os.listdir(download_path):
                 if file.endswith(".url"):
                     os.remove(os.path.join(download_path, file))
 
-            extracted_folder = os.path.join(download_path, game)
-            tempdownloading = os.path.join(download_path, f"temp-{os.urandom(6).hex()}")
-            if os.path.exists(extracted_folder):
-                shutil.copytree(extracted_folder, tempdownloading)
-                shutil.rmtree(extracted_folder)
-                shutil.copytree(tempdownloading, download_path, dirs_exist_ok=True)
-                shutil.rmtree(tempdownloading, ignore_errors=True)
+            _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game)
 
             del game_info["downloadingData"]
             safe_write_json(game_info_path, game_info)
@@ -445,6 +480,59 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
 
     except Exception as e:
         print(f"Failed to download or extract {game}. Error: {e}")
+
+def _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game):
+    try:
+        with open(watching_path, 'r') as f:
+            watching_data = json.load(f)
+
+        verify_errors = []
+        for file_path, file_info in watching_data.items():
+            full_path = os.path.join(download_path, file_path)
+            # Skip verification for directories
+            if os.path.isdir(full_path):
+                continue
+                
+            if not os.path.exists(full_path):
+                verify_errors.append({
+                    "file": file_path,
+                    "error": "File not found",
+                    "expected_size": file_info["size"]
+                })
+                continue
+
+            # Skip size verification entirely
+            continue
+
+        if verify_errors:
+            print(f"Found {len(verify_errors)} verification errors")
+            game_info["downloadingData"]["verifyError"] = verify_errors
+            error_count = len(verify_errors)
+            _launch_notification(
+                "dark",  # Use dark theme by default
+                "Verification Failed",
+                f"{error_count} {'file' if error_count == 1 else 'files'} failed to verify"
+            )
+        else:
+            print("All extracted files verified successfully")
+            if "verifyError" in game_info["downloadingData"]:
+                del game_info["downloadingData"]["verifyError"]
+
+    except Exception as e:
+        print(f"Error during verification: {str(e)}")
+        game_info["downloadingData"]["verifyError"] = [{
+            "file": "verification_process",
+            "error": str(e)
+        }]
+        _launch_notification(
+            "dark",  # Use dark theme by default
+            "Verification Error",
+            f"Error during verification: {str(e)}"
+        )
+
+    # Set verifying to false when done
+    game_info["downloadingData"]["verifying"] = False
+    safe_write_json(game_info_path, game_info)
 
 def parse_boolean(value):
     """Helper function to parse boolean values from command-line arguments."""
