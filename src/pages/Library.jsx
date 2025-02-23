@@ -1276,10 +1276,12 @@ const InstalledGameCard = ({
               <FolderOpen className="mr-2 h-4 w-4" />
               {t("library.openGameDirectory")}
             </DropdownMenuItem>
+            {!game.isCustom && (
             <DropdownMenuItem onClick={() => setIsVerifyingOpen(true)}>
               <FileCheck2 className="mr-2 h-4 w-4" />
               {t("library.verifyGameFiles")}
             </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={async () => {
                 const success = await window.electron.createGameShortcut(
