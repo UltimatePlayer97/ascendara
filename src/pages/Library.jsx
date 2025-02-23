@@ -1293,10 +1293,10 @@ const InstalledGameCard = ({
               <DropdownMenuItem
                 onClick={async () => {
                   const exePath =
-                    await window.electron.openFileDialog();
+                    await window.electron.openFileDialog(game.executable);
                   if (exePath) {
                     await window.electron.modifyGameExecutable(
-                      game.game || game.name,
+                      game.game || game.name, 
                       exePath
                     );
                   }

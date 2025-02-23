@@ -2264,19 +2264,22 @@ ipcMain.handle("open-directory-dialog", async event => {
     return result.filePaths[0];
   }
 });
+// Open the file dialog in the download directory
+ipcMain.handle("open-file-dialog", async (event, exePath = null) => {
+  const settings = settingsManager.getSettings();
+  let defaultPath = settings.downloadDirectory || app.getPath("downloads");
 
-// Open the file dialog
-ipcMain.handle("open-file-dialog", async event => {
+  if (exePath) {
+    defaultPath = path.dirname(exePath);
+  }
+
   const result = await dialog.showOpenDialog({
+    defaultPath: defaultPath,
     properties: ["openFile"],
     filters: [{ name: "Executable Files", extensions: ["exe"] }],
   });
 
-  if (result.canceled) {
-    return null;
-  } else {
-    return result.filePaths[0];
-  }
+  return result.canceled ? null : result.filePaths[0];
 });
 
 // Get the download directory

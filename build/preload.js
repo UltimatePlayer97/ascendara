@@ -88,7 +88,8 @@ contextBridge.exposeInMainWorld("electron", {
   getInstalledTools: () => ipcRenderer.invoke("get-installed-tools"),
   installTool: tool => ipcRenderer.invoke("install-tool", tool),
   canCreateFiles: directory => ipcRenderer.invoke("can-create-files", directory),
-  openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
+  openFileDialog: (exePath = null) =>
+    ipcRenderer.invoke("open-file-dialog", exePath),
   isSteamCMDInstalled: () => ipcRenderer.invoke("is-steamcmd-installed"),
   installSteamCMD: () => ipcRenderer.invoke("install-steamcmd"),
   getDownloadDirectory: () => ipcRenderer.invoke("get-download-directory"),
