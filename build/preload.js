@@ -53,6 +53,7 @@ contextBridge.exposeInMainWorld("electron", {
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),
   getCustomGames: () => ipcRenderer.invoke("get-custom-games"),
+  createGameShortcut: game => ipcRenderer.invoke("create-game-shortcut", game),
   verifyGame: game => ipcRenderer.invoke("verify-game", game),
   addGame: (game, online, dlc, version, executable, imgID) =>
     ipcRenderer.invoke("save-custom-game", game, online, dlc, version, executable, imgID),
