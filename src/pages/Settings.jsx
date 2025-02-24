@@ -182,7 +182,7 @@ function Settings() {
   const [apiMetadata, setApiMetadata] = useState(null);
   const [fitgirlMetadata, setFitgirlMetadata] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isOnWindows, setIsOnWindows] = useState(true);
+  const [isOnWindows, setIsOnWindows] = useState(null);
   const [downloadPath, setDownloadPath] = useState("");
   const [canCreateFiles, setCanCreateFiles] = useState(true);
   const [isDownloaderRunning, setIsDownloaderRunning] = useState(false);
@@ -463,33 +463,44 @@ function Settings() {
 
   // Check dependency status on mount and after reinstall
   const checkDependencies = useCallback(async () => {
-    console.log("Checking dependencies...");
+    console.log("Checking dependencies...", { isOnWindows });
     try {
-      if (!isOnWindows) {
-        console.log("Not on Windows, skipping dependency check");
-        setDependencyStatus(null);
+      // Skip if we don't know platform yet or not on Windows
+      if (isOnWindows === null || !isOnWindows) {
+        console.log("Not checking dependencies - not on Windows or platform unknown");
         return;
-      } else {
-        const status = await window.electron.checkGameDependencies();
-        setDependencyStatus(status);
       }
+      console.log("Requesting game dependencies status...");
+      const status = await window.electron.checkGameDependencies();
+      console.log("Received dependency status:", status);
+      setDependencyStatus(Array.isArray(status) ? status : []); // Ensure we always set an array
     } catch (error) {
       console.error("Failed to check dependencies:", error);
+      setDependencyStatus([]); // Set empty array on error to avoid infinite loading
     }
-  }, []);
+  }, [isOnWindows]);
 
   useEffect(() => {
-    if (!isOnWindows) {
-      return; // Don't even set up the timer if not on Windows
+    // Only run check when we know the platform and it's Windows
+    if (isOnWindows === null) {
+      return; // Wait until we know the platform
     }
-    const timer = setTimeout(() => {
+    if (isOnWindows) {
       checkDependencies();
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [checkDependencies, isOnWindows]);
+    } else {
+      setDependencyStatus([]); // Set empty array for non-Windows
+    }
+  }, [isOnWindows, checkDependencies]);
 
   // Get dependency status indicator
   const getDependencyStatusInfo = useMemo(() => {
+    if (isOnWindows === null) {
+      return {
+        text: t("settings.checkingDependencies"),
+        color: "text-muted-foreground",
+      };
+    }
+
     if (!isOnWindows) {
       return {
         text: t("settings.cannotCheckDependencies"),
@@ -616,7 +627,9 @@ function Settings() {
                 </span>
               </div>
               <div
-                onClick={() => window.electron.openURL("https://ascendara.app/changelog?individual")}
+                onClick={() =>
+                  window.electron.openURL("https://ascendara.app/changelog?individual")
+                }
                 className="cursor-pointer px-2 hover:underline"
               >
                 <span>v{__APP_VERSION__}</span>
@@ -667,7 +680,7 @@ function Settings() {
                       }
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label>{t("settings.notifications")}</Label>
@@ -678,10 +691,7 @@ function Settings() {
                     <Switch
                       checked={settings.notifications}
                       onCheckedChange={() =>
-                        handleSettingChange(
-                          "notifications",
-                          !settings.notifications
-                        )
+                        handleSettingChange("notifications", !settings.notifications)
                       }
                     />
                   </div>
@@ -696,7 +706,10 @@ function Settings() {
                     <Switch
                       checked={settings.smoothTransitions}
                       onCheckedChange={() =>
-                        handleSettingChange("smoothTransitions", !settings.smoothTransitions)
+                        handleSettingChange(
+                          "smoothTransitions",
+                          !settings.smoothTransitions
+                        )
                       }
                     />
                   </div>
@@ -1282,7 +1295,9 @@ function Settings() {
                     <a
                       className="inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
                       onClick={() =>
-                        window.electron.openURL("https://ascendara.app/docs/features/overview#ascendara-workshop-downloader")
+                        window.electron.openURL(
+                          "https://ascendara.app/docs/features/overview#ascendara-workshop-downloader"
+                        )
                       }
                     >
                       {t("common.learnMore")}
@@ -1295,13 +1310,31 @@ function Settings() {
                         {t("settings.ascendaraWorkshopDownloaderEnable")}
                       </Label>
                     </div>
-                    <Switch
-                      checked={settings.viewWorkshopPage}
-                      disabled={!isOnWindows}
-                      onCheckedChange={() =>
-                        handleSettingChange("viewWorkshopPage", !settings.viewWorkshopPage)
-                      }
-                    />
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Switch
+                              checked={settings.viewWorkshopPage}
+                              disabled={!isOnWindows}
+                              onCheckedChange={() =>
+                                handleSettingChange(
+                                  "viewWorkshopPage",
+                                  !settings.viewWorkshopPage
+                                )
+                              }
+                            />
+                          </div>
+                        </TooltipTrigger>
+                        {!isOnWindows && (
+                          <TooltipContent>
+                            <p className="text-secondary">
+                              {t("settings.onlyWindowsSupported2")}
+                            </p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>
@@ -1542,9 +1575,7 @@ function Settings() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              className="text-primary"
-            >
+            <AlertDialogCancel className="text-primary">
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction

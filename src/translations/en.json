@@ -1,5 +1,12 @@
 {
   "app": {
+    "brokenVersion": {
+      "description": "This version of Ascendara contains known critical issues with its functionality, like downloads, updating, and other core functions.",
+      "development": "While using this version you may encounter issues or crashes. Please update Ascendara to the latest version from the website.",
+      "title": "You're running a broken version",
+      "understand": "I Understand the Issues, Continue",
+      "update": "Update Now"
+    },
     "crashScreen": {
       "description": "Ascendara did not like what just happened. No worries, if you have analytics enabled this error has been tracked and the developer will get this fixed.",
       "reload": "Reload Ascendara",
@@ -50,19 +57,12 @@
       "updateReadyDesc": "Ascendara downloaded the update and is ready to install and restart now",
       "viewChangelog": "View Changelog"
     },
-    "torrentWarning": "TORRENTING IS ENABLED - USE VPN",
-    "brokenVersion": {
-      "title": "You're running a broken version",
-      "description": "This version of Ascendara contains known critical issues with its functionality, like downloads, updating, and other core functions.",
-      "development": "While using this version you may encounter issues or crashes. Please update Ascendara to the latest version from the website.",
-      "understand": "I Understand the Issues, Continue",
-      "update": "Update Now"
-    }
+    "torrentWarning": "TORRENTING IS ENABLED - USE VPN"
   },
   "common": {
     "cancel": "Cancel",
-    "downloads": "Active Downloads",
     "downloading": "Downloading...",
+    "downloads": "Active Downloads",
     "error": "Error",
     "finish": "Finish",
     "getStarted": "Get Started",
@@ -70,9 +70,9 @@
     "home": "Home",
     "learnMore": "Learn More",
     "library": "Library",
-    "workshopDownloader": "Workshop Downloader",
     "next": "Next",
     "ok": "OK",
+    "preferences": "Preferences",
     "prev": "Previous",
     "reportDialog": {
       "authFailed": "Authentication Failed",
@@ -100,18 +100,13 @@
     "reporting": "Reporting...",
     "retry": "Try Again",
     "search": "Search",
-    "preferences": "Preferences",
     "submit": "Submit",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "workshopDownloader": "Workshop Downloader"
   },
   "download": {
     "allDlc": "ALL-DLCs",
     "allDlcTooltip": "Includes all downloadable content (DLC) available for this game",
-    "gameNeedsEmulator": "This requires an emulator to run.",
-    "gameNeedsVR": "This game may require a virtual reality headset to run.",
-    "ratingTooltip": "This game is rated {{rating}} out of 5 stars by others on Ascendara. Read comments about this game in the Discord server.",
-    "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
-    "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
     "dmcaNotice": "DMCA Notice: Ascendara uses outsourced links and files and does not host anything on its own servers.",
     "downloadInstructions": "Download Instructions",
     "downloadOptions": {
@@ -149,12 +144,14 @@
       "selectProviderPrompt": "Please select a download provider to see the instructions.",
       "startingDownload": "Starting download...",
       "torrentInstructions": {
-        "noTorrent": "qBittorrent WebUI cannot be accessed. Check settings for more information.",
         "description": "Click the button below to download the torrent file. Make sure you have a torrent client installed and a VPN enabled for safe downloading.",
+        "noTorrent": "qBittorrent WebUI cannot be accessed. Check settings for more information.",
         "title": "Download via Torrent"
       },
       "waitingForBrowser": "Waiting for your browser to send the download..."
     },
+    "gameNeedsEmulator": "This requires an emulator to run.",
+    "gameNeedsVR": "This game may require a virtual reality headset to run.",
     "linkCopied": "Link copied to clipboard",
     "newUserGuide": {
       "close": "Close",
@@ -165,7 +162,6 @@
       "nextStep": "Next Step →",
       "noThanks": "No Thanks",
       "startGuide": "Start Guide",
-      "title": "Downloading with Ascendara",
       "steps": [
         {
           "description": "The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don't have it, close the guide and click the \"Don't have the extension? Get it for Chrome or Firefox\" button to download it.",
@@ -195,9 +191,12 @@
           "description": "Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.",
           "title": "That's it!"
         }
-      ]
+      ],
+      "title": "Downloading with Ascendara"
     },
     "online": "ONLINE",
+    "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
+    "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
     "onlineTooltip": "Online multiplayer capabilities enabled through online-fix.me",
     "pressEscToGoBack": "Press ESC key to go back",
     "protectYourself": {
@@ -205,6 +204,7 @@
       "warning": "Do not click on any ads or deceptive download buttons. The file size should match what you see here - be suspicious of small KB-sized files.",
       "warningTitle": "Protect yourself from fake downloads!"
     },
+    "ratingTooltip": "This game is rated {{rating}} out of 5 stars by others on Ascendara. Read comments about this game in the Discord server.",
     "reportBroken": "Report",
     "reportDescription": "Please provide more details about the issue",
     "reportError": "Please provide a reason and details for your report",
@@ -255,10 +255,9 @@
       "stopDownload": "Stop Download"
     },
     "activeDownloads": "Active Downloads",
-    "retryDownload": "Retrying Downloads",
-    "retryDownloadDescription": "Automatically retrying downloads is currently not implemented. To retry the download, cancel and delete the failed download here then search for the game again and download it again.",
     "alreadyReported": "Already Reported",
     "contentTypeError": "Received content type error from downloader. Download link most likely expired",
+    "currentTotalSpeed": "Current Total Speed",
     "downloadError": "Download Error",
     "errorHelp": "The download issue should already be reported. If the issue persists, please join the tagoWorks Discord server for support.",
     "errorReported": "Issue Reported Successfully",
@@ -271,11 +270,12 @@
       "understand": "I understand"
     },
     "noDownloads": "Well that's relaxing...",
-    "statistics": "Statistics",
     "noDownloadsMessage": "You're not downloading anything right now, start a download to track its progress here.",
-    "speedHistory": "Download Speeds",
-    "currentTotalSpeed": "Current Total Speed",
     "noFilesError": "Received no files error from downloader. Download link most likely was removed from the source",
+    "retryDownload": "Retrying Downloads",
+    "retryDownloadDescription": "Automatically retrying downloads is currently not implemented. To retry the download, cancel and delete the failed download here then search for the game again and download it again.",
+    "speedHistory": "Download Speeds",
+    "statistics": "Statistics",
     "updating": "Updating game...",
     "waiting": "Waiting for Peers",
     "waitingDescription": "qBittorrent is looking for peers to connect to download pieces of the torrent file from other users and upload to them in turn. Others may be able to see what you're downloading and/or determine your public IP address."
@@ -286,10 +286,10 @@
     "installed": "Installed",
     "loading": "Fetching Game Details...",
     "online": "ONLINE",
+    "ratingTooltip": "This is an average rating from others who have downloaded and played this game on Ascendara.",
     "showLess": "Show Less",
     "size": "Size",
-    "version": "Version",
-    "ratingTooltip": "This is an average rating from others who have downloaded and played this game on Ascendara."
+    "version": "Version"
   },
   "home": {
     "actionGames": "Action Games",
@@ -306,13 +306,6 @@
     "alreadyRunning": "{{game}} is already running",
     "availableSpace": "Available Space",
     "calculatingSize": "Calculating...",
-    "lessThanMinute": "Less than a minute",
-    "minute": "minute",
-    "minutes": "minutes",
-    "hour": "hour",
-    "hours": "hours",
-    "neverPlayed": "Never Played",
-    "ofPlaytime": "on this game",
     "cannotRunDev": "Cannot run games in developer mode",
     "changeExecutable": "Change Executable",
     "chooseExecutableFile": "Choose executable file...",
@@ -321,46 +314,49 @@
     "enterMoreChars": "Image results will appear here as you type",
     "executableNotFound": "Game executable not found",
     "gameName": "Game Name",
-    "gamesSpace": "Installed Games",
     "gamesInLibrary": "Total Games",
+    "gamesSpace": "Installed Games",
     "hasOnlineFix": "Has Online Fix",
+    "hour": "hour",
+    "hours": "hours",
     "iconLegend": {
-      "header": "Library Icon Legend",
       "allDlcs": "All DLCs Included",
+      "header": "Library Icon Legend",
       "onlineFix": "Game Has Online-Fix",
-      "vrGame": "Virtual Reality Game",
       "size": "Game Size",
-      "version": "Game Version"
+      "version": "Game Version",
+      "vrGame": "Virtual Reality Game"
     },
     "includesAllDLCs": "Includes All DLCs",
     "launchError": "Launch Error",
     "launchErrorMessage": "Failed to run {{game}}. Sometimes game executables are not named the same as the game name. Please make sure Ascendara is trying to run the correct file.",
     "launching": "Launching...",
+    "lessThanMinute": "Less than a minute",
+    "minute": "minute",
+    "minutes": "minutes",
+    "neverPlayed": "Never Played",
     "noResultsFound": "No results found. Be precise with your search.",
+    "ofPlaytime": "on this game",
     "openGameDirectory": "Open Game Directory",
-    "spaceTooltip": {
-      "games": "Space used by Ascendara games: {{size}}",
-      "other": "Space used by other files: {{size}}"
-    },
     "pageTitle": "Your Library",
     "play": "Play",
     "rateGame": {
-      "title": "Rate {{game}}",
-      "description": "Share your experience with {{game}}. Your rating helps other players determine if {{game}} is worth playing.",
-      "ratingLabel": "Your Rating",
-      "commentsLabel": "Comments (Optional)",
       "commentPlaceholder": "e.g., I had a good time playing but...",
+      "commentsLabel": "Comments (Optional)",
+      "description": "Share your experience with {{game}}. Your rating helps other players determine if {{game}} is worth playing.",
+      "error": "Failed to Submit Rating",
+      "errorDesc": "Unable to submit your rating. Please try again later.",
       "excellent": "The game ran great",
-      "veryGood": "Really enjoyed it",
-      "good": "It was okay",
       "fair": "Had some issues",
-      "poor": "Game had major issues",
+      "good": "It was okay",
       "missingRating": "Rating Required",
       "missingRatingDesc": "Please select a rating before submitting",
+      "poor": "Game had major issues",
+      "ratingLabel": "Your Rating",
       "success": "Rating Submitted",
       "successDesc": "Thank you for rating {{game}}!",
-      "error": "Failed to Submit Rating",
-      "errorDesc": "Unable to submit your rating. Please try again later."
+      "title": "Rate {{game}}",
+      "veryGood": "Really enjoyed it"
     },
     "removeGame": "Remove Game",
     "removeGameFromLibrary": "Remove from Library",
@@ -371,6 +367,10 @@
     "searchLibrary": "Search your games...",
     "shortcutCreated": "Shortcut created",
     "shortcutError": "Error creating shortcut. Maybe the executable path doesn't exist?",
+    "spaceTooltip": {
+      "games": "Space used by Ascendara games: {{size}}",
+      "other": "Space used by other files: {{size}}"
+    },
     "uninstallGame": "Uninstall Game",
     "uninstallGameWarning": "Are you sure you want to uninstall this game? This will delete the game from your computer and remove it from your Ascendara library.",
     "uninstallingGame": "Uninstalling",
@@ -427,11 +427,11 @@
     "ascendaraAnalyticsDescription": "Help improve Ascendara by sending usage data. This data is anonymous and cannot be used to identify you.",
     "ascendaraTimechine": "Ascendara Timemachine",
     "ascendaraToggleAnalytics": "Opt-in and help improve Ascendara",
+    "ascendaraUpdates": "Automatic Updates",
+    "ascendaraUpdatesDescription": "Automatically download new versions of Ascendara and ask you to install them when ready",
     "ascendaraWorkshopDownloader": "Ascendara Workshop Downloader",
     "ascendaraWorkshopDownloaderDescription": "The Ascendara Workshop Downloader allows you to download items from the Steam Workshop without needing to have an account.",
     "ascendaraWorkshopDownloaderEnable": "Add to Navigation Bar",
-    "ascendaraUpdates": "Automatic Updates",
-    "ascendaraUpdatesDescription": "Automatically download new versions of Ascendara and ask you to install them when ready",
     "autoCreateShortcuts": "Automatically Create Shortcuts",
     "autoCreateShortcutsDescription": "Automatically create shortcuts on desktop for games that run successfully for the first time",
     "cannotCheckDependencies": "Cannot check dependencies on this system",
@@ -462,14 +462,12 @@
       "additionalLangListDesc": "Choose from an additional 93 languages. These languages will be translated on your computer.",
       "additionalLanguagesList": "Additional Languages",
       "availableLanguagesList": "Your Available Languages",
+      "downloadTool": "Download Translation Tool",
+      "downloadToolDesc": "You need to have the Ascendara Translation Tool installed in order to select more languages. Click Continue to download the tool automatically.",
       "title": "Ascendara Languages",
       "translatingDialog": "Don't Close Ascendara",
-      "translatingDialogDesc": "Ascendara is translating the selected language. This may take a few minutes, you can leave this but do not close Ascendara.",
-      "downloadTool": "Download Translation Tool",
-      "downloadToolDesc": "You need to have the Ascendara Translation Tool installed in order to select more languages. Click Continue to download the tool automatically."
+      "translatingDialogDesc": "Ascendara is translating the selected language. This may take a few minutes, you can leave this but do not close Ascendara."
     },
-    "noTorrentTool": "Download the Torrent Handler",
-    "noTorrentToolDesc": "You need to have the Ascendara Torrent Handler installed in order to use the torrent feature on Ascendara. Click Continue to download the tool automatically.",
     "fitgirlRepacksDescription": "Access FitGirl's over 5500 games all on Ascendara. Games are sourced through the Hydralibrary and matched with an image using the IGDB. There are no categories or weights supported for these games, they will seem completely random.",
     "gameSources": "Indexed Game Source",
     "gameSourcesDescription": "Ascendara primarily uses SteamRIP as its trusted source for games",
@@ -481,13 +479,16 @@
     "languageSettingsDescription": "Choose your preferred language for the UI",
     "lastUpdated": "Last Updated",
     "lightThemes": "Light Themes",
-    "notifications": "Desktop Notifications",
-    "notificationsDescription": "Send desktop notifications when downloads finish or fail",
     "manageDependencies": "Manage Dependencies",
     "matureContent": "Mature Content",
     "matureContentDescription": "Allow games with mature themes to appear in search results",
     "noDependenciesInstalled": "No dependencies installed",
+    "noTorrentTool": "Download the Torrent Handler",
+    "noTorrentToolDesc": "You need to have the Ascendara Torrent Handler installed in order to use the torrent feature on Ascendara. Click Continue to download the tool automatically.",
+    "notifications": "Desktop Notifications",
+    "notificationsDescription": "Send desktop notifications when downloads finish or fail",
     "onlyWindowsSupported": "Only Windows is supported for now",
+    "onlyWindowsSupported2": "This feature is only on Windows",
     "reinstallDependencies": "Reinstall Dependencies",
     "reinstallDependenciesDesc": "If a game isn't running correctly, you can try reinstalling all the crucial libraries it needs to run",
     "reinstallError": "Error reinstalling dependencies",
@@ -575,29 +576,6 @@
     },
     "title": "Ascendara Guide",
     "welcome": "Welcome! Let's take a quick tour of Ascendara's interface."
-  },
-  "workshopDownloader": {
-    "welcome": "Welcome to Ascendara's Workshop Downloader",
-    "welcomeDescription": "Here you can download items from the Steam Workshop without needing to have an account.",
-    "installSteamCMD": "Install SteamCMD",
-    "install": "Install Now",
-    "installSteamCMDDescription": "First, we need to install SteamCMD. This CLI tool allows you to download items from the Steam Workshop without a UI.",
-    "installingSteamCMD": "Installing SteamCMD...",
-    "installSuccess": "Installation Complete!",
-    "installError": "Installation failed. Please try again.",
-    "mainTitle": "Download Workshop Items",
-    "mainDescription": "Paste workshop item links here to download them. Ascendara will add them to a directory for you to manage yourself.",
-    "goToWorkshop": "Visit the Steam Workshop",
-    "downloadLink": "Send Link to SteamCMD",
-    "downloading": "Downloading...",
-    "downloadProgress": "Download Progress",
-    "waitingForLogs": "Waiting for download to start...",
-    "downloadFailure": {
-      "title": "Download Failed",
-      "description": "The workshop item download failed. This could be due to:",
-      "reasons": ["The item may be private or restricted", "SteamCMD connection issues", "Insufficient disk space", "Invalid workshop item URL"],
-      "suggestion": "Please verify the item is public and try again. If the issue persists, try restarting Ascendara."
-    }
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "All required dependencies have been successfully installed. Welcome to Ascendara.",
@@ -706,5 +684,33 @@
     "youCanChangeThisSettingLater": "You can change this later in Settings.",
     "youWillReceiveAdminPrompts": "You will receive administrator prompts from official Microsoft installers to install the required components. Your computer may need to restart after installation.",
     "yourContinuedSupport": "Your continued support has made Ascendara what it is today. Ascendara has been completely rebuilt from the ground up with a new look and feel you've been asking for."
+  },
+  "workshopDownloader": {
+    "downloadFailure": {
+      "description": "The workshop item download failed. This could be due to:",
+      "reasons": [
+        "The item may be private or restricted",
+        "SteamCMD connection issues",
+        "Insufficient disk space",
+        "Invalid workshop item URL"
+      ],
+      "suggestion": "Please verify the item is public and try again. If the issue persists, try restarting Ascendara.",
+      "title": "Download Failed"
+    },
+    "downloadLink": "Send Link to SteamCMD",
+    "downloadProgress": "Download Progress",
+    "downloading": "Downloading...",
+    "goToWorkshop": "Visit the Steam Workshop",
+    "install": "Install Now",
+    "installError": "Installation failed. Please try again.",
+    "installSteamCMD": "Install SteamCMD",
+    "installSteamCMDDescription": "First, we need to install SteamCMD. This CLI tool allows you to download items from the Steam Workshop without a UI.",
+    "installSuccess": "Installation Complete!",
+    "installingSteamCMD": "Installing SteamCMD...",
+    "mainDescription": "Paste workshop item links here to download them. Ascendara will add them to a directory for you to manage yourself.",
+    "mainTitle": "Download Workshop Items",
+    "waitingForLogs": "Waiting for download to start...",
+    "welcome": "Welcome to Ascendara's Workshop Downloader",
+    "welcomeDescription": "Here you can download items from the Steam Workshop without needing to have an account."
   }
 }
