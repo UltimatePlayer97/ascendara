@@ -8,6 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import checkQbittorrentStatus from "@/services/qbittorrentCheckService";
 import {
   Select,
@@ -668,6 +674,62 @@ function Settings() {
                     </div>
                   )}
 
+                  <div className="mb-4">
+                    <Label>{t("settings.theme")}</Label>
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="mt-2 w-full rounded-lg border bg-card text-card-foreground shadow-sm"
+                    >
+                      <AccordionItem
+                        value="light-themes"
+                        className="px-1 first:border-t-0"
+                      >
+                        <AccordionTrigger className="px-3 py-4 hover:no-underline">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {t("settings.lightThemes")}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-3 pb-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            {groupedThemes.light.map(t => (
+                              <ThemeButton
+                                key={t.id}
+                                theme={t}
+                                currentTheme={theme}
+                                onSelect={handleThemeChange}
+                              />
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="dark-themes" className="border-t px-1">
+                        <AccordionTrigger className="px-3 py-4 hover:no-underline">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {t("settings.darkThemes")}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-3 pb-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            {groupedThemes.dark.map(t => (
+                              <ThemeButton
+                                key={t.id}
+                                theme={t}
+                                currentTheme={theme}
+                                onSelect={handleThemeChange}
+                              />
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label>{t("settings.ascendaraUpdates")}</Label>
@@ -1143,48 +1205,6 @@ function Settings() {
                     </div>
                   </div>
                 )}
-              </div>
-            </Card>
-
-            {/* Theme Settings Card */}
-            <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold text-primary">
-                {t("settings.theme")}
-              </h2>
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    {t("settings.lightThemes")}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {groupedThemes.light.map(t => (
-                      <ThemeButton
-                        key={t.id}
-                        theme={t}
-                        currentTheme={theme}
-                        onSelect={handleThemeChange}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    {t("settings.darkThemes")}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {groupedThemes.dark.map(t => (
-                      <ThemeButton
-                        key={t.id}
-                        theme={t}
-                        currentTheme={theme}
-                        onSelect={handleThemeChange}
-                      />
-                    ))}
-                  </div>
-                </div>
               </div>
             </Card>
           </div>
