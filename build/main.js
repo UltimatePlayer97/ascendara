@@ -35,6 +35,7 @@ const {
   shell,
   protocol,
   screen,
+  Notification,
 } = require("electron");
 const { Client } = require("discord-rpc");
 const disk = require("diskusage");
@@ -96,14 +97,17 @@ rpc.login({ clientId }).catch(console.error);
 app.whenReady().then(() => {
   console.log("App ready, creating window");
   createWindow();
-  axios.get('https://api.ascendara.app/app/brokenversions')
+  axios
+    .get("https://api.ascendara.app/app/brokenversions")
     .then(response => {
       const brokenVersions = response.data;
       isBrokenVersion = brokenVersions.includes(appVersion);
-      console.log(`Current version ${appVersion} is ${isBrokenVersion ? 'broken' : 'not broken'}`);
+      console.log(
+        `Current version ${appVersion} is ${isBrokenVersion ? "broken" : "not broken"}`
+      );
     })
     .catch(error => {
-      console.error('Error checking for broken versions:', error);
+      console.error("Error checking for broken versions:", error);
     });
 
   // Check for protocol URL in argv
@@ -124,10 +128,9 @@ app.whenReady().then(() => {
   });
 });
 
-
 const toolExecutables = {
-  torrent: 'AscendaraTorrentHandler.exe',
-  translator: 'AscendaraLanguageTranslation.exe'
+  torrent: "AscendaraTorrentHandler.exe",
+  translator: "AscendaraLanguageTranslation.exe",
 };
 
 function checkInstalledTools() {
@@ -136,33 +139,35 @@ function checkInstalledTools() {
       return;
     }
     const appDirectory = path.join(path.dirname(app.getPath("exe")));
-    const toolsDirectory = path.join(appDirectory, 'resources');
-    
-    if (fs.existsSync(TIMESTAMP_FILE)) {
-      const timestampData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, 'utf8'));
-      installedTools = timestampData.installedTools || [];
-      console.log('Installed tools:', installedTools);
+    const toolsDirectory = path.join(appDirectory, "resources");
 
-      const missingTools = installedTools.filter(tool => !fs.existsSync(path.join(toolsDirectory, toolExecutables[tool])));
+    if (fs.existsSync(TIMESTAMP_FILE)) {
+      const timestampData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
+      installedTools = timestampData.installedTools || [];
+      console.log("Installed tools:", installedTools);
+
+      const missingTools = installedTools.filter(
+        tool => !fs.existsSync(path.join(toolsDirectory, toolExecutables[tool]))
+      );
 
       if (missingTools.length > 0) {
-        console.log('Missing tools:', missingTools);
+        console.log("Missing tools:", missingTools);
         missingTools.forEach(tool => {
           console.log(`Redownloading ${tool}...`);
           installTool(tool);
         });
       }
     } else {
-      console.log('Timestamp file not found. No installed tools recorded.');
+      console.log("Timestamp file not found. No installed tools recorded.");
     }
   } catch (error) {
-    console.error('Error checking installed tools:', error);
+    console.error("Error checking installed tools:", error);
   }
 }
 
 checkInstalledTools();
 
-ipcMain.handle("get-installed-tools", async (event) => {
+ipcMain.handle("get-installed-tools", async event => {
   if (isWindows && !isDev) {
     return installedTools;
   } else {
@@ -175,23 +180,23 @@ async function installTool(tool) {
   const appDirectory = path.join(path.dirname(app.getPath("exe")));
   const toolUrls = {
     torrent: "https://cdn.ascendara.app/files/AscendaraTorrentHandler.exe",
-    translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe"
+    translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe",
   };
 
   const toolExecutable = toolExecutables[tool];
   const toolPath = path.join(appDirectory, "resources", toolExecutable);
   try {
     const response = await axios({
-      method: 'get',
+      method: "get",
       url: toolUrls[tool],
-      responseType: 'stream',
+      responseType: "stream",
     });
 
     await new Promise((resolve, reject) => {
       const writer = fs.createWriteStream(toolPath);
       response.data.pipe(writer);
-      writer.on('finish', resolve);
-      writer.on('error', reject);
+      writer.on("finish", resolve);
+      writer.on("error", reject);
     });
 
     console.log(`${tool} downloaded successfully`);
@@ -207,7 +212,7 @@ ipcMain.handle("install-tool", async (event, tool) => {
   const appDirectory = path.join(path.dirname(app.getPath("exe")));
   const toolUrls = {
     torrent: "https://cdn.ascendara.app/files/AscendaraTorrentHandler.exe",
-    translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe"
+    translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe",
   };
 
   const toolExecutable = toolExecutables[tool];
@@ -217,33 +222,33 @@ ipcMain.handle("install-tool", async (event, tool) => {
     await electronDl.download(BrowserWindow.getFocusedWindow(), toolUrls[tool], {
       directory: path.dirname(toolPath),
       filename: toolExecutable,
-      onProgress: (progress) => {
+      onProgress: progress => {
         console.log(`Downloading ${tool}: ${Math.round(progress.percent * 100)}%`);
-      }
+      },
     });
 
     console.log(`${tool} downloaded successfully`);
-    
+
     // Update installed tools list
     installedTools.push(tool);
-    
+
     // Read existing timestamp data
     let existingData = {};
     try {
       if (fs.existsSync(TIMESTAMP_FILE)) {
-        existingData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, 'utf8'));
+        existingData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
       }
     } catch (error) {
-      console.error('Error reading timestamp file:', error);
+      console.error("Error reading timestamp file:", error);
     }
 
     // Merge new data with existing data
     const timestampData = {
       ...existingData,
-      installedTools
+      installedTools,
     };
-    
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData), 'utf8');
+
+    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData), "utf8");
 
     return { success: true, message: `${tool} installed successfully` };
   } catch (error) {
@@ -258,11 +263,11 @@ ipcMain.handle("is-steamcmd-installed", async () => {
     if (!fs.existsSync(TIMESTAMP_FILE)) {
       return false;
     }
-    const timestampData = await fs.promises.readFile(TIMESTAMP_FILE, 'utf8');
+    const timestampData = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
     const data = JSON.parse(timestampData);
     return data.steamCMD === true;
   } catch (error) {
-    console.error('Error checking steamCMD installation:', error);
+    console.error("Error checking steamCMD installation:", error);
     return false;
   }
 });
@@ -279,19 +284,19 @@ ipcMain.handle("install-steamcmd", async () => {
     // Download steamcmd.exe
     await electronDl.download(BrowserWindow.getFocusedWindow(), steamCMDUrl, {
       directory: steamCMDDir,
-      filename: "steamcmd.exe"
+      filename: "steamcmd.exe",
     });
 
     // Run steamcmd.exe to create initial files
     const steamCMDPath = path.join(steamCMDDir, "steamcmd.exe");
     await new Promise((resolve, reject) => {
       const steamCmd = spawn(steamCMDPath, ["+quit"]);
-      
-      steamCmd.on('error', (error) => {
+
+      steamCmd.on("error", error => {
         reject(error);
       });
 
-      steamCmd.on('close', (code) => {
+      steamCmd.on("close", code => {
         // Exit code 7 means installation completed successfully
         if (code === 0 || code === 7) {
           resolve();
@@ -313,15 +318,18 @@ ipcMain.handle("install-steamcmd", async () => {
 
     const timestampData = {
       ...existingData,
-      steamCMD: true
+      steamCMD: true,
     };
-    
+
     fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
 
     return { success: true, message: "SteamCMD installed and initialized successfully" };
   } catch (error) {
     console.error("Error installing or initializing SteamCMD:", error);
-    return { success: false, message: `Failed to install or initialize SteamCMD: ${error.message}` };
+    return {
+      success: false,
+      message: `Failed to install or initialize SteamCMD: ${error.message}`,
+    };
   }
 });
 // Download item with steamcmd
@@ -338,7 +346,6 @@ ipcMain.handle("download-item", async (event, url) => {
     const appId = itemDetails.consumer_app_id.toString();
 
     if (!appId) {
-     
       throw new Error("Could not determine app ID for workshop item");
     }
     // Construct the SteamCMD command
@@ -347,30 +354,33 @@ ipcMain.handle("download-item", async (event, url) => {
 
     return new Promise((resolve, reject) => {
       const steamProcess = spawn(steamCMDPath, [
-        "+login", "anonymous",
-        "+workshop_download_item", appId, itemId,
-        "+quit"
+        "+login",
+        "anonymous",
+        "+workshop_download_item",
+        appId,
+        itemId,
+        "+quit",
       ]);
 
       let output = "";
       let errorOutput = "";
       let hasDownloadFailure = false;
 
-      steamProcess.stdout.on("data", (data) => {
+      steamProcess.stdout.on("data", data => {
         const text = data.toString();
         output += text;
         console.log("SteamCMD output:", text);
-        
+
         // Check for download failure in the output
         if (text.includes("ERROR! Download item") && text.includes("failed (Failure)")) {
           hasDownloadFailure = true;
         }
-        
+
         // Send log to renderer
         event.sender.send("download-progress", { type: "log", message: text });
       });
 
-      steamProcess.stderr.on("data", (data) => {
+      steamProcess.stderr.on("data", data => {
         const text = data.toString();
         errorOutput += text;
         console.error("SteamCMD error:", text);
@@ -378,20 +388,23 @@ ipcMain.handle("download-item", async (event, url) => {
         event.sender.send("download-progress", { type: "error", message: text });
       });
 
-      steamProcess.on("close", async (code) => {
+      steamProcess.on("close", async code => {
         if (code === 0 && !hasDownloadFailure) {
-          event.sender.send("download-progress", { type: "success", message: "Download completed successfully" });
+          event.sender.send("download-progress", {
+            type: "success",
+            message: "Download completed successfully",
+          });
           resolve({ success: true, message: "Item downloaded successfully" });
         } else {
-          const errorMsg = hasDownloadFailure 
+          const errorMsg = hasDownloadFailure
             ? "Workshop item download failed. The item may be private, restricted, or unavailable."
             : `SteamCMD process exited with code ${code}. Error: ${errorOutput}`;
-          
+
           // Clean up the workshop item directory if it exists
           try {
             const workshopDir = path.join(steamCMDDir, "steamapps", "workshop", appId);
             const itemDir = path.join(workshopDir, itemId);
-            
+
             if (fs.existsSync(itemDir)) {
               await fs.promises.rm(itemDir, { recursive: true, force: true });
               console.log(`Cleaned up failed download directory: ${itemDir}`);
@@ -399,13 +412,13 @@ ipcMain.handle("download-item", async (event, url) => {
           } catch (cleanupError) {
             console.error("Error cleaning up workshop directory:", cleanupError);
           }
-          
+
           event.sender.send("download-progress", { type: "error", message: errorMsg });
           resolve({ success: false, message: errorMsg });
         }
       });
 
-      steamProcess.on("error", (error) => {
+      steamProcess.on("error", error => {
         const errorMsg = `Failed to start SteamCMD: ${error.message}`;
         event.sender.send("download-progress", { type: "error", message: errorMsg });
         resolve({ success: false, message: errorMsg });
@@ -420,13 +433,16 @@ ipcMain.handle("download-item", async (event, url) => {
 // Fetch Steam Workshop item details
 async function fetchWorkshopItemDetails(itemId) {
   try {
-    const response = await fetch("https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `itemcount=1&publishedfileids[0]=${itemId}`,
-    });
+    const response = await fetch(
+      "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `itemcount=1&publishedfileids[0]=${itemId}`,
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Steam API request failed: ${response.status}`);
@@ -559,8 +575,7 @@ ipcMain.handle("get-setting", async (event, key) => {
 ipcMain.handle("reload", () => {
   app.relaunch();
   app.exit();
-})
-
+});
 
 // Sanitize text to handle special characters
 function sanitizeText(text) {
@@ -580,49 +595,64 @@ function sanitizeText(text) {
     .trim();
 }
 
-// Show test notification 
+// Show test notification
 ipcMain.handle("show-test-notification", async () => {
   try {
     // Read settings to get the theme
-    const settings = await fs.readJson(path.join(app.getPath("userData"), "ascendarasettings.json"));
-    const theme = settings.theme || "dark"; // Default to dark if not set
-    
-    let notificationHelperPath;
-    let args;
+    const settings = await fs.readJson(
+      path.join(app.getPath("userData"), "ascendarasettings.json")
+    );
+    const theme = settings.theme || "purple";
+
+    // Check if notifications are enabled in settings
+    if (!settings.notifications) {
+      console.log("Notifications are disabled in settings");
+      return { success: false, error: "Notifications are disabled in settings" };
+    }
 
     if (isWindows) {
-      notificationHelperPath = isDev
+      // Windows uses custom notification helper
+      const notificationHelperPath = isDev
         ? path.join(
             "./binaries/AscendaraNotificationHelper/dist/AscendaraNotificationHelper.exe"
           )
         : path.join(appDirectory, "/resources/AscendaraNotificationHelper.exe");
-      args = [
-        "--theme", theme,
-        "--title", "Test Notification",
-        "--message", "This is a test notification from Ascendara!"
+      const args = [
+        "--theme",
+        theme,
+        "--title",
+        "Test Notification",
+        "--message",
+        "This is a test notification from Ascendara!",
       ];
-    } else {
-      // For non-Windows, use python3 directly
-      notificationHelperPath = "python3";
-      const scriptPath = isDev
-        ? "./binaries/AscendaraNotificationHelper/src/AscendaraNotificationHelper.py"
-        : path.join(appDirectory, "/resources/AscendaraNotificationHelper.py");
-      args = [
-        scriptPath,
-        "--theme", theme,
-        "--title", "Test Notification",
-        "--message", "This is a test notification from Ascendara!"
-      ];
-    }
 
-    // Use spawn instead of execFile and don't wait for it to complete
-    const process = spawn(notificationHelperPath, args, {
-      detached: true, // Run in background
-      stdio: 'ignore' // Don't pipe stdio
-    });
-    
-    // Unref the process so parent can exit independently
-    process.unref();
+      // Use spawn instead of execFile and don't wait for it to complete
+      const process = spawn(notificationHelperPath, args, {
+        detached: true, // Run in background
+        stdio: "ignore", // Don't pipe stdio
+      });
+      console.log("spawn command:", notificationHelperPath, args);
+      // Unref the process so parent can exit independently
+      process.unref();
+    } else {
+      // For macOS/Linux use native notifications
+      console.log("Sending native notification on macOS/Linux");
+      const notification = new Notification({
+        title: "Test Notification",
+        body: "This is a test notification from Ascendara!",
+        silent: false,
+        timeoutType: "default",
+        urgency: "normal",
+        icon: path.join(app.getAppPath(), "build", "icon.png"),
+      });
+
+      notification.on("show", () => console.log("Notification shown"));
+      notification.on("click", () => console.log("Notification clicked"));
+      notification.on("close", () => console.log("Notification closed"));
+      notification.on("failed", error => console.error("Notification failed:", error));
+
+      notification.show();
+    }
 
     return { success: true };
   } catch (error) {
@@ -865,10 +895,10 @@ async function downloadUpdateInBackground() {
       fs.mkdirSync(tempDir);
     }
     const mainWindow = BrowserWindow.getAllWindows()[0];
-    
+
     // Create write stream for downloading
     const writer = fs.createWriteStream(installerPath);
-    
+
     try {
       const response = await axios({
         url: updateUrl,
@@ -877,8 +907,8 @@ async function downloadUpdateInBackground() {
         headers: {
           ...headers,
           "Accept-Encoding": "gzip, deflate, br",
-          "Connection": "keep-alive",
-          "Cache-Control": "no-cache"
+          Connection: "keep-alive",
+          "Cache-Control": "no-cache",
         },
         maxRedirects: 5,
         timeout: 30000,
@@ -892,12 +922,12 @@ async function downloadUpdateInBackground() {
       response.data.pipe(writer);
 
       await new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
+        writer.on("finish", resolve);
+        writer.on("error", reject);
       });
     } catch (error) {
       writer.end();
-      console.error('Download failed:', error);
+      console.error("Download failed:", error);
       throw error;
     }
 
@@ -1022,7 +1052,7 @@ ipcMain.handle("verify-game", async (event, game) => {
     const gameDirectory = path.join(settings.downloadDirectory, game);
     const filemapPath = path.join(gameDirectory, "filemap.ascendara.json");
     const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
-    
+
     const filemapData = fs.readFileSync(filemapPath, "utf8");
     const filemap = JSON.parse(filemapData);
     const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
@@ -1033,17 +1063,20 @@ ipcMain.handle("verify-game", async (event, game) => {
       // Normalize path separators to match OS and convert to lowercase on Windows
       const normalizedPath = filePath.replace(/[\/\\]/g, path.sep);
       const fullPath = path.join(gameDirectory, normalizedPath);
-      
+
       // On Windows, do case-insensitive path existence check
-      const pathExists = process.platform === 'win32' 
-        ? fs.existsSync(fullPath.toLowerCase()) || fs.existsSync(fullPath.toUpperCase()) || fs.existsSync(fullPath)
-        : fs.existsSync(fullPath);
-      
+      const pathExists =
+        process.platform === "win32"
+          ? fs.existsSync(fullPath.toLowerCase()) ||
+            fs.existsSync(fullPath.toUpperCase()) ||
+            fs.existsSync(fullPath)
+          : fs.existsSync(fullPath);
+
       if (!pathExists) {
         verifyErrors.push({
           file: filePath,
           error: "File not found",
-          expected_size: filemap[filePath].size
+          expected_size: filemap[filePath].size,
         });
       }
     }
@@ -1057,10 +1090,13 @@ ipcMain.handle("verify-game", async (event, game) => {
         progressCompleted: "100.00",
         progressDownloadSpeeds: "0.00 B/s",
         timeUntilComplete: "0s",
-        verifyError: verifyErrors
+        verifyError: verifyErrors,
       };
       fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 4));
-      return { success: false, error: `${verifyErrors.length} files failed verification` };
+      return {
+        success: false,
+        error: `${verifyErrors.length} files failed verification`,
+      };
     } else {
       delete gameInfo.downloadingData;
       fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 4));
@@ -1076,14 +1112,22 @@ ipcMain.handle("stop-download", async (event, game) => {
   try {
     if (isWindows) {
       // Windows: Use taskkill to terminate processes
-      const processNames = ["AscendaraDownloader.exe", "AscendaraGofileHelper.exe", "AscendaraTorrentHandler.exe"];
+      const processNames = [
+        "AscendaraDownloader.exe",
+        "AscendaraGofileHelper.exe",
+        "AscendaraTorrentHandler.exe",
+      ];
       for (const processName of processNames) {
         const killProcess = spawn("taskkill", ["/f", "/im", processName]);
         await new Promise(resolve => killProcess.on("close", resolve));
       }
     } else {
       // Unix-like systems: Find and kill Python processes for this game
-      const pythonScripts = ["AscendaraDownloader.py", "AscendaraGofileHelper.py", "AscendaraTorrentHandler.py"];
+      const pythonScripts = [
+        "AscendaraDownloader.py",
+        "AscendaraGofileHelper.py",
+        "AscendaraTorrentHandler.py",
+      ];
 
       for (const script of pythonScripts) {
         // Use pgrep to find Python processes running our scripts
@@ -1220,7 +1264,7 @@ ipcMain.handle(
     console.log(
       `Downloading file: ${link}, game: ${game}, online: ${online}, dlc: ${dlc}, isVr: ${isVr}, version: ${version}, size: ${size}`
     );
-    
+
     try {
       // Get download directory from settings
       const data = await fs.promises.readFile(
@@ -1228,7 +1272,7 @@ ipcMain.handle(
         "utf8"
       );
       const settings = JSON.parse(data);
-      
+
       if (!settings.downloadDirectory) {
         console.error("Download directory not set");
         return;
@@ -1239,9 +1283,10 @@ ipcMain.handle(
       await fs.promises.mkdir(gameDirectory, { recursive: true });
 
       // Download game header image
-      const imageLink = settings.gameSource === "fitgirl" 
-        ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
-        : `https://api.ascendara.app/v2/image/${imgID}`;
+      const imageLink =
+        settings.gameSource === "fitgirl"
+          ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
+          : `https://api.ascendara.app/v2/image/${imgID}`;
 
       const response = await axios({
         url: imageLink,
@@ -1264,31 +1309,35 @@ ipcMain.handle(
             settings.gameSource === "fitgirl"
               ? "./binaries/AscendaraTorrentHandler/dist/AscendaraTorrentHandler.exe"
               : link.includes("gofile.io")
-              ? "./binaries/AscendaraDownloader/dist/AscendaraGofileHelper.exe"
-              : "./binaries/AscendaraDownloader/dist/AscendaraDownloader.exe"
+                ? "./binaries/AscendaraDownloader/dist/AscendaraGofileHelper.exe"
+                : "./binaries/AscendaraDownloader/dist/AscendaraDownloader.exe"
           )
         : path.join(
             appDirectory,
             settings.gameSource === "fitgirl"
               ? "/resources/AscendaraTorrentHandler.exe"
               : link.includes("gofile.io")
-              ? "/resources/AscendaraGofileHelper.exe"
-              : "/resources/AscendaraDownloader.exe"
+                ? "/resources/AscendaraGofileHelper.exe"
+                : "/resources/AscendaraDownloader.exe"
           );
 
-      const spawnCommand = settings.gameSource === "fitgirl"
-        ? [link, game, online, dlc, version, size, settings.downloadDirectory]
-            .concat(settings.notifications ? [`--withNotification`, settings.theme] : [])
-        : [
-            link.includes("gofile.io") ? "https://" + link : link,
-            game,
-            online,
-            dlc,
-            isVr,
-            version,
-            size,
-            settings.downloadDirectory,
-          ].concat(settings.notifications ? [`--withNotification`, settings.theme] : []);
+      const spawnCommand =
+        settings.gameSource === "fitgirl"
+          ? [link, game, online, dlc, version, size, settings.downloadDirectory].concat(
+              settings.notifications ? [`--withNotification`, settings.theme] : []
+            )
+          : [
+              link.includes("gofile.io") ? "https://" + link : link,
+              game,
+              online,
+              dlc,
+              isVr,
+              version,
+              size,
+              settings.downloadDirectory,
+            ].concat(
+              settings.notifications ? [`--withNotification`, settings.theme] : []
+            );
 
       const downloadProcess = spawn(executablePath, spawnCommand, {
         detached: true,
@@ -1296,17 +1345,16 @@ ipcMain.handle(
         windowsHide: false,
       });
 
-      downloadProcess.on('error', (err) => {
+      downloadProcess.on("error", err => {
         console.error(`Failed to start download process: ${err}`);
-        event.sender.send('download-error', { game, error: err.message });
+        event.sender.send("download-error", { game, error: err.message });
       });
 
       downloadProcesses.set(game, downloadProcess);
       downloadProcess.unref();
-
     } catch (error) {
       console.error("Error in download-file handler:", error);
-      event.sender.send('download-error', { game, error: error.message });
+      event.sender.send("download-error", { game, error: error.message });
     }
   }
 );
@@ -2240,9 +2288,10 @@ ipcMain.handle(
 
       // Download and save the cover image if imgID is provided
       if (imgID) {
-        const imageLink = settings.gameSource === "fitgirl" 
-          ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
-          : `https://api.ascendara.app/v2/image/${imgID}`;
+        const imageLink =
+          settings.gameSource === "fitgirl"
+            ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
+            : `https://api.ascendara.app/v2/image/${imgID}`;
 
         const response = await axios({
           url: imageLink,
@@ -2258,7 +2307,6 @@ ipcMain.handle(
           path.join(gameDirectory, `header.ascendara${extension}`),
           imageBuffer
         );
-
       }
 
       try {
@@ -2361,12 +2409,12 @@ ipcMain.handle("open-game-directory", (event, game, isCustom) => {
     const executablePath = process.execPath;
     const executableDir = path.dirname(executablePath);
     shell.openPath(executableDir);
-  } if (game === "workshop") {
+  }
+  if (game === "workshop") {
     const steamCMDDir = path.join(os.homedir(), "ascendaraSteamcmd");
     const workshopContentPath = path.join(steamCMDDir, "steamapps/workshop/content");
     shell.openPath(workshopContentPath);
-  }
-  else {
+  } else {
     if (!isCustom) {
       const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
       try {
@@ -2967,7 +3015,7 @@ ipcMain.handle("clear-cache", async () => {
 let driveSpaceCache = {
   freeSpace: 0,
   totalSpace: 0,
-  lastCalculated: 0
+  lastCalculated: 0,
 };
 
 ipcMain.handle("get-drive-space", async (event, directory) => {
@@ -2975,22 +3023,22 @@ ipcMain.handle("get-drive-space", async (event, directory) => {
     // Check if we have a recent cache (less than 30 seconds old)
     const now = Date.now();
     if (driveSpaceCache.lastCalculated > now - 30 * 1000) {
-      return { 
-        freeSpace: driveSpaceCache.freeSpace, 
-        totalSpace: driveSpaceCache.totalSpace 
+      return {
+        freeSpace: driveSpaceCache.freeSpace,
+        totalSpace: driveSpaceCache.totalSpace,
       };
     }
 
     const { available, total } = await disk.check(directory);
     console.log(`Drive space for ${directory}: ${available}/${total} bytes`);
-    
+
     // Update cache
     driveSpaceCache = {
       freeSpace: available,
       totalSpace: total,
-      lastCalculated: now
+      lastCalculated: now,
     };
-    
+
     return { freeSpace: available, totalSpace: total };
   } catch (error) {
     console.error("Error getting drive space:", error);
@@ -3005,7 +3053,7 @@ async function fetchDriveSpace(directory) {
     driveSpaceCache = {
       freeSpace: available,
       totalSpace: total,
-      lastCalculated: Date.now()
+      lastCalculated: Date.now(),
     };
     return { freeSpace: available, totalSpace: total };
   } catch (error) {
@@ -3721,74 +3769,75 @@ ipcMain.handle("stop-translation-watcher", () => {
 
 // Add qBittorrent IPC handlers
 const qbittorrentClient = axios.create({
-  baseURL: 'http://localhost:8080/api/v2',
-  withCredentials: true
+  baseURL: "http://localhost:8080/api/v2",
+  withCredentials: true,
 });
 
 let qbittorrentSID = null;
 
-ipcMain.handle('qbittorrent:login', async (event, { username, password }) => {
+ipcMain.handle("qbittorrent:login", async (event, { username, password }) => {
   try {
-    console.log('[qbitMain] Attempting login...');
-    const response = await qbittorrentClient.post('/auth/login', 
+    console.log("[qbitMain] Attempting login...");
+    const response = await qbittorrentClient.post(
+      "/auth/login",
       `username=${username}&password=${password}`,
       {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Referer': 'http://localhost:8080',
-          'Origin': 'http://localhost:8080'
-        }
+          "Content-Type": "application/x-www-form-urlencoded",
+          Referer: "http://localhost:8080",
+          Origin: "http://localhost:8080",
+        },
       }
     );
 
-    console.log('[qbitMain] Login response status:', response.status);
-    console.log('[qbitMain] Login response data:', response.data);
-    console.log('[qbitMain] Login response headers:', response.headers);
+    console.log("[qbitMain] Login response status:", response.status);
+    console.log("[qbitMain] Login response data:", response.data);
+    console.log("[qbitMain] Login response headers:", response.headers);
 
     // Extract and store the SID cookie
-    const setCookie = response.headers['set-cookie'];
+    const setCookie = response.headers["set-cookie"];
     if (setCookie && setCookie[0]) {
       const match = setCookie[0].match(/SID=([^;]+)/);
       if (match) {
         qbittorrentSID = match[1];
-        console.log('[qbitMain] Extracted SID:', qbittorrentSID);
+        console.log("[qbitMain] Extracted SID:", qbittorrentSID);
       }
     }
 
     return { success: true, data: response.data };
   } catch (error) {
-    console.error('[qbitMain] Login error:', error.response?.data || error.message);
-    return { 
-      success: false, 
-      error: error.response?.data || error.message 
+    console.error("[qbitMain] Login error:", error.response?.data || error.message);
+    return {
+      success: false,
+      error: error.response?.data || error.message,
     };
   }
 });
 
-ipcMain.handle('qbittorrent:version', async () => {
+ipcMain.handle("qbittorrent:version", async () => {
   try {
-    console.log('[qbitMain] Fetching version...');
+    console.log("[qbitMain] Fetching version...");
     if (!qbittorrentSID) {
-      throw new Error('No SID available - please login first');
+      throw new Error("No SID available - please login first");
     }
 
-    const response = await qbittorrentClient.get('/app/version', {
+    const response = await qbittorrentClient.get("/app/version", {
       headers: {
-        'Referer': 'http://localhost:8080',
-        'Origin': 'http://localhost:8080',
-        'Cookie': `SID=${qbittorrentSID}`
-      }
+        Referer: "http://localhost:8080",
+        Origin: "http://localhost:8080",
+        Cookie: `SID=${qbittorrentSID}`,
+      },
     });
-    
-    console.log('[qbitMain] Version response status:', response.status);
-    console.log('[qbitMain] Version response data:', response.data);
 
-    return { success: true, version: response.data.replace(/['"]+/g, '') };
+    console.log("[qbitMain] Version response status:", response.status);
+    console.log("[qbitMain] Version response data:", response.data);
+
+    return { success: true, version: response.data.replace(/['"]+/g, "") };
   } catch (error) {
-    console.error('[qbitMain] Version error:', error.response?.data || error.message);
-    return { 
-      success: false, 
-      error: error.response?.data || error.message 
+    console.error("[qbitMain] Version error:", error.response?.data || error.message);
+    return {
+      success: false,
+      error: error.response?.data || error.message,
     };
   }
 });
@@ -3797,7 +3846,7 @@ ipcMain.handle('qbittorrent:version', async () => {
 let dirSizeCache = {
   size: 0,
   lastCalculated: 0,
-  calculating: false
+  calculating: false,
 };
 
 // Calculate directory size recursively
@@ -3820,11 +3869,11 @@ async function calculateDirSize(dirPath) {
 }
 
 // Get total size of installed games from actual directory sizes
-ipcMain.handle("get-installed-games-size", async (event) => {
+ipcMain.handle("get-installed-games-size", async event => {
   try {
     const settings = settingsManager.getSettings();
     const downloadDirectory = settings.downloadDirectory;
-    
+
     if (!downloadDirectory || !fs.existsSync(downloadDirectory)) {
       return { success: false, error: "Download directory not found" };
     }
@@ -3842,24 +3891,24 @@ ipcMain.handle("get-installed-games-size", async (event) => {
 
     // Calculate new size
     dirSizeCache.calculating = true;
-    event.sender.send('directory-size-status', { calculating: true });
-    
+    event.sender.send("directory-size-status", { calculating: true });
+
     const totalSize = await calculateDirSize(downloadDirectory);
-    
+
     // Update cache
     dirSizeCache = {
       size: totalSize,
       lastCalculated: now,
-      calculating: false
+      calculating: false,
     };
-    
-    event.sender.send('directory-size-status', { calculating: false });
+
+    event.sender.send("directory-size-status", { calculating: false });
     console.log(`Actual download directory size: ${totalSize} bytes`);
-    
+
     return { success: true, totalSize };
   } catch (error) {
     dirSizeCache.calculating = false;
-    event.sender.send('directory-size-status', { calculating: false });
+    event.sender.send("directory-size-status", { calculating: false });
     console.error("Error getting installed games size:", error);
     return { success: false, error: error.message };
   }
