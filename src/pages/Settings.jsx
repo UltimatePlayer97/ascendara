@@ -40,6 +40,7 @@ import {
   ChevronUp,
   ChevronDown,
   Package,
+  AlertTriangle,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
@@ -1205,6 +1206,276 @@ function Settings() {
                     </div>
                   </div>
                 )}
+              </div>
+            </Card>
+            <Card>
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold text-primary">
+                      {t("settings.gameBackup.title")}
+                    </h3>
+                    <p className="mt-4 text-sm text-muted-foreground">
+                      {t("settings.gameBackup.description")}
+                    </p>
+                  </div>
+                  {!isOnWindows && (
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-sm font-bold text-muted-foreground">
+                        {t("settings.onlyWindowsSupported2")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div
+                  className={`mt-6 space-y-6 ${!isOnWindows ? "pointer-events-none opacity-50" : ""}`}
+                >
+                  {/* Essential Settings */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">{t("settings.essential")}</h4>
+
+                    {/* Backup Location */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupLocation")}</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder={t("settings.gameBackup.selectDirectory")}
+                          className="flex-1"
+                          value={settings.ludusavi.backupLocation}
+                          readOnly
+                        />
+                        <Button
+                          onClick={async () => {
+                            const result = await window.electron.showOpenDialog({
+                              properties: ["openDirectory"],
+                            });
+                            if (!result.canceled && result.filePaths.length > 0) {
+                              setSettings(prev => ({
+                                ...prev,
+                                ludusavi: {
+                                  ...prev.ludusavi,
+                                  backupLocation: result.filePaths[0],
+                                },
+                              }));
+                            }
+                          }}
+                        >
+                          {t("settings.browse")}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Backup Format */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupFormat")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupFormat}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupFormat: value,
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="zip">
+                            {t("settings.gameBackup.formatZip")}
+                          </SelectItem>
+                          <SelectItem value="simple">
+                            {t("settings.gameBackup.formatSimple")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Backup Options */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">
+                      {t("settings.gameBackup.backupOptions")}
+                    </h4>
+
+                    {/* Number of Backups */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupsToKeep")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupOptions.backupsToKeep.toString()}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupOptions: {
+                                ...prev.ludusavi.backupOptions,
+                                backupsToKeep: parseInt(value),
+                              },
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">
+                            {t("settings.gameBackup.backupsCount.three")}
+                          </SelectItem>
+                          <SelectItem value="5">
+                            {t("settings.gameBackup.backupsCount.five")}
+                          </SelectItem>
+                          <SelectItem value="10">
+                            {t("settings.gameBackup.backupsCount.ten")}
+                          </SelectItem>
+                          <SelectItem value="custom">
+                            {t("settings.gameBackup.backupsCount.custom")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Compression Settings */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.compressionLevel")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupOptions.compressionLevel}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupOptions: {
+                                ...prev.ludusavi.backupOptions,
+                                compressionLevel: value,
+                              },
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fast">
+                            {t("settings.gameBackup.compression.fast")}
+                          </SelectItem>
+                          <SelectItem value="default">
+                            {t("settings.gameBackup.compression.default")}
+                          </SelectItem>
+                          <SelectItem value="best">
+                            {t("settings.gameBackup.compression.best")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Auto-backup */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.gameBackup.autoBackup")}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t("settings.gameBackup.autoBackupDesc")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.backupOptions.autoBackupOnGameExit}
+                        onCheckedChange={checked => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupOptions: {
+                                ...prev.ludusavi.backupOptions,
+                                autoBackupOnGameExit: checked,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* User Preferences */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">
+                      {t("settings.gameBackup.userPreferences")}
+                    </h4>
+
+                    {/* Notifications */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.gameBackup.showNotifications")}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t("settings.gameBackup.notificationsDesc")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.preferences.showNotifications}
+                        onCheckedChange={checked => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              preferences: {
+                                ...prev.ludusavi.preferences,
+                                showNotifications: checked,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </div>
+
+                    {/* Skip Confirmations */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.gameBackup.skipConfirmations")}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t("settings.gameBackup.skipConfirmationsDesc")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.preferences.skipConfirmations}
+                        onCheckedChange={checked => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              preferences: {
+                                ...prev.ludusavi.preferences,
+                                skipConfirmations: checked,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Custom Save Locations */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold">
+                        {t("settings.gameBackup.customLocations")}
+                      </h4>
+                      <Button>{t("settings.gameBackup.addLocation")}</Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {t("settings.gameBackup.customLocationsDesc")}
+                    </p>
+                    <div className="rounded-md border bg-card p-4">
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.gameBackup.noCustomLocations")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 const SettingsContext = createContext();
 
@@ -21,24 +27,43 @@ export function SettingsProvider({ children }) {
     threadCount: 4,
     sideScrollBar: false,
     crackDirectory: "",
+    ludusavi: {
+      backupLocation: "",
+      backupFormat: "simple",
+      enabled: false,
+      backupOptions: {
+        backupsToKeep: 5,
+        compressionLevel: "default",
+        autoBackupOnGameExit: false,
+      },
+      preferences: {
+        showNotifications: true,
+        skipConfirmations: false,
+      },
+      customLocations: [],
+    },
   });
 
-  const setSettings = useCallback(async (newSettings) => {
-    // If newSettings is a function, call it with current settings
-    const updatedSettings = typeof newSettings === 'function' 
-      ? newSettings(settings)
-      : { ...settings, ...newSettings };
+  const setSettings = useCallback(
+    async newSettings => {
+      // If newSettings is a function, call it with current settings
+      const updatedSettings =
+        typeof newSettings === "function"
+          ? newSettings(settings)
+          : { ...settings, ...newSettings };
 
-    // Update local state
-    setSettingsState(updatedSettings);
+      // Update local state
+      setSettingsState(updatedSettings);
 
-    // Save to electron
-    try {
-      await window.electron.saveSettings(updatedSettings);
-    } catch (error) {
-      console.error("Error saving settings:", error);
-    }
-  }, [settings]);
+      // Save to electron
+      try {
+        await window.electron.saveSettings(updatedSettings);
+      } catch (error) {
+        console.error("Error saving settings:", error);
+      }
+    },
+    [settings]
+  );
 
   useEffect(() => {
     // Load settings on mount
@@ -58,7 +83,7 @@ export function SettingsProvider({ children }) {
     const handleSettingsChange = (event, newSettings) => {
       setSettingsState(prevSettings => ({
         ...prevSettings,
-        ...newSettings
+        ...newSettings,
       }));
     };
 
@@ -70,10 +95,12 @@ export function SettingsProvider({ children }) {
   }, []);
 
   return (
-    <SettingsContext.Provider value={{ 
-      settings,
-      setSettings
-    }}>
+    <SettingsContext.Provider
+      value={{
+        settings,
+        setSettings,
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );

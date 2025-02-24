@@ -30,9 +30,15 @@ const PlatformWarningDialog = ({ onClose }) => {
           </div>
 
           <div className="mt-4 space-y-4">
-            <p className="text-sm">{t("app.platform.warning.description")}</p>
-            <p className="text-sm">{t("app.platform.warning.development")}</p>
-            <p className="text-sm">~ {t("app.platform.warning.fromSantiago")}</p>
+            <p className="text-sm text-primary">
+              {t("app.platform.warning.description")}
+            </p>
+            <p className="text-sm text-primary">
+              {t("app.platform.warning.development")}
+            </p>
+            <p className="text-sm text-primary">
+              ~ {t("app.platform.warning.fromSantiago")}
+            </p>
           </div>
 
           <div className="mt-6 flex justify-end">

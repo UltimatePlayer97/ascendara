@@ -482,6 +482,21 @@ class SettingsManager {
       threadCount: 4,
       sideScrollBar: false,
       crackDirectory: "",
+      ludusavi: {
+        backupLocation: "",
+        backupFormat: "simple",
+        enabled: false,
+        backupOptions: {
+          backupsToKeep: 5,
+          compressionLevel: "default",
+          autoBackupOnGameExit: false,
+        },
+        preferences: {
+          showNotifications: true,
+          skipConfirmations: false,
+        },
+        customLocations: [],
+      },
     };
     this.settings = this.loadSettings();
   }
