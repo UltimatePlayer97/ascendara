@@ -648,23 +648,25 @@ function Settings() {
               </h2>
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>{t("settings.autoCreateShortcuts")}</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {t("settings.autoCreateShortcutsDescription")}
-                      </p>
+                  {isOnWindows && (
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.autoCreateShortcuts")}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t("settings.autoCreateShortcutsDescription")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.autoCreateShortcuts}
+                        onCheckedChange={() =>
+                          handleSettingChange(
+                            "autoCreateShortcuts",
+                            !settings.autoCreateShortcuts
+                          )
+                        }
+                      />
                     </div>
-                    <Switch
-                      checked={settings.autoCreateShortcuts}
-                      onCheckedChange={() =>
-                        handleSettingChange(
-                          "autoCreateShortcuts",
-                          !settings.autoCreateShortcuts
-                        )
-                      }
-                    />
-                  </div>
+                  )}
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">

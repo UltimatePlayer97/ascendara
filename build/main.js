@@ -3237,7 +3237,12 @@ async function createGameShortcut(game) {
 
 // Handle shortcut creation request
 ipcMain.handle("create-game-shortcut", async (event, game) => {
-  return await createGameShortcut(game);
+  if (isWindows()) {
+    return await createGameShortcut(game);
+  } else {
+    console.error("Shortcut creation not supported on this platform");
+    return false;
+  }
 });
 
 ipcMain.handle("check-file-exists", async (event, execPath) => {
