@@ -3252,7 +3252,7 @@ async function createGameShortcut(game) {
 
 // Handle shortcut creation request
 ipcMain.handle("create-game-shortcut", async (event, game) => {
-  if (isWindows()) {
+  if (isWindows) {
     return await createGameShortcut(game);
   } else {
     console.error("Shortcut creation not supported on this platform");
