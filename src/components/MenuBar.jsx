@@ -187,15 +187,6 @@ const MenuBar = () => {
     mainContentRef.current = document.querySelector("main");
   }, []);
 
-  useEffect(() => {
-    const checkFullscreenState = async () => {
-      const state = window.electron.getFullscreenState();
-      console.log("Fullscreen state:", state);
-      setIsFullscreen(state);
-    };
-    checkFullscreenState();
-  }, []);
-
   const handleStatusClick = () => {
     setIsDialogOpen(true);
   };
@@ -211,8 +202,7 @@ const MenuBar = () => {
   };
 
   const handleFullscreenToggle = async () => {
-    const newState = await window.electron.toggleFullscreen();
-    setIsFullscreen(newState);
+    setIsFullscreen(await window.electron.toggleFullscreen());
   };
 
   return (
@@ -379,7 +369,7 @@ const MenuBar = () => {
               />
               <Maximize
                 className={`h-4 w-4 transition-opacity ${
-                  isFullscreen ? "opacity-0" : "opacity-100"
+                  isFullscreen ? "opacity-0" : "bg-background opacity-100"
                 }`}
               />
             </button>
