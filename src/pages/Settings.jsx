@@ -655,26 +655,6 @@ function Settings() {
               </h2>
               <div className="space-y-6">
                 <div className="space-y-4">
-                  {isOnWindows && (
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.autoCreateShortcuts")}</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {t("settings.autoCreateShortcutsDescription")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.autoCreateShortcuts}
-                        onCheckedChange={() =>
-                          handleSettingChange(
-                            "autoCreateShortcuts",
-                            !settings.autoCreateShortcuts
-                          )
-                        }
-                      />
-                    </div>
-                  )}
-
                   <div className="mb-4">
                     <Label>{t("settings.theme")}</Label>
                     <Accordion
@@ -811,6 +791,26 @@ function Settings() {
                       }
                     />
                   </div>
+
+                  {isOnWindows && (
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.autoCreateShortcuts")}</Label>
+                        <p className="text-sm text-muted-foreground">
+                          {t("settings.autoCreateShortcutsDescription")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.autoCreateShortcuts}
+                        onCheckedChange={() =>
+                          handleSettingChange(
+                            "autoCreateShortcuts",
+                            !settings.autoCreateShortcuts
+                          )
+                        }
+                      />
+                    </div>
+                  )}
 
                   <div>
                     {isDownloaderRunning && (
@@ -1215,26 +1215,45 @@ function Settings() {
                     <h3 className="text-xl font-semibold text-primary">
                       {t("settings.gameBackup.title")}
                     </h3>
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      {t("settings.gameBackup.description")}
+                    <p className="mt-4 max-w-[70%] text-sm text-muted-foreground">
+                      {t("settings.gameBackup.description")}&nbsp;
+                      <a
+                        onClick={() =>
+                          window.electron.openURL("https://ascendara.app/docs/")
+                        }
+                        className="cursor-pointer text-primary hover:underline"
+                      >
+                        {t("common.learnMore")}
+                        <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
+                      </a>
                     </p>
                   </div>
-                  {!isOnWindows && (
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                      <p className="text-sm font-bold text-muted-foreground">
-                        {t("settings.onlyWindowsSupported2")}
-                      </p>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-4">
+                    {!isOnWindows && (
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                        <p className="text-sm font-bold text-muted-foreground">
+                          {t("settings.onlyWindowsSupported2")}
+                        </p>
+                      </div>
+                    )}
+                    <Switch
+                      checked={settings.ludusavi.enabled}
+                      onCheckedChange={checked =>
+                        setSettings(prev => ({
+                          ...prev,
+                          ludusavi: { ...prev.ludusavi, enabled: checked },
+                        }))
+                      }
+                      disabled={!isOnWindows}
+                    />
+                  </div>
                 </div>
                 <div
-                  className={`mt-6 space-y-6 ${!isOnWindows ? "pointer-events-none opacity-50" : ""}`}
+                  className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
                 >
                   {/* Essential Settings */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">{t("settings.essential")}</h4>
-
                     {/* Backup Location */}
                     <div className="space-y-2">
                       <Label>{t("settings.gameBackup.backupLocation")}</Label>
@@ -1246,6 +1265,7 @@ function Settings() {
                           readOnly
                         />
                         <Button
+                          className="text-secondary"
                           onClick={async () => {
                             const result = await window.electron.showOpenDialog({
                               properties: ["openDirectory"],
@@ -1261,7 +1281,7 @@ function Settings() {
                             }
                           }}
                         >
-                          {t("settings.browse")}
+                          {t("settings.selectDirectory")}
                         </Button>
                       </div>
                     </div>
@@ -1464,7 +1484,9 @@ function Settings() {
                       <h4 className="text-sm font-semibold">
                         {t("settings.gameBackup.customLocations")}
                       </h4>
-                      <Button>{t("settings.gameBackup.addLocation")}</Button>
+                      <Button className="text-secondary">
+                        {t("settings.gameBackup.addLocation")}
+                      </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {t("settings.gameBackup.customLocationsDesc")}
