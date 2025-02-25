@@ -62,7 +62,7 @@
   "common": {
     "cancel": "Cancel",
     "downloading": "Downloading...",
-    "downloads": "Active Downloads",
+    "downloads": "Downloads",
     "error": "Error",
     "finish": "Finish",
     "getStarted": "Get Started",
@@ -101,8 +101,7 @@
     "retry": "Try Again",
     "search": "Search",
     "submit": "Submit",
-    "submitting": "Submitting...",
-    "workshopDownloader": "Workshop Downloader"
+    "submitting": "Submitting..."
   },
   "download": {
     "allDlc": "ALL-DLCs",
@@ -250,11 +249,21 @@
   "downloads": {
     "actions": {
       "cancelAndDelete": "Cancel & Delete",
+      "legacyGameVerification": "File verification is only available for games downloaded after Ascendara version 8.1.2",
       "openFolder": "Open Folder",
       "retryDownload": "Retry Download",
-      "stopDownload": "Stop Download"
+      "stopDownload": "Stop Download",
+      "verificationFailed": "Files failed to verify",
+      "verificationFailed1": "{{numFailed}} file failed to verify",
+      "verificationFailed2": "{{numFailed}} files failed to verify",
+      "verificationFailedDescription": "Your antivirus probably deleted important game crack files that were reported as false positives.",
+      "verificationSuccess": "Verification Complete",
+      "verificationSuccessDesc": "All game files have been verified",
+      "verifyAgain": "Verify Game Files",
+      "verifying": "Verifying files...",
+      "verifyingDescription": "Ascendara is verifying the game files. This may also take a while depending on the game size."
     },
-    "activeDownloads": "Active Downloads",
+    "activeDownloads": "Downloading Games",
     "alreadyReported": "Already Reported",
     "contentTypeError": "Received content type error from downloader. Download link most likely expired",
     "currentTotalSpeed": "Current Total Speed",
@@ -307,6 +316,7 @@
     "availableSpace": "Available Space",
     "calculatingSize": "Calculating...",
     "cannotRunDev": "Cannot run games in developer mode",
+    "cannotVerifyFiles": "Cannot verify game files",
     "changeExecutable": "Change Executable",
     "chooseExecutableFile": "Choose executable file...",
     "coverSearchError": "Error searching for image",
@@ -374,6 +384,7 @@
     "uninstallGame": "Uninstall Game",
     "uninstallGameWarning": "Are you sure you want to uninstall this game? This will delete the game from your computer and remove it from your Ascendara library.",
     "uninstallingGame": "Uninstalling",
+    "verifyGameFiles": "Verify Game Files",
     "version": "Version",
     "versionPlaceholder": "e.g., 1.0.0",
     "vrWarning": {
@@ -491,7 +502,7 @@
       "compressionLevel": "ZIP Compression Level",
       "customLocations": "Custom Save Locations",
       "customLocationsDesc": "Define custom save locations for games that store saves in non-standard paths",
-      "description": "Configure Ludusavi game save backup settings",
+      "description": "Configure Ludusavi backup settings. When enabled, games will launch with the Ludusavi wrapper.",
       "formatSimple": "Simple (Directory structure)",
       "formatZip": "ZIP (Recommended)",
       "noCustomLocations": "No custom locations defined",
