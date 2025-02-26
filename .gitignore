@@ -12,32 +12,30 @@ node_modules
 dist
 dist-ssr
 *.local
-
-# Million Lint
-.million
-/src/translations/json
-/binaries/AscendaraDownloader/build
-/binaries/AscendaraGameHandler/build
 *.spec
 package-lock.json
-exports.txt
 
-# Environment
+# Build outputs
+/binaries/*/build
+/installer/build
+
+# Configuration and environment
 .env
-
-# OS files
-*.bat
 build/config.prod.js
 build/icon.ico
-/installer/build
-/binaries/AscendaraCrashReporter/build
-/server
-/binaries/AscendaraLanguageTranslation/build
-/binaries/AscendaraGameHandler/src/debian
-/binaries/AscendaraDownloader/src/debian
-/binaries/AscendaraCrashReporter/src/debian
-/binaries/AscendaraLanguageTranslation/src/debian
-/binaries/AscendaraGofileHelper/src/debian
 
-/binaries/AscendaraTorrentHandler/build
-/binaries/AscendaraNotificationHelper/build
+# OS and editor files
+*.bat
+.DS_Store
+
+# Project-specific
+.million
+/src/translations/json
+exports.txt
+/server
+
+# Debian-specific files
+/binaries/*/src/debian
+
+# Specific files to ignore
+binaries/AscendaraNotificationHelper/src/debian/AscendaraNotificationHelper.py
