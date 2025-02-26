@@ -484,18 +484,16 @@ class SettingsManager {
       crackDirectory: "",
       ludusavi: {
         backupLocation: "",
-        backupFormat: "simple",
+        backupFormat: "zip",
         enabled: false,
         backupOptions: {
           backupsToKeep: 5,
           compressionLevel: "default",
-          autoBackupOnGameExit: false,
         },
         preferences: {
           showNotifications: true,
           skipConfirmations: false,
         },
-        customLocations: [],
       },
     };
     this.settings = this.loadSettings();
