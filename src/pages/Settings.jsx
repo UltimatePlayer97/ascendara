@@ -1072,7 +1072,7 @@ function Settings() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">
+                          <SelectItem value="zip">
                             {t("settings.gameBackup.formatZip")}
                           </SelectItem>
                           <SelectItem value="simple">

@@ -633,6 +633,179 @@ function sanitizeText(text) {
     .trim();
 }
 
+// Ludusavi functions
+ipcMain.handle("ludusavi", async (event, action, game) => {
+  try {
+    if (isWindows) {
+      // Windows uses custom notification helper
+      const ludusaviPath = isDev
+        ? path.join("./binaries/AscendaraGameHandler/dist/ludusavi.exe")
+        : path.join(appDirectory, "/resources/ludusavi.exe");
+
+      // Get ludusavi settings
+      const settings = settingsManager.getSettings();
+      const ludusaviSettings = settings.ludusavi || {};
+
+      if (!fs.existsSync(ludusaviPath)) {
+        return { success: false, error: "Ludusavi executable not found" };
+      }
+
+      // Prepare common arguments
+      let args = [];
+
+      switch (action) {
+        case "backup":
+          args = ["backup"];
+
+          // Add game title if provided
+          if (game) {
+            args.push(game);
+          }
+
+          // Add backup location if configured
+          if (ludusaviSettings.backupLocation) {
+            args.push("--path", ludusaviSettings.backupLocation);
+          }
+
+          // Add backup format if configured
+          if (ludusaviSettings.backupFormat) {
+            args.push("--format", ludusaviSettings.backupFormat);
+          }
+
+          // Add compression options if configured
+          if (
+            ludusaviSettings.backupOptions?.compressionLevel &&
+            ludusaviSettings.backupOptions.compressionLevel !== "default"
+          ) {
+            args.push("--compression", ludusaviSettings.backupOptions.compressionLevel);
+          }
+
+          // Add backups to keep limit
+          if (ludusaviSettings.backupOptions?.backupsToKeep) {
+            args.push("--full-limit", ludusaviSettings.backupOptions.backupsToKeep);
+          }
+
+          // Skip confirmations if configured
+          if (ludusaviSettings.preferences?.skipConfirmations) {
+            args.push("--force");
+          }
+
+          // Add API flag for machine-readable output
+          args.push("--api");
+
+          break;
+
+        case "restore":
+          args = ["restore"];
+
+          // Add game title if provided
+          if (game) {
+            args.push(game);
+          }
+
+          // Add backup location if configured
+          if (ludusaviSettings.backupLocation) {
+            args.push("--path", ludusaviSettings.backupLocation);
+          }
+
+          // Skip confirmations if configured
+          if (ludusaviSettings.preferences?.skipConfirmations) {
+            args.push("--force");
+          }
+
+          // Add API flag for machine-readable output
+          args.push("--api");
+
+          break;
+
+        case "list-backups":
+          args = ["backups"];
+
+          // Add game title if provided
+          if (game) {
+            args.push(game);
+          }
+
+          // Add backup location if configured
+          if (ludusaviSettings.backupLocation) {
+            args.push("--path", ludusaviSettings.backupLocation);
+          }
+
+          // Add API flag for machine-readable output
+          args.push("--api");
+
+          break;
+
+        case "find-game":
+          args = ["find"];
+
+          // Add game title if provided
+          if (game) {
+            args.push(game);
+          }
+
+          // Add multiple flag to find all potential matches
+          args.push("--multiple");
+
+          // Add API flag for machine-readable output
+          args.push("--api");
+
+          break;
+
+        default:
+          return { success: false, error: `Unknown action: ${action}` };
+      }
+
+      console.log(`Executing ludusavi command: ${ludusaviPath} ${args.join(" ")}`);
+
+      // Execute the command
+      const { spawn } = require("child_process");
+      const process = spawn(ludusaviPath, args);
+
+      return new Promise((resolve, reject) => {
+        let stdout = "";
+        let stderr = "";
+
+        process.stdout.on("data", data => {
+          stdout += data.toString();
+        });
+
+        process.stderr.on("data", data => {
+          stderr += data.toString();
+        });
+
+        process.on("close", code => {
+          if (code === 0) {
+            try {
+              // Parse JSON output if possible
+              const result = JSON.parse(stdout);
+              resolve({ success: true, data: result });
+            } catch (e) {
+              // Return raw output if not JSON
+              resolve({ success: true, data: stdout });
+            }
+          } else {
+            resolve({
+              success: false,
+              error: stderr || `Process exited with code ${code}`,
+              stdout: stdout,
+            });
+          }
+        });
+
+        process.on("error", err => {
+          reject({ success: false, error: err.message });
+        });
+      });
+    } else {
+      return { success: false, error: "Ludusavi is only supported on Windows" };
+    }
+  } catch (error) {
+    console.error("Error executing ludusavi command:", error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Show test notification
 ipcMain.handle("show-test-notification", async () => {
   try {

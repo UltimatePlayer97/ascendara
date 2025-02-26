@@ -1294,7 +1294,10 @@ const InstalledGameCard = memo(
                     <FolderSymlink className="mr-2 h-4 w-4" />
                     {t("library.restoreLatest")}
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => window.electron.ludusavi("backup", game.game)}
+                    className="cursor-pointer"
+                  >
                     <Layers2 className="mr-2 h-4 w-4" />
                     {t("library.backupNow")}
                   </DropdownMenuItem>

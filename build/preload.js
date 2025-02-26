@@ -26,7 +26,7 @@ contextBridge.exposeInMainWorld("electron", {
     saveGameImage: (gameName, imageBase64) =>
       ipcRenderer.invoke("save-game-image", gameName, imageBase64),
     readFile: path => ipcRenderer.invoke("read-file", path),
-    writeFile: (path, content) => ipcRenderer.invoke("write-file", path, content)
+    writeFile: (path, content) => ipcRenderer.invoke("write-file", path, content),
   },
 
   // Settings and Configuration
@@ -53,6 +53,7 @@ contextBridge.exposeInMainWorld("electron", {
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),
   getCustomGames: () => ipcRenderer.invoke("get-custom-games"),
+  ludusavi: (action, game) => ipcRenderer.invoke("ludusavi", action, game),
   createGameShortcut: game => ipcRenderer.invoke("create-game-shortcut", game),
   verifyGame: game => ipcRenderer.invoke("verify-game", game),
   addGame: (game, online, dlc, version, executable, imgID) =>
@@ -64,7 +65,7 @@ contextBridge.exposeInMainWorld("electron", {
   getInstalledGamesSize: () => ipcRenderer.invoke("get-installed-games-size"),
 
   // Download Status
-  onDownloadProgress: (callback) => {
+  onDownloadProgress: callback => {
     ipcRenderer.on("download-progress", (event, data) => {
       callback(data);
     });
@@ -90,12 +91,11 @@ contextBridge.exposeInMainWorld("electron", {
   getInstalledTools: () => ipcRenderer.invoke("get-installed-tools"),
   installTool: tool => ipcRenderer.invoke("install-tool", tool),
   canCreateFiles: directory => ipcRenderer.invoke("can-create-files", directory),
-  openFileDialog: (exePath = null) =>
-    ipcRenderer.invoke("open-file-dialog", exePath),
+  openFileDialog: (exePath = null) => ipcRenderer.invoke("open-file-dialog", exePath),
   isSteamCMDInstalled: () => ipcRenderer.invoke("is-steamcmd-installed"),
   installSteamCMD: () => ipcRenderer.invoke("install-steamcmd"),
   getDownloadDirectory: () => ipcRenderer.invoke("get-download-directory"),
-  getDriveSpace: (path) => ipcRenderer.invoke("get-drive-space", path),
+  getDriveSpace: path => ipcRenderer.invoke("get-drive-space", path),
   getLocalCrackUsername: () => ipcRenderer.invoke("get-local-crack-username"),
   getLocalCrackDirectory: () => ipcRenderer.invoke("get-local-crack-directory"),
   setLocalCrackUsername: username =>
@@ -103,16 +103,16 @@ contextBridge.exposeInMainWorld("electron", {
   setLocalCrackDirectory: directory =>
     ipcRenderer.invoke("set-local-crack-directory", directory),
   onDirectorySizeStatus: callback => {
-    ipcRenderer.on('directory-size-status', (_, status) => callback(status));
+    ipcRenderer.on("directory-size-status", (_, status) => callback(status));
     return () => {
-      ipcRenderer.removeListener('directory-size-status', callback);
+      ipcRenderer.removeListener("directory-size-status", callback);
     };
   },
 
   // Download and Installation
   installDependencies: () => ipcRenderer.invoke("install-dependencies"),
   installPython: () => ipcRenderer.invoke("install-python"),
-  downloadItem: (url) => ipcRenderer.invoke("download-item", url),
+  downloadItem: url => ipcRenderer.invoke("download-item", url),
   stopDownload: game => ipcRenderer.invoke("stop-download", game),
   retryDownload: (link, game, online, dlc, version) =>
     ipcRenderer.invoke("retry-download", link, game, online, dlc, version),
@@ -263,9 +263,9 @@ contextBridge.exposeInMainWorld("electron", {
 });
 
 // Add qBittorrent API to context bridge
-contextBridge.exposeInMainWorld('qbittorrentApi', {
-  login: (credentials) => ipcRenderer.invoke('qbittorrent:login', credentials),
-  getVersion: () => ipcRenderer.invoke('qbittorrent:version')
+contextBridge.exposeInMainWorld("qbittorrentApi", {
+  login: credentials => ipcRenderer.invoke("qbittorrent:login", credentials),
+  getVersion: () => ipcRenderer.invoke("qbittorrent:version"),
 });
 
 window.addEventListener("DOMContentLoaded", () => {
