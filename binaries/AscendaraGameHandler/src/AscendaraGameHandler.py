@@ -115,7 +115,84 @@ def update_play_time(file_path, is_custom_game, game_entry=None):
     except Exception as e:
         logging.error(f"Failed to update play time: {e}")
 
-def execute(game_path, is_custom_game, is_shortcut=False):
+def get_ludusavi_settings():
+    try:
+        settings_path = os.path.join(os.getenv('APPDATA'), 'ascendara', 'ascendarasettings.json')
+        if os.path.exists(settings_path):
+            with open(settings_path, 'r') as f:
+                settings = json.load(f)
+                ludusavi_settings = settings.get('ludusavi')
+                # Explicitly check if enabled is True, return None otherwise
+                if ludusavi_settings and ludusavi_settings.get('enabled') is True:
+                    return ludusavi_settings
+        return None
+    except Exception as e:
+        logging.error(f"Failed to load Ludusavi settings: {e}")
+        return None
+
+def run_ludusavi_backup(game_name):
+    """
+    Run Ludusavi backup for a specific game
+    """
+    ludusavi_settings = get_ludusavi_settings()
+    if not ludusavi_settings:
+        logging.info("Ludusavi backup skipped: not enabled in settings")
+        return False
+    
+    try:
+        # Check if Ludusavi is installed and available
+        ludusavi_path = os.path.join("./ludusavi.exe")
+        if not os.path.exists(ludusavi_path):
+            logging.error(f"Ludusavi executable not found at: {ludusavi_path}")
+            return False
+            
+        # Prepare backup command with settings from configuration
+        backup_location = ludusavi_settings.get('backupLocation')
+        backup_format = ludusavi_settings.get('backupFormat', 'zip')
+        backups_to_keep = ludusavi_settings.get('backupOptions', {}).get('backupsToKeep', 5)
+        
+        # Map 'default' compression to 'deflate' which is a good balance
+        compression_level = ludusavi_settings.get('backupOptions', {}).get('compressionLevel', 'default')
+        if compression_level == 'default':
+            compression_level = 'deflate'  # Valid values: none, deflate, bzip2, zstd
+        
+        # Build the command with correct syntax
+        cmd = [
+            ludusavi_path,
+            "--no-manifest-update",  # Skip manifest update checks for faster backup
+            "backup",
+            "--path", backup_location,
+            "--format", backup_format,
+            "--full-limit", str(backups_to_keep),
+            "--compression", compression_level,
+            game_name  # Game name as positional argument
+        ]
+        
+        # Check if we should skip confirmations
+        skip_confirmations = ludusavi_settings.get('preferences', {}).get('skipConfirmations', False)
+        if skip_confirmations:
+            cmd.append("--force")  # Don't ask for confirmation if skipConfirmations is true
+            
+        # Add GUI notification if configured
+        if ludusavi_settings.get('preferences', {}).get('showNotifications', False):
+            cmd.append("--gui")
+            
+        # Run the backup process
+        logging.info(f"Running Ludusavi backup for {game_name} with command: {' '.join(cmd)}")
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            logging.info(f"Ludusavi backup completed successfully for {game_name}")
+            return True
+        else:
+            logging.error(f"Ludusavi backup failed: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        logging.error(f"Error running Ludusavi backup: {e}")
+        return False
+
+def execute(game_path, is_custom_game, is_shortcut=False, use_ludusavi=False):
     rpc = None
     if is_shortcut:
         rpc = setup_discord_rpc()
@@ -123,6 +200,8 @@ def execute(game_path, is_custom_game, is_shortcut=False):
     json_file_path = None
     games_json_path = None
     game_entry = None
+    game_name = None
+    settings_file = os.path.join(os.environ['APPDATA'], 'ascendara', 'ascendarasettings.json')
 
     if not is_custom_game:
         game_dir, exe_name = os.path.split(game_path)
@@ -152,7 +231,8 @@ def execute(game_path, is_custom_game, is_shortcut=False):
         if game_entry is None:
             logging.error(f"Game not found in games.json for executable path: {exe_path}")
             return
-
+        game_name = game_entry.get("name", os.path.basename(os.path.dirname(exe_path)))
+    
     logging.info(f"game_dir: {os.path.dirname(exe_path)}, exe_path: {exe_path}")
 
     if not os.path.isfile(exe_path):
@@ -212,6 +292,7 @@ def execute(game_path, is_custom_game, is_shortcut=False):
         logging.error(f"Error updating settings.json: {e}")
 
     try:
+        # Regular game execution (no wrapping)
         if os.path.dirname(exe_path):
             os.chdir(os.path.dirname(exe_path))
         
@@ -245,6 +326,11 @@ def execute(game_path, is_custom_game, is_shortcut=False):
                 json.dump(settings_data, f, indent=4)
         except Exception as e:
             logging.error(f"Error updating settings.json on exit: {e}")
+
+        # Run Ludusavi backup after game closes if enabled
+        if use_ludusavi and game_name:
+            logging.info(f"Game closed, running Ludusavi backup for {game_name}")
+            run_ludusavi_backup(game_name)
 
         if is_custom_game and games_json_path:
             with open(games_json_path, "r") as f:
@@ -292,25 +378,26 @@ def execute(game_path, is_custom_game, is_shortcut=False):
         atexit.register(launch_crash_reporter, 1, str(e))
 
 if __name__ == "__main__":
-    # The script is called with: [script] [game_path] [is_custom_game] [--shortcut]
+    # The script is called with: [script] [game_path] [is_custom_game] [--shortcut] [--ludusavi]
     # Skip the first argument (script name)
     args = sys.argv[1:]
     
     if len(args) < 2:
         print("Error: Not enough arguments")
-        print("Usage: AscendaraGameHandler.exe [game_path] [is_custom_game] [--shortcut]")
+        print("Usage: AscendaraGameHandler.exe [game_path] [is_custom_game] [--shortcut] [--ludusavi]")
         sys.exit(1)
         
     game_path = args[0]
     is_custom_game = args[1] == '1' or args[1].lower() == 'true'
     is_shortcut = "--shortcut" in args
+    use_ludusavi = "--ludusavi" in args
 
     # Configure logging
     log_file = os.path.join(os.path.dirname(__file__), 'gamehandler.log')
     logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     try:
-        execute(game_path, is_custom_game, is_shortcut)
+        execute(game_path, is_custom_game, is_shortcut, use_ludusavi)
     except Exception as e:
         logging.error(f"Failed to execute game: {e}")
         atexit.register(launch_crash_reporter, 1, str(e))

@@ -191,10 +191,12 @@ function Settings() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOnWindows, setIsOnWindows] = useState(null);
   const [downloadPath, setDownloadPath] = useState("");
+  const [backupPath, setBackupPath] = useState("");
   const [canCreateFiles, setCanCreateFiles] = useState(true);
   const [isDownloaderRunning, setIsDownloaderRunning] = useState(false);
   const [showTorrentWarning, setShowTorrentWarning] = useState(false);
   const [showNoTorrentDialog, setShowNoTorrentDialog] = useState(false);
+  const [showNoLudusaviDialog, setShowNoLudusaviDialog] = useState(false);
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
   const [dependencyStatus, setDependencyStatus] = useState(null);
@@ -288,6 +290,9 @@ function Settings() {
           if (savedSettings.downloadDirectory) {
             setDownloadPath(savedSettings.downloadDirectory);
           }
+          if (savedSettings.backupDirectory) {
+            setBackupPath(savedSettings.backupDirectory);
+          }
           initialSettingsRef.current = savedSettings;
         }
 
@@ -302,7 +307,7 @@ function Settings() {
     initializeSettings();
   }, []); // Run only once on mount
 
-  const handleSettingChange = async (key, value) => {
+  const handleSettingChange = async (key, value, ludusavi = false) => {
     if (key === "gameSource") {
       setPendingSourceChange(value);
       setShowReloadDialog(true);
@@ -320,6 +325,28 @@ function Settings() {
       } else {
         document.documentElement.classList.remove("custom-scrollbar");
       }
+      return;
+    }
+
+    // Handle Ludusavi settings
+    if (ludusavi) {
+      // Only update the nested ludusavi object
+      window.electron
+        .updateSetting("ludusavi", {
+          ...(settings.ludusavi || {}),
+          [key]: value,
+        })
+        .then(success => {
+          if (success) {
+            setSettings(prev => ({
+              ...prev,
+              ludusavi: {
+                ...(prev.ludusavi || {}),
+                [key]: value,
+              },
+            }));
+          }
+        });
       return;
     }
 
@@ -344,6 +371,24 @@ function Settings() {
         }
         setDownloadPath(directory);
         handleSettingChange("downloadDirectory", directory);
+      }
+    } catch (error) {
+      console.error("Error selecting directory:", error);
+      toast.error(t("settings.errors.directorySelect"));
+    }
+  }, [handleSettingChange, t]);
+
+  const handleDirectoryChangeBackups = useCallback(async () => {
+    try {
+      const directory = await window.electron.openDirectoryDialog();
+      if (directory) {
+        const canCreate = await window.electron.canCreateFiles(directory);
+        if (!canCreate) {
+          toast.error(t("settings.errors.noPermission"));
+          return;
+        }
+        setBackupPath(directory);
+        handleSettingChange("backupLocation", directory, true);
       }
     } catch (error) {
       console.error("Error selecting directory:", error);
@@ -604,6 +649,19 @@ function Settings() {
       setShowTorrentWarning(false);
       handleSettingChange("torrentEnabled", true);
       window.dispatchEvent(new CustomEvent("torrentSettingChanged", { detail: true }));
+    }
+  };
+  const handleToggleLudusavi = async () => {
+    if (settings.ludusavi.enabled) {
+      handleSettingChange("enabled", false, true);
+    } else {
+      const tools = await window.electron.getInstalledTools();
+      const ludusaviInstalled = tools.includes("ludusavi");
+      if (!ludusaviInstalled) {
+        setShowNoLudusaviDialog(true);
+      } else {
+        handleSettingChange("enabled", true, true);
+      }
     }
   };
 
@@ -933,6 +991,241 @@ function Settings() {
               </div>
             </Card>
 
+            <Card>
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold text-primary">
+                      {t("settings.gameBackup.title")}
+                    </h3>
+                    <p className="mt-4 max-w-[70%] text-sm text-muted-foreground">
+                      {t("settings.gameBackup.description")}&nbsp;
+                      <a
+                        onClick={() =>
+                          window.electron.openURL(
+                            "https://ascendara.app/docs/features/game-backups"
+                          )
+                        }
+                        className="cursor-pointer text-primary hover:underline"
+                      >
+                        {t("common.learnMore")}
+                        <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
+                      </a>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {!isOnWindows && (
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                        <p className="text-sm font-bold text-muted-foreground">
+                          {t("settings.onlyWindowsSupported2")}
+                        </p>
+                      </div>
+                    )}
+                    <Switch
+                      checked={settings.ludusavi.enabled}
+                      onCheckedChange={handleToggleLudusavi}
+                      disabled={!isOnWindows}
+                    />
+                  </div>
+                </div>
+                <div
+                  className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
+                >
+                  {/* Essential Settings */}
+                  <div className="space-y-4">
+                    {/* Backup Location */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupLocation")}</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder={t("settings.gameBackup.selectDirectory")}
+                          className="flex-1"
+                          value={settings.ludusavi.backupLocation}
+                          readOnly
+                        />
+                        <Button
+                          className="text-secondary"
+                          onClick={handleDirectoryChangeBackups}
+                        >
+                          {t("settings.selectDirectory")}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Backup Format */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupFormat")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupFormat}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupFormat: value,
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">
+                            {t("settings.gameBackup.formatZip")}
+                          </SelectItem>
+                          <SelectItem value="simple">
+                            {t("settings.gameBackup.formatSimple")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Backup Options */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">
+                      {t("settings.gameBackup.backupOptions")}
+                    </h4>
+
+                    {/* Number of Backups */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.backupsToKeep")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupOptions.backupsToKeep.toString()}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupOptions: {
+                                ...prev.ludusavi.backupOptions,
+                                backupsToKeep: parseInt(value),
+                              },
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">
+                            {t("settings.gameBackup.backupsCount.three")}
+                          </SelectItem>
+                          <SelectItem value="5">
+                            {t("settings.gameBackup.backupsCount.five")}
+                          </SelectItem>
+                          <SelectItem value="10">
+                            {t("settings.gameBackup.backupsCount.ten")}
+                          </SelectItem>
+                          <SelectItem value="custom">
+                            {t("settings.gameBackup.backupsCount.custom")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Compression Settings */}
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.compressionLevel")}</Label>
+                      <Select
+                        value={settings.ludusavi.backupOptions.compressionLevel}
+                        onValueChange={value => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              backupOptions: {
+                                ...prev.ludusavi.backupOptions,
+                                compressionLevel: value,
+                              },
+                            },
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">
+                            {t("settings.gameBackup.compressionNone")}
+                          </SelectItem>
+                          <SelectItem value="deflate">
+                            {t("settings.gameBackup.compressionDeflate")}
+                          </SelectItem>
+                          <SelectItem value="bzip2">
+                            {t("settings.gameBackup.compressionBzip2")}
+                          </SelectItem>
+                          <SelectItem value="zstd">
+                            {t("settings.gameBackup.compressionZstd")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* User Preferences */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">
+                      {t("settings.gameBackup.userPreferences")}
+                    </h4>
+
+                    {/* Notifications */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.gameBackup.showNotifications")}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t("settings.gameBackup.notificationsDesc")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.preferences.showNotifications}
+                        onCheckedChange={checked => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              preferences: {
+                                ...prev.ludusavi.preferences,
+                                showNotifications: checked,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </div>
+
+                    {/* Skip Confirmations */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>{t("settings.gameBackup.skipConfirmations")}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t("settings.gameBackup.skipConfirmationsDesc")}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.preferences.skipConfirmations}
+                        onCheckedChange={checked => {
+                          setSettings(prev => ({
+                            ...prev,
+                            ludusavi: {
+                              ...prev.ludusavi,
+                              preferences: {
+                                ...prev.ludusavi.preferences,
+                                skipConfirmations: checked,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Game Sources Card */}
             <Card className="p-6">
               <div className="mb-6 flex items-center justify-between">
@@ -1206,298 +1499,6 @@ function Settings() {
                     </div>
                   </div>
                 )}
-              </div>
-            </Card>
-            <Card>
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-primary">
-                      {t("settings.gameBackup.title")}
-                    </h3>
-                    <p className="mt-4 max-w-[70%] text-sm text-muted-foreground">
-                      {t("settings.gameBackup.description")}&nbsp;
-                      <a
-                        onClick={() =>
-                          window.electron.openURL("https://ascendara.app/docs/")
-                        }
-                        className="cursor-pointer text-primary hover:underline"
-                      >
-                        {t("common.learnMore")}
-                        <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
-                      </a>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {!isOnWindows && (
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                        <p className="text-sm font-bold text-muted-foreground">
-                          {t("settings.onlyWindowsSupported2")}
-                        </p>
-                      </div>
-                    )}
-                    <Switch
-                      checked={settings.ludusavi.enabled}
-                      onCheckedChange={checked =>
-                        setSettings(prev => ({
-                          ...prev,
-                          ludusavi: { ...prev.ludusavi, enabled: checked },
-                        }))
-                      }
-                      disabled={!isOnWindows}
-                    />
-                  </div>
-                </div>
-                <div
-                  className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
-                >
-                  {/* Essential Settings */}
-                  <div className="space-y-4">
-                    {/* Backup Location */}
-                    <div className="space-y-2">
-                      <Label>{t("settings.gameBackup.backupLocation")}</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder={t("settings.gameBackup.selectDirectory")}
-                          className="flex-1"
-                          value={settings.ludusavi.backupLocation}
-                          readOnly
-                        />
-                        <Button
-                          className="text-secondary"
-                          onClick={async () => {
-                            const result = await window.electron.showOpenDialog({
-                              properties: ["openDirectory"],
-                            });
-                            if (!result.canceled && result.filePaths.length > 0) {
-                              setSettings(prev => ({
-                                ...prev,
-                                ludusavi: {
-                                  ...prev.ludusavi,
-                                  backupLocation: result.filePaths[0],
-                                },
-                              }));
-                            }
-                          }}
-                        >
-                          {t("settings.selectDirectory")}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Backup Format */}
-                    <div className="space-y-2">
-                      <Label>{t("settings.gameBackup.backupFormat")}</Label>
-                      <Select
-                        value={settings.ludusavi.backupFormat}
-                        onValueChange={value => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              backupFormat: value,
-                            },
-                          }));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="zip">
-                            {t("settings.gameBackup.formatZip")}
-                          </SelectItem>
-                          <SelectItem value="simple">
-                            {t("settings.gameBackup.formatSimple")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Backup Options */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">
-                      {t("settings.gameBackup.backupOptions")}
-                    </h4>
-
-                    {/* Number of Backups */}
-                    <div className="space-y-2">
-                      <Label>{t("settings.gameBackup.backupsToKeep")}</Label>
-                      <Select
-                        value={settings.ludusavi.backupOptions.backupsToKeep.toString()}
-                        onValueChange={value => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              backupOptions: {
-                                ...prev.ludusavi.backupOptions,
-                                backupsToKeep: parseInt(value),
-                              },
-                            },
-                          }));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="3">
-                            {t("settings.gameBackup.backupsCount.three")}
-                          </SelectItem>
-                          <SelectItem value="5">
-                            {t("settings.gameBackup.backupsCount.five")}
-                          </SelectItem>
-                          <SelectItem value="10">
-                            {t("settings.gameBackup.backupsCount.ten")}
-                          </SelectItem>
-                          <SelectItem value="custom">
-                            {t("settings.gameBackup.backupsCount.custom")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Compression Settings */}
-                    <div className="space-y-2">
-                      <Label>{t("settings.gameBackup.compressionLevel")}</Label>
-                      <Select
-                        value={settings.ludusavi.backupOptions.compressionLevel}
-                        onValueChange={value => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              backupOptions: {
-                                ...prev.ludusavi.backupOptions,
-                                compressionLevel: value,
-                              },
-                            },
-                          }));
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="fast">
-                            {t("settings.gameBackup.compression.fast")}
-                          </SelectItem>
-                          <SelectItem value="default">
-                            {t("settings.gameBackup.compression.default")}
-                          </SelectItem>
-                          <SelectItem value="best">
-                            {t("settings.gameBackup.compression.best")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Auto-backup */}
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.gameBackup.autoBackup")}</Label>
-                        <p className="text-xs text-muted-foreground">
-                          {t("settings.gameBackup.autoBackupDesc")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.backupOptions.autoBackupOnGameExit}
-                        onCheckedChange={checked => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              backupOptions: {
-                                ...prev.ludusavi.backupOptions,
-                                autoBackupOnGameExit: checked,
-                              },
-                            },
-                          }));
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* User Preferences */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">
-                      {t("settings.gameBackup.userPreferences")}
-                    </h4>
-
-                    {/* Notifications */}
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.gameBackup.showNotifications")}</Label>
-                        <p className="text-xs text-muted-foreground">
-                          {t("settings.gameBackup.notificationsDesc")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.preferences.showNotifications}
-                        onCheckedChange={checked => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              preferences: {
-                                ...prev.ludusavi.preferences,
-                                showNotifications: checked,
-                              },
-                            },
-                          }));
-                        }}
-                      />
-                    </div>
-
-                    {/* Skip Confirmations */}
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.gameBackup.skipConfirmations")}</Label>
-                        <p className="text-xs text-muted-foreground">
-                          {t("settings.gameBackup.skipConfirmationsDesc")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.preferences.skipConfirmations}
-                        onCheckedChange={checked => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              preferences: {
-                                ...prev.ludusavi.preferences,
-                                skipConfirmations: checked,
-                              },
-                            },
-                          }));
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Custom Save Locations */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold">
-                        {t("settings.gameBackup.customLocations")}
-                      </h4>
-                      <Button className="text-secondary">
-                        {t("settings.gameBackup.addLocation")}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {t("settings.gameBackup.customLocationsDesc")}
-                    </p>
-                    <div className="rounded-md border bg-card p-4">
-                      <p className="text-sm text-muted-foreground">
-                        {t("settings.gameBackup.noCustomLocations")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </Card>
           </div>
@@ -1906,6 +1907,42 @@ function Settings() {
                   if (!error) {
                     setShowNoTorrentDialog(false);
                   }
+                }
+              }}
+              disabled={isDownloading}
+            >
+              {isDownloading ? t("common.downloading") : t("welcome.continue")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* No Ludusavi Tool Dialog */}
+      <AlertDialog open={showNoLudusaviDialog} onOpenChange={setShowNoLudusaviDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {t("settings.noLudusaviTool")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              {t("settings.noLudusaviToolDesc")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-primary">
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-primary text-secondary"
+              onClick={async () => {
+                try {
+                  setIsDownloading(true);
+                  await window.electron.installTool("ludusavi");
+                  setShowNoLudusaviDialog(false);
+                } catch (error) {
+                  console.error("Failed to install Ludusavi:", error);
+                } finally {
+                  setIsDownloading(false);
                 }
               }}
               disabled={isDownloading}

@@ -131,6 +131,7 @@ app.whenReady().then(() => {
 const toolExecutables = {
   torrent: "AscendaraTorrentHandler.exe",
   translator: "AscendaraLanguageTranslation.exe",
+  ludusavi: "ludusavi.exe",
 };
 
 function checkInstalledTools() {
@@ -171,7 +172,7 @@ ipcMain.handle("get-installed-tools", async event => {
   if (isWindows && !isDev) {
     return installedTools;
   } else {
-    return ["translator", "torrent"];
+    return ["translator", "torrent", "ludusavi"];
   }
 });
 
@@ -181,6 +182,7 @@ async function installTool(tool) {
   const toolUrls = {
     torrent: "https://cdn.ascendara.app/files/AscendaraTorrentHandler.exe",
     translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe",
+    ludusavi: "https://cdn.ascendara.app/files/ludusavi.exe",
   };
 
   const toolExecutable = toolExecutables[tool];
@@ -213,6 +215,7 @@ ipcMain.handle("install-tool", async (event, tool) => {
   const toolUrls = {
     torrent: "https://cdn.ascendara.app/files/AscendaraTorrentHandler.exe",
     translator: "https://cdn.ascendara.app/files/AscendaraLanguageTranslation.exe",
+    ludusavi: "https://cdn.ascendara.app/files/ludusavi.exe",
   };
 
   const toolExecutable = toolExecutables[tool];
@@ -548,6 +551,12 @@ class SettingsManager {
         ...currentSettings,
         [key]: value,
       };
+
+      // Clean up any flat ludusavi properties if we're updating the ludusavi object
+      if (key === "ludusavi") {
+        this.cleanupFlatLudusaviProperties(updatedSettings);
+      }
+
       const success = this.saveSettings(updatedSettings);
       if (success) {
         ipcMain.emit("settings-updated", updatedSettings);
@@ -565,6 +574,22 @@ class SettingsManager {
 
   getSettings() {
     return this.settings;
+  }
+
+  // Clean up any flat ludusavi properties (e.g., ludusavi.backupLocation)
+  cleanupFlatLudusaviProperties(settings) {
+    const keysToRemove = [];
+    for (const key in settings) {
+      if (key.startsWith("ludusavi.")) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => {
+      delete settings[key];
+    });
+
+    return settings;
   }
 }
 

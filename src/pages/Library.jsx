@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,9 @@ import {
   Tag,
   PackageOpen,
   FileCheck2,
+  FolderSync,
+  Layers2,
+  FolderSymlink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -57,6 +60,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import imageCacheService from "@/services/imageCacheService";
+import { useSettings } from "@/context/SettingsContext";
 import gameService from "@/services/gameService";
 import fs from "fs";
 import { toast } from "sonner";
@@ -80,8 +84,7 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
             }}
             className="cursor-pointer hover:underline"
           >
-            {t("common.learnMore")}{" "}
-            <ExternalLink className="mb-1 inline-block h-3 w-3" />
+            {t("common.learnMore")} <ExternalLink className="mb-1 inline-block h-3 w-3" />
           </span>
           <br />
           <br />
@@ -89,23 +92,15 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter className="flex gap-2">
-        <Button
-          variant="outline"
-          className="text-primary"
-          onClick={onClose}
-        >
+        <Button variant="outline" className="text-primary" onClick={onClose}>
           {t("common.cancel")}
         </Button>
         <Button
           className="bg-primary text-secondary"
           onClick={async () => {
-            const exePath =
-              await window.electron.openFileDialog();
+            const exePath = await window.electron.openFileDialog();
             if (exePath) {
-              await window.electron.modifyGameExecutable(
-                errorGame,
-                exePath
-              );
+              await window.electron.modifyGameExecutable(errorGame, exePath);
             }
             onClose();
           }}
@@ -187,8 +182,8 @@ const Library = () => {
       fetchUsername();
     };
 
-    window.addEventListener('usernameUpdated', handleUsernameUpdate);
-    return () => window.removeEventListener('usernameUpdated', handleUsernameUpdate);
+    window.addEventListener("usernameUpdated", handleUsernameUpdate);
+    return () => window.removeEventListener("usernameUpdated", handleUsernameUpdate);
   }, []);
 
   useEffect(() => {
@@ -242,11 +237,11 @@ const Library = () => {
         // Get cached drive space and directory size
         const [driveSpace, gamesSize] = await Promise.all([
           window.electron.getDriveSpace(installPath),
-          window.electron.getInstalledGamesSize()
+          window.electron.getInstalledGamesSize(),
         ]);
 
         setStorageInfo(driveSpace);
-        
+
         if (gamesSize.success) {
           if (gamesSize.calculating) {
             setIsCalculatingSize(true);
@@ -269,11 +264,11 @@ const Library = () => {
           // Get cached drive space and directory size
           const [driveSpace, gamesSize] = await Promise.all([
             window.electron.getDriveSpace(installPath),
-            window.electron.getInstalledGamesSize()
+            window.electron.getInstalledGamesSize(),
           ]);
 
           setStorageInfo(driveSpace);
-          
+
           if (gamesSize.success) {
             if (gamesSize.calculating) {
               setIsCalculatingSize(true);
@@ -289,7 +284,7 @@ const Library = () => {
     };
 
     // Set up directory size status listener
-    const cleanup = window.electron.onDirectorySizeStatus((status) => {
+    const cleanup = window.electron.onDirectorySizeStatus(status => {
       setIsCalculatingSize(status.calculating);
       if (!status.calculating) {
         fetchStorageInfo();
@@ -308,7 +303,7 @@ const Library = () => {
 
   // Keep track of whether we've initialized
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // Initialize once on mount
   useEffect(() => {
     const init = async () => {
@@ -325,12 +320,14 @@ const Library = () => {
     const handleGameClosed = async () => {
       const lastGame = lastLaunchedGameRef.current;
       console.log("Game closed - last launched game:", lastGame);
-      
+
       if (lastGame) {
         // Get fresh game data
         const freshGames = await window.electron.getGames();
-        const gameData = freshGames.find(g => (g.game || g.name) === (lastGame.game || lastGame.name));
-        
+        const gameData = freshGames.find(
+          g => (g.game || g.name) === (lastGame.game || lastGame.name)
+        );
+
         if (gameData && gameData.launchCount === 1) {
           setRatingGame(lastGame);
           setShowRateDialog(true);
@@ -344,8 +341,14 @@ const Library = () => {
     window.electron.ipcRenderer.on("game-closed", handleGameClosed);
 
     return () => {
-      window.electron.ipcRenderer.removeListener("game-launch-error", handleGameLaunchError);
-      window.electron.ipcRenderer.removeListener("game-launch-success", handleGameLaunchSuccess);
+      window.electron.ipcRenderer.removeListener(
+        "game-launch-error",
+        handleGameLaunchError
+      );
+      window.electron.ipcRenderer.removeListener(
+        "game-launch-success",
+        handleGameLaunchSuccess
+      );
       window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
     };
   }, [isInitialized, setRatingGame, setShowRateDialog]); // Add required dependencies
@@ -357,9 +360,11 @@ const Library = () => {
       const customGames = await window.electron.getCustomGames();
 
       // Filter out games that are being verified
-      const filteredInstalledGames = installedGames.filter(game => 
-        !game.downloadingData?.verifying && 
-        (!game.downloadingData?.verifyError || game.downloadingData.verifyError.length === 0)
+      const filteredInstalledGames = installedGames.filter(
+        game =>
+          !game.downloadingData?.verifying &&
+          (!game.downloadingData?.verifyError ||
+            game.downloadingData.verifyError.length === 0)
       );
 
       // Combine both types of games
@@ -417,12 +422,12 @@ const Library = () => {
 
       if (game.online && (game.launchCount < 1 || !game.launchCount)) {
         // Check if warning has been shown before
-        const onlineFixWarningShown = localStorage.getItem('onlineFixWarningShown');
+        const onlineFixWarningShown = localStorage.getItem("onlineFixWarningShown");
         if (!onlineFixWarningShown) {
           setSelectedGame(game);
           setShowOnlineFixWarning(true);
           // Save that warning has been shown
-          localStorage.setItem('onlineFixWarningShown', 'true');
+          localStorage.setItem("onlineFixWarningShown", "true");
           return;
         }
       }
@@ -439,9 +444,7 @@ const Library = () => {
       await window.electron.playGame(gameName, game.isCustom);
 
       // Get and cache the game image before saving to recently played
-      const imageBase64 = await window.electron.getGameImage(
-        gameName
-      );
+      const imageBase64 = await window.electron.getGameImage(gameName);
       if (imageBase64) {
         await imageCacheService.getImage(game.imgID);
       }
@@ -485,10 +488,7 @@ const Library = () => {
 
   const handleOpenDirectory = async game => {
     try {
-      await window.electron.openGameDirectory(
-        game.game || game.name,
-        game.isCustom
-      );
+      await window.electron.openGameDirectory(game.game || game.name, game.isCustom);
     } catch (error) {
       console.error("Error opening directory:", error);
       setError("Failed to open game directory");
@@ -656,7 +656,6 @@ const Library = () => {
 
               {/* Right side: Storage Info and Settings */}
               <div className="flex items-start gap-4">
-                
                 {storageInfo && (
                   <div className="min-w-[250px] rounded-lg bg-secondary/10 p-3">
                     <div className="space-y-3">
@@ -683,15 +682,15 @@ const Library = () => {
                       </div>
 
                       <div className="mt-2 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <SquareLibrary className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-muted-foreground">
-                              {t("library.gamesInLibrary")}
-                            </span>
-                          </div>
-                          <span className="text-sm font-medium">{games.length}</span>
+                        <div className="flex items-center gap-2">
+                          <SquareLibrary className="h-4 w-4 text-primary" />
+                          <span className="text-sm text-muted-foreground">
+                            {t("library.gamesInLibrary")}
+                          </span>
                         </div>
-                        
+                        <span className="text-sm font-medium">{games.length}</span>
+                      </div>
+
                       {/* Storage section */}
                       <div>
                         <div className="mb-1 flex items-center justify-between">
@@ -710,17 +709,17 @@ const Library = () => {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div 
-                                  className="absolute left-0 top-0 h-2 rounded-l-full bg-primary cursor-help" 
-                                  style={{ 
+                                <div
+                                  className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
+                                  style={{
                                     width: `${(totalGamesSize / storageInfo.totalSpace) * 100}%`,
-                                    zIndex: 2 
-                                  }} 
+                                    zIndex: 2,
+                                  }}
                                 />
                               </TooltipTrigger>
                               <TooltipContent className="text-secondary">
-                                {t("library.spaceTooltip.games", { 
-                                  size: formatBytes(totalGamesSize) 
+                                {t("library.spaceTooltip.games", {
+                                  size: formatBytes(totalGamesSize),
                                 })}
                               </TooltipContent>
                             </Tooltip>
@@ -730,17 +729,21 @@ const Library = () => {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div 
-                                  className="absolute left-0 top-0 h-2 rounded-r-full bg-muted cursor-help" 
-                                  style={{ 
+                                <div
+                                  className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
+                                  style={{
                                     width: `${((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100}%`,
-                                    zIndex: 1 
-                                  }} 
+                                    zIndex: 1,
+                                  }}
                                 />
                               </TooltipTrigger>
                               <TooltipContent className="text-secondary">
-                                {t("library.spaceTooltip.other", { 
-                                  size: formatBytes(storageInfo.totalSpace - storageInfo.freeSpace - totalGamesSize) 
+                                {t("library.spaceTooltip.other", {
+                                  size: formatBytes(
+                                    storageInfo.totalSpace -
+                                      storageInfo.freeSpace -
+                                      totalGamesSize
+                                  ),
                                 })}
                               </TooltipContent>
                             </Tooltip>
@@ -751,11 +754,10 @@ const Library = () => {
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>
-                            {t("library.gamesSpace")}: {
-                              isCalculatingSize ? 
-                              t("library.calculatingSize") : 
-                              formatBytes(totalGamesSize)
-                            }
+                            {t("library.gamesSpace")}:{" "}
+                            {isCalculatingSize
+                              ? t("library.calculatingSize")
+                              : formatBytes(totalGamesSize)}
                           </span>
                         </div>
                       </div>
@@ -779,7 +781,7 @@ const Library = () => {
                   <AlertDialogTitle className="text-2xl font-bold text-foreground">
                     {t("library.addGame")}
                   </AlertDialogTitle>
-                  <AlertDialogDescription className="text-muted-foreground text-xs">
+                  <AlertDialogDescription className="text-xs text-muted-foreground">
                     {t("library.addGameDescription2")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -899,15 +901,15 @@ const Library = () => {
                   <div className="w-full">
                     <div className="relative overflow-hidden">
                       <Progress value={undefined} className="bg-muted/30" />
-                        <div
-                          className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
-                          style={{
-                            animation: "shimmer 3s infinite ease-in-out",
-                            backgroundSize: "200% 100%",
-                            WebkitAnimation: "shimmer 3s infinite ease-in-out",
-                            WebkitBackgroundSize: "200% 100%",
-                          }}
-                        />
+                      <div
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
+                        style={{
+                          animation: "shimmer 3s infinite ease-in-out",
+                          backgroundSize: "200% 100%",
+                          WebkitAnimation: "shimmer 3s infinite ease-in-out",
+                          WebkitBackgroundSize: "200% 100%",
+                        }}
+                      />
                     </div>
                     <p className="mt-2 text-center text-sm text-muted-foreground">
                       <span className="flex items-center justify-center gap-2">
@@ -1004,118 +1006,119 @@ const AddGameCard = React.forwardRef((props, ref) => {
 
 AddGameCard.displayName = "AddGameCard";
 
-const InstalledGameCard = ({
-  game,
-  onPlay,
-  onDelete,
-  onSelect,
-  isSelected,
-  onOpenDirectory,
-  isLaunching,
-  isUninstalling,
-  favorites,
-  onToggleFavorite,
-}) => {
-  const { t } = useLanguage();
-  const [isRunning, setIsRunning] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [imageData, setImageData] = useState(null);
-  const [executableExists, setExecutableExists] = useState(null);
-  const isFavorite = favorites.includes(game.game || game.name);
-  const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
+const InstalledGameCard = memo(
+  ({
+    game,
+    onPlay,
+    onDelete,
+    onSelect,
+    isSelected,
+    onOpenDirectory,
+    isLaunching,
+    isUninstalling,
+    favorites,
+    onToggleFavorite,
+  }) => {
+    const { t } = useLanguage();
+    const [isRunning, setIsRunning] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [imageData, setImageData] = useState(null);
+    const [executableExists, setExecutableExists] = useState(null);
+    const isFavorite = favorites.includes(game.game || game.name);
+    const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
+    const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
+    const { settings } = useSettings();
 
-  useEffect(() => {
-    const checkExecutable = async () => {
-      if (game.executable && !game.isCustom) {
+    useEffect(() => {
+      const checkExecutable = async () => {
+        if (game.executable && !game.isCustom) {
+          try {
+            const execPath = `${game.game}/${game.executable}`;
+            const exists = await window.electron.checkFileExists(execPath);
+            setExecutableExists(exists);
+          } catch (error) {
+            console.error("Error checking executable:", error);
+            setExecutableExists(false);
+          }
+        }
+      };
+
+      checkExecutable();
+    }, [game.executable, game.isCustom, game.game]);
+
+    // Check game running status periodically
+    useEffect(() => {
+      let isMounted = true;
+      const gameId = game.game || game.name;
+
+      const checkGameStatus = async () => {
         try {
-          const execPath = `${game.game}/${game.executable}`;
-          const exists = await window.electron.checkFileExists(execPath);
-          setExecutableExists(exists);
+          if (!isMounted) return;
+          const running = await window.electron.isGameRunning(gameId);
+          if (isMounted) {
+            setIsRunning(running);
+          }
         } catch (error) {
-          console.error("Error checking executable:", error);
-          setExecutableExists(false);
+          console.error("Error checking game status:", error);
         }
-      }
-    };
+      };
 
-    checkExecutable();
-  }, [game.executable, game.isCustom, game.game]);
+      // Initial check
+      checkGameStatus();
 
-  // Check game running status periodically
-  useEffect(() => {
-    let isMounted = true;
+      // Set up interval for periodic checks - reduced frequency to 3 seconds
+      const interval = setInterval(checkGameStatus, 3000);
 
-    const checkGameStatus = async () => {
-      try {
-        if (!isMounted) return;
-        const running = await window.electron.isGameRunning(
-          game.game || game.name
-        );
-        if (isMounted) {
-          setIsRunning(running);
+      // Cleanup function
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    }, [game.game, game.name]); // Only depend on game ID properties
+
+    // Load game image
+    useEffect(() => {
+      let isMounted = true;
+      const gameId = game.game || game.name;
+
+      const loadGameImage = async () => {
+        try {
+          const imageBase64 = await window.electron.getGameImage(gameId);
+          if (imageBase64 && isMounted) {
+            setImageData(`data:image/jpeg;base64,${imageBase64}`);
+          }
+        } catch (error) {
+          console.error("Error loading game image:", error);
         }
-      } catch (error) {
-        console.error("Error checking game status:", error);
-      }
-    };
+      };
 
-    // Initial check
-    checkGameStatus();
+      loadGameImage();
 
-    // Set up interval for periodic checks
-    const interval = setInterval(checkGameStatus, 1000);
+      return () => {
+        isMounted = false;
+      };
+    }, [game.game, game.name]); // Only depend on game ID properties
 
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [game]);
-
-  // Load game image
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadGameImage = async () => {
-      try {
-        const imageBase64 = await window.electron.getGameImage(
-          game.game || game.name
-        );
-        if (imageBase64 && isMounted) {
-          setImageData(`data:image/jpeg;base64,${imageBase64}`);
-        }
-      } catch (error) {
-        console.error("Error loading game image:", error);
-      }
-    };
-
-    loadGameImage();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [game]);
-
-  return (
-    <Card
-      className={cn(
-        "group relative overflow-hidden transition-all duration-200",
-        "hover:-translate-y-1 hover:shadow-lg",
-        isSelected && "ring-2 ring-primary",
-        "cursor-pointer"
-      )}
-      onClick={onSelect}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <CardContent className="p-0">
-        <div className="relative aspect-[4/3]">
-          <img src={imageData} alt={game.game} className="h-full w-full object-cover" />
-          {isUninstalling && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-              <div className="w-full max-w-[200px] space-y-2 px-4">
-                <div className="relative overflow-hidden">
-                  <Progress value={undefined} className="bg-muted/30" />
+    return (
+      <Card
+        className={cn(
+          "group relative overflow-hidden transition-all duration-200",
+          "hover:-translate-y-1 hover:shadow-lg",
+          isSelected && "ring-2 ring-primary",
+          "cursor-pointer"
+        )}
+        onClick={onSelect}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <CardContent className="p-0">
+          <div className="relative aspect-[4/3]">
+            <img src={imageData} alt={game.game} className="h-full w-full object-cover" />
+            {isUninstalling && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <div className="w-full max-w-[200px] space-y-2 px-4">
+                  <div className="relative overflow-hidden">
+                    <Progress value={undefined} className="bg-muted/30" />
                     <div
                       className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
                       style={{
@@ -1125,218 +1128,278 @@ const InstalledGameCard = ({
                         WebkitBackgroundSize: "200% 100%",
                       }}
                     />
-                </div>
-                <div className="text-center text-sm font-medium text-white">
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader className="h-4 w-4 animate-spin" />
-                    {t("library.uninstallingGame")}
-                  </span>
+                  </div>
+                  <div className="text-center text-sm font-medium text-white">
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader className="h-4 w-4 animate-spin" />
+                      {t("library.uninstallingGame")}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          <div
-            className={cn(
-              "absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent",
-              "opacity-0 transition-opacity group-hover:opacity-100",
-              "flex flex-col justify-end p-4 text-secondary"
             )}
-          >
-            <div className="absolute right-4 top-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 hover:text-primary"
-                onClick={e => {
-                  e.stopPropagation();
-                  onToggleFavorite(game.game || game.name);
-                }}
-              >
-                <Heart
-                  className={cn(
-                    "h-6 w-6",
-                    isFavorite ? "fill-primary text-primary" : "fill-none text-white"
-                  )}
-                />
-              </Button>
-            </div>
-            <div className="space-y-4">
-              <div className="flex flex-col gap-2">
+            <div
+              className={cn(
+                "absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent",
+                "opacity-0 transition-opacity group-hover:opacity-100",
+                "flex flex-col justify-end p-4 text-secondary"
+              )}
+            >
+              <div className="absolute right-4 top-4">
                 <Button
-                  className="w-full gap-2"
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 hover:text-primary"
                   onClick={e => {
                     e.stopPropagation();
-                    if (!isRunning && !isLaunching) {
-                      onPlay();
-                    }
+                    onToggleFavorite(game.game || game.name);
                   }}
-                  disabled={isLaunching || isRunning}
                 >
-                  {isLaunching ? (
-                    <>
-                      <Loader className="h-4 w-4 animate-spin" />
-                      {t("library.launching")}
-                    </>
-                  ) : isRunning ? (
-                    <>
-                      <StopCircle className="h-4 w-4" />
-                      {t("library.running")}
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4" />
-                      {t("library.play")}
-                    </>
-                  )}
+                  <Heart
+                    className={cn(
+                      "h-6 w-6",
+                      isFavorite ? "fill-primary text-primary" : "fill-none text-white"
+                    )}
+                  />
                 </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    className="w-full gap-2"
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (!isRunning && !isLaunching) {
+                        onPlay();
+                      }
+                    }}
+                    disabled={isLaunching || isRunning}
+                  >
+                    {isLaunching ? (
+                      <>
+                        <Loader className="h-4 w-4 animate-spin" />
+                        {t("library.launching")}
+                      </>
+                    ) : isRunning ? (
+                      <>
+                        <StopCircle className="h-4 w-4" />
+                        {t("library.running")}
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4" />
+                        {t("library.play")}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between p-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate font-semibold text-foreground">{game.game}</h3>
-            {game.online && <Gamepad2 className="h-4 w-4 text-muted-foreground" />}
-            {game.dlc && <Gift className="h-4 w-4 text-muted-foreground" />}
-            {game.isVr && (
-              <svg
-                className="p-0.5 text-foreground"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2 10C2 8.89543 2.89543 8 4 8H20C21.1046 8 22 8.89543 22 10V17C22 18.1046 21.1046 19 20 19H16.1324C15.4299 19 14.7788 18.6314 14.4174 18.029L12.8575 15.4292C12.4691 14.7818 11.5309 14.7818 11.1425 15.4292L9.58261 18.029C9.22116 18.6314 8.57014 19 7.86762 19H4C2.89543 19 2 18.1046 2 17V10Z"
-                  stroke="currentColor"
-                  strokeWidth={1.3}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+        </CardContent>
+        <CardFooter className="flex items-center justify-between p-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="truncate font-semibold text-foreground">{game.game}</h3>
+              {game.online && <Gamepad2 className="h-4 w-4 text-muted-foreground" />}
+              {game.dlc && <Gift className="h-4 w-4 text-muted-foreground" />}
+              {game.isVr && (
+                <svg
+                  className="p-0.5 text-foreground"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2 10C2 8.89543 2.89543 8 4 8H20C21.1046 8 22 8.89543 22 10V17C22 18.1046 21.1046 19 20 19H16.1324C15.4299 19 14.7788 18.6314 14.4174 18.029L12.8575 15.4292C12.4691 14.7818 11.5309 14.7818 11.1425 15.4292L9.58261 18.029C9.22116 18.6314 8.57014 19 7.86762 19H4C2.89543 19 2 18.1046 2 17V10Z"
+                    stroke="currentColor"
+                    strokeWidth={1.3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3.81253 6.7812C4.5544 5.6684 5.80332 5 7.14074 5H16.8593C18.1967 5 19.4456 5.6684 20.1875 6.7812L21 8H3L3.81253 6.7812Z"
+                    stroke="currentColor"
+                    strokeWidth={1.3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+              {executableExists === true && (
+                <AlertTriangle
+                  className="h-4 w-4 text-yellow-500"
+                  title={t("library.executableNotFound")}
                 />
-                <path
-                  d="M3.81253 6.7812C4.5544 5.6684 5.80332 5 7.14074 5H16.8593C18.1967 5 19.4456 5.6684 20.1875 6.7812L21 8H3L3.81253 6.7812Z"
-                  stroke="currentColor"
-                  strokeWidth={1.3}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            )}
-            {executableExists === true && (
-              <AlertTriangle
-                className="h-4 w-4 text-yellow-500"
-                title={t("library.executableNotFound")}
-              />
-            )}
+              )}
+            </div>
+            <p className="line-clamp-2 text-sm text-muted-foreground">
+              {game.playTime !== undefined ? (
+                <span className="font-medium md:text-xs">
+                  {game.playTime < 60
+                    ? t("library.lessThanMinute")
+                    : game.playTime < 120
+                      ? `1 ${t("library.minute")} ${t("library.ofPlaytime")}`
+                      : game.playTime < 3600
+                        ? `${Math.floor(game.playTime / 60)} ${t("library.minutes")} ${t("library.ofPlaytime")}`
+                        : game.playTime < 7200
+                          ? `1 ${t("library.hour")} ${t("library.ofPlaytime")}`
+                          : `${Math.floor(game.playTime / 3600)} ${t("library.hours")} ${t("library.ofPlaytime")}`}
+                </span>
+              ) : (
+                <span className="font-medium md:text-xs">{t("library.neverPlayed")}</span>
+              )}
+            </p>
           </div>
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {game.playTime !== undefined ? (
-              <span className="font-medium md:text-xs">
-                {game.playTime < 60
-                  ? t("library.lessThanMinute")
-                  : game.playTime < 120
-                  ? `1 ${t("library.minute")} ${t("library.ofPlaytime")}`
-                  : game.playTime < 3600
-                  ? `${Math.floor(game.playTime / 60)} ${t("library.minutes")} ${t("library.ofPlaytime")}`
-                  : game.playTime < 7200
-                  ? `1 ${t("library.hour")} ${t("library.ofPlaytime")}`
-                  : `${Math.floor(game.playTime / 3600)} ${t("library.hours")} ${t("library.ofPlaytime")}`}
-              </span>
-            ) : (
-              <span className="font-medium md:text-xs">{t("library.neverPlayed")}</span>
+
+          <div className="flex gap-2">
+            {settings.ludusavi.enabled && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={e => e.stopPropagation()}
+                    className="hover:bg-transparent hover:text-inherit"
+                  >
+                    <FolderSync className="h-4 w-4 hover:text-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem
+                    onSelect={e => e.preventDefault()}
+                    className="px-4 py-3"
+                  >
+                    <div className="flex w-full flex-col">
+                      <div className="flex flex-col space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-md whitespace-nowrap font-medium">
+                            {t("library.autoBackup")}
+                          </span>
+                          <Switch
+                            checked={autoBackupEnabled}
+                            onCheckedChange={setAutoBackupEnabled}
+                            className="ml-0.5 scale-[70%]"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {t("library.autoBackupDesc")}
+                        </p>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FolderSymlink className="mr-2 h-4 w-4" />
+                    {t("library.restoreLatest")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Layers2 className="mr-2 h-4 w-4" />
+                    {t("library.backupNow")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
-          </p>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={e => e.stopPropagation()}>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {game.size && (
-            <DropdownMenuItem disabled>
-              <PackageOpen className="mr-2 h-4 w-4" />
-              {game.size}
-            </DropdownMenuItem>
-            )}
-            {game.version && (
-              <DropdownMenuItem disabled>
-                <Tag className="mr-2 h-4 w-4" />
-                {game.version}
-              </DropdownMenuItem>
-            )}
-            {(game.size || game.version) && (
-              <Separator className="my-2 bg-muted" />
-            )}
-            <DropdownMenuItem onClick={onOpenDirectory}>
-              <FolderOpen className="mr-2 h-4 w-4" />
-              {t("library.openGameDirectory")}
-            </DropdownMenuItem>
-            {!game.isCustom && (
-            <DropdownMenuItem onClick={() => setIsVerifyingOpen(true)}>
-              <FileCheck2 className="mr-2 h-4 w-4" />
-              {t("library.verifyGameFiles")}
-            </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={async () => {
-                const success = await window.electron.createGameShortcut(
-                  game
-                );
-                if (success) {
-                  toast.success(t("library.shortcutCreated"));
-                } else {
-                  toast.error(t("library.shortcutError"));
-                }
-              }}
-            >
-              <Monitor className="mr-2 h-4 w-4" />
-              {t("library.createShortcut")}
-            </DropdownMenuItem>
-            {!game.isCustom && (
-              <DropdownMenuItem
-                onClick={async () => {
-                  const exePath =
-                    await window.electron.openFileDialog(game.executable);
-                  if (exePath) {
-                    await window.electron.modifyGameExecutable(
-                      game.game || game.name, 
-                      exePath
-                    );
-                  }
-                }}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                {t("library.changeExecutable")}
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={e => {
-                e.stopPropagation();
-                onDelete();
-              }}
-              className="text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {game.isCustom
-                ? t("library.removeGameFromLibrary")
-                : t("library.uninstallGame")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <VerifyingGameDialog
-          game={game}
-          open={isVerifyingOpen}
-          onOpenChange={setIsVerifyingOpen}
-        />
-      </CardFooter>
-    </Card>
-  );
-};
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-transparent hover:text-inherit"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MoreVertical className="h-4 w-4 hover:text-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {game.size && (
+                  <DropdownMenuItem disabled>
+                    <PackageOpen className="mr-2 h-4 w-4" />
+                    {game.size}
+                  </DropdownMenuItem>
+                )}
+                {game.version && (
+                  <DropdownMenuItem disabled>
+                    <Tag className="mr-2 h-4 w-4" />
+                    {game.version}
+                  </DropdownMenuItem>
+                )}
+                {(game.size || game.version) && <Separator className="my-2 bg-muted" />}
+                <DropdownMenuItem className="cursor-pointer" onClick={onOpenDirectory}>
+                  <FolderOpen className="mr-2 h-4 w-4" />
+                  {t("library.openGameDirectory")}
+                </DropdownMenuItem>
+                {!game.isCustom && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => setIsVerifyingOpen(true)}
+                  >
+                    <FileCheck2 className="mr-2 h-4 w-4" />
+                    {t("library.verifyGameFiles")}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={async () => {
+                    const success = await window.electron.createGameShortcut(game);
+                    if (success) {
+                      toast.success(t("library.shortcutCreated"));
+                    } else {
+                      toast.error(t("library.shortcutError"));
+                    }
+                  }}
+                >
+                  <Monitor className="mr-2 h-4 w-4" />
+                  {t("library.createShortcut")}
+                </DropdownMenuItem>
+                {!game.isCustom && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={async () => {
+                      const exePath = await window.electron.openFileDialog(
+                        game.executable
+                      );
+                      if (exePath) {
+                        await window.electron.modifyGameExecutable(
+                          game.game || game.name,
+                          exePath
+                        );
+                      }
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t("library.changeExecutable")}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                  className="cursor-pointer"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {game.isCustom
+                    ? t("library.removeGameFromLibrary")
+                    : t("library.uninstallGame")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <VerifyingGameDialog
+            game={game}
+            open={isVerifyingOpen}
+            onOpenChange={setIsVerifyingOpen}
+          />
+        </CardFooter>
+      </Card>
+    );
+  }
+);
+
+InstalledGameCard.displayName = "InstalledGameCard";
 
 const AddGameForm = ({ onSuccess }) => {
   const { t } = useLanguage();
@@ -1515,7 +1578,9 @@ const AddGameForm = ({ onSuccess }) => {
                 placeholder={t("library.searchGameCover")}
                 minLength={minSearchLength}
               />
-              <p className="text-xs mt-2 text-muted-foreground">{t("library.searchGameCoverNotice")}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t("library.searchGameCoverNotice")}
+              </p>
             </div>
           </div>
 
