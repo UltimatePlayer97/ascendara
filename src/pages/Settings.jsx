@@ -1017,7 +1017,7 @@ function Settings() {
                     {!isOnWindows && (
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                        <p className="text-sm font-bold text-muted-foreground">
+                        <p className="whitespace-nowrap text-sm font-bold text-muted-foreground">
                           {t("settings.onlyWindowsSupported2")}
                         </p>
                       </div>
@@ -1149,7 +1149,7 @@ function Settings() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">
+                          <SelectItem value="default">
                             {t("settings.gameBackup.compressionNone")}
                           </SelectItem>
                           <SelectItem value="deflate">
