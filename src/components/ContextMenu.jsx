@@ -89,11 +89,17 @@ const ContextMenu = () => {
             }}
           >
             <div className="context-menu-content">
-              <button onClick={handleReport} className="context-menu-item">
+              <button
+                onClick={handleReport}
+                className="context-menu-item rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
                 <TriangleAlert className="mr-2 h-4 w-4" />
                 {t("common.reportIssue")}
               </button>
-              <button onClick={handleFeedback} className="context-menu-item">
+              <button
+                onClick={handleFeedback}
+                className="context-menu-item rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
                 <MessageSquareText className="mr-2 h-4 w-4" />
                 {t("common.giveFeedback")}
               </button>
