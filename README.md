@@ -224,7 +224,7 @@ The Ascendara project is organized into the following main directories:
 - **build/**: Compiled application output & where the main Javascript is located
 - **installer/**: The source code for the GUI installer
 
-## 🛠️ Building from Source
+## 🛠️ Running from Source
 
 For detailed instructions, check out the [Developer Docs](https://ascendara.app/docs/developer/build-from-source).
 
@@ -242,15 +242,30 @@ Before building, ensure you have all required dependencies. [View full requireme
    git clone https://github.com/ascendara/ascendara.git
    ```
 
-2. **Install Dependencies**
+2. **Install Yarn Dependencies**
 
    ```sh
-   npm install -r
+   yarn
    ```
 
-3. **Build the App**
+3. **Install Python Dependencies**
+
    ```sh
-   npm run dist
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Development App**
+
+   > ⚠️ **Note:** Before running, set `isDev = true` in `build/main.js`.
+
+   ```sh
+   yarn start
+   ```
+
+5. **Build the Application**
+
+   ```sh
+   yarn build
    ```
 
 ## 🗺️ Development Roadmap

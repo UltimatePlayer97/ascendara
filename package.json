@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --mode development",
     "build": "vite build",
-    "build-react": "npm run build && electron-builder",
+    "build-react": "yarn run build && electron-builder",
     "electron": "electron ./build/main.js",
     "start": "concurrently \"vite\" \"wait-on tcp:5173 && electron ./build/main.js\"",
     "dist": "python3 ./scripts/build_ascendara.py",
