@@ -63,6 +63,7 @@ const MenuBar = () => {
     const checkWindows = async () => {
       const isWindows = await window.electron.isOnWindows();
       setLeftSideActions(!isWindows);
+      setIsFullscreen(!isWindows);
     };
     checkWindows();
   }, []);
