@@ -22,6 +22,7 @@
 Ascendara simplifies your pirating experience by providing a seamless way to download, manage, and play the pre-installed games. No more hassle with extracting, installing, or moving files. The game library is powered by a custom webscraper, currently featuring games from [STEAMRIP](https://steamrip.com/), with plans to expand to more sources.
 
 ### 👥 Community
+
 - [Join our Discord](https://discord.gg/ascendara) for discussions and support
 - [Submit feedback for Ascendara](https://ascendara.app/feedback)
 - [Read the latest changelog](https://ascendara.app/changelog)
@@ -45,22 +46,23 @@ Ascendara simplifies your pirating experience by providing a seamless way to dow
   Personalize your username for online game cracks that support it.
 
 - 🌍 **105 Languages Support**  
-  Full interface support for 105 different languages, making Ascendara accessible worldwide.
+ Full interface support for 105 different languages, making Ascendara accessible worldwide.
 <details>
 <summary>See the 12 base languages</summary>
 
- These languages come with the app by default:
-- English 
+These languages come with the app by default:
+
+- English
 - Spanish
 - French
 - German
 - Italian
 - Chinese
-- Arabic 
+- Arabic
 - Hindi
 - Bengali
 - Portuguese
-- Russian 
+- Russian
 - Japanese
 
 <details>
@@ -165,34 +167,69 @@ Ascendara simplifies your pirating experience by providing a seamless way to dow
 ## 🖼️ Preview
 
 ### Download Latest Version
+
 🚀 [Download the Ascendara Installer](https://ascendara.app/)
 
 <details>
 <summary>📸 Screenshots</summary>
 
 ### Home Page
+
 ![Home Page](./readme/home.png)
 
 ### Search Page
+
 ![Search Page](./readme/search.png)
 
 ### Library Page
+
 ![Library Page](./readme/library.png)
 
 ### Downloads Page
+
 ![Downloads Page](./readme/downloads.png)
 
 </details>
 
-## 🤝 Contributing 
+## 🤝 Contributing
 
 Contributing to Ascendara is the best way to get your desired features, bug fixes, or improvements into the official build! When your contribution is accepted, your changes will be prominently featured in the Ascendara changelogs, giving you recognition for your valuable input to the project. Learn how to contribute to Ascendara [here](https://ascendara.app/docs/getting-started/contributing).
+
+## 📂 Project Structure
+
+The Ascendara project is organized into the following main directories:
+
+- **src/**: Main application source code
+
+  - **components/**: Core UI components
+  - **context/**: React context providers for state management
+  - **hooks/**: Custom hooks for efficient image loading and caching
+  - **lib/**: Miscellaneous utility libraries and helper functions
+  - **pages/**: Main application pages/screens
+  - **services/**: Service modules for external API requests and core application functionality
+  - **styles/**: CSS and styling files
+  - **translations/**: Internationalization files
+
+- **binaries/**: Main application binary executable tools
+
+  - **AscendaraCrashReporter/**: Crash reporting functionality
+  - **AscendaraDownloader/**: Main game download managers
+  - **AscendaraGameHandler/**: Game execution and management
+  - **AscendaraLanguageTranslation/**: Translation tool used to translate to the additional 93 languages
+  - **AscendaraNotificationHelper/**: Download notification helper tool
+  - **AscendaraTorrentHandler/**: Torrent download functionality
+
+- **scripts/**: Utility scripts for maintaining the project
+- **public/**: Static assets and public resources
+- **build/**: Compiled application output & where the main Javascript is located
+- **installer/**: The source code for the GUI installer
 
 ## 🛠️ Building from Source
 
 For detailed instructions, check out the [Developer Docs](https://ascendara.app/docs/developer/build-from-source).
 
 ### Prerequisites
+
 Before building, ensure you have all required dependencies. [View full requirements](https://ascendara.app/docs/developer/build-from-source#prerequisites).
 
 ### Quick Start
@@ -200,11 +237,13 @@ Before building, ensure you have all required dependencies. [View full requireme
 > ⚠️ **Note:** Some API features like reporting and analytics services will not work on the public version of the app. Additionally, you will not be able to run games in development mode. Check the [Developer Docs](https://ascendara.app/docs/developer/build-from-source#important-limitations) for more information.
 
 1. **Clone the Repository**
+
    ```sh
    git clone https://github.com/ascendara/ascendara.git
    ```
 
 2. **Install Dependencies**
+
    ```sh
    npm install -r
    ```
@@ -217,13 +256,14 @@ Before building, ensure you have all required dependencies. [View full requireme
 ## 🗺️ Development Roadmap
 
 ### Current Goals
+
 - [ ] Endpoint for known games that have weird installation paths, issues, etc.
 - [ ] Enhanced antivirus operation checks
 - [ ] Add semi-support for Linux, and macOS
 
-
 ### Future Goals
- > Want to suggest a feature you don't see here? [Contribute](https://ascendara.app/docs/getting-started/contributing) to Ascendara or [submit feedback](https://ascendara.app/feedback)!
+
+> Want to suggest a feature you don't see here? [Contribute](https://ascendara.app/docs/getting-started/contributing) to Ascendara or [submit feedback](https://ascendara.app/feedback)!
 
 - [ ] Ascendara approved additional sources
 - [ ] Debrid support for downloads
@@ -231,6 +271,7 @@ Before building, ensure you have all required dependencies. [View full requireme
 - [ ] Improved download management (pausing, resuming)
 
 ### Completed Features
+
 - [x] Complete UI overhaul (V7)
 - [x] Legacy game version support (Ascendara Timemachine)
 - [x] Game ratings and reliability system
@@ -251,17 +292,18 @@ Before building, ensure you have all required dependencies. [View full requireme
 - [x] Public API creation
 - [x] Popularity-based sorting
 
-
 ## 📝 License & Contact
 
 Licensed under [CC BY-NC 1.0 Universal](./LICENSE) - 2025 tagoWorks
 
 ### Get in Touch
+
 - Email: [santiago@tago.works](mailto:santiago@tago.works)
 - Website: [tago.works](https://tago.works)
 - Discord: [Join our community](https://ascendara.app/discord)
 
 ---
+
 <div align="center">
     <sub>Built with 💖 by <a href="https://tago.works">tago</a></sub>
 </div>
