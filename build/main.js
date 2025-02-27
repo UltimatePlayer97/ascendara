@@ -630,7 +630,7 @@ function sanitizeText(text) {
 }
 
 // Ludusavi functions
-ipcMain.handle("ludusavi", async (event, action, game) => {
+ipcMain.handle("ludusavi", async (event, action, game, backupName) => {
   try {
     if (isWindows) {
       // Windows uses custom notification helper
@@ -668,6 +668,11 @@ ipcMain.handle("ludusavi", async (event, action, game) => {
           // Add backup format if configured
           if (ludusaviSettings.backupFormat) {
             args.push("--format", ludusaviSettings.backupFormat);
+          }
+
+          // Add specific backup name if provided
+          if (backupName) {
+            args.push("--backup", backupName);
           }
 
           // Add compression options if configured
