@@ -104,12 +104,11 @@
     "files": [
       "build/*",
       "package.json",
-      "public/*",
       ".env"
     ],
     "extraResources": [
       {
-        "from": "public",
+        "from": "src/public",
         "to": "public"
       },
       {
