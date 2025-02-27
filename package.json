@@ -17,6 +17,7 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "0r": "^1.0.0",
     "@million/lint": "^1.0.14",
     "@nextui-org/react": "latest",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -39,7 +40,6 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@tanstack/react-virtual": "^3.11.2",
     "@trigger.dev/sdk": "^3.3.7",
-    "0r": "^1.0.0",
     "axios": "^1.6.8",
     "babel-plugin-react-compiler": "^19.0.0-beta-27714ef-20250124",
     "child_process": "^1.0.2",
@@ -49,6 +49,7 @@
     "discord-rpc": "^4.0.1",
     "diskusage": "^1.2.0",
     "dotenv": "^16.4.5",
+    "electron-builder-squirrel-windows": "24.13.3",
     "electron-dl": "^4.0.0",
     "framer-motion": "^11.13.3",
     "fs-extra": "^11.2.0",
