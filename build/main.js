@@ -16,8 +16,8 @@
  * - Error handling and crash reporting
  * - Protocol handling for custom URL schemes
  *
- *  Start development by first setting the isDev variable to true, then run `npm run start`.
- *  Build the app from source to an executable by setting isDev to false and running `npm run dist`.
+ *  Start development by first setting the isDev variable to true, then run `yarn start`.
+ *  Build the app from source to an executable by setting isDev to false and running `yarn dist`.
  *  Note: This will run the execute.py script to build the the index files, then build the app.
  *
  *  Learn more about developing Ascendara at https://ascendara.app/docs/developer/overview
