@@ -100,12 +100,20 @@ def main():
     translations_file = os.path.join('src', 'translations', 'en.json')
     src_directory = 'src'
     
+    # Keys to always ignore (they exist but aren't explicitly referenced in code)
+    ignored_keys = {
+        "download.newUserGuide.steps"  # This key exists but is not explicitly defined
+    }
+    
     # Get all translation keys
     translation_dict = get_all_translation_keys(translations_file)
     all_keys = set(translation_dict.keys())
     
     # Find used keys
     used_keys = scan_directory(src_directory, all_keys)
+    
+    # Add ignored keys to the used keys to prevent them from being reported as unused
+    used_keys.update(ignored_keys)
     
     # Find unused keys
     unused_keys = all_keys - used_keys
