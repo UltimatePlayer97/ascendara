@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -52,34 +51,35 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
     }
   }, [open]);
 
-  const handleToggleAutoBackup = async enabled => {
+  const handleToggleAutoBackup = async newBackupState => {
     try {
-      const gameBackups = game.backups ?? false;
-      const newBackupState = !gameBackups;
-
       if (newBackupState) {
-        await window.electron.enableGameAutoBackups(game.game, game.isCustom);
+        await window.electron.enableGameAutoBackups(
+          game.game || game.name,
+          game.isCustom
+        );
+        toast.success(t("library.backups.autoBackupEnabled"), {
+          description: t("library.backups.autoBackupEnabledDesc", {
+            game: game.game || game.name,
+          }),
+        });
       } else {
-        await window.electron.disableGameAutoBackups(game.game, game.isCustom);
+        await window.electron.disableGameAutoBackups(
+          game.game || game.name,
+          game.isCustom
+        );
+        toast.success(t("library.backups.autoBackupDisabled"), {
+          description: t("library.backups.autoBackupDisabledDesc", {
+            game: game.game || game.name,
+          }),
+        });
       }
-
       setAutoBackupEnabled(newBackupState);
-
-      toast.success(
-        newBackupState
-          ? t("library.backups.autoBackupEnabled")
-          : t("library.backups.autoBackupDisabled"),
-        {
-          description: newBackupState
-            ? t("library.backups.autoBackupEnabledDesc", { game: game.game || game.name })
-            : t("library.backups.autoBackupDisabledDesc", {
-                game: game.game || game.name,
-              }),
-        }
-      );
     } catch (error) {
-      console.error("Error toggling auto backup:", error);
-      toast.error(t("library.backups.toggleFailed"));
+      console.error("Error toggling auto-backup:", error);
+      toast.error(t("common.error"), {
+        description: t("library.backups.autoBackupToggleError"),
+      });
     }
   };
 
@@ -219,9 +219,9 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
               <Label htmlFor="autoBackup" className="text-base font-medium">
                 {t("library.backups.autoBackupOnGameClose")}
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <span className="block text-sm text-muted-foreground">
                 {t("library.backups.autoBackupDesc")}
-              </p>
+              </span>
             </div>
             <Switch
               id="autoBackup"
@@ -246,15 +246,15 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
             <h3 className="mb-2 text-lg font-medium text-amber-500">
               {t("library.backups.restoreWarningTitle")}
             </h3>
-            <p className="mb-2 text-sm">
+            <span className="mb-2 block text-sm">
               {t("library.backups.restoreWarningDesc", { game: game.game || game.name })}
-            </p>
-            <p className="mb-2 text-sm font-medium">
+            </span>
+            <span className="mb-2 block text-sm font-medium">
               {t("library.backups.restoreWarningOverwrite")}
-            </p>
-            <p className="text-sm text-muted-foreground">
+            </span>
+            <span className="block text-sm text-muted-foreground">
               {t("library.backups.restoreWarningGameClosed")}
-            </p>
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -275,9 +275,9 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
                   game: game.game || game.name,
                 })}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <span className="block text-sm text-muted-foreground">
                 {t("library.backups.waitingBackup")}
-              </p>
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -293,9 +293,9 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
               <h3 className="mb-1 text-lg font-medium text-green-500">
                 {t("library.backups.backupSuccess")}
               </h3>
-              <p className="text-sm">
+              <span className="block text-sm">
                 {t("library.backups.backupSuccessDesc", { game: game.game || game.name })}
-              </p>
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -339,9 +339,9 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
                   game: game.game || game.name,
                 })}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <span className="block text-sm text-muted-foreground">
                 {t("library.backups.waitingRestore")}
-              </p>
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -357,11 +357,11 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
               <h3 className="mb-1 text-lg font-medium text-green-500">
                 {t("library.backups.restoreSuccess")}
               </h3>
-              <p className="text-sm">
+              <span className="block text-sm">
                 {t("library.backups.restoreSuccessDesc", {
                   game: game.game || game.name,
                 })}
-              </p>
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -511,9 +511,8 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
               t("library.backups.restoreResult")
             )}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-muted-foreground">
-            {renderContent()}
-          </AlertDialogDescription>
+          {/* Wrap the content in a span instead of using AlertDialogDescription directly */}
+          <span className="text-sm text-muted-foreground">{renderContent()}</span>
         </AlertDialogHeader>
         <AlertDialogFooter>{renderFooterButtons()}</AlertDialogFooter>
       </AlertDialogContent>

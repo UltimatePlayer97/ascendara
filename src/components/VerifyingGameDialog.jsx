@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -108,9 +107,9 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
           <Loader2 className="h-5 w-5 animate-spin" />
           <span className="font-medium">{t("downloads.verifying")}</span>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {t("downloads.verifyingDescription")}
-        </p>
+        </span>
       </CardContent>
     </Card>
   );
@@ -122,9 +121,9 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
           <CheckCircle2 className="h-5 w-5" />
           <span className="font-medium">{t("downloads.verificationSuccess")}</span>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {t("downloads.verificationSuccessDesc")}
-        </p>
+        </span>
       </CardContent>
     </Card>
   );
@@ -136,9 +135,9 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
           <FileWarning className="h-5 w-5" />
           <span className="font-medium">{t("library.cannotVerifyFiles")}</span>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {t("downloads.actions.legacyGameVerification")}
-        </p>
+        </span>
       </CardContent>
     </Card>
   );
@@ -159,9 +158,9 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
                   })}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             {t("downloads.verificationFailedDesc")}
-          </p>
+          </span>
         </CardContent>
       </Card>
 
@@ -247,7 +246,7 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
             <FileSearch className="h-6 w-6 text-primary" />
             {isLegacyGame ? t("library.cannotVerifyFiles") : t("library.verifyGameFiles")}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             <div className="py-2">
               {isVerifyingGame && renderVerifyingContent()}
 
@@ -269,7 +268,7 @@ const VerifyingGameDialog = ({ game, open, onOpenChange }) => {
 
               {renderActionButtons()}
             </div>
-          </AlertDialogDescription>
+          </span>
         </AlertDialogHeader>
       </AlertDialogContent>
     </AlertDialog>
