@@ -769,7 +769,7 @@ export default function DownloadPage() {
                     </TooltipProvider>
                   )}
                 </h1>
-                {settings.gameSource == "fitigrl" && (
+                {settings.gameSource !== "fitgirl" && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button className="fixed right-8" variant="outline" size="sm">
