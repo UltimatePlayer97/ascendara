@@ -5,11 +5,11 @@ import subprocess
 import shutil
 import re
 
-def run_npm_build():
-    print("Running npm build...")
+def run_yarn_build():
+    print("Running yarn build...")
     try:
-        npm_cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
-        subprocess.run([npm_cmd, 'run', 'build'], check=True, cwd=os.getcwd())
+        yarn_cmd = 'yarn.cmd' if os.name == 'nt' else 'yarn'
+        subprocess.run([yarn_cmd, 'build'], check=True, cwd=os.getcwd())
         print("Build completed successfully")
         return True
     except subprocess.CalledProcessError as e:
@@ -19,8 +19,8 @@ def run_npm_build():
 def run_electron_builder():
     print("Running electron-builder...")
     try:
-        npm_cmd = 'npm.cmd' if os.name == 'nt' else 'npm'
-        subprocess.run([npm_cmd, 'run', 'buildwithelectron'], check=True, cwd=os.getcwd())
+        yarn_cmd = 'yarn.cmd' if os.name == 'nt' else 'yarn'
+        subprocess.run([yarn_cmd, 'buildwithelectron'], check=True, cwd=os.getcwd())
         print("Electron build completed successfully")
         return True
     except subprocess.CalledProcessError as e:
@@ -100,8 +100,8 @@ def move_files():
         return False
 
 def main():
-    print("Buliding Ascendara from source to EXE...")  
-    if not run_npm_build():
+    print("Building Ascendara from source to EXE...")  
+    if not run_yarn_build():
         return
     
     if not modify_index_html():
