@@ -163,36 +163,7 @@
       "nextStep": "Next Step →",
       "noThanks": "No Thanks",
       "startGuide": "Start Guide",
-      "steps": [
-        {
-          "description": "The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don't have it, close the guide and click the \"Don't have the extension? Get it for Chrome or Firefox\" button to download it.",
-          "title": "The Ascendara Download Handler"
-        },
-        {
-          "description": "After installing the extension, click the extension icon to enable the handler.",
-          "title": "Step 1: Enable the Handler"
-        },
-        {
-          "description": "The extension can stay on as it will only send known providers to Ascendara.",
-          "title": "The Download Handler"
-        },
-        {
-          "description": "Complete the CAPTCHA, and start the download.",
-          "title": "Step 2: Start the download"
-        },
-        {
-          "description": "Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.",
-          "title": "Step 3: Using the Extension"
-        },
-        {
-          "description": "Click the button to Open Ascendara.",
-          "title": "Step 4: Downloading"
-        },
-        {
-          "description": "Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.",
-          "title": "That's it!"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "Downloading with Ascendara"
     },
     "online": "ONLINE",
@@ -254,16 +225,7 @@
       "legacyGameVerification": "File verification is only available for games downloaded after Ascendara version 8.1.2",
       "openFolder": "Open Folder",
       "retryDownload": "Retry Download",
-      "stopDownload": "Stop Download",
-      "verificationFailed": "Files failed to verify",
-      "verificationFailed1": "{{numFailed}} file failed to verify",
-      "verificationFailed2": "{{numFailed}} files failed to verify",
-      "verificationFailedDescription": "Your antivirus probably deleted important game crack files that were reported as false positives.",
-      "verificationSuccess": "Verification Complete",
-      "verificationSuccessDesc": "All game files have been verified",
-      "verifyAgain": "Verify Game Files",
-      "verifying": "Verifying files...",
-      "verifyingDescription": "Ascendara is verifying the game files. This may also take a while depending on the game size."
+      "stopDownload": "Stop Download"
     },
     "activeDownloads": "Downloading Games",
     "alreadyReported": "Already Reported",
@@ -324,8 +286,6 @@
     "addGameDescription1": "Add your own game to your library.",
     "addGameDescription2": "Add a game to your  Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
     "alreadyRunning": "{{game}} is already running",
-    "autoBackup": "Backup on Exit",
-    "autoBackupDesc": "Automatically backup this game when it closes.",
     "availableSpace": "Available Space",
     "backups": {
       "autoBackupDesc": "Automatically backup save data when game closes",
@@ -527,12 +487,8 @@
     },
     "fitgirlRepacksDescription": "Access FitGirl's over 5500 games all on Ascendara. Games are sourced through the Hydralibrary and matched with an image using the IGDB. There are no categories or weights supported for these games, they will seem completely random.",
     "gameBackup": {
-      "addLocation": "Add Location",
-      "autoBackup": "Auto-backup on Game Exit",
-      "autoBackupDesc": "Automatically backup saves when game closes",
       "backupFormat": "Backup Format",
       "backupLocation": "Backup Location",
-      "backupOptions": "Backup Options",
       "backupsCount": {
         "custom": "Custom",
         "five": "5 backups",
@@ -540,29 +496,16 @@
         "three": "3 backups"
       },
       "backupsToKeep": "Backups to Keep per Game",
-      "compression": {
-        "best": "Best (Maximum compression)",
-        "default": "Default (Balanced)",
-        "fast": "Fast (Less compression)"
-      },
       "compressionBzip2": "BZip2 (Better compression, slower)",
       "compressionDeflate": "Deflate (Balanced, recommended)",
       "compressionLevel": "Compression Level",
       "compressionNone": "None (Fastest, largest files)",
       "compressionZstd": "Zstd (Best compression, slowest)",
-      "customLocations": "Custom Save Locations",
-      "customLocationsDesc": "Define custom save locations for games that store saves in non-standard paths",
       "description": "Select a directory to enable and configure Ludusavi game save backups. Choose which games to backup in your library.",
       "formatSimple": "Simple (Directory structure)",
       "formatZip": "ZIP (Recommended)",
-      "noCustomLocations": "No custom locations defined",
-      "notificationsDesc": "Display notifications for backup/restore events",
       "selectDirectory": "Select backup directory",
-      "showNotifications": "Show Notifications",
-      "skipConfirmations": "Skip Confirmations",
-      "skipConfirmationsDesc": "Skip confirmation dialogs for backup/restore",
-      "title": "Game Backups",
-      "userPreferences": "User Preferences"
+      "title": "Game Backups"
     },
     "gameSources": "Indexed Game Source",
     "gameSourcesDescription": "Ascendara primarily uses SteamRIP as its trusted source for games",
@@ -785,12 +728,7 @@
   "workshopDownloader": {
     "downloadFailure": {
       "description": "The workshop item download failed. This could be due to:",
-      "reasons": [
-        "The item may be private or restricted",
-        "SteamCMD connection issues",
-        "Insufficient disk space",
-        "Invalid workshop item URL"
-      ],
+      "reasons": "['The item may be private or restricted', 'SteamCMD connection issues', 'Insufficient disk space', 'Invalid workshop item URL']",
       "suggestion": "Please verify the item is public and try again. If the issue persists, try restarting Ascendara.",
       "title": "Download Failed"
     },
