@@ -205,6 +205,7 @@ The Ascendara project is organized into the following main directories:
   - **components/**: Core UI components
   - **context/**: React context providers for state management
   - **hooks/**: Custom hooks for efficient image loading and caching
+  - **public/**: Static assets and public resources
   - **lib/**: Miscellaneous utility libraries and helper functions
   - **pages/**: Main application pages/screens
   - **services/**: Service modules for external API requests and core application functionality
@@ -221,7 +222,6 @@ The Ascendara project is organized into the following main directories:
   - **AscendaraTorrentHandler/**: Torrent download functionality
 
 - **scripts/**: Utility scripts for maintaining the project
-- **public/**: Static assets and public resources
 - **build/**: Compiled application output & where the main Javascript is located
 - **installer/**: The source code for the GUI installer
 
