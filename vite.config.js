@@ -11,7 +11,7 @@ plugins.unshift(MillionLint.vite());
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: plugins,
-  publicDir: path.join(__dirname, "public"),
+  publicDir: path.join(__dirname, "src/public"),
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     __APP_REVISION__: JSON.stringify(execSync("git rev-parse HEAD").toString()),

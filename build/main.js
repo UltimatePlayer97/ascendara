@@ -3257,7 +3257,7 @@ ipcMain.handle("get-asset-path", (event, filename) => {
   let assetPath;
   if (!app.isPackaged) {
     // In development
-    assetPath = path.join(__dirname, "../public", filename);
+    assetPath = path.join(__dirname, "../src/public", filename);
   } else {
     // In production
     assetPath = path.join(process.resourcesPath, "public", filename);
