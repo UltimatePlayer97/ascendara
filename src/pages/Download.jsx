@@ -106,7 +106,7 @@ export default function DownloadPage() {
   const navigate = useNavigate();
   const [gameData, setGameData] = useState(state?.gameData);
   const { t } = useLanguage();
-  const { settings, updateSettings } = useSettings();
+  const { settings, setSettings } = useSettings();
 
   // Clear data when leaving the page
   useEffect(() => {
@@ -208,12 +208,14 @@ export default function DownloadPage() {
           );
 
           // Keep isStarting true until download actually begins
-          const removeDownloadListener = window.electron.onDownloadProgress(downloadInfo => {
-            if (downloadInfo.game === sanitizedGameName) {
-              setIsStartingDownload(false);
-              removeDownloadListener();
+          const removeDownloadListener = window.electron.onDownloadProgress(
+            downloadInfo => {
+              if (downloadInfo.game === sanitizedGameName) {
+                setIsStartingDownload(false);
+                removeDownloadListener();
+              }
             }
-          });
+          );
 
           setTimeout(() => {
             toast.success(t("download.toast.torrentSent"));
@@ -305,10 +307,9 @@ export default function DownloadPage() {
     checkQbittorrent();
   }, [t, settings.torrentEnabled]);
 
-
   useEffect(() => {
     const checkDevMode = async () => {
-      const isDevMode = await window.electron.isDev()
+      const isDevMode = await window.electron.isDev();
       setIsDev(isDevMode);
     };
     checkDevMode();
@@ -524,10 +525,10 @@ export default function DownloadPage() {
   };
 
   const handleNextStep = () => {
-    if (guideStep < guideSteps.length - 1) {
+    if (guideStep < guideSteps.length) {
       setGuideStep(guideStep + 1);
     } else {
-      updateSettings({ downloadHandler: true })
+      setSettings({ downloadHandler: true })
         .then(() => {
           setShowNewUserGuide(false);
           setGuideStep(0);
@@ -700,7 +701,7 @@ export default function DownloadPage() {
       const availableProviders = Object.keys(gameData.download_links).filter(
         provider => gameData.download_links[provider]?.length > 0
       );
-      
+
       if (availableProviders.includes("gofile")) {
         setSelectedProvider("gofile");
       } else if (availableProviders.includes("buzzheavier")) {
@@ -730,7 +731,7 @@ export default function DownloadPage() {
           style={{
             animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
           }}
-        > 
+        >
           {t("download.pressEscToGoBack")}
         </div>
 
@@ -744,25 +745,28 @@ export default function DownloadPage() {
             />
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold flex items-center">
+                <h1 className="flex items-center text-2xl font-bold">
                   {gameData.game}
                   {gameData.rating && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="ml-2 flex cursor-help">
-                          {[...Array(Math.round(gameData.rating))].map((_, i) => (
-                            <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                          ))}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p className="font-semibold text-secondary max-w-[300px]">
-                          {t("download.ratingTooltip", { rating: gameData.rating })}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="ml-2 flex cursor-help">
+                            {[...Array(Math.round(gameData.rating))].map((_, i) => (
+                              <Star
+                                key={i}
+                                className="h-5 w-5 fill-current text-yellow-400"
+                              />
+                            ))}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p className="max-w-[300px] font-semibold text-secondary">
+                            {t("download.ratingTooltip", { rating: gameData.rating })}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                 </h1>
                 {settings.gameSource == "fitigrl" && (
@@ -781,14 +785,17 @@ export default function DownloadPage() {
                       >
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-2xl font-bold text-foreground">
-                            {t("download.reportBroken")}: {gameData.game} 
+                            {t("download.reportBroken")}: {gameData.game}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="space-y-4">
                             <div className="space-y-2">
                               <label className="text-sm font-medium">
                                 {t("download.reportReason")}
                               </label>
-                              <Select value={reportReason} onValueChange={setReportReason}>
+                              <Select
+                                value={reportReason}
+                                onValueChange={setReportReason}
+                              >
                                 <SelectTrigger>
                                   <SelectValue
                                     placeholder={t("download.reportReasons.placeholder")}
@@ -862,7 +869,7 @@ export default function DownloadPage() {
 
               <div className="flex items-center gap-2">
                 {gameData.emulator && (
-                  <span className="flex items-center gap-1 rounded bg-yellow-500/10 px-2 py-0.5 mb-2 text-sm text-yellow-500">
+                  <span className="mb-2 flex items-center gap-1 rounded bg-yellow-500/10 px-2 py-0.5 text-sm text-yellow-500">
                     <CircleSlash className="mr-1 h-4 w-4" />{" "}
                     {t("download.gameNeedsEmulator")}&nbsp;
                     <a
@@ -879,7 +886,7 @@ export default function DownloadPage() {
                   </span>
                 )}
                 {gameData.category?.includes("Virtual Reality") && (
-                  <span className="flex items-center rounded bg-purple-500/10 px-2 py-0.5 mb-2 text-sm text-foreground">
+                  <span className="mb-2 flex items-center rounded bg-purple-500/10 px-2 py-0.5 text-sm text-foreground">
                     <svg
                       className="p-0.5 text-foreground"
                       width="20"
@@ -953,7 +960,7 @@ export default function DownloadPage() {
                   </TooltipProvider>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {t("download.size")}: {gameData.size}
               </p>
             </div>
@@ -983,9 +990,7 @@ export default function DownloadPage() {
               <div className="flex flex-col items-center space-y-8 py-2">
                 <div className="flex w-full items-center justify-between">
                   <h2 className="flex items-center gap-2 text-xl font-semibold">
-                    <span className="flex items-center gap-1">
-                      FitGirl Repacks
-                    </span>
+                    <span className="flex items-center gap-1">FitGirl Repacks</span>
                   </h2>
                 </div>
 
@@ -1000,7 +1005,7 @@ export default function DownloadPage() {
 
                 {!torrentRunning && (
                   <p className="text-muted-foreground">
-                    <AlertTriangle className="h-4 w-4 inline-block mr-2" />
+                    <AlertTriangle className="mr-2 inline-block h-4 w-4" />
                     {t("download.downloadOptions.torrentInstructions.noTorrent")}
                   </p>
                 )}
@@ -1086,15 +1091,15 @@ export default function DownloadPage() {
                     {t("download.downloadOptions.downloadOptions")}
                   </h2>
                   {isDev && (
-                        <Button
-                        onClick={() => {
-                          window.electron.openURL(gameData.dirlink)
-                        }}
-                        className="h-12 w-full text-lg text-secondary"
-                      >
-                        (DEV) Open Direct Link
-                      </Button>
-                      )}
+                    <Button
+                      onClick={() => {
+                        window.electron.openURL(gameData.dirlink);
+                      }}
+                      className="h-12 w-full text-lg text-secondary"
+                    >
+                      (DEV) Open Direct Link
+                    </Button>
+                  )}
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>{t("download.downloadOptions.downloadSource")}</Label>
@@ -1398,7 +1403,7 @@ export default function DownloadPage() {
           )}
         </div>
       </div>
-      
+
       {settings.gameSource !== "fitgirl" && (
         <TooltipProvider>
           <Tooltip open={showShareCopySuccess}>
