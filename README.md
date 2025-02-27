@@ -1,5 +1,5 @@
 <div align="center">
-    <img align="center" width="128" height="128" src="./public/icon.png" alt="Ascendara Logo">
+    <img align="center" width="128" height="128" src="./src/public/icon.png" alt="Ascendara Logo">
     <h1>Ascendara</h1>
     <p><em>The best way to test games before you buy them.</em></p>
     <p>
