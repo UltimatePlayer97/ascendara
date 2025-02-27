@@ -22,6 +22,7 @@ export function SettingsProvider({ children }) {
     smoothTransitions: true,
     sendAnalytics: true,
     autoUpdate: true,
+    endOnClose: false,
     language: "en",
     theme: "purple",
     threadCount: 4,

@@ -480,6 +480,7 @@ class SettingsManager {
       smoothTransitions: true,
       sendAnalytics: true,
       autoUpdate: true,
+      endOnClose: false,
       language: "en",
       theme: "purple",
       threadCount: 4,
@@ -3113,9 +3114,16 @@ ipcMain.handle("maximize-window", () => {
 });
 
 // Close the window
-ipcMain.handle("close-window", () => {
+ipcMain.handle("close-window", async () => {
   const win = BrowserWindow.getFocusedWindow();
-  if (win) win.close();
+  if (win) {
+    const settings = await getSettings();
+    if (!settings.endOnClose) {
+      win.hide();
+    } else {
+      win.close();
+    }
+  }
 });
 
 // Handle fullscreen toggle

@@ -801,6 +801,21 @@ function Settings() {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
+                      <Label>{t("settings.quickLaunch")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.quickLaunchDescription")}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={!settings.endOnClose}
+                      onCheckedChange={() =>
+                        handleSettingChange("endOnClose", !settings.endOnClose)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
                       <Label>{t("settings.smoothTransitions")}</Label>
                       <p className="text-sm text-muted-foreground">
                         {t("settings.smoothTransitionsDescription")}
