@@ -23,6 +23,7 @@ export default defineConfig({
     },
   },
   build: {
+    copyPublicDir: true,
     outDir: path.join(__dirname, "src/dist"),
     emptyOutDir: true,
     rollupOptions: {
