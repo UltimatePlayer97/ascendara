@@ -159,24 +159,15 @@ def run_ludusavi_backup(game_name):
         # Build the command with correct syntax
         cmd = [
             ludusavi_path,
-            "--no-manifest-update",  # Skip manifest update checks for faster backup
             "backup",
             "--path", backup_location,
             "--format", backup_format,
             "--full-limit", str(backups_to_keep),
             "--compression", compression_level,
+            "--force",  # Always skip confirmations
             game_name  # Game name as positional argument
         ]
-        
-        # Check if we should skip confirmations
-        skip_confirmations = ludusavi_settings.get('preferences', {}).get('skipConfirmations', False)
-        if skip_confirmations:
-            cmd.append("--force")  # Don't ask for confirmation if skipConfirmations is true
-            
-        # Add GUI notification if configured
-        if ludusavi_settings.get('preferences', {}).get('showNotifications', False):
-            cmd.append("--gui")
-            
+
         # Run the backup process
         logging.info(f"Running Ludusavi backup for {game_name} with command: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -207,13 +198,44 @@ def execute(game_path, is_custom_game, is_shortcut=False, use_ludusavi=False):
         game_dir, exe_name = os.path.split(game_path)
         exe_path = os.path.join(game_dir, exe_name)
         
-        game_name = os.path.basename(game_dir)
-        json_file_path = os.path.join(game_dir, f"{game_name}.ascendara.json")
+        # First, try to find the game's root directory by looking for the .ascendara.json file
+        # Start from the executable's directory and move up until we find it
+        current_dir = game_dir
+        found_json = False
         
-        if not os.path.exists(json_file_path):
-            parent_dir = os.path.dirname(game_dir)
+        while current_dir and os.path.dirname(current_dir) != current_dir:
+            dir_name = os.path.basename(current_dir)
+            potential_json = os.path.join(current_dir, f"{dir_name}.ascendara.json")
+            
+            if os.path.exists(potential_json):
+                json_file_path = potential_json
+                game_name = dir_name
+                found_json = True
+                break
+                
+            # Also check for a JSON file with the same name as the parent directory
+            parent_dir = os.path.dirname(current_dir)
             parent_name = os.path.basename(parent_dir)
-            json_file_path = os.path.join(parent_dir, f"{parent_name}.ascendara.json")
+            potential_parent_json = os.path.join(parent_dir, f"{parent_name}.ascendara.json")
+            
+            if os.path.exists(potential_parent_json):
+                json_file_path = potential_parent_json
+                game_name = parent_name
+                found_json = True
+                break
+                
+            # Move up one directory
+            current_dir = parent_dir
+            
+        # If we couldn't find the JSON file, fall back to the original behavior
+        if not found_json:
+            game_name = os.path.basename(game_dir)
+            json_file_path = os.path.join(game_dir, f"{game_name}.ascendara.json")
+            
+            if not os.path.exists(json_file_path):
+                parent_dir = os.path.dirname(game_dir)
+                parent_name = os.path.basename(parent_dir)
+                json_file_path = os.path.join(parent_dir, f"{parent_name}.ascendara.json")
     else:
         exe_path = game_path
         user_data_dir = os.path.join(os.environ['APPDATA'], 'ascendara')

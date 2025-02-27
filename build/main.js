@@ -2763,195 +2763,131 @@ ipcMain.handle("modify-game-executable", (event, game, executable) => {
   }
 });
 
-ipcMain.handle("play-game", async (event, game, isCustom = false) => {
-  try {
-    const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
-
-    if (!settings.downloadDirectory) {
-      throw new Error("Download directory not set");
-    }
-
-    let executable;
-    let gameDirectory;
-
-    if (!isCustom) {
-      gameDirectory = path.join(settings.downloadDirectory, game);
-      const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
-
-      if (!fs.existsSync(gameInfoPath)) {
-        throw new Error(`Game info file not found: ${gameInfoPath}`);
-      }
-
-      const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
-      const gameInfo = JSON.parse(gameInfoData);
-
-      if (!gameInfo.executable) {
-        throw new Error("Executable path not found in game info");
-      }
-
-      // Check if the executable path is already absolute
-      if (path.isAbsolute(gameInfo.executable)) {
-        executable = gameInfo.executable;
-      } else {
-        executable = path.join(gameDirectory, gameInfo.executable);
-      }
-    } else {
-      const gamesPath = path.join(settings.downloadDirectory, "games.json");
-      if (!fs.existsSync(gamesPath)) {
-        throw new Error("Custom games file not found");
-      }
-
-      const gamesData = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
-      const gameInfo = gamesData.games.find(g => g.game === game);
-
-      if (!gameInfo || !gameInfo.executable) {
-        throw new Error(`Game not found in games.json: ${game}`);
-      }
-
-      executable = gameInfo.executable; // Custom games should already have absolute paths
-      gameDirectory = path.dirname(executable);
-    }
-
-    // Validate paths
-    if (!fs.existsSync(executable)) {
-      throw new Error(`Game executable not found: ${executable}`);
-    }
-
-    // Check if game is already running
-    if (runGameProcesses.has(game)) {
-      throw new Error("Game is already running");
-    }
-
-    let handlerPath;
-
-    if (isWindows) {
-      handlerPath = path.join(appDirectory, "/resources/AscendaraGameHandler.exe");
-    } else {
-      // For non-Windows, we need to use python3 to execute the script
-      handlerPath = "python3";
-      executable = `${path.join(appDirectory, "/resources/AscendaraGameHandler.py")} ${executable}`;
-    }
-
-    if (!fs.existsSync(handlerPath)) {
-      throw new Error("Game handler not found");
-    }
-
-    console.log("Launching game:", {
-      handlerPath,
-      executable,
-      isCustom: isCustom.toString(),
-      gameDirectory,
-    });
-
-    const spawnArgs = isWindows
-      ? [executable, isCustom.toString()]
-      : ["-c", executable, isCustom.toString()];
-
-    const runGame = spawn(handlerPath, spawnArgs, {
-      detached: false,
-      stdio: ["ignore", "pipe", "pipe"],
-      windowsHide: true,
-      cwd: gameDirectory,
-      shell: !isWindows, // Use shell on non-Windows platforms
-    });
-
-    // Log any output for debugging
-    runGame.stdout.on("data", data => {
-      console.log(`Game handler output: ${data}`);
-    });
-
-    runGame.stderr.on("data", data => {
-      console.error(`Game handler error: ${data}`);
-    });
-
-    runGameProcesses.set(game, runGame);
-
-    // Update game status to running in JSON files
+ipcMain.handle(
+  "play-game",
+  async (event, game, isCustom = false, backupOnClose = false) => {
     try {
-      // Update settings.json
-      if (!settings.runningGames) settings.runningGames = {};
-      settings.runningGames[game] = true;
-      fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
+      const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+      const data = fs.readFileSync(filePath, "utf8");
+      const settings = JSON.parse(data);
 
-      // Update games.json
-      const gamesPath = path.join(settings.downloadDirectory, "games.json");
-      if (fs.existsSync(gamesPath)) {
-        const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
-        if (games[game]) {
-          games[game].running = true;
-          fs.writeFileSync(gamesPath, JSON.stringify(games, null, 2));
+      if (!settings.downloadDirectory) {
+        throw new Error("Download directory not set");
+      }
+
+      let executable;
+      let gameDirectory;
+
+      if (!isCustom) {
+        gameDirectory = path.join(settings.downloadDirectory, game);
+        const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+
+        if (!fs.existsSync(gameInfoPath)) {
+          throw new Error(`Game info file not found: ${gameInfoPath}`);
         }
+
+        const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+        const gameInfo = JSON.parse(gameInfoData);
+
+        if (!gameInfo.executable) {
+          throw new Error("Executable path not found in game info");
+        }
+
+        // Check if the executable path is already absolute
+        if (path.isAbsolute(gameInfo.executable)) {
+          executable = gameInfo.executable;
+        } else {
+          executable = path.join(gameDirectory, gameInfo.executable);
+        }
+      } else {
+        const gamesPath = path.join(settings.downloadDirectory, "games.json");
+        if (!fs.existsSync(gamesPath)) {
+          throw new Error("Custom games file not found");
+        }
+
+        const gamesData = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+        const gameInfo = gamesData.games.find(g => g.game === game);
+
+        if (!gameInfo || !gameInfo.executable) {
+          throw new Error(`Game not found in games.json: ${game}`);
+        }
+
+        executable = gameInfo.executable; // Custom games should already have absolute paths
+        gameDirectory = path.dirname(executable);
       }
-    } catch (error) {
-      console.error("Error updating game running status:", error);
-    }
 
-    // Set up error handler
-    runGame.on("error", error => {
-      console.error(`Failed to start game ${game}:`, error);
-      event.sender.send("game-launch-error", { game, error: error.message });
-      runGameProcesses.delete(game);
-      showWindow();
-    });
-
-    // Wait a short moment to catch immediate launch errors
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // If no immediate errors, consider it a success
-    event.sender.send("game-launch-success", { game });
-    hideWindow();
-
-    // Create shortcut and mark game as launched if it's the first time
-    if (!isCustom) {
-      const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
-      const gameInfo = JSON.parse(fs.readFileSync(gameInfoPath, "utf8"));
-      if (!gameInfo.hasBeenLaunched && settings.autoCreateShortcuts) {
-        await createGameShortcut({
-          game: game,
-          name: game,
-          executable: executable,
-          custom: false,
-        });
-        gameInfo.hasBeenLaunched = true;
-        fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+      // Validate paths
+      if (!fs.existsSync(executable)) {
+        throw new Error(`Game executable not found: ${executable}`);
       }
-    }
 
-    // Update Discord Rich Presence
-    rpc.setActivity({
-      details: "Playing a Game",
-      state: `${game}`,
-      startTimestamp: new Date(),
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-      buttons: [
-        {
-          label: "Play on Ascendara",
-          url: "https://ascendara.app/",
-        },
-      ],
-    });
+      // Check if game is already running
+      if (runGameProcesses.has(game)) {
+        throw new Error("Game is already running");
+      }
 
-    runGame.on("exit", code => {
-      console.log(`Game ${game} exited with code ${code}`);
+      let handlerPath;
 
-      // Update game status to not running in JSON files
+      if (isWindows) {
+        handlerPath = path.join(appDirectory, "/resources/AscendaraGameHandler.exe");
+      } else {
+        // For non-Windows, we need to use python3 to execute the script
+        handlerPath = "python3";
+        executable = `${path.join(appDirectory, "/resources/AscendaraGameHandler.py")} ${executable}`;
+      }
+
+      if (!fs.existsSync(handlerPath)) {
+        throw new Error("Game handler not found");
+      }
+
+      console.log("Launching game:", {
+        handlerPath,
+        executable,
+        isCustom: isCustom.toString(),
+        gameDirectory,
+      });
+
+      const spawnArgs = isWindows
+        ? [executable, isCustom.toString(), ...(backupOnClose ? ["--ludusavi"] : [])]
+        : [
+            "-c",
+            executable,
+            isCustom.toString(),
+            ...(backupOnClose ? ["--ludusavi"] : []),
+          ];
+
+      const runGame = spawn(handlerPath, spawnArgs, {
+        detached: false,
+        stdio: ["ignore", "pipe", "pipe"],
+        windowsHide: true,
+        cwd: gameDirectory,
+        shell: !isWindows, // Use shell on non-Windows platforms
+      });
+
+      // Log any output for debugging
+      runGame.stdout.on("data", data => {
+        console.log(`Game handler output: ${data}`);
+      });
+
+      runGame.stderr.on("data", data => {
+        console.error(`Game handler error: ${data}`);
+      });
+
+      runGameProcesses.set(game, runGame);
+
+      // Update game status to running in JSON files
       try {
         // Update settings.json
-        const settings = JSON.parse(fs.readFileSync(filePath, "utf8"));
-        if (settings.runningGames) {
-          delete settings.runningGames[game];
-          fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
-        }
+        if (!settings.runningGames) settings.runningGames = {};
+        settings.runningGames[game] = true;
+        fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
 
         // Update games.json
         const gamesPath = path.join(settings.downloadDirectory, "games.json");
         if (fs.existsSync(gamesPath)) {
           const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
           if (games[game]) {
-            games[game].running = false;
+            games[game].running = true;
             fs.writeFileSync(gamesPath, JSON.stringify(games, null, 2));
           }
         }
@@ -2959,27 +2895,99 @@ ipcMain.handle("play-game", async (event, game, isCustom = false) => {
         console.error("Error updating game running status:", error);
       }
 
-      runGameProcesses.delete(game);
-      showWindow();
-
-      // Update Discord RPC
-      rpc.setActivity({
-        state: "Browsing Menus...",
-        largeImageKey: "ascendara",
-        largeImageText: "Ascendara",
+      // Set up error handler
+      runGame.on("error", error => {
+        console.error(`Failed to start game ${game}:`, error);
+        event.sender.send("game-launch-error", { game, error: error.message });
+        runGameProcesses.delete(game);
+        showWindow();
       });
 
-      // Notify renderer that game has closed
-      event.sender.send("game-closed", { game });
-    });
+      // Wait a short moment to catch immediate launch errors
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    return true;
-  } catch (error) {
-    console.error("Error launching game:", error);
-    event.sender.send("game-launch-error", { game, error: error.message });
-    return false;
+      // If no immediate errors, consider it a success
+      event.sender.send("game-launch-success", { game });
+      hideWindow();
+
+      // Create shortcut and mark game as launched if it's the first time
+      if (!isCustom) {
+        const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+        const gameInfo = JSON.parse(fs.readFileSync(gameInfoPath, "utf8"));
+        if (!gameInfo.hasBeenLaunched && settings.autoCreateShortcuts) {
+          await createGameShortcut({
+            game: game,
+            name: game,
+            executable: executable,
+            custom: false,
+          });
+          gameInfo.hasBeenLaunched = true;
+          fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+        }
+      }
+
+      // Update Discord Rich Presence
+      rpc.setActivity({
+        details: "Playing a Game",
+        state: `${game}`,
+        startTimestamp: new Date(),
+        largeImageKey: "ascendara",
+        largeImageText: "Ascendara",
+        buttons: [
+          {
+            label: "Play on Ascendara",
+            url: "https://ascendara.app/",
+          },
+        ],
+      });
+
+      runGame.on("exit", code => {
+        console.log(`Game ${game} exited with code ${code}`);
+
+        // Update game status to not running in JSON files
+        try {
+          // Update settings.json
+          const settings = JSON.parse(fs.readFileSync(filePath, "utf8"));
+          if (settings.runningGames) {
+            delete settings.runningGames[game];
+            fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
+          }
+
+          // Update games.json
+          const gamesPath = path.join(settings.downloadDirectory, "games.json");
+          if (fs.existsSync(gamesPath)) {
+            const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+            if (games[game]) {
+              games[game].running = false;
+              fs.writeFileSync(gamesPath, JSON.stringify(games, null, 2));
+            }
+          }
+        } catch (error) {
+          console.error("Error updating game running status:", error);
+        }
+
+        runGameProcesses.delete(game);
+        showWindow();
+
+        // Update Discord RPC
+        rpc.setActivity({
+          state: "Browsing Menus...",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        });
+
+        // Notify renderer that game has closed
+        event.sender.send("game-closed", { game });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Error launching game:", error);
+      event.sender.send("game-launch-error", { game, error: error.message });
+      return false;
+    }
   }
-});
+);
 
 // Stop the game
 ipcMain.handle("stop-game", (event, game) => {

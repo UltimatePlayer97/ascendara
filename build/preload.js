@@ -85,7 +85,8 @@ contextBridge.exposeInMainWorld("electron", {
   },
 
   // Game Execution
-  playGame: (game, isCustom) => ipcRenderer.invoke("play-game", game, isCustom),
+  playGame: (game, isCustom, backupOnClose) =>
+    ipcRenderer.invoke("play-game", game, isCustom, backupOnClose),
   isGameRunning: game => ipcRenderer.invoke("is-game-running", game),
 
   // File and Directory Management
