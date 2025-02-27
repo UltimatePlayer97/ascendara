@@ -990,7 +990,6 @@ function Settings() {
                 </div>
               </div>
             </Card>
-
             <Card>
               <div className="p-6">
                 <div className="flex items-center justify-between">
@@ -998,44 +997,9 @@ function Settings() {
                     <h3 className="text-xl font-semibold text-primary">
                       {t("settings.gameBackup.title")}
                     </h3>
-                    <p className="mt-4 max-w-[70%] text-sm text-muted-foreground">
-                      {t("settings.gameBackup.description")}&nbsp;
-                      <a
-                        onClick={() =>
-                          window.electron.openURL(
-                            "https://ascendara.app/docs/features/game-backups"
-                          )
-                        }
-                        className="cursor-pointer text-primary hover:underline"
-                      >
-                        {t("common.learnMore")}
-                        <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
-                      </a>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {!isOnWindows && (
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-                        <p className="whitespace-nowrap text-sm font-bold text-muted-foreground">
-                          {t("settings.onlyWindowsSupported2")}
-                        </p>
-                      </div>
-                    )}
-                    <Switch
-                      checked={settings.ludusavi.enabled}
-                      onCheckedChange={handleToggleLudusavi}
-                      disabled={!isOnWindows}
-                    />
-                  </div>
-                </div>
-                <div
-                  className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
-                >
-                  {/* Essential Settings */}
-                  <div className="space-y-4">
+
                     {/* Backup Location */}
-                    <div className="space-y-2">
+                    <div className="mt-2 space-y-2">
                       <Label>{t("settings.gameBackup.backupLocation")}</Label>
                       <div className="flex gap-2">
                         <Input
@@ -1052,7 +1016,44 @@ function Settings() {
                         </Button>
                       </div>
                     </div>
-
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Label>{t("settings.gameBackup.title")}</Label>
+                        <p className="max-w-[70%] text-sm text-muted-foreground">
+                          {t("settings.gameBackup.description")}&nbsp;
+                          <a
+                            onClick={() =>
+                              window.electron.openURL(
+                                "https://ascendara.app/docs/features/game-backups"
+                              )
+                            }
+                            className="cursor-pointer text-primary hover:underline"
+                          >
+                            {t("common.learnMore")}
+                            <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
+                          </a>
+                        </p>
+                        {!isOnWindows && (
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                            <p className="whitespace-nowrap text-sm font-bold text-muted-foreground">
+                              {t("settings.onlyWindowsSupported2")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <Switch
+                        checked={settings.ludusavi.enabled}
+                        onCheckedChange={handleToggleLudusavi}
+                        disabled={!isOnWindows || !settings.ludusavi.backupLocation}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
+                >
+                  <div className="space-y-4">
                     {/* Backup Format */}
                     <div className="space-y-2">
                       <Label>{t("settings.gameBackup.backupFormat")}</Label>
@@ -1085,10 +1086,6 @@ function Settings() {
 
                   {/* Backup Options */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">
-                      {t("settings.gameBackup.backupOptions")}
-                    </h4>
-
                     {/* Number of Backups */}
                     <div className="space-y-2">
                       <Label>{t("settings.gameBackup.backupsToKeep")}</Label>
@@ -1163,63 +1160,6 @@ function Settings() {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
-                  </div>
-
-                  {/* User Preferences */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">
-                      {t("settings.gameBackup.userPreferences")}
-                    </h4>
-
-                    {/* Notifications */}
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.gameBackup.showNotifications")}</Label>
-                        <p className="text-xs text-muted-foreground">
-                          {t("settings.gameBackup.notificationsDesc")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.preferences.showNotifications}
-                        onCheckedChange={checked => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              preferences: {
-                                ...prev.ludusavi.preferences,
-                                showNotifications: checked,
-                              },
-                            },
-                          }));
-                        }}
-                      />
-                    </div>
-
-                    {/* Skip Confirmations */}
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>{t("settings.gameBackup.skipConfirmations")}</Label>
-                        <p className="text-xs text-muted-foreground">
-                          {t("settings.gameBackup.skipConfirmationsDesc")}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.preferences.skipConfirmations}
-                        onCheckedChange={checked => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              preferences: {
-                                ...prev.ludusavi.preferences,
-                                skipConfirmations: checked,
-                              },
-                            },
-                          }));
-                        }}
-                      />
                     </div>
                   </div>
                 </div>

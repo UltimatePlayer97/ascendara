@@ -493,10 +493,6 @@ class SettingsManager {
           backupsToKeep: 5,
           compressionLevel: "default",
         },
-        preferences: {
-          showNotifications: true,
-          skipConfirmations: false,
-        },
       },
     };
     this.settings = this.loadSettings();
@@ -662,6 +658,8 @@ ipcMain.handle("ludusavi", async (event, action, game) => {
             args.push(game);
           }
 
+          args.push("--force");
+
           // Add backup location if configured
           if (ludusaviSettings.backupLocation) {
             args.push("--path", ludusaviSettings.backupLocation);
@@ -673,21 +671,17 @@ ipcMain.handle("ludusavi", async (event, action, game) => {
           }
 
           // Add compression options if configured
-          if (
-            ludusaviSettings.backupOptions?.compressionLevel &&
-            ludusaviSettings.backupOptions.compressionLevel !== "default"
-          ) {
-            args.push("--compression", ludusaviSettings.backupOptions.compressionLevel);
+          if (ludusaviSettings.backupOptions?.compressionLevel) {
+            let compressionLevel = ludusaviSettings.backupOptions.compressionLevel;
+            if (compressionLevel === "default") {
+              compressionLevel = "deflate";
+            }
+            args.push("--compression", compressionLevel);
           }
 
           // Add backups to keep limit
           if (ludusaviSettings.backupOptions?.backupsToKeep) {
             args.push("--full-limit", ludusaviSettings.backupOptions.backupsToKeep);
-          }
-
-          // Skip confirmations if configured
-          if (ludusaviSettings.preferences?.skipConfirmations) {
-            args.push("--force");
           }
 
           // Add API flag for machine-readable output
@@ -702,6 +696,8 @@ ipcMain.handle("ludusavi", async (event, action, game) => {
           if (game) {
             args.push(game);
           }
+
+          args.push("--force");
 
           // Add backup location if configured
           if (ludusaviSettings.backupLocation) {
@@ -1213,6 +1209,69 @@ ipcMain.handle("is-downloader-running", async () => {
 
 ipcMain.handle("is-broken-version", () => {
   return isBrokenVersion;
+});
+ipcMain.handle("enable-game-auto-backups", async (event, game, isCustom) => {
+  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    const settings = JSON.parse(data);
+    if (!settings.downloadDirectory) {
+      throw new Error("Download directory not set");
+    }
+
+    let gameInfoPath;
+    if (isCustom) {
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+      if (!gameInfo) throw new Error("Custom game not found");
+      gameInfo.backups = true;
+      fs.writeFileSync(gamesFilePath, JSON.stringify(gamesData, null, 2));
+    } else {
+      const gameDirectory = path.join(settings.downloadDirectory, game);
+      gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+      const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+      const gameInfo = JSON.parse(gameInfoData);
+      gameInfo.backups = true;
+      fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+    }
+    return true;
+  } catch (error) {
+    console.error("Error enabling game auto backups:", error);
+    return false;
+  }
+});
+
+ipcMain.handle("disable-game-auto-backups", async (event, game, isCustom) => {
+  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    const settings = JSON.parse(data);
+    if (!settings.downloadDirectory) {
+      throw new Error("Download directory not set");
+    }
+
+    let gameInfoPath;
+    if (isCustom) {
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+      if (!gameInfo) throw new Error("Custom game not found");
+      gameInfo.backups = false;
+      fs.writeFileSync(gamesFilePath, JSON.stringify(gamesData, null, 2));
+    } else {
+      const gameDirectory = path.join(settings.downloadDirectory, game);
+      gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+      const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+      const gameInfo = JSON.parse(gameInfoData);
+      gameInfo.backups = false;
+      fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+    }
+    return true;
+  } catch (error) {
+    console.error("Error disabling game auto backups:", error);
+    return false;
+  }
 });
 
 ipcMain.handle("delete-game-directory", async (event, game) => {
@@ -2625,6 +2684,20 @@ ipcMain.handle("open-game-directory", (event, game, isCustom) => {
     const steamCMDDir = path.join(os.homedir(), "ascendaraSteamcmd");
     const workshopContentPath = path.join(steamCMDDir, "steamapps/workshop/content");
     shell.openPath(workshopContentPath);
+  }
+  if (game === "backupDir") {
+    const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+    try {
+      const data = fs.readFileSync(filePath, "utf8");
+      const settings = JSON.parse(data);
+      if (!settings.ludusavi.backupLocation) {
+        console.error("Backup directory not set");
+        return;
+      }
+      shell.openPath(settings.ludusavi.backupLocation);
+    } catch (error) {
+      console.error("Error reading the settings file:", error);
+    }
   } else {
     if (!isCustom) {
       const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");

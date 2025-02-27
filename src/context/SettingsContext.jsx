@@ -35,10 +35,6 @@ export function SettingsProvider({ children }) {
         backupsToKeep: 5,
         compressionLevel: "default",
       },
-      preferences: {
-        showNotifications: true,
-        skipConfirmations: false,
-      },
     },
   });
 

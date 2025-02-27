@@ -66,6 +66,7 @@ import fs from "fs";
 import { toast } from "sonner";
 import UserSettingsDialog from "@/components/UserSettingsDialog";
 import VerifyingGameDialog from "@/components/VerifyingGameDialog";
+import GamesBackupDialog from "@/components/GamesBackupDialog";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -1024,6 +1025,7 @@ const InstalledGameCard = memo(
     const [isHovered, setIsHovered] = useState(false);
     const [imageData, setImageData] = useState(null);
     const [executableExists, setExecutableExists] = useState(null);
+    const [backupDialogOpen, setBackupDialogOpen] = useState(false);
     const isFavorite = favorites.includes(game.game || game.name);
     const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
     const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
@@ -1256,53 +1258,16 @@ const InstalledGameCard = memo(
 
           <div className="flex gap-2">
             {settings.ludusavi.enabled && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={e => e.stopPropagation()}
-                    className="hover:bg-transparent hover:text-inherit"
-                  >
-                    <FolderSync className="h-4 w-4 hover:text-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem
-                    onSelect={e => e.preventDefault()}
-                    className="px-4 py-3"
-                  >
-                    <div className="flex w-full flex-col">
-                      <div className="flex flex-col space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-md whitespace-nowrap font-medium">
-                            {t("library.autoBackup")}
-                          </span>
-                          <Switch
-                            checked={autoBackupEnabled}
-                            onCheckedChange={setAutoBackupEnabled}
-                            className="ml-0.5 scale-[70%]"
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {t("library.autoBackupDesc")}
-                        </p>
-                      </div>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <FolderSymlink className="mr-2 h-4 w-4" />
-                    {t("library.restoreLatest")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => window.electron.ludusavi("backup", game.game)}
-                    className="cursor-pointer"
-                  >
-                    <Layers2 className="mr-2 h-4 w-4" />
-                    {t("library.backupNow")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-transparent hover:text-inherit"
+                onClick={() => {
+                  setBackupDialogOpen(true);
+                }}
+              >
+                <FolderSync className="h-4 w-4 hover:text-foreground" />
+              </Button>
             )}
 
             <DropdownMenu>
@@ -1391,12 +1356,18 @@ const InstalledGameCard = memo(
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <VerifyingGameDialog
-            game={game}
-            open={isVerifyingOpen}
-            onOpenChange={setIsVerifyingOpen}
-          />
         </CardFooter>
+        <VerifyingGameDialog
+          game={game}
+          open={isVerifyingOpen}
+          onOpenChange={setIsVerifyingOpen}
+        />
+
+        <GamesBackupDialog
+          game={game}
+          open={backupDialogOpen}
+          onOpenChange={setBackupDialogOpen}
+        />
       </Card>
     );
   }
