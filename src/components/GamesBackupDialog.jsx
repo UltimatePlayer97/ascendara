@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import {
   AlertTriangle,
   CheckCircle2,
-  Loader2,
+  Loader,
   FolderSync,
   FolderOpen,
   RotateCcw,
@@ -343,7 +343,7 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
             <div className="rounded-full bg-primary/10 p-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Loader className="h-8 w-8 animate-spin text-primary" />
             </div>
             <div className="text-center">
               <h3 className="mb-1 text-lg font-medium">
@@ -407,7 +407,7 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
             <div className="rounded-full bg-primary/10 p-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Loader className="h-8 w-8 animate-spin text-primary" />
             </div>
             <div className="text-center">
               <h3 className="mb-1 text-lg font-medium">
@@ -504,7 +504,7 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
             <div className="rounded-full bg-primary/10 p-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Loader className="h-8 w-8 animate-spin text-primary" />
             </div>
             <div className="text-center">
               <h3 className="mb-1 text-lg font-medium">
@@ -692,7 +692,7 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
         <>
           {backupFailed && !isBackingUp && (
             <Button
-              className="text-primary-foreground bg-primary/90 hover:bg-primary"
+              className="bg-primary/90 text-secondary hover:bg-primary"
               onClick={handleBackupGame}
               disabled={isBackingUp}
             >
