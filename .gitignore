@@ -39,3 +39,4 @@ exports.txt
 
 # Specific files to ignore
 binaries/AscendaraNotificationHelper/src/debian/AscendaraNotificationHelper.py
+yarn.lock
