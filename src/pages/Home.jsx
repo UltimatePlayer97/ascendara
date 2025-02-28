@@ -177,8 +177,8 @@ const Home = memo(() => {
     const popularCats = getPopularCategories(apiGames, usedGames);
 
     // Update state based on source
-    const source = settings?.gameSource || 'steamrip';
-    if (source === 'fitgirl') {
+    const source = settings?.gameSource || "steamrip";
+    if (source === "fitgirl") {
       // For fitgirl, track used games to avoid duplicates
       const usedGames = new Set([...recentGames.map(g => g.game)]);
 
@@ -615,7 +615,9 @@ const Home = memo(() => {
             <section className="space-y-8">
               <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
                 <Sword className="h-6 w-6 text-primary" />
-                {settings?.gameSource === 'fitgirl' ? t("home.randomGames") : t("home.topGames")}
+                {settings?.gameSource === "fitgirl"
+                  ? t("home.randomGames")
+                  : t("home.topGames")}
               </h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {loading
@@ -647,7 +649,7 @@ const Home = memo(() => {
             </section>
           )}
 
-          {settings?.gameSource !== 'fitgirl' && (
+          {settings?.gameSource !== "fitgirl" && (
             <>
               <section className="space-y-8">
                 <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
@@ -669,7 +671,9 @@ const Home = memo(() => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {Object.entries(popularCategories).map(([category, games]) => (
                     <div key={category} className="space-y-4">
-                      <h3 className="text-lg font-semibold text-foreground">{category}</h3>
+                      <h3 className="text-lg font-semibold text-foreground">
+                        {category}
+                      </h3>
                       <div className="grid grid-cols-2 gap-2">
                         {games.map(game => (
                           <HomeGameCard key={game.game} game={game} small />

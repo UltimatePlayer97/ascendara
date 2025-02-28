@@ -31,6 +31,7 @@ import Downloads from "./pages/Downloads";
 import ExtraLanguages from "./pages/ExtraLanguages";
 import Home from "./pages/Home";
 import WorkshopDownloader from "./pages/WorkshopDownloader";
+import GameScreen from "./pages/GameScreen";
 import Library from "./pages/Library";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
@@ -245,7 +246,8 @@ const AppRoutes = () => {
               description: t("app.toasts.justUpdatedDesc", { version: __APP_VERSION__ }),
               action: {
                 label: t("app.toasts.viewChangelog"),
-                onClick: () => window.electron.openURL("https://ascendara.app/changelog?individual"),
+                onClick: () =>
+                  window.electron.openURL("https://ascendara.app/changelog?individual"),
               },
               duration: 10000,
               id: "update-completed",
@@ -528,6 +530,16 @@ const AppRoutes = () => {
               }
             />
             <Route
+              path="gamescreen"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="gamescreen">
+                    <GameScreen />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
               path="downloads"
               element={
                 <AnimatePresence mode="wait">
@@ -702,7 +714,7 @@ function ToasterWithTheme() {
 
 function App() {
   const { t } = useTranslation();
-  
+
   useEffect(() => {
     const checkUpdates = async () => {
       const hasUpdate = await checkForUpdates();
@@ -719,11 +731,11 @@ function App() {
           // Pre-fetch both drive space and directory size
           await Promise.all([
             window.electron.getDriveSpace(downloadDir),
-            window.electron.getInstalledGamesSize()
+            window.electron.getInstalledGamesSize(),
           ]);
         }
       } catch (error) {
-        console.error('[App] Error calculating storage info:', error);
+        console.error("[App] Error calculating storage info:", error);
       }
     };
 
@@ -743,8 +755,8 @@ function App() {
         if (!mounted) return; // Don't proceed if unmounted
 
         if (!status.active) {
-          toast.error(t('app.qbittorrent.notAccessible'), {
-            description: status.error || t('app.qbittorrent.checkWebUI'),
+          toast.error(t("app.qbittorrent.notAccessible"), {
+            description: status.error || t("app.qbittorrent.checkWebUI"),
             duration: 10000,
           });
         }
@@ -753,7 +765,7 @@ function App() {
 
     checkQbittorrent().catch(error => {
       if (mounted) {
-        console.error('[App] Error checking qBittorrent:', error);
+        console.error("[App] Error checking qBittorrent:", error);
       }
     });
 

@@ -261,7 +261,7 @@ const Dependencies = () => {
           className="flex w-full max-w-4xl flex-col items-center px-8"
           variants={itemVariants}
         >
-          <div className="mb-8 w-full flex justify-end">
+          <div className="mb-8 flex w-full justify-end">
             <Button
               variant="ghost"
               size="icon"

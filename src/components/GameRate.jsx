@@ -77,7 +77,7 @@ const GameRate = ({ game, isOpen, onClose }) => {
       });
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       // Get a fresh token for each request to ensure timestamp validity
@@ -103,7 +103,7 @@ const GameRate = ({ game, isOpen, onClose }) => {
       toast.success(t("library.rateGame.success"), {
         description: t("library.rateGame.successDesc", { game: game.name }),
       });
-      
+
       onClose();
       // Reset form
       setRating(0);
@@ -118,7 +118,7 @@ const GameRate = ({ game, isOpen, onClose }) => {
     }
   };
 
-  const getRatingText = (rating) => {
+  const getRatingText = rating => {
     if (rating >= 4.5) return t("library.rateGame.excellent");
     if (rating >= 3.5) return t("library.rateGame.veryGood");
     if (rating >= 2.5) return t("library.rateGame.good");
@@ -136,7 +136,7 @@ const GameRate = ({ game, isOpen, onClose }) => {
               <AlertDialogTitle className="text-2xl font-bold text-foreground">
                 {t("library.rateGame.title", { game: game.game })}
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-muted-foreground mt-1">
+              <AlertDialogDescription className="mt-1 text-muted-foreground">
                 {t("library.rateGame.description", { game: game.game })}
               </AlertDialogDescription>
             </div>
@@ -148,13 +148,10 @@ const GameRate = ({ game, isOpen, onClose }) => {
             <Label className="text-lg font-semibold text-foreground">
               {t("library.rateGame.ratingLabel")}
             </Label>
-            
+
             <div className="flex flex-col items-center gap-2">
-              <div 
-                className="flex gap-1" 
-                onMouseLeave={() => setHoveredRating(0)}
-              >
-                {[1, 2, 3, 4, 5].map((value) => (
+              <div className="flex gap-1" onMouseLeave={() => setHoveredRating(0)}>
+                {[1, 2, 3, 4, 5].map(value => (
                   <motion.button
                     key={value}
                     whileHover={{ scale: 1.1 }}
@@ -175,7 +172,7 @@ const GameRate = ({ game, isOpen, onClose }) => {
                   </motion.button>
                 ))}
               </div>
-              
+
               <AnimatePresence>
                 {(rating || hoveredRating) > 0 && (
                   <motion.div
@@ -198,9 +195,9 @@ const GameRate = ({ game, isOpen, onClose }) => {
             <Textarea
               id="comments"
               value={comments}
-              onChange={(e) => setComments(e.target.value)}
+              onChange={e => setComments(e.target.value)}
               placeholder={t("library.rateGame.commentPlaceholder")}
-              className="min-h-[100px] resize-none text-foreground" 
+              className="min-h-[100px] resize-none text-foreground"
             />
           </div>
         </div>

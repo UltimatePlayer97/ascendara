@@ -6,8 +6,18 @@ import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import {
   DropdownMenu,
@@ -52,19 +62,23 @@ const Downloads = () => {
   const [showFirstTimeAlert, setShowFirstTimeAlert] = useState(false);
   const MAX_HISTORY_POINTS = 20;
   const [speedHistory, setSpeedHistory] = useState(() => {
-    const savedHistory = localStorage.getItem('speedHistory');
-    return savedHistory ? JSON.parse(savedHistory) : Array(MAX_HISTORY_POINTS).fill({ index: 0, speed: 0 }).map((_, i) => ({ 
-      index: i, 
-      speed: 0 
-    }));
+    const savedHistory = localStorage.getItem("speedHistory");
+    return savedHistory
+      ? JSON.parse(savedHistory)
+      : Array(MAX_HISTORY_POINTS)
+          .fill({ index: 0, speed: 0 })
+          .map((_, i) => ({
+            index: i,
+            speed: 0,
+          }));
   });
   const { t } = useLanguage();
 
-  const normalizeSpeed = (speed) => {
+  const normalizeSpeed = speed => {
     const [value, unit] = speed.split(" ");
     const num = parseFloat(value);
     if (isNaN(num)) return 0;
-    
+
     // Convert everything to MB/s
     switch (unit) {
       case "KB/s":
@@ -122,11 +136,14 @@ const Downloads = () => {
 
           // Update speed history
           setSpeedHistory(prevHistory => {
-            const newHistory = [...prevHistory.slice(1), { 
-              index: prevHistory[prevHistory.length - 1].index + 1, 
-              speed: totalSpeedNum
-            }];
-            localStorage.setItem('speedHistory', JSON.stringify(newHistory));
+            const newHistory = [
+              ...prevHistory.slice(1),
+              {
+                index: prevHistory[prevHistory.length - 1].index + 1,
+                speed: totalSpeedNum,
+              },
+            ];
+            localStorage.setItem("speedHistory", JSON.stringify(newHistory));
             return newHistory;
           });
         }
@@ -152,7 +169,7 @@ const Downloads = () => {
     };
   }, [downloadingGames.length]);
 
-  const handleStopDownload = async (game) => {
+  const handleStopDownload = async game => {
     setStoppingDownloads(prev => new Set([...prev, game.id]));
     try {
       await window.electron.stopDownload(game.game);
@@ -186,26 +203,30 @@ const Downloads = () => {
   return (
     <div className="container mx-auto">
       {downloadingGames.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[85vh] max-w-md mx-auto text-center">
+        <div className="mx-auto flex min-h-[85vh] max-w-md flex-col items-center justify-center text-center">
           <div className="space-y-6">
-            <div className="p-6 rounded-full bg-primary/5 w-fit mx-auto">
-              <Coffee className="w-12 h-12 text-primary" />
+            <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
+              <Coffee className="h-12 w-12 text-primary" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-semibold tracking-tight">{t("downloads.noDownloads")}</h3>
-              <p className="text-muted-foreground text-base leading-relaxed">{t("downloads.noDownloadsMessage")}</p>
+              <h3 className="text-2xl font-semibold tracking-tight">
+                {t("downloads.noDownloads")}
+              </h3>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {t("downloads.noDownloadsMessage")}
+              </p>
             </div>
           </div>
         </div>
       ) : (
         /* Main Content Grid */
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-24">
+        <div className="mt-24 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Downloads Section - Takes up 2 columns on large screens */}
-          <div className="lg:col-span-2 space-y-4">
-          <h1 className="text-3xl font-bold text-primary">
-            {t("downloads.activeDownloads")}
-          </h1>
-            {downloadingGames.map((game) => (
+          <div className="space-y-4 lg:col-span-2">
+            <h1 className="text-3xl font-bold text-primary">
+              {t("downloads.activeDownloads")}
+            </h1>
+            {downloadingGames.map(game => (
               <DownloadCard
                 key={`${game.game}-${game.executable}`}
                 game={game}
@@ -226,35 +247,29 @@ const Downloads = () => {
               </CardHeader>
               <CardContent className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart 
+                  <LineChart
                     data={speedHistory}
                     margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="index" 
-                      hide 
+                    <XAxis dataKey="index" hide />
+                    <YAxis
+                      domain={[0, "auto"]}
+                      tickFormatter={value => `${value.toFixed(1)}`}
                     />
-                    <YAxis 
-                      domain={[0, 'auto']}
-                      tickFormatter={(value) => `${value.toFixed(1)}`}
-                    />
-                    <Tooltip 
-                      formatter={(value) => [
-                        `${value.toFixed(2)} MB/s`,
-                        'Speed'
-                      ]}
-                      labelFormatter={() => ''}
+                    <Tooltip
+                      formatter={value => [`${value.toFixed(2)} MB/s`, "Speed"]}
+                      labelFormatter={() => ""}
                       contentStyle={{
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: 'var(--radius)',
-                        padding: '8px',
-                        color: 'hsl(var(--popover-foreground))',
-                        fontSize: '0.875rem'
+                        backgroundColor: "hsl(var(--popover))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "var(--radius)",
+                        padding: "8px",
+                        color: "hsl(var(--popover-foreground))",
+                        fontSize: "0.875rem",
                       }}
                       labelStyle={{
-                        color: 'hsl(var(--popover-foreground))'
+                        color: "hsl(var(--popover-foreground))",
                       }}
                     />
                     <Line
@@ -277,11 +292,11 @@ const Downloads = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>{t("downloads.activeDownloads")}</span>
                     <span className="font-medium">{activeDownloads}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>{t("downloads.currentTotalSpeed")}</span>
                     <span className="font-medium">{totalSpeed}</span>
                   </div>
@@ -319,13 +334,17 @@ const Downloads = () => {
       <AlertDialog open={retryModalOpen} onOpenChange={setRetryModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-bold text-foreground">{t("downloads.retryDownload")}</AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {t("downloads.retryDownload")}
+            </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription className="text-muted-foreground">
             {t("downloads.retryDownloadDescription")}
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-primary">{t("common.ok")}</AlertDialogCancel>
+            <AlertDialogCancel className="text-primary">
+              {t("common.ok")}
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -496,12 +515,15 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <h3 className="font-semibold leading-none tracking-tight">{game.game}</h3>
-          <p className="text-sm text-muted-foreground font-medium">{game.size}</p>
+          <p className="text-sm font-medium text-muted-foreground">{game.size}</p>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 transition-colors duration-200 hover:bg-muted/80">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0 transition-colors duration-200 hover:bg-muted/80"
+            >
               {isStopping ? (
                 <Loader className="h-4 w-4 animate-spin" />
               ) : (
@@ -516,18 +538,20 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                   <RefreshCcw className="h-4 w-4" />
                   {t("downloads.actions.retryDownload")}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleRemoveDownload(game)} className="gap-2 text-destructive focus:text-destructive">
+                <DropdownMenuItem
+                  onClick={() => handleRemoveDownload(game)}
+                  className="text-destructive focus:text-destructive gap-2"
+                >
                   <Trash2 className="h-4 w-4" />
                   {t("downloads.actions.cancelAndDelete")}
                 </DropdownMenuItem>
               </>
             ) : (
-                <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
-                  <StopCircle className="h-4 w-4" />
-                  {t("downloads.actions.stopDownload")}
-                </DropdownMenuItem>
-              )
-            }
+              <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
+                <StopCircle className="h-4 w-4" />
+                {t("downloads.actions.stopDownload")}
+              </DropdownMenuItem>
+            )}
             {!isDownloading && (
               <DropdownMenuItem onClick={() => onOpenFolder(game)} className="gap-2">
                 <FolderOpen className="h-4 w-4" />
@@ -540,12 +564,12 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
 
       <CardContent>
         {downloadingData.verifying ? (
-          <div className="flex flex-col items-center justify-center py-2 bg-muted/40 rounded-lg">
+          <div className="flex flex-col items-center justify-center rounded-lg bg-muted/40 py-2">
             <span className="flex items-center gap-2 text-lg font-semibold">
               <Loader className="h-4 w-4 animate-spin" />
               {t("downloads.verifying")}
             </span>
-            <span className="text-sm text-muted-foreground mt-1">
+            <span className="mt-1 text-sm text-muted-foreground">
               {t("downloads.verifyingDescription")}
             </span>
           </div>
@@ -555,12 +579,24 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               <AlertTriangle className="h-4 w-4" />
               <span className="text-sm font-medium">
                 {downloadingData.verifyError.length === 1
-                  ? t("downloads.verificationFailed1", { numFailed: downloadingData.verifyError.length })
-                  : t("downloads.verificationFailed2", { numFailed: downloadingData.verifyError.length })}
+                  ? t("downloads.verificationFailed1", {
+                      numFailed: downloadingData.verifyError.length,
+                    })
+                  : t("downloads.verificationFailed2", {
+                      numFailed: downloadingData.verifyError.length,
+                    })}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">{t("downloads.verificationFailedDescription")}&nbsp;
-              <a className="inline-flex cursor-pointer items-center text-xs text-primary hover:underline" onClick={() => {window.electron.openURL("https://ascendara.app/docs/troubleshooting/common-issues#verification-issues")}}>
+            <p className="text-xs text-muted-foreground">
+              {t("downloads.verificationFailedDescription")}&nbsp;
+              <a
+                className="inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
+                onClick={() => {
+                  window.electron.openURL(
+                    "https://ascendara.app/docs/troubleshooting/common-issues#verification-issues"
+                  );
+                }}
+              >
                 {t("common.learnMore")} <ExternalLink className="ml-1 h-3 w-3" />
               </a>
             </p>
@@ -583,7 +619,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
             </div>
           </div>
         ) : hasError ? (
-          <div className="bg-destructive/5 border-destructive/20 space-y-4 rounded-lg border p-4 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="bg-destructive/5 border-destructive/20 space-y-4 rounded-lg border p-4 duration-200 animate-in fade-in slide-in-from-top-1">
             <div className="flex items-start space-x-3">
               <AlertCircle className="text-destructive mt-0.5 h-5 w-5 flex-shrink-0" />
               <div className="flex-1 space-y-2">
@@ -675,34 +711,38 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
         ) : (
           <>
             {isDownloading && !isWaiting && (
-              <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="space-y-3 duration-200 animate-in fade-in slide-in-from-top-1">
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-muted-foreground min-w-[45px]">
+                  <span className="min-w-[45px] text-sm font-medium text-muted-foreground">
                     {downloadingData.progressCompleted}%
                   </span>
                   <div className="flex-1">
-                    <Progress 
-                      value={parseFloat(downloadingData.progressCompleted)} 
+                    <Progress
+                      value={parseFloat(downloadingData.progressCompleted)}
                       className="h-2 transition-all duration-300"
                     />
                   </div>
                 </div>
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <div className="flex items-center space-x-2 bg-muted/40 px-3 py-1 rounded-md">
+                  <div className="flex items-center space-x-2 rounded-md bg-muted/40 px-3 py-1">
                     <Download className="h-4 w-4" />
-                    <span className="font-medium">{downloadingData.progressDownloadSpeeds}</span>
+                    <span className="font-medium">
+                      {downloadingData.progressDownloadSpeeds}
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-2 bg-muted/40 px-3 py-1 rounded-md">
+                  <div className="flex items-center space-x-2 rounded-md bg-muted/40 px-3 py-1">
                     <Clock className="h-4 w-4" />
-                    <span className="font-medium">ETA: {downloadingData.timeUntilComplete}</span>
+                    <span className="font-medium">
+                      ETA: {downloadingData.timeUntilComplete}
+                    </span>
                   </div>
                 </div>
               </div>
             )}
             {(isExtracting || isUpdating) && (
-              <div className="mt-2 space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="mt-2 space-y-3 duration-200 animate-in fade-in slide-in-from-top-1">
                 <div className="relative overflow-hidden rounded-full">
-                  <Progress value={undefined} className="bg-muted/30 h-2" />
+                  <Progress value={undefined} className="h-2 bg-muted/30" />
                   <div
                     className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"
                     style={{
@@ -713,12 +753,12 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                     }}
                   />
                 </div>
-                <div className="flex flex-col items-center justify-center py-2 bg-muted/40 rounded-lg">
+                <div className="flex flex-col items-center justify-center rounded-lg bg-muted/40 py-2">
                   <span className="flex items-center gap-2 text-lg font-semibold">
                     <Loader className="h-4 w-4 animate-spin" />
                     {isExtracting ? t("downloads.extracting") : t("downloads.updating")}
                   </span>
-                  <span className="text-sm text-muted-foreground mt-1">
+                  <span className="mt-1 text-sm text-muted-foreground">
                     {isExtracting
                       ? t("downloads.extractingDescription")
                       : t("downloads.updatingDescription")}
@@ -727,16 +767,16 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               </div>
             )}
             {isWaiting && (
-              <div className="mt-2 space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="mt-2 space-y-3 duration-200 animate-in fade-in slide-in-from-top-1">
                 <div className="relative overflow-hidden rounded-full">
-                  <Progress value={undefined} className="bg-muted/30 h-2" />
+                  <Progress value={undefined} className="h-2 bg-muted/30" />
                 </div>
-                <div className="flex flex-col items-center justify-center py-2 bg-muted/40 rounded-lg">
+                <div className="flex flex-col items-center justify-center rounded-lg bg-muted/40 py-2">
                   <span className="flex items-center gap-2 text-lg font-semibold">
                     <Loader className="h-4 w-4 animate-spin" />
                     {t("downloads.waiting")}
                   </span>
-                  <span className="text-sm text-muted-foreground mt-1 text-center max-w-[70%]">
+                  <span className="mt-1 max-w-[70%] text-center text-sm text-muted-foreground">
                     {t("downloads.waitingDescription")}
                   </span>
                 </div>

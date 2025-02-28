@@ -17,7 +17,6 @@ Here is a list of the languages that have been translated:
 - German (de)
 - French (fr)
 
-
 For the 93 additional languages, you must choose in the app which one you want to translate.
 
 See the full list of languages in the '/pages/ExtraLanguages.jsx' file.

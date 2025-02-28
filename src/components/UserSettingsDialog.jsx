@@ -69,8 +69,8 @@ const UserSettingsDialog = () => {
       }
 
       // Emit custom event when username is updated
-      window.dispatchEvent(new CustomEvent('usernameUpdated'));
-      
+      window.dispatchEvent(new CustomEvent("usernameUpdated"));
+
       toast.success(t("settings.userSettings.saveSuccess"));
       setIsOpen(false);
     } catch (error) {

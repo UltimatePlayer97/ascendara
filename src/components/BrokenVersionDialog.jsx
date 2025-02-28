@@ -34,9 +34,11 @@ const BrokenVersionDialog = ({ onClose }) => {
             <p className="text-sm">{t("app.brokenVersion.development")}</p>
           </div>
 
-          <div className="mt-6 gap-2 flex justify-end">
+          <div className="mt-6 flex justify-end gap-2">
             <button
-              onClick={() => window.electron.openURL("https://lfs.ascendara.app/download?update")}
+              onClick={() =>
+                window.electron.openURL("https://lfs.ascendara.app/download?update")
+              }
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-secondary hover:bg-primary/90"
             >
               {t("app.brokenVersion.update")}
@@ -48,7 +50,6 @@ const BrokenVersionDialog = ({ onClose }) => {
               {t("app.brokenVersion.understand")}
             </button>
           </div>
-          
         </motion.div>
       </motion.div>
     </AnimatePresence>

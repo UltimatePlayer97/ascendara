@@ -25,15 +25,15 @@ const checkEndpoint = async url => {
           typeof response.data === "string" ? JSON.parse(response.data) : response.data,
       };
     }
-    return { 
+    return {
       ok: false,
       error: `Service Unavailable (${response.status})`,
     };
   } catch (error) {
     console.warn(`Failed to check ${url}:`, error);
-    return { 
+    return {
       ok: false,
-      error: 'Service Unreachable'
+      error: "Service Unreachable",
     };
   }
 };
@@ -81,9 +81,9 @@ export const checkServerStatus = async (force = false) => {
       currentStatus = {
         ok: false,
         noInternet: true,
-        api: { ok: false, error: 'No internet connection' },
-        storage: { ok: false, error: 'No internet connection' },
-        lfs: { ok: false, error: 'No internet connection' },
+        api: { ok: false, error: "No internet connection" },
+        storage: { ok: false, error: "No internet connection" },
+        lfs: { ok: false, error: "No internet connection" },
       };
       lastCheck = Date.now();
       notifySubscribers();

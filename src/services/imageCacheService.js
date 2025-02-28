@@ -161,11 +161,11 @@ class ImageCacheService {
       const timestamp = Math.floor(Date.now() / 1000);
       const signature = await this.generateSignature(timestamp);
       const settings = await window.electron.getSettings();
-      const source = settings?.gameSource || 'steamrip';
+      const source = settings?.gameSource || "steamrip";
 
-      let endpoint = 'v2/image';
-      if (source === 'fitgirl') {
-        endpoint = 'v2/fitgirl/image';
+      let endpoint = "v2/image";
+      if (source === "fitgirl") {
+        endpoint = "v2/fitgirl/image";
       }
 
       const response = await fetch(`https://api.ascendara.app/${endpoint}/${imgID}`, {

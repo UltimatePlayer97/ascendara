@@ -237,7 +237,7 @@ function ExtraLanguages() {
             <Button
               key={lang.id}
               variant={language === lang.id ? "default" : "outline"}
-              className={`w-full justify-start gap-2 ${language === lang.id ? 'text-secondary' : ''}`}
+              className={`w-full justify-start gap-2 ${language === lang.id ? "text-secondary" : ""}`}
               onClick={() => handleChangeLanguage(lang.id)}
             >
               <span>{lang.icon}</span>
@@ -354,9 +354,7 @@ function ExtraLanguages() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog
-        open={showDownloadDialog}
-      >
+      <AlertDialog open={showDownloadDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-bold text-foreground">

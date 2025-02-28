@@ -90,10 +90,10 @@ const gameService = {
   async fetchDataFromAPI() {
     // Get settings from electron
     const settings = await window.electron.getSettings();
-    const source = settings?.gameSource || 'steamrip';
-    
+    const source = settings?.gameSource || "steamrip";
+
     let endpoint = `${API_URL}/json/games`;
-    if (source === 'fitgirl') {
+    if (source === "fitgirl") {
       endpoint = `${API_URL}/json/sources/fitgirl/games`;
     }
 
@@ -120,24 +120,24 @@ const gameService = {
           games: data.games?.length,
           getDate: data.metadata?.getDate,
           source: data.metadata?.source || source,
-          imagesAvailable: true
+          imagesAvailable: true,
         },
       };
     } catch (error) {
-      console.warn('Primary API failed, trying backup CDN:', error);
-      const backupEndpoint = 'https://cdn.ascendara.app/files/data.json';
-      
+      console.warn("Primary API failed, trying backup CDN:", error);
+      const backupEndpoint = "https://cdn.ascendara.app/files/data.json";
+
       try {
         const response = await fetch(backupEndpoint, {
-          mode: 'no-cors',
+          mode: "no-cors",
           headers: {
-            'Accept': 'application/json'
-          }
+            Accept: "application/json",
+          },
         });
-        
+
         // When using no-cors, we can't access the response directly
         // We need to handle it differently
-        if (!response.ok && response.type !== 'opaque') {
+        if (!response.ok && response.type !== "opaque") {
           throw new Error(`Backup CDN failed! status: ${response.status}`);
         }
 
@@ -147,8 +147,8 @@ const gameService = {
         try {
           data = await response.json();
         } catch (parseError) {
-          console.error('Failed to parse CDN response:', parseError);
-          throw new Error('Unable to parse backup data source');
+          console.error("Failed to parse CDN response:", parseError);
+          throw new Error("Unable to parse backup data source");
         }
 
         // Sanitize game titles
@@ -167,13 +167,13 @@ const gameService = {
             games: data.games?.length,
             getDate: data.metadata?.getDate,
             source: data.metadata?.source || source,
-            imagesAvailable: false // Images won't be available when using CDN
+            imagesAvailable: false, // Images won't be available when using CDN
           },
         };
       } catch (cdnError) {
-        console.error('Both API and CDN failed:', cdnError);
+        console.error("Both API and CDN failed:", cdnError);
         // Re-throw the error to be handled by the caller
-        throw new Error('Failed to fetch game data from both primary and backup sources');
+        throw new Error("Failed to fetch game data from both primary and backup sources");
       }
     }
   },

@@ -40,7 +40,7 @@ export const addLanguage = (code, name, nativeName) => {
 };
 
 // Function to check if a language file exists in the languages folder
-export const isExtraLanguageFile = async (lang) => {
+export const isExtraLanguageFile = async lang => {
   try {
     const { electron } = window;
     return await electron.languageFileExists(`lang.${lang}.json`);

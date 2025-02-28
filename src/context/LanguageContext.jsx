@@ -60,7 +60,7 @@ export function LanguageProvider({ children }) {
     initLanguage();
   }, []);
 
-  const setLanguageAndSave = useCallback(async (newLanguage) => {
+  const setLanguageAndSave = useCallback(async newLanguage => {
     try {
       await changeLanguage(newLanguage);
       setLanguage(newLanguage);

@@ -4,7 +4,19 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallpaper, FolderOpen, ArrowRight, Settings2, Coffee, Link, Download, Loader, DownloadCloud, ExternalLink, Package } from "lucide-react";
+import {
+  Wallpaper,
+  FolderOpen,
+  ArrowRight,
+  Settings2,
+  Coffee,
+  Link,
+  Download,
+  Loader,
+  DownloadCloud,
+  ExternalLink,
+  Package,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -49,14 +61,13 @@ const WorkshopDownloader = () => {
 
   useEffect(() => {
     // Set up download progress listener
-    const removeListener = window.electron.onDownloadProgress((data) => {
+    const removeListener = window.electron.onDownloadProgress(data => {
       setDownloadLogs(prev => [...prev, data.message]);
     });
 
     // Cleanup listener on unmount
     return () => removeListener();
   }, []);
-
 
   const handleNext = async () => {
     if (step === 2) {
@@ -84,30 +95,34 @@ const WorkshopDownloader = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="flex flex-col items-center justify-center text-center space-y-6"
+        className="flex flex-col items-center justify-center space-y-6 text-center"
       >
-        <Link className="w-16 h-16 text-primary" />
+        <Link className="h-16 w-16 text-primary" />
         <h2 className="text-2xl font-bold">{t("workshopDownloader.mainTitle")}</h2>
-        <p className="text-muted-foreground max-w-xl">
+        <p className="max-w-xl text-muted-foreground">
           {t("workshopDownloader.mainDescription")}&nbsp;
-          <a className="cursor-pointer items-center text-primary hover:underline"
-           onClick={() =>window.electron.openURL("https://steamcommunity.com/workshop/browse")}>
+          <a
+            className="cursor-pointer items-center text-primary hover:underline"
+            onClick={() =>
+              window.electron.openURL("https://steamcommunity.com/workshop/browse")
+            }
+          >
             {t("workshopDownloader.goToWorkshop")}
-            <ExternalLink className="w-4 h-4 ml-1 mb-1 inline-flex" />
+            <ExternalLink className="mb-1 ml-1 inline-flex h-4 w-4" />
           </a>
         </p>
-        
+
         <div className="w-full max-w-md space-y-4">
           <Input
             value={wallpaperUrl}
-            onChange={(e) => setWallpaperUrl(e.target.value)}
+            onChange={e => setWallpaperUrl(e.target.value)}
             placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=XXXXXXXXXX"
             className="placeholder:text-xs"
           />
         </div>
-        <div className="w-full max-w-md flex items-center space-x-2">
-          <Button 
-            size="lg" 
+        <div className="flex w-full max-w-md items-center space-x-2">
+          <Button
+            size="lg"
             className="flex-grow text-secondary"
             disabled={isDownloading || !wallpaperUrl}
             onClick={async () => {
@@ -123,7 +138,9 @@ const WorkshopDownloader = () => {
                     if (result.message.includes("Workshop item download failed")) {
                       setShowFailureDialog(true);
                     } else {
-                      toast.error(result.message || t("workshopDownloader.downloadError"));
+                      toast.error(
+                        result.message || t("workshopDownloader.downloadError")
+                      );
                     }
                   }
                 } catch (error) {
@@ -143,7 +160,8 @@ const WorkshopDownloader = () => {
               </>
             ) : (
               <>
-                {t("workshopDownloader.downloadLink")} <ArrowRight className="ml-2 w-4 h-4" />
+                {t("workshopDownloader.downloadLink")}{" "}
+                <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
@@ -152,7 +170,7 @@ const WorkshopDownloader = () => {
             variant="outline"
             onClick={() => window.electron.openGameDirectory("workshop")}
           >
-            <FolderOpen className="w-4 h-4" />
+            <FolderOpen className="h-4 w-4" />
           </Button>
         </div>
 
@@ -162,17 +180,23 @@ const WorkshopDownloader = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="w-full max-w-md mt-4"
+            className="mt-4 w-full max-w-md"
           >
-            <div className="bg-background border rounded-lg p-4 max-h-48 overflow-y-auto font-mono text-sm">
-              <h3 className="text-primary font-semibold mb-2">{t("workshopDownloader.downloadProgress")}</h3>
+            <div className="max-h-48 overflow-y-auto rounded-lg border bg-background p-4 font-mono text-sm">
+              <h3 className="mb-2 font-semibold text-primary">
+                {t("workshopDownloader.downloadProgress")}
+              </h3>
               <div className="space-y-1 text-muted-foreground">
                 {downloadLogs.length > 0 ? (
                   downloadLogs.map((log, index) => (
-                    <div key={index} className="whitespace-pre-wrap">{log}</div>
+                    <div key={index} className="whitespace-pre-wrap">
+                      {log}
+                    </div>
                   ))
                 ) : (
-                  <div className="text-center italic">{t("workshopDownloader.waitingForLogs")}</div>
+                  <div className="text-center italic">
+                    {t("workshopDownloader.waitingForLogs")}
+                  </div>
                 )}
               </div>
             </div>
@@ -188,8 +212,10 @@ const WorkshopDownloader = () => {
               </AlertDialogTitle>
               <AlertDialogDescription className="space-y-4">
                 <p>{t("workshopDownloader.downloadFailure.description")}</p>
-                <ul className="list-disc pl-6 space-y-1">
-                  {t("workshopDownloader.downloadFailure.reasons", { returnObjects: true }).map((reason, index) => (
+                <ul className="list-disc space-y-1 pl-6">
+                  {t("workshopDownloader.downloadFailure.reasons", {
+                    returnObjects: true,
+                  }).map((reason, index) => (
                     <li key={index}>{reason}</li>
                   ))}
                 </ul>
@@ -197,7 +223,10 @@ const WorkshopDownloader = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction className="text-secondary" onClick={() => setShowFailureDialog(false)}>
+              <AlertDialogAction
+                className="text-secondary"
+                onClick={() => setShowFailureDialog(false)}
+              >
                 {t("common.ok")}
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -215,20 +244,26 @@ const WorkshopDownloader = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex flex-col items-center justify-center text-center space-y-6"
+            className="flex flex-col items-center justify-center space-y-6 text-center"
           >
-            <Package className="w-16 h-16 text-primary" />
+            <Package className="h-16 w-16 text-primary" />
             <h2 className="text-2xl font-bold">{t("workshopDownloader.welcome")}</h2>
-            <p className="text-muted-foreground max-w-md">
+            <p className="max-w-md text-muted-foreground">
               {t("workshopDownloader.welcomeDescription")}&nbsp;
-              <a className="cursor-pointer items-center text-primary hover:underline"
-               onClick={() =>window.electron.openURL("https://steamcommunity.com/workshop/browse/?appid=431960")}>
+              <a
+                className="cursor-pointer items-center text-primary hover:underline"
+                onClick={() =>
+                  window.electron.openURL(
+                    "https://steamcommunity.com/workshop/browse/?appid=431960"
+                  )
+                }
+              >
                 {t("common.learnMore")}
-                <ExternalLink className="w-4 h-4 ml-1 mb-1 inline-flex" />
+                <ExternalLink className="mb-1 ml-1 inline-flex h-4 w-4" />
               </a>
             </p>
             <Button onClick={handleNext} size="lg" className="mt-8 text-secondary">
-              {t("common.getStarted")} <ArrowRight className="ml-2 w-4 h-4" />
+              {t("common.getStarted")} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </motion.div>
         );
@@ -239,11 +274,13 @@ const WorkshopDownloader = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex flex-col items-center justify-center text-center space-y-6"
+            className="flex flex-col items-center justify-center space-y-6 text-center"
           >
-            <DownloadCloud className="w-16 h-16 text-primary" />
-            <h2 className="text-2xl font-bold">{t("workshopDownloader.installSteamCMD")}</h2>
-            <p className="text-muted-foreground max-w-md">
+            <DownloadCloud className="h-16 w-16 text-primary" />
+            <h2 className="text-2xl font-bold">
+              {t("workshopDownloader.installSteamCMD")}
+            </h2>
+            <p className="max-w-md text-muted-foreground">
               {t("workshopDownloader.installSteamCMDDescription")}
             </p>
             <Button
@@ -254,14 +291,15 @@ const WorkshopDownloader = () => {
             >
               {isInstalling ? (
                 <>
-                  <div className="animate-spin mr-2">
-                    <Loader className="w-4 h-4" />
+                  <div className="mr-2 animate-spin">
+                    <Loader className="h-4 w-4" />
                   </div>
                   {t("workshopDownloader.installingSteamCMD")}
                 </>
               ) : (
                 <>
-                  {t("workshopDownloader.install")} <ArrowRight className="ml-2 w-4 h-4" />
+                  {t("workshopDownloader.install")}{" "}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
             </Button>
@@ -284,7 +322,7 @@ const WorkshopDownloader = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 min-h-[80vh] flex items-center justify-center">
+    <div className="container mx-auto flex min-h-[80vh] items-center justify-center p-6">
       <AnimatePresence mode="wait">
         {isSetup ? renderMainInterface() : renderSetupStep()}
       </AnimatePresence>

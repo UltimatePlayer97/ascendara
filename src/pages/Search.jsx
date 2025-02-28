@@ -56,24 +56,24 @@ const Search = memo(() => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState(() => {
-    const saved = window.localStorage.getItem('selectedCategories');
+    const saved = window.localStorage.getItem("selectedCategories");
     return saved ? JSON.parse(saved) : [];
   });
   const [onlineFilter, setOnlineFilter] = useState(() => {
-    const saved = window.localStorage.getItem('onlineFilter');
+    const saved = window.localStorage.getItem("onlineFilter");
     return saved || "all";
   });
   const [selectedSort, setSelectedSort] = useState(() => {
-    const saved = window.localStorage.getItem('selectedSort');
+    const saved = window.localStorage.getItem("selectedSort");
     return saved || "weight";
   });
   const [showDLC, setShowDLC] = useState(() => {
-    const saved = window.localStorage.getItem('showDLC');
-    return saved === 'true';
+    const saved = window.localStorage.getItem("showDLC");
+    return saved === "true";
   });
   const [showOnline, setShowOnline] = useState(() => {
-    const saved = window.localStorage.getItem('showOnline');
-    return saved === 'true';
+    const saved = window.localStorage.getItem("showOnline");
+    return saved === "true";
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isIndexUpdating, setIsIndexUpdating] = useState(false);
@@ -255,9 +255,7 @@ const Search = memo(() => {
     // Apply category filter
     if (selectedCategories.length > 0) {
       filtered = filtered.filter(game =>
-        selectedCategories.every(category => 
-          game.category?.includes(category)
-        )
+        selectedCategories.every(category => game.category?.includes(category))
       );
     }
 
@@ -281,8 +279,8 @@ const Search = memo(() => {
     }
 
     // Apply source filter
-    const source = settings?.gameSource || 'steamrip';
-    if (source === 'fitgirl') {
+    const source = settings?.gameSource || "steamrip";
+    if (source === "fitgirl") {
       // For fitgirl, show all games without additional filtering
       return filtered;
     }
@@ -304,7 +302,16 @@ const Search = memo(() => {
     });
 
     return filtered;
-  }, [games, searchQuery, selectedCategories, onlineFilter, selectedSort, settings?.gameSource, showDLC, showOnline]);
+  }, [
+    games,
+    searchQuery,
+    selectedCategories,
+    onlineFilter,
+    selectedSort,
+    settings?.gameSource,
+    showDLC,
+    showOnline,
+  ]);
 
   useEffect(() => {
     setDisplayedGames(filteredGames.slice(0, gamesPerLoad));
@@ -487,9 +494,7 @@ const Search = memo(() => {
                 </SheetTrigger>
                 <SheetContent className="border-0 bg-background p-6 text-foreground">
                   <SheetHeader>
-                    <SheetTitle>
-                      {t("search.filterOptions")}
-                    </SheetTitle>
+                    <SheetTitle>{t("search.filterOptions")}</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6 space-y-4">
                     <div className="flex items-center">
@@ -516,7 +521,13 @@ const Search = memo(() => {
                     </div>
                     <Separator className="bg-border/50" />
                     <div className="space-y-4">
-                      <h4 className={isFitGirlSource ? "text-muted-foreground text-sm font-medium" : "text-sm font-medium text-foreground"}>
+                      <h4
+                        className={
+                          isFitGirlSource
+                            ? "text-sm font-medium text-muted-foreground"
+                            : "text-sm font-medium text-foreground"
+                        }
+                      >
                         {t("search.sortBy")}
                       </h4>
                       <RadioGroup
@@ -525,26 +536,68 @@ const Search = memo(() => {
                         className="grid grid-cols-1 gap-2"
                       >
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="weight" id="weight" disabled={isFitGirlSource} />
-                          <Label className={`${isFitGirlSource ? 'text-muted-foreground' : 'text-foreground hover:text-foreground/90 cursor-pointer'}`} htmlFor="weight">{t("search.mostPopular")}</Label>
+                          <RadioGroupItem
+                            value="weight"
+                            id="weight"
+                            disabled={isFitGirlSource}
+                          />
+                          <Label
+                            className={`${isFitGirlSource ? "text-muted-foreground" : "cursor-pointer text-foreground hover:text-foreground/90"}`}
+                            htmlFor="weight"
+                          >
+                            {t("search.mostPopular")}
+                          </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="weight-asc" id="weight-asc" disabled={isFitGirlSource} />
-                          <Label className={`${isFitGirlSource ? 'text-muted-foreground' : 'text-foreground hover:text-foreground/90 cursor-pointer'}`} htmlFor="weight-asc">{t("search.leastPopular")}</Label>
+                          <RadioGroupItem
+                            value="weight-asc"
+                            id="weight-asc"
+                            disabled={isFitGirlSource}
+                          />
+                          <Label
+                            className={`${isFitGirlSource ? "text-muted-foreground" : "cursor-pointer text-foreground hover:text-foreground/90"}`}
+                            htmlFor="weight-asc"
+                          >
+                            {t("search.leastPopular")}
+                          </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="name" id="name" disabled={isFitGirlSource} />
-                          <Label className={`${isFitGirlSource ? 'text-muted-foreground' : 'text-foreground hover:text-foreground/90 cursor-pointer'}`} htmlFor="name">{t("search.alphabeticalAZ")}</Label>
+                          <RadioGroupItem
+                            value="name"
+                            id="name"
+                            disabled={isFitGirlSource}
+                          />
+                          <Label
+                            className={`${isFitGirlSource ? "text-muted-foreground" : "cursor-pointer text-foreground hover:text-foreground/90"}`}
+                            htmlFor="name"
+                          >
+                            {t("search.alphabeticalAZ")}
+                          </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="name-desc" id="name-desc" disabled={isFitGirlSource} />
-                          <Label className={`${isFitGirlSource ? 'text-muted-foreground' : 'text-foreground hover:text-foreground/90 cursor-pointer'}`} htmlFor="name-desc">{t("search.alphabeticalZA")}</Label>
+                          <RadioGroupItem
+                            value="name-desc"
+                            id="name-desc"
+                            disabled={isFitGirlSource}
+                          />
+                          <Label
+                            className={`${isFitGirlSource ? "text-muted-foreground" : "cursor-pointer text-foreground hover:text-foreground/90"}`}
+                            htmlFor="name-desc"
+                          >
+                            {t("search.alphabeticalZA")}
+                          </Label>
                         </div>
                       </RadioGroup>
                     </div>
                     <Separator className="bg-border/50" />
                     <div className="space-y-4">
-                      <h4 className={isFitGirlSource ? "text-muted-foreground text-sm font-medium" : "text-sm font-medium text-foreground"}>
+                      <h4
+                        className={
+                          isFitGirlSource
+                            ? "text-sm font-medium text-muted-foreground"
+                            : "text-sm font-medium text-foreground"
+                        }
+                      >
                         {t("search.categories")}
                       </h4>
                       <CategoryFilter
