@@ -1673,11 +1673,11 @@ export default function DownloadPage() {
                         )}
                         {/* Game Title and Basic Info */}
                         <div className="flex-1">
-                          <h1 className="text-3xl font-bold text-white drop-shadow-md">
+                          <h1 className="text-3xl font-bold text-primary drop-shadow-md">
                             {igdbData.name || gameData.game}
                           </h1>
 
-                          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/80">
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-primary/80">
                             {gameData.version && (
                               <span className="rounded bg-primary/20 px-2 py-1">
                                 v{gameData.version}
@@ -1704,7 +1704,7 @@ export default function DownloadPage() {
                                   <TooltipTrigger asChild>
                                     <div className="flex cursor-help items-center gap-2">
                                       <Apple className="h-5 w-5 fill-red-400 text-red-400" />
-                                      <span className="text-sm font-medium text-white">
+                                      <span className="text-sm font-medium text-primary">
                                         {(igdbData.rating / 10).toFixed(1)}
                                       </span>
                                     </div>
@@ -1726,7 +1726,7 @@ export default function DownloadPage() {
                                   <TooltipTrigger asChild>
                                     <div className="flex cursor-help items-center gap-2">
                                       <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                                      <span className="text-sm font-medium text-white">
+                                      <span className="text-sm font-medium text-primary">
                                         {gameData.rating}
                                       </span>
                                     </div>
@@ -1768,7 +1768,7 @@ export default function DownloadPage() {
                 )}
               </div>
 
-              <div className="flex space-x-4 pl-8">
+              <div className="mt-4 flex space-x-4 pl-8">
                 <Button
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   className="h-12 text-lg text-secondary"
@@ -1897,7 +1897,7 @@ export default function DownloadPage() {
 
                 {/* Screenshots Gallery - Full width */}
                 {igdbData.screenshots && igdbData.screenshots.length > 0 && (
-                  <div className="mt-8">
+                  <div className="mb-64 mt-8">
                     <h2 className="mb-4 text-xl font-bold text-foreground">
                       {t("download.screenshots")}
                     </h2>
@@ -1916,7 +1916,7 @@ export default function DownloadPage() {
                 )}
 
                 {/* System Requirements - Full width */}
-                <div className="mt-48 rounded-lg border border-border p-5">
+                <div className="rounded-lg border border-border p-5">
                   <h2 className="mb-4 text-xl font-bold text-foreground">
                     {t("download.systemRequirements")}
                   </h2>
