@@ -1606,7 +1606,7 @@ export default function DownloadPage() {
               <Button
                 variant="outline"
                 onClick={handleShareLink}
-                className="fixed right-4 top-1/4 z-50 -translate-y-1/2 gap-2"
+                className={`fixed ${igdbData ? "right-4 top-1/4 -translate-y-1/2" : "bottom-1/4 right-4"} z-50 gap-2`}
               >
                 {showShareCopySuccess ? (
                   <CheckIcon className="h-4 w-4" />

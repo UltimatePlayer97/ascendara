@@ -204,7 +204,7 @@
       ],
       "title": "Downloading with Ascendara"
     },
-    "noGameInfoAvailable": "No game information available",
+    "noGameInfoAvailable": "Setup IGDB in Preferences to see more information about this game",
     "online": "ONLINE",
     "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
     "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
