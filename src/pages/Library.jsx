@@ -115,36 +115,11 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
 );
 
 const Library = () => {
-  // Error handling at component level
-  const showError = (game, error) => {
-    setErrorGame(game);
-    setErrorMessage(error);
-    setShowErrorDialog(true);
-    setLaunchingGame(null);
-  };
-
-  const handleGameLaunchError = (_, { game, error }) => {
-    showError(game, error);
-  };
-
-  const handleGameLaunchSuccess = async (_, game) => {
-    setLaunchingGame(null);
-    // Keep lastLaunchedGame set so we can use it when the game closes
-  };
-
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
-  const [gameToDelete, setGameToDelete] = useState(null);
-  const [selectedGame, setSelectedGame] = useState(null);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [ratingGame, setRatingGame] = useState(null);
-  const [showRateDialog, setShowRateDialog] = useState(false);
-  const [isUninstalling, setIsUninstalling] = useState(false);
-  const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
-  const [showVrWarning, setShowVrWarning] = useState(false);
-  const [uninstallingGame, setUninstallingGame] = useState(null);
   const [launchingGame, setLaunchingGame] = useState(null);
   const [lastLaunchedGame, setLastLaunchedGame] = useState(null);
   const lastLaunchedGameRef = useRef(null);
@@ -233,32 +208,6 @@ const Library = () => {
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
-  const fetchStorageInfo = async () => {
-    try {
-      const installPath = await window.electron.getDownloadDirectory();
-      if (installPath) {
-        // Get cached drive space and directory size
-        const [driveSpace, gamesSize] = await Promise.all([
-          window.electron.getDriveSpace(installPath),
-          window.electron.getInstalledGamesSize(),
-        ]);
-
-        setStorageInfo(driveSpace);
-
-        if (gamesSize.success) {
-          if (gamesSize.calculating) {
-            setIsCalculatingSize(true);
-          } else {
-            setTotalGamesSize(gamesSize.totalSize);
-            setIsCalculatingSize(false);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching storage info:", error);
-    }
-  };
-
   useEffect(() => {
     const fetchStorageInfo = async () => {
       try {
@@ -314,47 +263,7 @@ const Library = () => {
       setIsInitialized(true);
     };
     init();
-  }, []); // Empty deps - only run once on mount
-
-  // Set up event listeners
-  useEffect(() => {
-    if (!isInitialized) return; // Don't set up listeners until initialized
-
-    const handleGameClosed = async () => {
-      const lastGame = lastLaunchedGameRef.current;
-      console.log("Game closed - last launched game:", lastGame);
-
-      if (lastGame) {
-        // Get fresh game data
-        const freshGames = await window.electron.getGames();
-        const gameData = freshGames.find(
-          g => (g.game || g.name) === (lastGame.game || lastGame.name)
-        );
-
-        if (gameData && gameData.launchCount === 1) {
-          setRatingGame(lastGame);
-          setShowRateDialog(true);
-        }
-        setLastLaunchedGame(null);
-      }
-    };
-
-    window.electron.ipcRenderer.on("game-launch-error", handleGameLaunchError);
-    window.electron.ipcRenderer.on("game-launch-success", handleGameLaunchSuccess);
-    window.electron.ipcRenderer.on("game-closed", handleGameClosed);
-
-    return () => {
-      window.electron.ipcRenderer.removeListener(
-        "game-launch-error",
-        handleGameLaunchError
-      );
-      window.electron.ipcRenderer.removeListener(
-        "game-launch-success",
-        handleGameLaunchSuccess
-      );
-      window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
-    };
-  }, [isInitialized, setRatingGame, setShowRateDialog]); // Add required dependencies
+  }, []);
 
   const loadGames = async () => {
     try {
@@ -407,43 +316,6 @@ const Library = () => {
     });
   };
 
-  const handleDeleteGame = async game => {
-    try {
-      if (game.isCustom) {
-        await window.electron.removeCustomGame(game.game || game.name);
-      } else {
-        setIsUninstalling(true);
-        setUninstallingGame(game.game || game.name);
-        await window.electron.deleteGame(game.game || game.name);
-      }
-      setGames(games.filter(g => (g.game || g.name) !== (game.game || game.name)));
-      setGameToDelete(null);
-      setIsUninstalling(false);
-      setUninstallingGame(null);
-    } catch (error) {
-      console.error("Error deleting game:", error);
-      setError("Failed to delete game");
-      setIsUninstalling(false);
-      setUninstallingGame(null);
-    }
-  };
-
-  const handleOpenDirectory = async game => {
-    try {
-      await window.electron.openGameDirectory(game.game || game.name, game.isCustom);
-    } catch (error) {
-      console.error("Error opening directory:", error);
-      setError("Failed to open game directory");
-    }
-  };
-
-  const isGameSelected = (game, selectedGame) => {
-    if (!selectedGame) return false;
-    const gameId = game.game || game.name;
-    const selectedId = selectedGame.game || selectedGame.name;
-    return gameId === selectedId;
-  };
-
   const searchGameCovers = async query => {
     if (!query.trim()) {
       setCoverSearchResults([]);
@@ -469,12 +341,6 @@ const Library = () => {
 
     return () => clearTimeout(debounceTimer);
   }, [coverSearchQuery, searchGameCovers]); // Add searchGameCovers dependency
-
-  const handleCloseErrorDialog = () => {
-    setShowErrorDialog(false);
-    setErrorGame(null);
-    setErrorMessage("");
-  };
 
   if (loading) {
     return (
@@ -744,180 +610,12 @@ const Library = () => {
                 <InstalledGameCard
                   game={game}
                   onPlay={() => handlePlayGame(game)}
-                  onDelete={() => setGameToDelete(game)}
-                  onSelect={() => setSelectedGame(game)}
-                  isSelected={isGameSelected(game, selectedGame)}
-                  onOpenDirectory={() => handleOpenDirectory(game)}
-                  isLaunching={launchingGame === (game.game || game.name)}
-                  isUninstalling={uninstallingGame === (game.game || game.name)}
                   favorites={favorites}
                   onToggleFavorite={() => toggleFavorite(game.game || game.name)}
                 />
               </div>
             ))}
           </div>
-
-          <ErrorDialog
-            open={showErrorDialog}
-            onClose={handleCloseErrorDialog}
-            errorGame={errorGame}
-            errorMessage={errorMessage}
-            t={t}
-          />
-
-          {ratingGame && (
-            <GameRate
-              game={ratingGame}
-              isOpen={showRateDialog}
-              onClose={() => {
-                setShowRateDialog(false);
-                setRatingGame(null);
-              }}
-            />
-          )}
-
-          {/* VR Warning Dialog */}
-          <AlertDialog
-            open={showVrWarning}
-            onOpenChange={open => {
-              setShowVrWarning(open);
-            }}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-2xl font-bold text-foreground">
-                  {t("library.vrWarning.title")}
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-muted-foreground">
-                  {t("library.vrWarning.description")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <Button
-                  variant="outline"
-                  className="text-xs text-primary"
-                  onClick={() => {
-                    setShowVrWarning(false);
-                    window.electron.openURL(
-                      "https://ascendara.app/docs/troubleshooting/vr-games"
-                    );
-                  }}
-                >
-                  {t("library.vrWarning.learnMore")}
-                </Button>
-                <Button
-                  className="text-secondary"
-                  onClick={() => {
-                    setShowVrWarning(false);
-                    if (selectedGame) {
-                      handlePlayGame(selectedGame, true);
-                    }
-                  }}
-                >
-                  {t("library.vrWarning.confirm")}
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          <AlertDialog
-            key="delete-game-dialog"
-            open={!!gameToDelete}
-            onOpenChange={open => !open && setGameToDelete(null)}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-2xl font-bold text-foreground">
-                  {gameToDelete?.isCustom
-                    ? t("library.removeGameFromLibrary")
-                    : t("library.uninstallGame")}
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-muted-foreground">
-                  {gameToDelete?.isCustom
-                    ? t("library.removeGameFromLibraryWarning")
-                    : t("library.uninstallGameWarning")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="flex justify-end gap-2">
-                {isUninstalling ? (
-                  <div className="w-full">
-                    <div className="relative overflow-hidden">
-                      <Progress value={undefined} className="bg-muted/30" />
-                      <div
-                        className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
-                        style={{
-                          animation: "shimmer 3s infinite ease-in-out",
-                          backgroundSize: "200% 100%",
-                          WebkitAnimation: "shimmer 3s infinite ease-in-out",
-                          WebkitBackgroundSize: "200% 100%",
-                        }}
-                      />
-                    </div>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">
-                      <span className="flex items-center justify-center gap-2">
-                        <Loader className="h-4 w-4 animate-spin" />
-                        {t("library.uninstallingGame")}
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      onClick={() => setGameToDelete(null)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      {t("common.cancel")}
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteGame(gameToDelete)}
-                      className="hover:text-secondary-foreground text-secondary"
-                    >
-                      {gameToDelete?.isCustom
-                        ? t("library.removeGame")
-                        : t("library.uninstallGame")}
-                    </Button>
-                  </>
-                )}
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          <AlertDialog open={showOnlineFixWarning}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-2xl font-bold text-foreground">
-                  {t("download.onlineFixWarningTitle")}
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-muted-foreground">
-                  {t("download.onlineFixWarningDescription")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowOnlineFixWarning(false);
-                    if (selectedGame) {
-                      handlePlayGame(selectedGame, true);
-                    }
-                  }}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  {t("common.ok")}
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {filteredGames.map(game => (
-            <VerifyingGameDialog
-              key={game.game || game.name}
-              game={game}
-              open={false}
-              onOpenChange={() => {}}
-            />
-          ))}
         </div>
       </div>
     </div>
@@ -949,28 +647,13 @@ const AddGameCard = React.forwardRef((props, ref) => {
 AddGameCard.displayName = "AddGameCard";
 
 const InstalledGameCard = memo(
-  ({
-    game,
-    onPlay,
-    onDelete,
-    onSelect,
-    isSelected,
-    onOpenDirectory,
-    isLaunching,
-    isUninstalling,
-    favorites,
-    onToggleFavorite,
-  }) => {
+  ({ game, onPlay, isSelected, isUninstalling, favorites, onToggleFavorite }) => {
     const { t } = useLanguage();
     const [isRunning, setIsRunning] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [imageData, setImageData] = useState(null);
     const [executableExists, setExecutableExists] = useState(null);
-    const [backupDialogOpen, setBackupDialogOpen] = useState(false);
     const isFavorite = favorites.includes(game.game || game.name);
-    const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
-    const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
-    const { settings } = useSettings();
 
     useEffect(() => {
       const checkExecutable = async () => {
@@ -1172,120 +855,8 @@ const InstalledGameCard = memo(
                 )}
               </p>
             </div>
-
-            <div className="flex gap-2">
-              {settings.ludusavi.enabled && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-transparent hover:text-inherit"
-                  onClick={() => {
-                    setBackupDialogOpen(true);
-                  }}
-                >
-                  <FolderSync className="h-4 w-4 hover:text-foreground" />
-                </Button>
-              )}
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-transparent hover:text-inherit"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <MoreVertical className="h-4 w-4 hover:text-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {game.size && (
-                    <DropdownMenuItem disabled>
-                      <PackageOpen className="mr-2 h-4 w-4" />
-                      {game.size}
-                    </DropdownMenuItem>
-                  )}
-                  {game.version && (
-                    <DropdownMenuItem disabled>
-                      <Tag className="mr-2 h-4 w-4" />
-                      {game.version}
-                    </DropdownMenuItem>
-                  )}
-                  {(game.size || game.version) && <Separator className="my-2 bg-muted" />}
-                  <DropdownMenuItem className="cursor-pointer" onClick={onOpenDirectory}>
-                    <FolderOpen className="mr-2 h-4 w-4" />
-                    {t("library.openGameDirectory")}
-                  </DropdownMenuItem>
-                  {!game.isCustom && (
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() => setIsVerifyingOpen(true)}
-                    >
-                      <FileCheck2 className="mr-2 h-4 w-4" />
-                      {t("library.verifyGameFiles")}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={async () => {
-                      const success = await window.electron.createGameShortcut(game);
-                      if (success) {
-                        toast.success(t("library.shortcutCreated"));
-                      } else {
-                        toast.error(t("library.shortcutError"));
-                      }
-                    }}
-                  >
-                    <Monitor className="mr-2 h-4 w-4" />
-                    {t("library.createShortcut")}
-                  </DropdownMenuItem>
-                  {!game.isCustom && (
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={async () => {
-                        const exePath = await window.electron.openFileDialog(
-                          game.executable
-                        );
-                        if (exePath) {
-                          await window.electron.modifyGameExecutable(
-                            game.game || game.name,
-                            exePath
-                          );
-                        }
-                      }}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      {t("library.changeExecutable")}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem
-                    onClick={e => {
-                      e.stopPropagation();
-                      onDelete();
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {game.isCustom
-                      ? t("library.removeGameFromLibrary")
-                      : t("library.uninstallGame")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </CardFooter>
         </Card>
-        <VerifyingGameDialog
-          game={game}
-          open={isVerifyingOpen}
-          onOpenChange={setIsVerifyingOpen}
-        />
-
-        <GamesBackupDialog
-          game={game}
-          open={backupDialogOpen}
-          onOpenChange={setBackupDialogOpen}
-        />
       </>
     );
   }
