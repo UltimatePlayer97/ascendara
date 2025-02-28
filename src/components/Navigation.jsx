@@ -24,6 +24,7 @@ const Navigation = memo(({ items }) => {
     const savedSize = localStorage.getItem("navSize");
     return savedSize ? parseFloat(savedSize) : 100;
   });
+  const [downloadCount, setDownloadCount] = useState(0);
 
   const handleMouseDown = useCallback(
     (e, isLeft) => {
@@ -132,6 +133,36 @@ const Navigation = memo(({ items }) => {
   }, [t, settings.viewWorkshopPage]);
 
   useEffect(() => {
+    const checkDownloaderStatus = async () => {
+      try {
+        const games = await window.electron.getGames();
+        const downloadingGames = games.filter(game => {
+          const { downloadingData } = game;
+          return (
+            downloadingData &&
+            (downloadingData.downloading ||
+              downloadingData.extracting ||
+              downloadingData.updating ||
+              downloadingData.error)
+          );
+        });
+        setDownloadCount(downloadingGames.length);
+      } catch (error) {
+        console.error("Error checking downloading games:", error);
+      }
+    };
+
+    // Check immediately
+    checkDownloaderStatus();
+
+    // Then check every second
+    const interval = setInterval(() => {
+      checkDownloaderStatus();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const handleResize = () => {
       const newSize = localStorage.getItem("navSize");
       if (newSize) {
@@ -201,7 +232,20 @@ const Navigation = memo(({ items }) => {
                 <div
                   className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} opacity-0 ${isActive(item.path) || hoveredItem === item.path ? "opacity-100" : ""} transition-opacity duration-300`}
                 />
-                <item.icon className="relative z-10 h-5 w-5" />
+                <div
+                  className={`relative flex h-12 w-12 items-center justify-center rounded-lg transition-all duration-200 ${
+                    isActive(item.path)
+                      ? "bg-gradient-to-br " + item.color
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  <item.icon className="h-6 w-6" />
+                  {item.icon === Download && downloadCount > 0 && (
+                    <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                      {downloadCount}
+                    </div>
+                  )}
+                </div>
                 <div
                   className={`absolute -top-10 transform whitespace-nowrap rounded-lg border border-border bg-background/95 px-3 py-1.5 text-sm font-medium text-foreground transition-all duration-300 ${
                     hoveredItem === item.path
