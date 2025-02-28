@@ -308,6 +308,17 @@
     "waiting": "Waiting for Peers",
     "waitingDescription": "qBittorrent is looking for peers to connect to download pieces of the torrent file from other users and upload to them in turn. Others may be able to see what you're downloading and/or determine your public IP address."
   },
+  "game": {
+    "metadata": {
+      "appleRating": "Apple Rating",
+      "developer": "Developer",
+      "genres": "Genres",
+      "platforms": "Platforms",
+      "publisher": "Publisher",
+      "releaseDate": "Release Date",
+      "title": "Game Details"
+    }
+  },
   "gameCard": {
     "dlc": "ALL DLCs",
     "download": "Download",
