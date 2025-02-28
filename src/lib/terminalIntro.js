@@ -82,7 +82,7 @@ function printDevModeIntro(appVersion, nodeEnv, isDev = true) {
 
   // Documentation
   console.log(`${colors.yellow}  📚 DOCUMENTATION${colors.reset}`);
-  console.log("    • Docs: https://docs.ascendara.app");
+  console.log("    • Docs: https://ascendara.app/docs");
   console.log("");
 
   // Warning if not in dev mode (at the bottom)
