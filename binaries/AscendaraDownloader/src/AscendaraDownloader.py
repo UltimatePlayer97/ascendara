@@ -411,6 +411,11 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
             watching_path = os.path.join(download_path, "filemap.ascendara.json")
             watching_data = {}
 
+            # Set extracting flag to true before starting extraction
+            game_info["downloadingData"]["extracting"] = True
+            game_info["downloadingData"]["downloading"] = False
+            safe_write_json(game_info_path, game_info)
+
             if sys.platform == "win32":
                 from unrar import rarfile
                 if archive_ext == "rar":
@@ -456,17 +461,13 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
             # Save watching data
             safe_write_json(watching_path, watching_data)
 
-            os.remove(archive_file_path)
+            # Set extracting to false and start verification
             game_info["downloadingData"]["extracting"] = False
             game_info["downloadingData"]["verifying"] = True
             safe_write_json(game_info_path, game_info)
 
-            # Clean up extracted files
-            for file in os.listdir(download_path):
-                if file.endswith(".url"):
-                    os.remove(os.path.join(download_path, file))
-
-            _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game)
+            # Verify the extracted files
+            _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game, archive_file_path)
 
             del game_info["downloadingData"]
             safe_write_json(game_info_path, game_info)
@@ -481,7 +482,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
     except Exception as e:
         print(f"Failed to download or extract {game}. Error: {e}")
 
-def _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game):
+def _verify_extracted_files(watching_path, download_path, game_info, game_info_path, game, archive_file_path):
     try:
         with open(watching_path, 'r') as f:
             watching_data = json.load(f)
@@ -515,6 +516,10 @@ def _verify_extracted_files(watching_path, download_path, game_info, game_info_p
             )
         else:
             print("All extracted files verified successfully")
+            try:
+                os.remove(archive_file_path)
+            except Exception as e:
+                print(f"Error removing original archive: {str(e)}")
             if "verifyError" in game_info["downloadingData"]:
                 del game_info["downloadingData"]["verifyError"]
 

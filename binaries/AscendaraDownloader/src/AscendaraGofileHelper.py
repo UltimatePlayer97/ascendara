@@ -542,9 +542,9 @@ class GofileDownloader:
         safe_write_json(self.game_info_path, self.game_info)
 
         # Start verification
-        self._verify_extracted_files(watching_path)
+        self._verify_extracted_files(watching_path, archive_path)
 
-    def _verify_extracted_files(self, watching_path):
+    def _verify_extracted_files(self, watching_path, archive_path):
         try:
             with open(watching_path, 'r') as f:
                 watching_data = json.load(f)
@@ -577,7 +577,11 @@ class GofileDownloader:
                     f"{error_count} {'file' if error_count == 1 else 'files'} failed to verify"
                 )
             else:
-                print("All extracted files verified successfully")
+                print("All extracted files verified successfully")  
+                try:
+                    os.remove(archive_path)
+                except Exception as e:
+                    print(f"Error removing original archive: {str(e)}")
                 if "verifyError" in self.game_info["downloadingData"]:
                     del self.game_info["downloadingData"]["verifyError"]
 
