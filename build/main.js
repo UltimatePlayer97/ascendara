@@ -93,9 +93,11 @@ rpc.on("ready", () => {
 
 rpc.login({ clientId }).catch(console.error);
 
+const { printDevModeIntro } = require("../src/lib/terminalIntro");
+
 // Handle app ready event
 app.whenReady().then(() => {
-  console.log("App ready, creating window");
+  printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
   createWindow();
   axios
     .get("https://api.ascendara.app/app/brokenversions")
