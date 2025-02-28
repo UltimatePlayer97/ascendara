@@ -197,6 +197,8 @@ function Settings() {
   const [showTorrentWarning, setShowTorrentWarning] = useState(false);
   const [showNoTorrentDialog, setShowNoTorrentDialog] = useState(false);
   const [showNoLudusaviDialog, setShowNoLudusaviDialog] = useState(false);
+  const [twitchSecret, setTwitchSecret] = useState("");
+  const [twitchClientId, setTwitchClientId] = useState("");
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
   const [dependencyStatus, setDependencyStatus] = useState(null);
@@ -1178,6 +1180,51 @@ function Settings() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </Card>
+
+            {/* IGDB API Key Card */}
+            <Card className="p-6">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-primary">
+                  {t("settings.igdbApiKey")}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t("settings.igdbApiKeyDescription")}
+                </p>
+                <a
+                  onClick={() =>
+                    window.electron.openURL("https://ascendara.app/docs/igdb-api-key")
+                  }
+                  className="cursor text-sm text-primary hover:underline"
+                >
+                  {t("settings.igdbLearnHowtoGet")}
+                  <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
+                </a>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Input
+                  type="password"
+                  value={twitchClientId}
+                  onChange={e => setTwitchClientId(e.target.value)}
+                  placeholder={t("settings.enterTwitchClientId")}
+                />
+                <Input
+                  type="password"
+                  value={twitchSecret}
+                  onChange={e => setTwitchSecret(e.target.value)}
+                  placeholder={t("settings.enterIgdbApiKey")}
+                />
+                <Button
+                  variant="outline"
+                  className="text-primary"
+                  onClick={() => {
+                    handleSettingChange("twitchClientId", twitchClientId);
+                    handleSettingChange("twitchSecret", twitchSecret);
+                  }}
+                >
+                  {t("settings.setKey")}
+                </Button>
               </div>
             </Card>
 

@@ -486,6 +486,8 @@ class SettingsManager {
       threadCount: 4,
       sideScrollBar: false,
       crackDirectory: "",
+      twitchSecret: "",
+      twitchClientId: "",
       ludusavi: {
         backupLocation: "",
         backupFormat: "zip",

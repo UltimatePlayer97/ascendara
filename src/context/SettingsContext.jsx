@@ -28,6 +28,8 @@ export function SettingsProvider({ children }) {
     threadCount: 4,
     sideScrollBar: false,
     crackDirectory: "",
+    twitchSecret: "",
+    twitchClientId: "",
     ludusavi: {
       backupLocation: "",
       backupFormat: "zip",

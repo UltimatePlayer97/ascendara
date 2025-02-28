@@ -67,6 +67,7 @@ import { toast } from "sonner";
 import UserSettingsDialog from "@/components/UserSettingsDialog";
 import VerifyingGameDialog from "@/components/VerifyingGameDialog";
 import GamesBackupDialog from "@/components/GamesBackupDialog";
+import { useNavigate } from "react-router-dom";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -165,6 +166,7 @@ const Library = () => {
   const [isCalculatingSize, setIsCalculatingSize] = useState(false);
   const errorTimeoutRef = useRef(null);
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   useEffect(() => {
     localStorage.setItem("game-favorites", JSON.stringify(favorites));
@@ -397,73 +399,12 @@ const Library = () => {
     }
   };
 
-  const handlePlayGame = async (game, forcePlay = false) => {
-    const gameName = game.game || game.name;
-
-    // Check if window.electron.isDev is true. Cannot run in developer mode
-    if (await window.electron.isDev()) {
-      toast.error(t("library.cannotRunDev"));
-      return;
-    }
-
-    try {
-      // First check if game is already running
-      const isRunning = await window.electron.isGameRunning(gameName);
-      if (isRunning) {
-        toast.error(t("library.alreadyRunning", { game: gameName }));
-        return;
-      }
-
-      // Check if game is VR and show warning
-      if (game.isVr && !forcePlay) {
-        setSelectedGame(game); // Set the selected game before showing warning
-        setShowVrWarning(true);
-        return;
-      }
-
-      if (game.online && (game.launchCount < 1 || !game.launchCount)) {
-        // Check if warning has been shown before
-        const onlineFixWarningShown = localStorage.getItem("onlineFixWarningShown");
-        if (!onlineFixWarningShown) {
-          setSelectedGame(game);
-          setShowOnlineFixWarning(true);
-          // Save that warning has been shown
-          localStorage.setItem("onlineFixWarningShown", "true");
-          return;
-        }
-      }
-
-      // Set launching state here after all checks pass
-      setLaunchingGame(gameName);
-
-      // Set launching state here after all checks pass
-      setLaunchingGame(gameName);
-      setLastLaunchedGame(game);
-
-      console.log("Launching game: ", gameName);
-      // Launch the game
-      await window.electron.playGame(gameName, game.isCustom, game.backups ?? false);
-
-      // Get and cache the game image before saving to recently played
-      const imageBase64 = await window.electron.getGameImage(gameName);
-      if (imageBase64) {
-        await imageCacheService.getImage(game.imgID);
-      }
-
-      // Save to recently played games
-      recentGamesService.addRecentGame({
-        game: gameName,
-        name: game.name,
-        imgID: game.imgID,
-        version: game.version,
-        isCustom: game.isCustom,
-        online: game.online,
-        dlc: game.dlc,
-      });
-    } catch (error) {
-      console.error("Error launching game:", error);
-      setLaunchingGame(null);
-    }
+  const handlePlayGame = async game => {
+    navigate("/gamescreen", {
+      state: {
+        gameData: game,
+      },
+    });
   };
 
   const handleDeleteGame = async game => {

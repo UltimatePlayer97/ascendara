@@ -7,7 +7,7 @@
  */
 
 // Constants for API
-const IGDB_API_URL = "https://api.igdb.com/v4";
+const IGDB_API_URL = "/api/igdb";
 const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/token";
 
 /**
