@@ -45,12 +45,22 @@ import {
   Zap,
   AlertTriangle,
   Star,
+  ArrowDown,
+  Download,
+  Apple,
+  Gamepad2,
+  Gift,
+  ArrowDownCircle,
+  Share,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import checkQbittorrentStatus from "@/services/qbittorrentCheckService";
 import { toast } from "sonner";
 import TimemachineDialog from "@/components/TimemachineDialog";
+import igdbService from "@/services/igdbService";
+import { useIgdbConfig } from "@/services/igdbConfig";
+import GameScreenshots from "@/components/GameScreenshots";
 
 const isValidURL = (url, provider) => {
   const trimmedUrl = url.trim();
@@ -107,6 +117,33 @@ export default function DownloadPage() {
   const [gameData, setGameData] = useState(state?.gameData);
   const { t } = useLanguage();
   const { settings, setSettings } = useSettings();
+  const igdbConfig = useIgdbConfig();
+
+  // Fetch IGDB data
+  const fetchIgdbData = async gameName => {
+    try {
+      // Skip if IGDB is not enabled
+      if (!igdbConfig.enabled) {
+        console.log("IGDB integration is not enabled");
+        return;
+      }
+
+      setIgdbLoading(true);
+
+      const data = await igdbService.getGameDetails(gameName, igdbConfig);
+
+      if (data) {
+        setIgdbData(data);
+      } else {
+        console.log("No IGDB data found for:", gameData.game);
+      }
+
+      setIgdbLoading(false);
+    } catch (error) {
+      console.error("Error fetching IGDB data:", error);
+      setIgdbLoading(false);
+    }
+  };
 
   // Clear data when leaving the page
   useEffect(() => {
@@ -144,6 +181,13 @@ export default function DownloadPage() {
     console.log("Received game data:", gameData);
   }, [gameData, navigate]);
 
+  // Fetch IGDB data when game data changes
+  useEffect(() => {
+    if (gameData && gameData.game) {
+      fetchIgdbData(gameData.game);
+    }
+  }, [gameData]);
+
   // State declarations
   const [selectedProvider, setSelectedProvider] = useState("");
   const [inputLink, setInputLink] = useState("");
@@ -166,10 +210,16 @@ export default function DownloadPage() {
   const [guideImages, setGuideImages] = useState({});
   const [lastProcessedUrl, setLastProcessedUrl] = useState(null);
   const [isProcessingUrl, setIsProcessingUrl] = useState(false);
+  const [igdbData, setIgdbData] = useState(null);
+  const [igdbLoading, setIgdbLoading] = useState(false);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   // Use a ref to track the event handler and active status
   const urlHandlerRef = useRef(null);
   const isActive = useRef(false);
+  const igdbSectionRef = useRef(null);
+  const mainContentRef = useRef(null);
+  const scrollThreshold = 30; // Even lower threshold for quicker response
 
   // Simple download handler function
   async function handleDownload(directUrl = null) {
@@ -426,6 +476,160 @@ export default function DownloadPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!igdbData || !igdbSectionRef.current) return;
+
+    let lastScrollY = 0;
+    let ticking = false;
+    let scrollingTimeout = null;
+    let scrollDirection = null;
+    let lastScrollTime = Date.now();
+    let hasScrolledToIgdb = false;
+    let hasScrolledToBottom = false;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const currentTime = Date.now();
+
+      // Determine scroll direction
+      if (currentScrollY > lastScrollY) {
+        scrollDirection = "down";
+      } else if (currentScrollY < lastScrollY) {
+        scrollDirection = "up";
+      }
+
+      // Update last scroll position
+      lastScrollY = currentScrollY;
+
+      // Reset scroll direction if it's been a while since last scroll
+      if (currentTime - lastScrollTime > 500) {
+        scrollDirection = null;
+      }
+
+      lastScrollTime = currentTime;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Clear any existing timeout
+          if (scrollingTimeout) {
+            clearTimeout(scrollingTimeout);
+          }
+
+          if (isAutoScrolling) {
+            ticking = false;
+            return;
+          }
+
+          const igdbSectionTop = igdbSectionRef.current.offsetTop;
+          const igdbSectionBottom = igdbSectionTop + igdbSectionRef.current.offsetHeight;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const scrollBottom = currentScrollY + windowHeight;
+
+          // Reset flags when user has scrolled far enough
+          if (currentScrollY < scrollThreshold) {
+            hasScrolledToIgdb = false;
+          }
+          if (currentScrollY < igdbSectionTop - 100) {
+            hasScrolledToBottom = false;
+          }
+
+          // Custom animation function for smooth scrolling
+          const smoothScrollTo = (startPosition, targetPosition) => {
+            setIsAutoScrolling(true);
+
+            const distance = targetPosition - startPosition;
+            const duration = 400; // milliseconds - faster animation
+            let startTime = null;
+
+            const animateScroll = timestamp => {
+              if (!startTime) startTime = timestamp;
+              const elapsed = timestamp - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+
+              // Easing function for smoother animation
+              const easeOutCubic = progress => 1 - Math.pow(1 - progress, 3);
+              const easedProgress = easeOutCubic(progress);
+
+              window.scrollTo(0, startPosition + distance * easedProgress);
+
+              if (elapsed < duration) {
+                window.requestAnimationFrame(animateScroll);
+              } else {
+                // Animation complete
+                scrollingTimeout = setTimeout(() => {
+                  setIsAutoScrolling(false);
+
+                  // Update flags after scrolling completes
+                  if (targetPosition >= igdbSectionTop - 100) {
+                    hasScrolledToIgdb = true;
+                  }
+                  if (targetPosition >= documentHeight - windowHeight - 50) {
+                    hasScrolledToBottom = true;
+                  }
+                }, 100);
+              }
+            };
+
+            window.requestAnimationFrame(animateScroll);
+          };
+
+          // Case 1: Scrolling down from top area to IGDB section
+          if (
+            scrollDirection === "down" &&
+            currentScrollY > scrollThreshold &&
+            currentScrollY < igdbSectionTop - 150 &&
+            !hasScrolledToIgdb
+          ) {
+            smoothScrollTo(currentScrollY, igdbSectionTop - 40);
+          }
+          // Case 2: Scrolling up from IGDB section to top area
+          else if (
+            scrollDirection === "up" &&
+            currentScrollY < igdbSectionTop &&
+            currentScrollY > scrollThreshold
+          ) {
+            smoothScrollTo(currentScrollY, 0);
+          }
+          // Case 3: Scrolling up from bottom of page to IGDB section
+          else if (
+            scrollDirection === "up" &&
+            currentScrollY > igdbSectionBottom + 200 &&
+            currentScrollY < documentHeight - windowHeight - 100
+          ) {
+            // Only trigger if we've scrolled up a significant amount
+            if (scrollBottom < documentHeight - 150) {
+              smoothScrollTo(currentScrollY, igdbSectionTop - 40);
+            }
+          }
+          // Case 4: Scrolling down from IGDB section to bottom of page
+          // Only trigger if we haven't already scrolled to bottom and we're near the end of the IGDB section
+          else if (
+            scrollDirection === "down" &&
+            currentScrollY >= igdbSectionBottom - 200 &&
+            currentScrollY < igdbSectionBottom &&
+            !hasScrolledToBottom
+          ) {
+            smoothScrollTo(currentScrollY, documentHeight - windowHeight);
+          }
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollingTimeout) {
+        clearTimeout(scrollingTimeout);
+      }
+    };
+  }, [igdbData, isAutoScrolling]);
+
   const checkDownloadPath = async () => {
     try {
       if (!settings.downloadDirectory) {
@@ -457,16 +661,6 @@ export default function DownloadPage() {
 
     setIsValidLink(isValidURL(newLink, selectedProvider));
   };
-
-  useEffect(() => {
-    // Disable scrolling on the body
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      // Re-enable scrolling when the component unmounts
-      document.body.style.overflow = "auto";
-    };
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = event => {
@@ -724,6 +918,7 @@ export default function DownloadPage() {
     <div
       className="container mx-auto flex min-h-screen max-w-7xl flex-col items-center fade-in"
       style={{ transform: `scale(0.95)`, transformOrigin: "top center" }}
+      ref={mainContentRef}
     >
       <div className="w-full max-w-6xl">
         <div
@@ -1411,7 +1606,7 @@ export default function DownloadPage() {
               <Button
                 variant="outline"
                 onClick={handleShareLink}
-                className="fixed bottom-20 right-4 z-50 flex items-center gap-2"
+                className="fixed right-4 top-1/4 z-50 -translate-y-1/2 gap-2"
               >
                 {showShareCopySuccess ? (
                   <CheckIcon className="h-4 w-4" />
@@ -1426,6 +1621,383 @@ export default function DownloadPage() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+      )}
+
+      {igdbData && (
+        <div className="mt-4 opacity-50">{t("download.scrollToViewMore")}</div>
+      )}
+
+      {/* IGDB Game Store-like Section */}
+      {gameData && (
+        <div
+          ref={igdbSectionRef}
+          className="mb-8 mt-48 overflow-hidden rounded-lg border border-border bg-card shadow-md"
+        >
+          {igdbLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+              <span className="ml-3 text-lg text-muted-foreground">
+                {t("common.loading")}
+              </span>
+            </div>
+          ) : igdbData ? (
+            <>
+              {/* Hero Banner with Cover Image */}
+              <div className="relative">
+                {igdbData.screenshots && igdbData.screenshots.length > 0 ? (
+                  <div className="relative h-[400px] w-full overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{
+                        backgroundImage: `url(${igdbService.formatImageUrl(igdbData.screenshots[0].url, "screenshot_huge")})`,
+                        filter: "blur(1px)",
+                        transform: "scale(1.01)",
+                      }}
+                    ></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/90 to-transparent"></div>
+
+                    <div className="absolute bottom-0 left-0 right-0 flex items-end p-8">
+                      <div className="relative z-10 flex w-full flex-col md:flex-row md:items-end">
+                        {/* Game Cover */}
+                        {igdbData.cover && (
+                          <div className="mb-4 h-[200px] w-[150px] shrink-0 overflow-hidden rounded-md border border-border shadow-lg md:mb-0 md:mr-6">
+                            <img
+                              src={igdbService.formatImageUrl(
+                                igdbData.cover.url,
+                                "cover_big"
+                              )}
+                              alt={igdbData.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        )}
+                        {/* Game Title and Basic Info */}
+                        <div className="flex-1">
+                          <h1 className="text-3xl font-bold text-white drop-shadow-md">
+                            {igdbData.name || gameData.game}
+                          </h1>
+
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/80">
+                            {gameData.version && (
+                              <span className="rounded bg-primary/20 px-2 py-1">
+                                v{gameData.version}
+                              </span>
+                            )}
+                            {gameData.online && (
+                              <span className="flex items-center gap-1 rounded bg-blue-500/20 px-2 py-1">
+                                <Gamepad2 className="h-4 w-4" />
+                                Online
+                              </span>
+                            )}
+                            {gameData.dlc && (
+                              <span className="flex items-center gap-1 rounded bg-green-500/20 px-2 py-1">
+                                <Gift className="h-4 w-4" />
+                                DLC
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="mt-3 flex flex-wrap items-center gap-4">
+                            {igdbData.rating && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex cursor-help items-center gap-2">
+                                      <Apple className="h-5 w-5 fill-red-400 text-red-400" />
+                                      <span className="text-sm font-medium text-white">
+                                        {(igdbData.rating / 10).toFixed(1)}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p className="max-w-[300px] text-xs font-semibold text-secondary">
+                                      {t("download.igdbRating", {
+                                        rating: (igdbData.rating / 10).toFixed(1),
+                                      })}
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+
+                            {gameData.rating > 0 && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex cursor-help items-center gap-2">
+                                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-sm font-medium text-white">
+                                        {gameData.rating}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p className="max-w-[300px] font-semibold text-secondary">
+                                      {t("download.ratingTooltip", {
+                                        rating: gameData.rating,
+                                      })}
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+
+                            {igdbData.release_date && (
+                              <div className="rounded-full bg-primary/20 px-3 py-1.5 text-sm font-medium text-primary">
+                                {t("download.firstReleasedOn")}: {igdbData.release_date}
+                              </div>
+                            )}
+
+                            {gameData.category && gameData.category.length > 0 && (
+                              <div className="hidden rounded-full bg-card/80 px-3 py-1.5 text-sm font-medium text-foreground md:block">
+                                {gameData.category.slice(0, 2).join(", ")}
+                                {gameData.category.length > 2 && "..."}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-[200px] items-center justify-center bg-gradient-to-r from-primary/20 to-secondary/20">
+                    <h1 className="text-3xl font-bold text-foreground">
+                      {igdbData.name || gameData.game}
+                    </h1>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex space-x-4 pl-8">
+                <Button
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className="h-12 text-lg text-secondary"
+                >
+                  {t("download.downloadOptions.downloadNow")}
+                  <ArrowDownCircle className="ml-2 h-6 w-6" />
+                </Button>
+
+                <Button
+                  onClick={handleShareLink}
+                  className="flex h-12 items-center text-lg text-secondary"
+                >
+                  {showShareCopySuccess ? (
+                    <>
+                      <CheckIcon className="mr-2 h-4 w-4" />
+                      {t("download.linkCopied")}
+                    </>
+                  ) : (
+                    <>
+                      <Share className="mr-2 h-4 w-4" />
+                      {t("download.shareGame")}
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Main Content */}
+              <div className="p-8">
+                {/* Game Details Grid - 3 columns on large screens */}
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                  {/* Game Summary - Spans 2 columns */}
+                  <div className="md:col-span-2">
+                    {igdbData.summary && (
+                      <div className="mb-8">
+                        <h2 className="mb-3 text-xl font-bold text-foreground">
+                          {t("download.aboutGame")}
+                        </h2>
+                        <p className="leading-relaxed text-muted-foreground">
+                          {igdbData.summary}
+                        </p>
+
+                        {igdbData.storyline && (
+                          <div className="mt-4">
+                            <p className="leading-relaxed text-muted-foreground">
+                              {igdbData.storyline}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Game Metadata - Right column */}
+                  <div className="space-y-6">
+                    {/* Categories */}
+                    {gameData.category && gameData.category.length > 0 && (
+                      <div className="rounded-lg border border-border bg-card/50 p-4">
+                        <h3 className="mb-2 font-semibold text-foreground">
+                          {t("download.categories")}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {gameData.category.map((category, index) => (
+                            <span
+                              key={index}
+                              className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                            >
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Developers & Publishers */}
+                    {(igdbData.developers?.length > 0 ||
+                      igdbData.publishers?.length > 0) && (
+                      <div className="rounded-lg border border-border bg-card/50 p-4">
+                        <h3 className="mb-2 font-semibold text-foreground">
+                          {t("download.companies")}
+                        </h3>
+
+                        {igdbData.developers?.length > 0 && (
+                          <div className="mb-2">
+                            <h4 className="text-xs font-medium uppercase text-muted-foreground">
+                              {t("download.developers")}
+                            </h4>
+                            <p className="text-sm text-foreground">
+                              {igdbData.developers.join(", ")}
+                            </p>
+                          </div>
+                        )}
+
+                        {igdbData.publishers?.length > 0 && (
+                          <div>
+                            <h4 className="text-xs font-medium uppercase text-muted-foreground">
+                              {t("download.publishers")}
+                            </h4>
+                            <p className="text-sm text-foreground">
+                              {igdbData.publishers.join(", ")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Game Features */}
+                    {igdbData.game_modes && igdbData.game_modes.length > 0 && (
+                      <div className="rounded-lg border border-border bg-card/50 p-4">
+                        <h3 className="mb-2 font-semibold text-foreground">
+                          {t("download.gameModes")}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {igdbData.game_modes.map((mode, index) => (
+                            <span
+                              key={index}
+                              className="rounded-full bg-card px-3 py-1 text-xs font-medium text-foreground"
+                            >
+                              {mode.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Screenshots Gallery - Full width */}
+                {igdbData.screenshots && igdbData.screenshots.length > 0 && (
+                  <div className="mt-8">
+                    <h2 className="mb-4 text-xl font-bold text-foreground">
+                      {t("download.screenshots")}
+                    </h2>
+                    <GameScreenshots
+                      screenshots={igdbData.screenshots.map(screenshot => ({
+                        ...screenshot,
+                        url: igdbService.formatImageUrl(screenshot.url, "screenshot_big"),
+                        formatted_url: igdbService.formatImageUrl(
+                          screenshot.url,
+                          "screenshot_huge"
+                        ),
+                      }))}
+                      className="h-[500px] w-full rounded-lg border border-border shadow-inner"
+                    />
+                  </div>
+                )}
+
+                {/* System Requirements - Full width */}
+                <div className="mt-48 rounded-lg border border-border p-5">
+                  <h2 className="mb-4 text-xl font-bold text-foreground">
+                    {t("download.systemRequirements")}
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                      <h3 className="mb-2 text-lg font-semibold text-foreground">
+                        {t("download.minimum")}
+                      </h3>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li>
+                          <span className="font-medium text-foreground">OS:</span> Windows
+                          10 64-bit
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Processor:</span>{" "}
+                          Intel Core i5-2500K / AMD FX-6300
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Memory:</span> 8
+                          GB RAM
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Graphics:</span>{" "}
+                          NVIDIA GeForce GTX 770 2GB / AMD Radeon R9 280 3GB
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Storage:</span>{" "}
+                          {gameData.size || "70 GB available space"}
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="mb-2 text-lg font-semibold text-foreground">
+                        {t("download.recommended")}
+                      </h3>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li>
+                          <span className="font-medium text-foreground">OS:</span> Windows
+                          10 64-bit
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Processor:</span>{" "}
+                          Intel Core i7-4770K / AMD Ryzen 5 1500X
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Memory:</span> 12
+                          GB RAM
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Graphics:</span>{" "}
+                          NVIDIA GeForce GTX 1060 6GB / AMD Radeon RX 480 4GB
+                        </li>
+                        <li>
+                          <span className="font-medium text-foreground">Storage:</span>{" "}
+                          {gameData.size || "70 GB available space"} (SSD recommended)
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* IGDB Attribution */}
+                <div className="mt-8 flex items-center justify-end text-xs text-muted-foreground">
+                  <span>{t("download.dataProvidedBy")}</span>
+                  <a
+                    onClick={() => window.electron.openURL("https://www.igdb.com")}
+                    className="ml-1 flex cursor-pointer items-center text-primary hover:underline"
+                  >
+                    IGDB <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="p-6">
+              <p className="text-center text-muted-foreground">
+                {t("download.noGameInfoAvailable")}
+              </p>
+            </div>
+          )}
+        </div>
       )}
 
       {gameData && (

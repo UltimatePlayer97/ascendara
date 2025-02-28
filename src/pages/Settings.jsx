@@ -212,6 +212,15 @@ function Settings() {
   const isFirstMount = useRef(true);
 
   useEffect(() => {
+    if (settings.twitchSecret) {
+      setTwitchSecret(settings.twitchSecret);
+    }
+    if (settings.twitchClientId) {
+      setTwitchClientId(settings.twitchClientId);
+    }
+  }, [settings]);
+
+  useEffect(() => {
     const checkExperiment = async () => {
       const isExperiment = await window.electron.isExperiment();
       setIsExperiment(isExperiment);
@@ -308,6 +317,11 @@ function Settings() {
 
     initializeSettings();
   }, []); // Run only once on mount
+
+  const handleUpdateKeys = async () => {
+    await handleSettingChange("twitchSecret", twitchSecret);
+    await handleSettingChange("twitchClientId", twitchClientId);
+  };
 
   const handleSettingChange = async (key, value, ludusavi = false) => {
     if (key === "gameSource") {
@@ -1219,8 +1233,7 @@ function Settings() {
                   variant="outline"
                   className="text-primary"
                   onClick={() => {
-                    handleSettingChange("twitchClientId", twitchClientId);
-                    handleSettingChange("twitchSecret", twitchSecret);
+                    handleUpdateKeys();
                   }}
                 >
                   {t("settings.setKey")}

@@ -6,6 +6,9 @@
  * https://api-docs.igdb.com/#authentication
  */
 
+// Import cache service
+import igdbCacheService from "./igdbCacheService";
+
 // Constants for API
 const IGDB_API_URL = "/api/igdb";
 const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/token";
@@ -99,6 +102,37 @@ const getGameScreenshots = async (gameId, clientId, accessToken) => {
 };
 
 /**
+ * Get game modes
+ * @param {number} gameId - IGDB Game ID
+ * @param {string} clientId - Twitch Client ID
+ * @param {string} accessToken - Twitch Access Token
+ * @returns {Promise<Array>} Game modes array
+ */
+const getGameModes = async (gameId, clientId, accessToken) => {
+  try {
+    const response = await fetch(`${IGDB_API_URL}/game_modes`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Client-ID": clientId,
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: `fields *; where game = ${gameId}; limit 10;`,
+    });
+
+    if (!response.ok) {
+      throw new Error(`IGDB API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error getting game modes:", error);
+    return [];
+  }
+};
+
+/**
  * Format IGDB image URL to get the appropriate size
  * @param {string} url - Original image URL from IGDB
  * @param {string} size - Size of the image (e.g., 'cover_big', 'screenshot_huge')
@@ -120,39 +154,84 @@ const formatImageUrl = (url, size = "screenshot_big") => {
  */
 const getGameDetails = async (gameName, config = {}) => {
   try {
-    // Check if we have the required credentials
-    if (!config.clientId || !config.clientSecret) {
-      console.warn("IGDB credentials not provided");
+    // Check if we have this game in cache first
+    const cachedData = igdbCacheService.getCachedGame(gameName);
+    if (cachedData) {
+      console.log(`Using cached IGDB data for: ${gameName}`);
+      return cachedData;
+    }
+
+    console.log(`Fetching IGDB data for: ${gameName}`);
+
+    // Extract config values
+    const { clientId, clientSecret, enabled = true } = config;
+
+    // Skip if not enabled or missing credentials
+    if (!enabled || !clientId || !clientSecret) {
+      console.log("IGDB integration is not enabled or missing credentials");
       return null;
     }
 
     // Get access token
-    const accessToken = await getTwitchToken(config.clientId, config.clientSecret);
+    const accessToken = await getTwitchToken(clientId, clientSecret);
 
     // Search for the game
-    const game = await searchGame(gameName, config.clientId, accessToken);
+    const game = await searchGame(gameName, clientId, accessToken);
 
-    if (!game) return null;
+    if (!game) {
+      return null;
+    }
 
-    // Get screenshots if available
-    let screenshots = [];
+    // Process the game data
+    const gameDetails = {
+      id: game.id,
+      name: game.name,
+      summary: game.summary,
+      storyline: game.storyline,
+      rating: game.rating,
+      cover: game.cover,
+      screenshots: game.screenshots || [],
+      genres: game.genres || [],
+      platforms: game.platforms || [],
+      release_date: game.release_dates?.[0]?.human,
+    };
+
+    // Extract developers and publishers
+    if (game.involved_companies) {
+      gameDetails.developers = game.involved_companies
+        .filter(company => company.developer)
+        .map(company => company.company.name);
+
+      gameDetails.publishers = game.involved_companies
+        .filter(company => company.publisher)
+        .map(company => company.company.name);
+    }
+
+    // Get additional screenshots if needed
+    if (game.screenshots?.length < 3 && game.id) {
+      const additionalScreenshots = await getGameScreenshots(
+        game.id,
+        clientId,
+        accessToken
+      );
+
+      if (additionalScreenshots.length > 0) {
+        gameDetails.screenshots = additionalScreenshots;
+      }
+    }
+
+    // Get game modes if available
     if (game.id) {
-      screenshots = await getGameScreenshots(game.id, config.clientId, accessToken);
+      const gameModes = await getGameModes(game.id, clientId, accessToken);
+      if (gameModes.length > 0) {
+        gameDetails.game_modes = gameModes;
+      }
     }
 
-    // Format the cover and screenshot URLs
-    if (game.cover && game.cover.url) {
-      game.cover.formatted_url = formatImageUrl(game.cover.url, "cover_big");
-    }
+    // Cache the processed game data
+    igdbCacheService.cacheGame(gameName, gameDetails);
 
-    if (screenshots && screenshots.length > 0) {
-      game.formatted_screenshots = screenshots.map(screenshot => ({
-        ...screenshot,
-        formatted_url: formatImageUrl(screenshot.url, "screenshot_big"),
-      }));
-    }
-
-    return game;
+    return gameDetails;
   } catch (error) {
     console.error("Error getting game details:", error);
     return null;

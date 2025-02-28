@@ -1051,7 +1051,7 @@ const InstalledGameCard = memo(
             isSelected && "ring-2 ring-primary",
             "cursor-pointer"
           )}
-          onClick={onSelect}
+          onClick={onPlay}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -1088,7 +1088,7 @@ const InstalledGameCard = memo(
               )}
               <div
                 className={cn(
-                  "absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent",
+                  "absolute inset-0 to-transparent",
                   "opacity-0 transition-opacity group-hover:opacity-100",
                   "flex flex-col justify-end p-4 text-secondary"
                 )}
@@ -1110,37 +1110,6 @@ const InstalledGameCard = memo(
                       )}
                     />
                   </Button>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      className="w-full gap-2"
-                      onClick={e => {
-                        e.stopPropagation();
-                        if (!isRunning && !isLaunching) {
-                          onPlay();
-                        }
-                      }}
-                      disabled={isLaunching || isRunning}
-                    >
-                      {isLaunching ? (
-                        <>
-                          <Loader className="h-4 w-4 animate-spin" />
-                          {t("library.launching")}
-                        </>
-                      ) : isRunning ? (
-                        <>
-                          <StopCircle className="h-4 w-4" />
-                          {t("library.running")}
-                        </>
-                      ) : (
-                        <>
-                          <Play className="h-4 w-4" />
-                          {t("library.play")}
-                        </>
-                      )}
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>

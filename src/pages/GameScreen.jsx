@@ -97,6 +97,32 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   </AlertDialog>
 );
 
+const UninstallConfirmationDialog = ({ open, onClose, onConfirm, gameName, t }) => (
+  <AlertDialog open={open} onOpenChange={onClose}>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle className="text-2xl font-bold text-foreground">
+          {t("library.confirmUninstall")}
+        </AlertDialogTitle>
+        <AlertDialogDescription className="space-y-4 text-muted-foreground">
+          {t("library.uninstallConfirmMessage", { game: gameName })}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter className="flex gap-2">
+        <Button variant="outline" className="text-primary" onClick={onClose}>
+          {t("common.cancel")}
+        </Button>
+        <Button
+          className="bg-destructive text-destructive-foreground"
+          onClick={onConfirm}
+        >
+          {t("library.uninstall")}
+        </Button>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
+
 export default function GameScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -123,6 +149,7 @@ export default function GameScreen() {
 
   // Dialog states
   const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [backupDialogOpen, setBackupDialogOpen] = useState(false);
   const [showVrWarning, setShowVrWarning] = useState(false);
   const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
@@ -329,26 +356,17 @@ export default function GameScreen() {
   const handleDeleteGame = async () => {
     if (!game || isUninstalling) return;
 
-    const confirmed = await window.electron.showConfirmDialog(
-      t("library.confirmUninstall.title"),
-      t("library.confirmUninstall.message", { game: game.game || game.name })
-    );
+    if (game.isCustom) {
+      await window.electron.removeCustomGame(game.game || game.name);
+      navigate("/library");
+    } else {
+      const uninstalled = await window.electron.uninstallGame(game.game || game.name);
 
-    if (confirmed) {
-      setIsUninstalling(true);
-
-      if (game.isCustom) {
-        await window.electron.removeCustomGame(game.game || game.name);
+      if (uninstalled) {
         navigate("/library");
       } else {
-        const uninstalled = await window.electron.uninstallGame(game.game || game.name);
-
-        if (uninstalled) {
-          navigate("/library");
-        } else {
-          setIsUninstalling(false);
-          toast.error(t("library.uninstallFailed"));
-        }
+        setIsUninstalling(false);
+        toast.error(t("library.uninstallFailed"));
       }
     }
   };
@@ -374,6 +392,13 @@ export default function GameScreen() {
       const data = await igdbService.getGameDetails(gameName, igdbConfig);
 
       if (data) {
+        // Format screenshot URLs
+        if (data.screenshots && data.screenshots.length > 0) {
+          data.formatted_screenshots = data.screenshots.map(screenshot => ({
+            ...screenshot,
+            formatted_url: igdbService.formatImageUrl(screenshot.url, "screenshot_huge"),
+          }));
+        }
         setIgdbData(data);
       } else {
         console.log("No IGDB data found for:", gameName);
@@ -671,7 +696,7 @@ export default function GameScreen() {
                   <Button
                     variant="outline"
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full justify-start gap-2"
-                    onClick={handleDeleteGame}
+                    onClick={() => setIsDeleteDialogOpen(true)}
                     disabled={isUninstalling}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -705,10 +730,6 @@ export default function GameScreen() {
                     {t("gameScreen.details")}
                   </TabsTrigger>
                 )}
-                <TabsTrigger value="settings">
-                  <Settings2 className="mr-2 h-4 w-4" />
-                  {t("gameScreen.settings")}
-                </TabsTrigger>
               </TabsList>
 
               {/* Overview tab */}
@@ -940,114 +961,6 @@ export default function GameScreen() {
                   </Card>
                 )}
               </TabsContent>
-
-              {/* Settings tab */}
-              <TabsContent value="settings" className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="mb-4 text-xl font-bold">
-                      {t("gameScreen.gameSettings")}
-                    </h2>
-
-                    <div className="space-y-6">
-                      {/* IGDB Integration */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">
-                          {t("gameScreen.igdbIntegration")}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {t("gameScreen.igdbDescription")}
-                        </p>
-
-                        <Button
-                          variant="outline"
-                          className="gap-2"
-                          onClick={() => navigate("/settings")}
-                        >
-                          <Settings2 className="h-4 w-4" />
-                          {t("gameScreen.configureIgdb")}
-                        </Button>
-
-                        {igdbData && (
-                          <Button
-                            variant="outline"
-                            className="ml-2 gap-2"
-                            onClick={async () => {
-                              // Remove cached IGDB data
-                              await window.electron.removeStoreValue(
-                                `igdb_${game.game || game.name}`
-                              );
-                              await window.electron.removeStoreValue(
-                                `igdb_${game.game || game.name}_time`
-                              );
-                              setIgdbData(null);
-
-                              // Fetch new data
-                              fetchIgdbData(game.game || game.name);
-                              toast.success(t("gameScreen.refreshingGameData"));
-                            }}
-                          >
-                            <Download className="h-4 w-4" />
-                            {t("gameScreen.refreshGameData")}
-                          </Button>
-                        )}
-                      </div>
-
-                      <Separator />
-
-                      {/* External links */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">
-                          {t("gameScreen.externalLinks")}
-                        </h3>
-
-                        <div className="space-y-2">
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start gap-2"
-                            onClick={() =>
-                              window.electron.openURL(
-                                `https://www.google.com/search?q=${encodeURIComponent(`${game.game || game.name} game`)}`
-                              )
-                            }
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            {t("gameScreen.searchOnGoogle")}
-                          </Button>
-
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start gap-2"
-                            onClick={() =>
-                              window.electron.openURL(
-                                `https://store.steampowered.com/search/?term=${encodeURIComponent(game.game || game.name)}`
-                              )
-                            }
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                            {t("gameScreen.searchOnSteam")}
-                          </Button>
-
-                          {igdbData?.id && (
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start gap-2"
-                              onClick={() =>
-                                window.electron.openURL(
-                                  `https://www.igdb.com/games/${igdbData.slug}`
-                                )
-                              }
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              {t("gameScreen.viewOnIgdb")}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
         </div>
@@ -1140,6 +1053,15 @@ export default function GameScreen() {
         onClose={handleCloseErrorDialog}
         errorGame={errorGame}
         errorMessage={errorMessage}
+        t={t}
+      />
+
+      {/* Uninstall Confirmation Dialog */}
+      <UninstallConfirmationDialog
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteGame}
+        gameName={game?.name || game?.game}
+        open={isDeleteDialogOpen}
         t={t}
       />
     </div>

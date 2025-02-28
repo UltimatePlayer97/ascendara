@@ -106,8 +106,13 @@
     "submitting": "Submitting..."
   },
   "download": {
+    "aboutGame": "About This Game",
     "allDlc": "ALL-DLCs",
     "allDlcTooltip": "Includes all downloadable content (DLC) available for this game",
+    "categories": "Categories",
+    "companies": "Companies",
+    "dataProvidedBy": "Game data provided by",
+    "developers": "Developers",
     "dmcaNotice": "DMCA Notice: Ascendara uses outsourced links and files and does not host anything on its own servers.",
     "downloadInstructions": "Download Instructions",
     "downloadOptions": {
@@ -151,9 +156,13 @@
       },
       "waitingForBrowser": "Waiting for your browser to send the download..."
     },
+    "firstReleasedOn": "Game Released",
+    "gameModes": "Game Modes",
     "gameNeedsEmulator": "This requires an emulator to run.",
-    "gameNeedsVR": "This game may require a virtual reality headset to run.",
+    "gameNeedsVR": "VR Required",
+    "igdbRating": "This game is rated {{rating}} apples. Apple ratings are different than Star ratings on Ascendara, and are more of a general rating of the game.",
     "linkCopied": "Link copied to clipboard",
+    "minimum": "Minimum Requirements",
     "newUserGuide": {
       "close": "Close",
       "description": "You haven't installed a game before, so Ascendara will guide you through the setup process.",
@@ -163,20 +172,54 @@
       "nextStep": "Next Step →",
       "noThanks": "No Thanks",
       "startGuide": "Start Guide",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don't have it, close the guide and click the \"Don't have the extension? Get it for Chrome or Firefox\" button to download it.",
+          "title": "The Ascendara Download Handler"
+        },
+        {
+          "description": "After installing the extension, click the extension icon to enable the handler.",
+          "title": "Step 1: Enable the Handler"
+        },
+        {
+          "description": "The extension can stay on as it will only send known providers to Ascendara.",
+          "title": "The Download Handler"
+        },
+        {
+          "description": "Complete the CAPTCHA, and start the download.",
+          "title": "Step 2: Start the download"
+        },
+        {
+          "description": "Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.",
+          "title": "Step 3: Using the Extension"
+        },
+        {
+          "description": "Click the button to Open Ascendara.",
+          "title": "Step 4: Downloading"
+        },
+        {
+          "description": "Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.",
+          "title": "That's it!"
+        }
+      ],
       "title": "Downloading with Ascendara"
     },
+    "noGameInfoAvailable": "No game information available",
     "online": "ONLINE",
     "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
     "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
     "onlineTooltip": "Online multiplayer capabilities enabled through online-fix.me",
+    "platforms": "Platforms",
     "pressEscToGoBack": "Press ESC key to go back",
     "protectYourself": {
       "learnHow": "How to protect yourself from fake downloads",
       "warning": "Do not click on any ads or deceptive download buttons. The file size should match what you see here - be suspicious of small KB-sized files.",
       "warningTitle": "Protect yourself from fake downloads!"
     },
+    "publishers": "Publishers",
+    "rating": "Rating",
     "ratingTooltip": "This game is rated {{rating}} out of 5 stars by others on Ascendara. Read comments about this game in the Discord server.",
+    "recommended": "Recommended Requirements",
     "reportBroken": "Report",
     "reportDescription": "Please provide more details about the issue",
     "reportError": "Please provide a reason and details for your report",
@@ -190,12 +233,15 @@
       "notAGame": "This isn't a game",
       "placeholder": "Select a reason"
     },
+    "screenshots": "Screenshots",
+    "scrollToViewMore": "Scroll to view more game details",
     "sendingTorrent": "Sending Torrent...",
     "shareGame": "Share Ascendara Game Link",
     "size": "Size",
     "submitReport": "Submit Report",
     "submitting": "Submitting...",
     "switchProvider": "Switch Provider",
+    "systemRequirements": "System Requirements",
     "timemachine": {
       "cancel": "Cancel",
       "description": "Select a previous version of {game}",
@@ -273,6 +319,41 @@
     "size": "Size",
     "version": "Version"
   },
+  "gameScreen": {
+    "backToLibrary": "Back to Library",
+    "backupSaves": "Backup Saves",
+    "configureIntegration": "Configure Integration",
+    "configureLgdb": "Configure LGDB",
+    "configureLgdbInfo": "Configure LGDB Info",
+    "details": "Details",
+    "externalLinks": "External Links",
+    "gameDetails": "Game Details",
+    "gameInfo": "Game Info",
+    "gameNotFound": "Game Not Found",
+    "gameSettings": "Game Settings",
+    "igdbDescription": "IGDB Description",
+    "lgdbDescription": "LGDB Description",
+    "loadingGameInfo": "Loading Game Info",
+    "loadingInfo": "Loading game information...",
+    "media": "Media",
+    "noDetailsAvailable": "No Details Available",
+    "noDetailsDescription": "No details available for this game.",
+    "noScreenshotsAvailable": "No Screenshots Available",
+    "noScreenshotsDescription": "No screenshots available for this game.",
+    "noSummaryAvailable": "No Summary Available",
+    "noSummaryDescription": "No summary description available for this game.",
+    "overview": "Overview",
+    "refreshGameData": "Refresh Game Data",
+    "refreshingGameData": "Refreshing Game Data...",
+    "screenshots": "Screenshots",
+    "searchOnGoogle": "Search on Google",
+    "searchOnSteam": "Search on Steam",
+    "settings": "Settings",
+    "storyline": "Storyline",
+    "summary": "Summary",
+    "viewAll": "View All",
+    "viewOnIgdb": "View on IGDB"
+  },
   "home": {
     "actionGames": "Action Games",
     "onlineGames": "Online Games",
@@ -285,6 +366,7 @@
     "addGame": "Add Game",
     "addGameDescription1": "Add your own game to your library.",
     "addGameDescription2": "Add a game to your  Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
+    "addToFavorites": "Add to Favorites",
     "alreadyRunning": "{{game}} is already running",
     "availableSpace": "Available Space",
     "backups": {
@@ -335,9 +417,14 @@
     "cannotVerifyFiles": "Cannot verify game files",
     "changeExecutable": "Change Executable",
     "chooseExecutableFile": "Choose executable file...",
+    "confirmUninstall": {
+      "message": "Are you sure you want to uninstall this game? This will remove the game from your library and delete all associated files.",
+      "title": "Confirm Uninstall"
+    },
     "coverSearchError": "Error searching for image",
     "createShortcut": "Create Desktop Shortcut",
     "enterMoreChars": "Image results will appear here as you type",
+    "executable": "Executable",
     "executableNotFound": "Game executable not found",
     "gameName": "Game Name",
     "gamesInLibrary": "Total Games",
@@ -366,6 +453,7 @@
     "openGameDirectory": "Open Game Directory",
     "pageTitle": "Your Library",
     "play": "Play",
+    "playTime": "Play Time",
     "rateGame": {
       "commentPlaceholder": "e.g., I had a good time playing but...",
       "commentsLabel": "Comments (Optional)",
@@ -384,6 +472,7 @@
       "title": "Rate {{game}}",
       "veryGood": "Really enjoyed it"
     },
+    "removeFromFavorites": "Remove from Favorites",
     "removeGame": "Remove Game",
     "removeGameFromLibrary": "Remove from Library",
     "removeGameFromLibraryWarning": "Removing this game from your library will only remove it from your Ascendara library. It will not uninstall the game. Are you sure you want to remove this game?",
@@ -393,10 +482,12 @@
     "searchLibrary": "Search your games...",
     "shortcutCreated": "Shortcut created",
     "shortcutError": "Error creating shortcut. Maybe the executable path doesn't exist?",
+    "size": "Size",
     "spaceTooltip": {
       "games": "Space used by Ascendara games: {{size}}",
       "other": "Space used by other files: {{size}}"
     },
+    "uninstallFailed": "Uninstall Failed",
     "uninstallGame": "Uninstall Game",
     "uninstallGameWarning": "Are you sure you want to uninstall this game? This will delete the game from your computer and remove it from your Ascendara library.",
     "uninstallingGame": "Uninstalling",
