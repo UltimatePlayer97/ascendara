@@ -1,7 +1,8 @@
 import React from "react";
-import { Calendar, Users, Tag, Award, Monitor } from "lucide-react";
+import { Calendar, Users, Tag, Award, Monitor, Apple } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 /**
  * Game Metadata Component
@@ -38,9 +39,11 @@ const GameMetadata = ({ gameInfo, className }) => {
   // Get platforms
   const gamePlatforms = platforms?.map(platform => platform.name).filter(Boolean) || [];
 
+  const { t } = useTranslation();
+
   return (
     <div className={cn("space-y-4", className)}>
-      <h3 className="text-lg font-semibold">Game Details</h3>
+      <h3 className="text-lg font-semibold">{t("game.metadata.title")}</h3>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Release Date */}
@@ -48,7 +51,9 @@ const GameMetadata = ({ gameInfo, className }) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
-              <span className="text-sm text-muted-foreground">Release Date</span>
+              <span className="text-sm text-muted-foreground">
+                {t("game.metadata.releaseDate")}
+              </span>
               <p className="text-sm font-medium">{releaseDate}</p>
             </div>
           </div>
@@ -59,7 +64,9 @@ const GameMetadata = ({ gameInfo, className }) => {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
             <div>
-              <span className="text-sm text-muted-foreground">Developer</span>
+              <span className="text-sm text-muted-foreground">
+                {t("game.metadata.developer")}
+              </span>
               <p className="text-sm font-medium">{developers.join(", ")}</p>
             </div>
           </div>
@@ -70,7 +77,9 @@ const GameMetadata = ({ gameInfo, className }) => {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
             <div>
-              <span className="text-sm text-muted-foreground">Publisher</span>
+              <span className="text-sm text-muted-foreground">
+                {t("game.metadata.publisher")}
+              </span>
               <p className="text-sm font-medium">{publishers.join(", ")}</p>
             </div>
           </div>
@@ -79,9 +88,11 @@ const GameMetadata = ({ gameInfo, className }) => {
         {/* Rating */}
         {formattedRating && (
           <div className="flex items-center gap-2">
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Apple className="h-4 w-4 text-muted-foreground" />
             <div>
-              <span className="text-sm text-muted-foreground">Rating</span>
+              <span className="text-sm text-muted-foreground">
+                {t("game.metadata.appleRating")}
+              </span>
               <p className="text-sm font-medium">{formattedRating}/100</p>
             </div>
           </div>
@@ -93,7 +104,9 @@ const GameMetadata = ({ gameInfo, className }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Genres</span>
+            <span className="text-sm text-muted-foreground">
+              {t("game.metadata.genres")}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             {gameGenres.map((genre, index) => (
@@ -110,7 +123,9 @@ const GameMetadata = ({ gameInfo, className }) => {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Monitor className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Platforms</span>
+            <span className="text-sm text-muted-foreground">
+              {t("game.metadata.platforms")}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             {gamePlatforms.map((platform, index) => (

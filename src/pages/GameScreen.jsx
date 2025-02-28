@@ -50,7 +50,6 @@ import GamesBackupDialog from "@/components/GamesBackupDialog";
 import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
 import igdbService from "@/services/igdbService";
-import igdbConfig from "@/services/igdbConfig";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -124,14 +123,27 @@ const UninstallConfirmationDialog = ({ open, onClose, onConfirm, gameName, t }) 
 );
 
 export default function GameScreen() {
+  const showError = (game, error) => {
+    setErrorGame(game);
+    setErrorMessage(error);
+    setShowErrorDialog(true);
+    setLaunchingGame(null);
+  };
+
+  const handleGameLaunchError = (_, { game, error }) => {
+    showError(game, error);
+  };
+
+  const handleGameLaunchSuccess = async (_, game) => {
+    setLaunchingGame(null);
+  };
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { gameData } = location.state || {};
   const { settings } = useSettings();
   const igdbConfig = useIgdbConfig();
-
-  // Game state
   const [game, setGame] = useState(gameData || null);
   const [loading, setLoading] = useState(!gameData);
   const [imageData, setImageData] = useState("");
@@ -141,26 +153,30 @@ export default function GameScreen() {
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
   const [isFavorite, setIsFavorite] = useState(false);
-
-  // Game actions state
   const [isLaunching, setIsLaunching] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
-
-  // Dialog states
   const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [backupDialogOpen, setBackupDialogOpen] = useState(false);
   const [showVrWarning, setShowVrWarning] = useState(false);
   const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [ratingGame, setRatingGame] = useState(null);
+  const [showRateDialog, setShowRateDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [errorGame, setErrorGame] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  // IGDB data state
   const [igdbData, setIgdbData] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    const init = async () => {
+      setIsInitialized(true);
+    };
+    init();
+  }, []);
 
   // Load game data
   useEffect(() => {
@@ -208,6 +224,46 @@ export default function GameScreen() {
       clearInterval(gameStatusInterval);
     };
   }, [game, navigate]);
+
+  // Set up event listeners
+  useEffect(() => {
+    if (!isInitialized) return; // Don't set up listeners until initialized
+
+    const handleGameClosed = async () => {
+      const lastGame = lastLaunchedGameRef.current;
+      console.log("Game closed - last launched game:", lastGame);
+
+      if (lastGame) {
+        // Get fresh game data
+        const freshGames = await window.electron.getGames();
+        const gameData = freshGames.find(
+          g => (g.game || g.name) === (lastGame.game || lastGame.name)
+        );
+
+        if (gameData && gameData.launchCount === 1) {
+          setRatingGame(lastGame);
+          setShowRateDialog(true);
+        }
+        setLastLaunchedGame(null);
+      }
+    };
+
+    window.electron.ipcRenderer.on("game-launch-error", handleGameLaunchError);
+    window.electron.ipcRenderer.on("game-launch-success", handleGameLaunchSuccess);
+    window.electron.ipcRenderer.on("game-closed", handleGameClosed);
+
+    return () => {
+      window.electron.ipcRenderer.removeListener(
+        "game-launch-error",
+        handleGameLaunchError
+      );
+      window.electron.ipcRenderer.removeListener(
+        "game-launch-success",
+        handleGameLaunchSuccess
+      );
+      window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
+    };
+  }, [isInitialized, setRatingGame, setShowRateDialog]); // Add required dependencies
 
   // Update favorite status when game or favorites change
   useEffect(() => {
@@ -508,7 +564,7 @@ export default function GameScreen() {
                 />
               ) : (
                 <AlertTriangle
-                  className="h-5 w-5 text-yellow-500"
+                  className="mb-2 h-6 w-6 text-yellow-500"
                   title={t("library.executableNotFound")}
                 />
               )}
@@ -595,10 +651,10 @@ export default function GameScreen() {
                 {/* Main actions */}
                 <div className="space-y-3">
                   <Button
-                    className="w-full gap-2 py-6 text-lg"
+                    className="w-full gap-2 py-6 text-lg text-secondary"
                     size="lg"
                     onClick={handlePlayGame}
-                    disabled={isLaunching || isRunning}
+                    disabled={isLaunching || isRunning || !executableExists}
                   >
                     {isLaunching ? (
                       <>
@@ -631,7 +687,7 @@ export default function GameScreen() {
                 <Separator />
 
                 {/* Secondary actions */}
-                <div className="space-y-3">
+                <div className="text-secondary-foreground space-y-3">
                   {settings.ludusavi.enabled && (
                     <Button
                       variant="outline"
@@ -690,12 +746,18 @@ export default function GameScreen() {
                     >
                       <Pencil className="h-4 w-4" />
                       {t("library.changeExecutable")}
+                      {!executableExists && (
+                        <AlertTriangle
+                          className="h-4 w-4 text-yellow-500"
+                          title={t("library.executableNotFound")}
+                        />
+                      )}
                     </Button>
                   )}
 
                   <Button
                     variant="outline"
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full justify-start gap-2"
+                    className="w-full justify-start gap-2"
                     onClick={() => setIsDeleteDialogOpen(true)}
                     disabled={isUninstalling}
                   >
@@ -907,10 +969,6 @@ export default function GameScreen() {
               <TabsContent value="details" className="space-y-6">
                 <Card>
                   <CardContent className="p-6">
-                    <h2 className="mb-4 text-xl font-bold">
-                      {t("gameScreen.gameDetails")}
-                    </h2>
-
                     {igdbData ? (
                       <GameMetadata gameInfo={igdbData} />
                     ) : (
@@ -978,6 +1036,17 @@ export default function GameScreen() {
         open={backupDialogOpen}
         onOpenChange={setBackupDialogOpen}
       />
+
+      {ratingGame && (
+        <GameRate
+          game={ratingGame}
+          isOpen={showRateDialog}
+          onClose={() => {
+            setShowRateDialog(false);
+            setRatingGame(null);
+          }}
+        />
+      )}
 
       {/* VR Warning Dialog */}
       <AlertDialog
