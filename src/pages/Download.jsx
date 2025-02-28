@@ -747,7 +747,7 @@ export default function DownloadPage() {
               <div className="flex items-center justify-between">
                 <h1 className="flex items-center text-2xl font-bold">
                   {gameData.game}
-                  {gameData.rating && (
+                  {gameData.rating > 0 && (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>

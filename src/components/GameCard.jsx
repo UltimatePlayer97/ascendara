@@ -130,7 +130,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
             <h3 className="line-clamp-1 text-lg font-semibold text-foreground">
               {sanitizeText(game.game)}
             </h3>
-            {game.rating && (
+            {game.rating > 0 && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
