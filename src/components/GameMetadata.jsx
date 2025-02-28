@@ -12,10 +12,7 @@ const GameMetadata = ({ gameInfo, className }) => {
   if (!gameInfo) return null;
 
   // Extract relevant information
-  const { release_dates, genres, platforms, involved_companies, rating } = gameInfo;
-
-  // Format the rating to a score out of 100
-  const formattedRating = rating ? Math.round(rating) : null;
+  const { release_dates, genres, platforms, involved_companies } = gameInfo;
 
   // Get developers and publishers
   const developers =
@@ -81,19 +78,6 @@ const GameMetadata = ({ gameInfo, className }) => {
                 {t("game.metadata.publisher")}
               </span>
               <p className="text-sm font-medium">{publishers.join(", ")}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Rating */}
-        {formattedRating && (
-          <div className="flex items-center gap-2">
-            <Apple className="h-4 w-4 text-muted-foreground" />
-            <div>
-              <span className="text-sm text-muted-foreground">
-                {t("game.metadata.appleRating")}
-              </span>
-              <p className="text-sm font-medium">{formattedRating}/100</p>
             </div>
           </div>
         )}
