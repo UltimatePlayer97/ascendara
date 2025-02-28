@@ -647,7 +647,7 @@ const AddGameCard = React.forwardRef((props, ref) => {
 AddGameCard.displayName = "AddGameCard";
 
 const InstalledGameCard = memo(
-  ({ game, onPlay, isSelected, isUninstalling, favorites, onToggleFavorite }) => {
+  ({ game, onPlay, isSelected, favorites, onToggleFavorite }) => {
     const { t } = useLanguage();
     const [isRunning, setIsRunning] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -745,30 +745,6 @@ const InstalledGameCard = memo(
                 alt={game.game}
                 className="h-full w-full object-cover"
               />
-              {isUninstalling && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                  <div className="w-full max-w-[200px] space-y-2 px-4">
-                    <div className="relative overflow-hidden">
-                      <Progress value={undefined} className="bg-muted/30" />
-                      <div
-                        className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
-                        style={{
-                          animation: "shimmer 3s infinite ease-in-out",
-                          backgroundSize: "200% 100%",
-                          WebkitAnimation: "shimmer 3s infinite ease-in-out",
-                          WebkitBackgroundSize: "200% 100%",
-                        }}
-                      />
-                    </div>
-                    <div className="text-center text-sm font-medium text-white">
-                      <span className="flex items-center justify-center gap-2">
-                        <Loader className="h-4 w-4 animate-spin" />
-                        {t("library.uninstallingGame")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
               <div
                 className={cn(
                   "absolute inset-0 to-transparent",

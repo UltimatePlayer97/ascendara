@@ -1915,69 +1915,6 @@ export default function DownloadPage() {
                   </div>
                 )}
 
-                {/* System Requirements - Full width */}
-                <div className="rounded-lg border border-border p-5">
-                  <h2 className="mb-4 text-xl font-bold text-foreground">
-                    {t("download.systemRequirements")}
-                  </h2>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <div>
-                      <h3 className="mb-2 text-lg font-semibold text-foreground">
-                        {t("download.minimum")}
-                      </h3>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>
-                          <span className="font-medium text-foreground">OS:</span> Windows
-                          10 64-bit
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Processor:</span>{" "}
-                          Intel Core i5-2500K / AMD FX-6300
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Memory:</span> 8
-                          GB RAM
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Graphics:</span>{" "}
-                          NVIDIA GeForce GTX 770 2GB / AMD Radeon R9 280 3GB
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Storage:</span>{" "}
-                          {gameData.size || "70 GB available space"}
-                        </li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="mb-2 text-lg font-semibold text-foreground">
-                        {t("download.recommended")}
-                      </h3>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>
-                          <span className="font-medium text-foreground">OS:</span> Windows
-                          10 64-bit
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Processor:</span>{" "}
-                          Intel Core i7-4770K / AMD Ryzen 5 1500X
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Memory:</span> 12
-                          GB RAM
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Graphics:</span>{" "}
-                          NVIDIA GeForce GTX 1060 6GB / AMD Radeon RX 480 4GB
-                        </li>
-                        <li>
-                          <span className="font-medium text-foreground">Storage:</span>{" "}
-                          {gameData.size || "70 GB available space"} (SSD recommended)
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
                 {/* IGDB Attribution */}
                 <div className="mt-8 flex items-center justify-end text-xs text-muted-foreground">
                   <span>{t("download.dataProvidedBy")}</span>

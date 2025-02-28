@@ -101,21 +101,18 @@ const UninstallConfirmationDialog = ({ open, onClose, onConfirm, gameName, t }) 
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle className="text-2xl font-bold text-foreground">
-          {t("library.confirmUninstall")}
+          {t("library.confirmDelete")}
         </AlertDialogTitle>
         <AlertDialogDescription className="space-y-4 text-muted-foreground">
-          {t("library.uninstallConfirmMessage", { game: gameName })}
+          {t("library.deleteConfirmMessage", { game: gameName })}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter className="flex gap-2">
         <Button variant="outline" className="text-primary" onClick={onClose}>
           {t("common.cancel")}
         </Button>
-        <Button
-          className="bg-destructive text-destructive-foreground"
-          onClick={onConfirm}
-        >
-          {t("library.uninstall")}
+        <Button className="text-secondary" onClick={onConfirm}>
+          {t("library.delete", { game: gameName })}
         </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
@@ -285,6 +282,16 @@ export default function GameScreen() {
 
     const loadGameImage = async () => {
       try {
+        // First try to use IGDB cover if available
+        if (igdbData?.cover?.url) {
+          const coverUrl = igdbService.formatImageUrl(igdbData.cover.url, "cover_big");
+          if (coverUrl && isMounted) {
+            setImageData(coverUrl);
+            return;
+          }
+        }
+
+        // Fall back to local game image if IGDB cover is not available
         const imageBase64 = await window.electron.getGameImage(gameId);
         if (imageBase64 && isMounted) {
           setImageData(`data:image/jpeg;base64,${imageBase64}`);
@@ -299,7 +306,7 @@ export default function GameScreen() {
     return () => {
       isMounted = false;
     };
-  }, [game.game, game.name]); // Only depend on game ID properties
+  }, [game.game, game.name, igdbData?.cover?.url]); // Add igdbData.cover.url as dependency
 
   // Toggle favorite status
   const toggleFavorite = async () => {
@@ -405,7 +412,7 @@ export default function GameScreen() {
   // Handle open directory
   const handleOpenDirectory = async () => {
     if (!game) return;
-    await window.electron.openGameFolder(game.game || game.name);
+    await window.electron.openGameDirectory(game.game || game.name);
   };
 
   // Handle delete game
@@ -422,7 +429,7 @@ export default function GameScreen() {
         navigate("/library");
       } else {
         setIsUninstalling(false);
-        toast.error(t("library.uninstallFailed"));
+        toast.error(t("library.deleteFailed"));
       }
     }
   };
@@ -437,7 +444,6 @@ export default function GameScreen() {
   // Fetch IGDB data
   const fetchIgdbData = async gameName => {
     try {
-      // Skip if IGDB is not enabled
       if (!igdbConfig.enabled) {
         console.log("IGDB integration is not enabled");
         return;
@@ -448,7 +454,6 @@ export default function GameScreen() {
       const data = await igdbService.getGameDetails(gameName, igdbConfig);
 
       if (data) {
-        // Format screenshot URLs
         if (data.screenshots && data.screenshots.length > 0) {
           data.formatted_screenshots = data.screenshots.map(screenshot => ({
             ...screenshot,
@@ -601,7 +606,7 @@ export default function GameScreen() {
                 {/* Main image */}
                 <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
                   <img
-                    src={igdbData?.cover?.formatted_url || imageData}
+                    src={imageData}
                     alt={game.game}
                     className="h-full w-full object-cover"
                   />
@@ -623,7 +628,7 @@ export default function GameScreen() {
                         <div className="text-center text-sm font-medium text-primary">
                           <span className="flex items-center justify-center gap-2">
                             <Loader className="h-4 w-4 animate-spin" />
-                            {t("library.uninstallingGame")}
+                            {t("library.deletingGame")}
                           </span>
                         </div>
                       </div>
@@ -764,7 +769,7 @@ export default function GameScreen() {
                     <Trash2 className="h-4 w-4" />
                     {game.isCustom
                       ? t("library.removeGameFromLibrary")
-                      : t("library.uninstallGame")}
+                      : t("library.deleteGame")}
                   </Button>
                 </div>
               </CardContent>
@@ -1129,7 +1134,7 @@ export default function GameScreen() {
       <UninstallConfirmationDialog
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDeleteGame}
-        gameName={game?.name || game?.game}
+        gameName={game.game}
         open={isDeleteDialogOpen}
         t={t}
       />
