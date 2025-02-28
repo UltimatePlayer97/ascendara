@@ -1208,7 +1208,9 @@ function Settings() {
                 </p>
                 <a
                   onClick={() =>
-                    window.electron.openURL("https://ascendara.app/docs/igdb-api-key")
+                    window.electron.openURL(
+                      "https://ascendara.app/docs/features/igdb-integration"
+                    )
                   }
                   className="cursor text-sm text-primary hover:underline"
                 >
