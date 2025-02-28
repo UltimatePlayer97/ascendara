@@ -76,6 +76,9 @@ const Navigation = memo(({ items }) => {
       if (path === "/settings" && location.pathname === "/extralanguages") {
         return true;
       }
+      if (path === "/library" && location.pathname === "/gamescreen") {
+        return true;
+      }
       return location.pathname === path;
     },
     [location.pathname]
