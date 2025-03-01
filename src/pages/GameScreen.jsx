@@ -51,6 +51,7 @@ import recentGamesService from "@/services/recentGamesService";
 import GamesBackupDialog from "@/components/GamesBackupDialog";
 import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
+import imageCacheService from "@/services/imageCacheService";
 import igdbService from "@/services/igdbService";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
@@ -405,6 +406,7 @@ export default function GameScreen() {
       setIsLaunching(false);
     } catch (error) {
       console.error("Error launching game:", error);
+      setIsLaunching(false);
     }
   };
 
