@@ -257,7 +257,7 @@ Before building, ensure you have all required dependencies. [View full requireme
 
 4. **Run the Development App**
 
-   > ⚠️ **Note:** Before running, set `isDev = true` in `build/main.js`.
+   > ⚠️ **Note:** Before running, set `isDev = true` in `electron/app.js`.
 
    ```sh
    yarn start

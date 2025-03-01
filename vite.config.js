@@ -17,7 +17,7 @@ export default defineConfig({
     __APP_REVISION__: JSON.stringify(execSync("git rev-parse HEAD").toString()),
   },
   root: path.join(__dirname, "src"),
-  base: process.env.ELECTRON == "true" ? "./" : "/",
+  base: "./",
   server: {
     port: 5173,
     proxy: {
@@ -50,7 +50,7 @@ export default defineConfig({
   },
   build: {
     copyPublicDir: true,
-    outDir: path.join(__dirname, "src/dist"),
+    outDir: path.join(__dirname, "build"),
     emptyOutDir: true,
     rollupOptions: {
       input: path.join(__dirname, "src/index.html"),

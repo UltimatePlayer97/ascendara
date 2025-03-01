@@ -24,7 +24,7 @@
  *
  **/
 
-let isDev = false;
+let isDev = true;
 let appVersion = "8.1.3";
 
 const {
@@ -44,6 +44,7 @@ const axios = require("axios");
 const unzipper = require("unzipper");
 const fs = require("fs-extra");
 const os = require("os");
+const ip = require("ip");
 const { spawn } = require("child_process");
 require("dotenv").config();
 
@@ -93,11 +94,11 @@ rpc.on("ready", () => {
 
 rpc.login({ clientId }).catch(console.error);
 
-const { printDevModeIntro } = require("../src/lib/terminalIntro");
-
 // Handle app ready event
 app.whenReady().then(() => {
-  printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
+  if (isDev) {
+    printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
+  }
   createWindow();
   axios
     .get("https://api.ascendara.app/app/brokenversions")
@@ -318,7 +319,7 @@ ipcMain.handle("install-steamcmd", async () => {
         existingData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
       }
     } catch (error) {
-      console.warn("Could not read existing timestamp file:", error);
+      console.error("Error reading timestamp file:", error);
     }
 
     const timestampData = {
@@ -1296,6 +1297,7 @@ ipcMain.handle("delete-game-directory", async (event, game) => {
       }
       const downloadDirectory = settings.downloadDirectory;
       const gameDirectory = path.join(downloadDirectory, game);
+
       try {
         // First ensure all file handles are closed by attempting to read the directory
         const files = await fs.promises.readdir(gameDirectory, { withFileTypes: true });
@@ -3504,6 +3506,13 @@ async function createGameShortcut(game) {
       throw new Error(`Game handler not found at: ${handlerPath}`);
     }
 
+    console.log("Launching game:", {
+      handlerPath,
+      executable: exePath,
+      isCustom: isCustom.toString(),
+      gameDirectory: path.dirname(handlerPath),
+    });
+
     // PowerShell script to create shortcut
     const psScript = `
       $WScriptShell = New-Object -ComObject WScript.Shell
@@ -4227,3 +4236,104 @@ ipcMain.handle("get-installed-games-size", async event => {
     return { success: false, error: error.message };
   }
 });
+
+// Terminal intro function moved from src/lib/terminalIntro.js
+/**
+ * Prints a stylish intro in the terminal when starting the Ascendara development server
+ * @param {string} appVersion - The current version of the application
+ * @param {string} nodeEnv - The current Node environment
+ * @param {boolean} isDev - Whether the app is running in development mode
+ */
+function printDevModeIntro(appVersion, nodeEnv, isDev = true) {
+  // Clear the console
+  console.clear();
+
+  const hostname = os.hostname();
+  const platform = os.platform();
+  const release = os.release();
+  const arch = os.arch();
+  const localIp = ip.address();
+
+  // ANSI color codes for simple coloring
+  const colors = {
+    reset: "\x1b[0m",
+    bright: "\x1b[1m",
+    dim: "\x1b[2m",
+    underscore: "\x1b[4m",
+    blink: "\x1b[5m",
+    reverse: "\x1b[7m",
+    hidden: "\x1b[8m",
+
+    black: "\x1b[30m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    yellow: "\x1b[33m",
+    blue: "\x1b[34m",
+    magenta: "\x1b[35m",
+    cyan: "\x1b[36m",
+    white: "\x1b[37m",
+
+    bgBlack: "\x1b[40m",
+    bgRed: "\x1b[41m",
+    bgGreen: "\x1b[42m",
+    bgYellow: "\x1b[43m",
+    bgBlue: "\x1b[44m",
+    bgMagenta: "\x1b[45m",
+    bgCyan: "\x1b[46m",
+    bgWhite: "\x1b[47m",
+  };
+
+  // Title with decoration
+  console.log("");
+  console.log(
+    `${colors.cyan}${colors.bright}  ╔═══════════════════════════════════════════╗${colors.reset}`
+  );
+  console.log(
+    `${colors.cyan}${colors.bright}  ║           ASCENDARA DEVELOPER MODE        ║${colors.reset}`
+  );
+  console.log(
+    `${colors.cyan}${colors.bright}  ║           Version: ${appVersion} (${nodeEnv})${" ".repeat(Math.max(0, 15 - appVersion.length - nodeEnv.length))}    ║${colors.reset}`
+  );
+  console.log(
+    `${colors.cyan}${colors.bright}  ╚═══════════════════════════════════════════╝${colors.reset}`
+  );
+  console.log("");
+
+  // System Information
+  console.log(`${colors.green}  💻 SYSTEM INFORMATION${colors.reset}`);
+  console.log(`    OS: ${platform} ${release} (${arch})`);
+  console.log(`    Hostname: ${hostname}`);
+  console.log("");
+
+  // Network Information
+  console.log(`${colors.blue}  🌐 NETWORK INFORMATION${colors.reset}`);
+  console.log(`    Local IP: ${localIp}`);
+  console.log(`    Connect: http://${localIp}`);
+  console.log("");
+
+  // Developer Tools
+  console.log(`${colors.magenta}  🛠️  DEVELOPER TOOLS${colors.reset}`);
+  console.log("    • Press Ctrl+C to exit developer mode");
+  console.log("    • View logs in console for debugging");
+  console.log("");
+
+  // Documentation
+  console.log(`${colors.yellow}  📚 DOCUMENTATION${colors.reset}`);
+  console.log("    • Docs: https://ascendara.app/docs");
+  console.log("");
+
+  // Warning if not in dev mode (at the bottom)
+  if (!isDev) {
+    console.log("");
+    console.log(
+      `${colors.yellow}${colors.bright}  ⚠️  WARNING: NOT RUNNING IN DEVELOPER MODE ⚠️${colors.reset}`
+    );
+    console.log(
+      `${colors.yellow}${colors.bright}  The app will not load correctly unless isDev is set to true.${colors.reset}`
+    );
+    console.log(
+      `${colors.yellow}${colors.bright}  Please restart the application in developer mode.${colors.reset}`
+    );
+    console.log("");
+  }
+}
