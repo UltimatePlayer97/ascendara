@@ -239,7 +239,7 @@ const Navigation = memo(({ items }) => {
                       : "hover:bg-white/10"
                   }`}
                 >
-                  <item.icon className="h-6 w-6" />
+                  <item.icon className="h-5 w-5" />
                   {item.icon === Download && downloadCount > 0 && (
                     <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                       {downloadCount}
