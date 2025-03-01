@@ -344,10 +344,12 @@ export default function GameScreen() {
   // Handle play game
   const handlePlayGame = async (forcePlay = false) => {
     const gameName = game.game || game.name;
+    setIsLaunching(true);
 
     // Check if window.electron.isDev is true. Cannot run in developer mode
     if (await window.electron.isDev()) {
       toast.error(t("library.cannotRunDev"));
+      setIsLaunching(false);
       return;
     }
 
@@ -356,12 +358,14 @@ export default function GameScreen() {
       const isRunning = await window.electron.isGameRunning(gameName);
       if (isRunning) {
         toast.error(t("library.alreadyRunning", { game: gameName }));
+        setIsLaunching(false);
         return;
       }
 
       // Check if game is VR and show warning
       if (game.isVr && !forcePlay) {
         setShowVrWarning(true);
+        setIsLaunching(false);
         return;
       }
 
@@ -372,6 +376,7 @@ export default function GameScreen() {
           setShowOnlineFixWarning(true);
           // Save that warning has been shown
           localStorage.setItem("onlineFixWarningShown", "true");
+          setIsLaunching(false);
           return;
         }
       }
@@ -396,6 +401,8 @@ export default function GameScreen() {
         online: game.online,
         dlc: game.dlc,
       });
+
+      setIsLaunching(false);
     } catch (error) {
       console.error("Error launching game:", error);
     }
