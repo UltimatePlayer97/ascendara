@@ -140,15 +140,10 @@ export default function GameScreen() {
     setErrorGame(game);
     setErrorMessage(error);
     setShowErrorDialog(true);
-    setLaunchingGame(null);
   };
 
   const handleGameLaunchError = (_, { game, error }) => {
     showError(game, error);
-  };
-
-  const handleGameLaunchSuccess = async (_, game) => {
-    setLaunchingGame(null);
   };
 
   const { t } = useTranslation();
@@ -243,36 +238,27 @@ export default function GameScreen() {
     if (!isInitialized) return; // Don't set up listeners until initialized
 
     const handleGameClosed = async () => {
-      const lastGame = lastLaunchedGameRef.current;
-      console.log("Game closed - last launched game:", lastGame);
-
-      if (lastGame) {
+      if (gameData) {
         // Get fresh game data
         const freshGames = await window.electron.getGames();
         const gameData = freshGames.find(
-          g => (g.game || g.name) === (lastGame.game || lastGame.name)
+          g => (g.game || g.name) === (game.game || game.name)
         );
 
         if (gameData && gameData.launchCount === 1) {
-          setRatingGame(lastGame);
+          setRatingGame(gameData.game || gameData.name);
           setShowRateDialog(true);
         }
-        setLastLaunchedGame(null);
       }
     };
 
     window.electron.ipcRenderer.on("game-launch-error", handleGameLaunchError);
-    window.electron.ipcRenderer.on("game-launch-success", handleGameLaunchSuccess);
     window.electron.ipcRenderer.on("game-closed", handleGameClosed);
 
     return () => {
       window.electron.ipcRenderer.removeListener(
         "game-launch-error",
         handleGameLaunchError
-      );
-      window.electron.ipcRenderer.removeListener(
-        "game-launch-success",
-        handleGameLaunchSuccess
       );
       window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
     };
@@ -375,7 +361,6 @@ export default function GameScreen() {
 
       // Check if game is VR and show warning
       if (game.isVr && !forcePlay) {
-        setSelectedGame(game); // Set the selected game before showing warning
         setShowVrWarning(true);
         return;
       }
@@ -384,20 +369,12 @@ export default function GameScreen() {
         // Check if warning has been shown before
         const onlineFixWarningShown = localStorage.getItem("onlineFixWarningShown");
         if (!onlineFixWarningShown) {
-          setSelectedGame(game);
           setShowOnlineFixWarning(true);
           // Save that warning has been shown
           localStorage.setItem("onlineFixWarningShown", "true");
           return;
         }
       }
-
-      // Set launching state here after all checks pass
-      setLaunchingGame(gameName);
-
-      // Set launching state here after all checks pass
-      setLaunchingGame(gameName);
-      setLastLaunchedGame(game);
 
       console.log("Launching game: ", gameName);
       // Launch the game
@@ -421,7 +398,6 @@ export default function GameScreen() {
       });
     } catch (error) {
       console.error("Error launching game:", error);
-      setLaunchingGame(null);
     }
   };
 
@@ -574,12 +550,27 @@ export default function GameScreen() {
                 </svg>
               )}
               {executableExists ? (
-                <Play
-                  fill="currentColor"
-                  className="mb-2 h-8 w-8 cursor-pointer text-primary transition-all hover:scale-110"
+                <Button
+                  variant="icon"
+                  size="sm"
+                  className="mb-2 text-primary transition-all hover:scale-110"
                   onClick={() => handlePlayGame()}
-                  title={t("library.play")}
-                />
+                  disabled={isLaunching || isRunning}
+                >
+                  {isLaunching ? (
+                    <>
+                      <Loader className="h-5 w-5 animate-spin" />
+                    </>
+                  ) : isRunning ? (
+                    <>
+                      <StopCircle className="h-5 w-5" />
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-5 w-5 fill-current" />
+                    </>
+                  )}
+                </Button>
               ) : (
                 <AlertTriangle
                   className="mb-2 h-6 w-6 text-yellow-500"
