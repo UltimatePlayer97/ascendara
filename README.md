@@ -200,7 +200,7 @@ Contributing to Ascendara is the best way to get your desired features, bug fixe
 
 The Ascendara project is organized into the following main directories:
 
-- **src/**: Interface and application logic
+- **src/**: Core application logic and UI implementation
 
   - **components/**: Core UI components
   - **context/**: React context providers for state management
@@ -212,18 +212,21 @@ The Ascendara project is organized into the following main directories:
   - **styles/**: CSS and styling files
   - **translations/**: Internationalization files
 
-- **binaries/**: Main application binary executable tools
+- **binaries/**: Prebuilt binaries for core application functionality
 
   - **AscendaraCrashReporter/**: Crash reporting functionality
-  - **AscendaraDownloader/**: Main game download managers
+  - **AscendaraDownloader/**: Game download managers to handle most files
   - **AscendaraGameHandler/**: Game execution and management
-  - **AscendaraLanguageTranslation/**: Translation tool used to translate to the additional 93 languages
   - **AscendaraNotificationHelper/**: Download notification helper tool
+
+    > ℹ️ INFO: The tools below are additional tools that do not come with the official build of Ascendara. Instead, they utilize Ascendara's tool installation feature to install these supplementary tools as needed.
+
+  - **AscendaraLanguageTranslation/**: Translation tool used to translate to the additional 93 languages
   - **AscendaraTorrentHandler/**: Torrent download functionality
 
-- **scripts/**: Utility scripts for maintaining the project
+- **scripts/**: Helper scripts for development, deployment, and maintenance
 - **electron/**: The source code for the Electron app and IPC handles
-- **installer/**: The source code for the app's GUI installer
+- **installer/**: Source code for the graphical installer and setup process
 
 ## 🛠️ Running from Source
 
@@ -235,7 +238,7 @@ Before building, ensure you have all required dependencies. [View full requireme
 
 ### Quick Start
 
-> ⚠️ **Note:** Some API features like reporting and analytics services will not work on the public version of the app. Additionally, you will not be able to run games in development mode. Check the [Developer Docs](https://ascendara.app/docs/developer/build-from-source#important-limitations) for more information.
+> ⚠️ **WARNING:** Some API features like reporting and analytics services will not work on the public version of the app. Additionally, you will not be able to run games in development mode. Check the [Developer Docs](https://ascendara.app/docs/developer/build-from-source#important-limitations) for more information.
 
 1. **Clone the Repository**
 
@@ -274,6 +277,7 @@ Before building, ensure you have all required dependencies. [View full requireme
 ### Current Goals
 
 - [ ] Endpoint for known games that have weird installation paths, issues, etc.
+- [ ] Break up code into files for better organization
 - [ ] Add semi-support for Linux, and macOS
 
 ### Future Goals
