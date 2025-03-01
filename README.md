@@ -200,7 +200,7 @@ Contributing to Ascendara is the best way to get your desired features, bug fixe
 
 The Ascendara project is organized into the following main directories:
 
-- **src/**: Main application source code
+- **src/**: Interface and application logic
 
   - **components/**: Core UI components
   - **context/**: React context providers for state management
@@ -222,8 +222,8 @@ The Ascendara project is organized into the following main directories:
   - **AscendaraTorrentHandler/**: Torrent download functionality
 
 - **scripts/**: Utility scripts for maintaining the project
-- **build/**: Compiled application output & where the main Javascript is located
-- **installer/**: The source code for the GUI installer
+- **electron/**: The source code for the Electron app and IPC handles
+- **installer/**: The source code for the app's GUI installer
 
 ## 🛠️ Running from Source
 
