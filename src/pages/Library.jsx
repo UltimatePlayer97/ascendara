@@ -185,31 +185,36 @@ const Library = () => {
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
-  const fetchStorageInfo = async () => {
-    try {
-      const installPath = await window.electron.getDownloadDirectory();
-      if (installPath) {
-        const [driveSpace, gamesSize] = await Promise.all([
-          window.electron.getDriveSpace(installPath),
-          window.electron.getInstalledGamesSize(),
-        ]);
 
-        setStorageInfo(driveSpace);
+  useEffect(() => {
+    const fetchStorageInfo = async () => {
+      try {
+        const installPath = await window.electron.getDownloadDirectory();
+        if (installPath) {
+          const [driveSpace, gamesSize] = await Promise.all([
+            window.electron.getDriveSpace(installPath),
+            window.electron.getInstalledGamesSize(),
+          ]);
 
-        if (gamesSize.success) {
-          setIsCalculatingSize(gamesSize.calculating);
-          if (!gamesSize.calculating) {
-            setTotalGamesSize(gamesSize.totalSize);
+          setStorageInfo(driveSpace);
+
+          if (gamesSize.success) {
+            setIsCalculatingSize(gamesSize.calculating);
+            if (!gamesSize.calculating) {
+              setTotalGamesSize(gamesSize.totalSize);
+            }
           }
         }
+      } catch (error) {
+        console.error("Error fetching storage info:", error);
       }
-    } catch (error) {
-      console.error("Error fetching storage info:", error);
-    }
-  };
+    };
+
+    fetchStorageInfo();
+  }, []);
+
   useEffect(() => {
     fetchUsername();
-    fetchStorageInfo();
   }, []);
 
   // Keep track of whether we've initialized
@@ -471,7 +476,9 @@ const Library = () => {
                           </span>
                         </div>
                         <span className="text-sm font-medium">
-                          {formatBytes(storageInfo.freeSpace)}
+                          {storageInfo
+                            ? formatBytes(storageInfo.freeSpace)
+                            : t("library.loading")}
                         </span>
                       </div>
                       <div className="relative mb-2">
@@ -482,7 +489,7 @@ const Library = () => {
                               <div
                                 className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
                                 style={{
-                                  width: `${(totalGamesSize / storageInfo.totalSpace) * 100}%`,
+                                  width: `${storageInfo ? (totalGamesSize / storageInfo.totalSpace) * 100 : 0}%`,
                                   zIndex: 2,
                                 }}
                               />
@@ -502,7 +509,7 @@ const Library = () => {
                               <div
                                 className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
                                 style={{
-                                  width: `${((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100}%`,
+                                  width: `${storageInfo ? ((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100 : 0}%`,
                                   zIndex: 1,
                                 }}
                               />
@@ -510,9 +517,11 @@ const Library = () => {
                             <TooltipContent className="text-secondary">
                               {t("library.spaceTooltip.other", {
                                 size: formatBytes(
-                                  storageInfo.totalSpace -
-                                    storageInfo.freeSpace -
-                                    totalGamesSize
+                                  storageInfo
+                                    ? storageInfo.totalSpace -
+                                        storageInfo.freeSpace -
+                                        totalGamesSize
+                                    : 0
                                 ),
                               })}
                             </TooltipContent>
@@ -527,7 +536,9 @@ const Library = () => {
                           {t("library.gamesSpace")}:{" "}
                           {isCalculatingSize
                             ? t("library.calculatingSize")
-                            : formatBytes(totalGamesSize)}
+                            : storageInfo
+                              ? formatBytes(totalGamesSize)
+                              : t("library.loading")}
                         </span>
                       </div>
                     </div>
