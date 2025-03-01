@@ -1212,7 +1212,7 @@ function Settings() {
                       "https://ascendara.app/docs/features/igdb-integration"
                     )
                   }
-                  className="cursor text-sm text-primary hover:underline"
+                  className="cursor cursor-pointer text-sm text-primary hover:underline"
                 >
                   {t("settings.igdbLearnHowtoGet")}
                   <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
