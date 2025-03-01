@@ -49,10 +49,11 @@ import {
 import VerifyingGameDialog from "@/components/VerifyingGameDialog";
 import recentGamesService from "@/services/recentGamesService";
 import GamesBackupDialog from "@/components/GamesBackupDialog";
+import imageCacheService from "@/services/imageCacheService";
 import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
-import imageCacheService from "@/services/imageCacheService";
 import igdbService from "@/services/igdbService";
+import GameRate from "@/components/GameRate";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
