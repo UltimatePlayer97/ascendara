@@ -54,8 +54,9 @@ let updateDownloaded = false;
 let notificationShown = false;
 let updateDownloadInProgress = false;
 let experiment = false;
-let isBrokenVersion = false;
+let mainWindowHidden = false;
 let installedTools = [];
+let isBrokenVersion = false;
 let isWindows = os.platform().startsWith("win");
 let rpc;
 let config;
@@ -3119,19 +3120,6 @@ ipcMain.handle("maximize-window", () => {
   }
 });
 
-// Close the window
-ipcMain.handle("close-window", async () => {
-  const win = BrowserWindow.getFocusedWindow();
-  if (win) {
-    const settings = await getSettings();
-    if (!settings.endOnClose) {
-      win.hide();
-    } else {
-      win.close();
-    }
-  }
-});
-
 // Handle fullscreen toggle
 ipcMain.handle("toggle-fullscreen", () => {
   const win = BrowserWindow.getFocusedWindow();
@@ -3201,6 +3189,7 @@ function createWindow() {
     width: windowWidth,
     height: windowHeight,
     frame: false,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
@@ -3209,6 +3198,12 @@ function createWindow() {
   });
   // Width, Height
   mainWindow.setMinimumSize(600, 400);
+
+  // Only show the window when it's ready to be displayed
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
+    mainWindowHidden = false;
+  });
 
   if (isDev) {
     mainWindow.loadURL("http://localhost:5173");
@@ -3220,9 +3215,23 @@ function createWindow() {
     return { action: "deny" };
   });
 
-  // Start watching for translation progress
-}
+  // Add window event listeners
+  mainWindow.on("hide", () => {
+    mainWindowHidden = true;
+    console.log("Window hidden event fired");
+  });
 
+  mainWindow.on("show", () => {
+    mainWindowHidden = false;
+    console.log("Window shown event fired");
+  });
+
+  mainWindow.on("close", () => {
+    console.log("Window close event fired");
+  });
+
+  return mainWindow;
+}
 // Window visibility control functions
 let isHandlingProtocolUrl = false;
 
@@ -3232,16 +3241,46 @@ function hideWindow() {
     console.log("Skipping window hide during protocol URL handling");
     return;
   }
-  BrowserWindow.getAllWindows().forEach(window => {
-    window.hide();
-  });
+
+  const windows = BrowserWindow.getAllWindows();
+  if (windows.length > 0) {
+    mainWindowHidden = true;
+    windows.forEach(window => {
+      window.hide();
+    });
+  }
 }
 
 function showWindow() {
-  BrowserWindow.getAllWindows().forEach(window => {
-    window.show();
-  });
+  const windows = BrowserWindow.getAllWindows();
+  if (windows.length > 0) {
+    const mainWindow = windows[0];
+    if (!mainWindow.isVisible()) {
+      console.log("Showing window from showWindow function");
+      mainWindow.show();
+      mainWindowHidden = false;
+    }
+    mainWindow.focus();
+  } else {
+    console.log("Creating new window from showWindow function");
+    createWindow();
+  }
 }
+
+// Close the window
+ipcMain.handle("close-window", async () => {
+  const win = BrowserWindow.getFocusedWindow();
+  if (win) {
+    const settings = await getSettings();
+    if (!settings.endOnClose) {
+      mainWindowHidden = true;
+      win.hide();
+      console.log("Window hidden instead of closed");
+    } else {
+      win.close();
+    }
+  }
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -3503,7 +3542,7 @@ async function createGameShortcut(game) {
     console.log("Handler path:", handlerPath);
 
     if (!fs.existsSync(handlerPath)) {
-      throw new Error(`Game handler not found at: ${handlerPath}`);
+      throw new Error("Game handler not found at: ${handlerPath}");
     }
 
     console.log("Launching game:", {
@@ -3716,13 +3755,33 @@ if (!gotTheLock) {
 
     if (protocolUrl) {
       handleProtocolUrl(protocolUrl);
-    } else {
-      // Focus existing window for normal launch
-      const mainWindow = BrowserWindow.getAllWindows()[0];
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
+    }
+
+    // Find all windows
+    const windows = BrowserWindow.getAllWindows();
+
+    if (windows.length > 0) {
+      const mainWindow = windows[0];
+
+      // If the window is hidden, show it
+      if (mainWindowHidden || !mainWindow.isVisible()) {
+        console.log("Showing hidden window");
+        mainWindow.show();
+        mainWindowHidden = false;
       }
+
+      // If minimized, restore
+      if (mainWindow.isMinimized()) {
+        console.log("Restoring minimized window");
+        mainWindow.restore();
+      }
+
+      // Focus window
+      mainWindow.focus();
+    } else {
+      // No windows found, create a new one
+      console.log("No windows found, creating new window");
+      createWindow();
     }
   });
 
@@ -4206,12 +4265,6 @@ ipcMain.handle("get-installed-games-size", async event => {
       return { success: true, calculating: true };
     }
 
-    // Check if we have a recent cache (less than 5 minutes old)
-    const now = Date.now();
-    if (dirSizeCache.lastCalculated > now - 5 * 60 * 1000) {
-      return { success: true, totalSize: dirSizeCache.size };
-    }
-
     // Calculate new size
     dirSizeCache.calculating = true;
     event.sender.send("directory-size-status", { calculating: true });
@@ -4221,7 +4274,7 @@ ipcMain.handle("get-installed-games-size", async event => {
     // Update cache
     dirSizeCache = {
       size: totalSize,
-      lastCalculated: now,
+      lastCalculated: Date.now(),
       calculating: false,
     };
 
