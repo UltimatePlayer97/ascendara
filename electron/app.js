@@ -18,13 +18,13 @@
  *
  *  Start development by first setting the isDev variable to true, then run `yarn start`.
  *  Build the app from source to an executable by setting isDev to false and running `yarn dist`.
- *  Note: This will run the execute.py script to build the the index files, then build the app.
+ *  Note: This will run the build_ascendara.py script to build the the index files, then build the app.
  *
  *  Learn more about developing Ascendara at https://ascendara.app/docs/developer/overview
  *
  **/
 
-let isDev = true;
+let isDev = false;
 let appVersion = "8.1.3";
 
 const {

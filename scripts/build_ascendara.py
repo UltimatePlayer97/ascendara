@@ -147,7 +147,7 @@ def cleanup_after_build():
     """Clean up temporary files after the build is complete."""
     print("Cleaning up after build...")
     
-    # Remove build directory
+    # Step 1: Remove build directory
     if os.path.exists('build'):
         try:
             shutil.rmtree('build')
@@ -155,9 +155,48 @@ def cleanup_after_build():
         except Exception as e:
             print(f"Warning: Could not remove build directory: {e}")
     
-    # We don't clean up the electron directory after build since it's needed for the packaged app
-    print("Cleanup complete")
+    # Step 2: Clean up unnecessary files in electron directory
+    # We need to keep essential files but remove temporary build artifacts
+    electron_dir = 'electron'
+    if os.path.exists(electron_dir):
+        try:
+            # Remove index.html file
+            index_path = os.path.join(electron_dir, 'index.html')
+            if os.path.exists(index_path):
+                os.remove(index_path)
+                print("Removed index.html")
+            
+            # Remove index-*.css, index-*.js, and index-*.js.map files
+            for item in os.listdir(electron_dir):
+                if item.startswith('index-') and (item.endswith('.css') or item.endswith('.js') or item.endswith('.js.map')):
+                    os.remove(os.path.join(electron_dir, item))
+                    print(f"Removed {item}")
+            
+            # Clean up guide directory if it exists
+            guide_dir = os.path.join(electron_dir, 'guide')
+            if os.path.exists(guide_dir):
+                shutil.rmtree(guide_dir)
+                print("Removed electron/guide directory")
+                
+            # Clean up assets directory but keep essential files
+            assets_dir = os.path.join(electron_dir, 'assets')
+            if os.path.exists(assets_dir):
+                # Option 1: Remove the entire assets directory
+                shutil.rmtree(assets_dir)
+                print("Removed electron/assets directory")
+                
+            # Remove other temporary files
+            temp_files = ['icon.png', 'no-image.png']
+            for temp_file in temp_files:
+                temp_path = os.path.join(electron_dir, temp_file)
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                    print(f"Removed {temp_file}")
+                    
+        except Exception as e:
+            print(f"Warning: Error cleaning up electron directory: {e}")
     
+    print("Cleanup complete")
     return True
 
 def modify_index_html():
