@@ -12,31 +12,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  MoreVertical,
-  Play,
   Plus,
   FolderOpen,
   ExternalLink,
   Pencil,
-  Trash2,
-  Search,
   User,
   HardDrive,
   Gamepad2,
-  Monitor,
   Gift,
   Search as SearchIcon,
-  Loader,
-  StopCircle,
   AlertTriangle,
   Heart,
   SquareLibrary,
   Tag,
   PackageOpen,
-  FileCheck2,
-  FolderSync,
-  Layers2,
-  FolderSymlink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -50,24 +39,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import recentGamesService from "@/services/recentGamesService";
-import GameRate from "@/components/GameRate";
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import imageCacheService from "@/services/imageCacheService";
-import { useSettings } from "@/context/SettingsContext";
 import gameService from "@/services/gameService";
-import fs from "fs";
 import { toast } from "sonner";
 import UserSettingsDialog from "@/components/UserSettingsDialog";
-import VerifyingGameDialog from "@/components/VerifyingGameDialog";
-import GamesBackupDialog from "@/components/GamesBackupDialog";
 import { useNavigate } from "react-router-dom";
+import igdbService from "@/services/igdbService";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -120,7 +102,6 @@ const Library = () => {
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [launchingGame, setLaunchingGame] = useState(null);
   const [lastLaunchedGame, setLastLaunchedGame] = useState(null);
   const lastLaunchedGameRef = useRef(null);
   const [isOnWindows, setIsOnWindows] = useState(true);
@@ -130,9 +111,6 @@ const Library = () => {
   const [selectedGameImage, setSelectedGameImage] = useState(null);
   const [storageInfo, setStorageInfo] = useState(null);
   const [username, setUsername] = useState(null);
-  const [errorGame, setErrorGame] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [favorites, setFavorites] = useState(() => {
     const savedFavorites = localStorage.getItem("game-favorites");
     return savedFavorites ? JSON.parse(savedFavorites) : [];
@@ -207,50 +185,31 @@ const Library = () => {
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
+  const fetchStorageInfo = async () => {
+    try {
+      const installPath = await window.electron.getDownloadDirectory();
+      if (installPath) {
+        const [driveSpace, gamesSize] = await Promise.all([
+          window.electron.getDriveSpace(installPath),
+          window.electron.getInstalledGamesSize(),
+        ]);
 
-  useEffect(() => {
-    const fetchStorageInfo = async () => {
-      try {
-        const installPath = await window.electron.getDownloadDirectory();
-        if (installPath) {
-          // Get cached drive space and directory size
-          const [driveSpace, gamesSize] = await Promise.all([
-            window.electron.getDriveSpace(installPath),
-            window.electron.getInstalledGamesSize(),
-          ]);
+        setStorageInfo(driveSpace);
 
-          setStorageInfo(driveSpace);
-
-          if (gamesSize.success) {
-            if (gamesSize.calculating) {
-              setIsCalculatingSize(true);
-            } else {
-              setTotalGamesSize(gamesSize.totalSize);
-              setIsCalculatingSize(false);
-            }
+        if (gamesSize.success) {
+          setIsCalculatingSize(gamesSize.calculating);
+          if (!gamesSize.calculating) {
+            setTotalGamesSize(gamesSize.totalSize);
           }
         }
-      } catch (error) {
-        console.error("Error fetching storage info:", error);
       }
-    };
-
-    // Set up directory size status listener
-    const cleanup = window.electron.onDirectorySizeStatus(status => {
-      setIsCalculatingSize(status.calculating);
-      if (!status.calculating) {
-        fetchStorageInfo();
-      }
-    });
-
-    // Initial fetch
-    fetchStorageInfo();
-
-    return cleanup;
-  }, []); // Only run once on mount, cleanup on unmount
-
+    } catch (error) {
+      console.error("Error fetching storage info:", error);
+    }
+  };
   useEffect(() => {
     fetchUsername();
+    fetchStorageInfo();
   }, []);
 
   // Keep track of whether we've initialized
@@ -324,7 +283,18 @@ const Library = () => {
 
     setIsCoverSearchLoading(true);
     try {
-      const results = await gameService.searchGameCovers(query);
+      const gameDetails = await igdbService.getGameDetails(query);
+      // Transform the results to match the expected format
+      const results = gameDetails
+        .map(game => ({
+          id: game.id,
+          url:
+            game.screenshots && game.screenshots.length > 0
+              ? igdbService.formatImageUrl(game.screenshots[0].url, "screenshot_big")
+              : null,
+          name: game.name,
+        }))
+        .filter(game => game.url); // Only include games with screenshots
       setCoverSearchResults(results);
     } catch (error) {
       console.error("Error searching game covers:", error);
@@ -464,114 +434,105 @@ const Library = () => {
 
               {/* Right side: Storage Info and Settings */}
               <div className="flex items-start gap-4">
-                {storageInfo && (
-                  <div className="min-w-[250px] rounded-lg bg-secondary/10 p-3">
-                    <div className="space-y-3">
-                      {/* Username section */}
-                      <div className="flex items-center justify-between border-b border-secondary/20 pb-2">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-primary" />
-                          <span className="text-sm font-medium">
-                            {username || "Guest"}
-                          </span>
-                        </div>
-                        {isOnWindows ? (
-                          <UserSettingsDialog />
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            disabled
-                            size="icon"
-                            className="h-9 w-9"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        )}
+                <div className="min-w-[250px] rounded-lg bg-secondary/10 p-3">
+                  <div className="space-y-3">
+                    {/* Username section */}
+                    <div className="flex items-center justify-between border-b border-secondary/20 pb-2">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">{username || "Guest"}</span>
                       </div>
+                      {isOnWindows ? (
+                        <UserSettingsDialog />
+                      ) : (
+                        <Button variant="ghost" disabled size="icon" className="h-9 w-9">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
 
-                      <div className="mt-2 flex items-center justify-between">
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <SquareLibrary className="h-4 w-4 text-primary" />
+                        <span className="text-sm text-muted-foreground">
+                          {t("library.gamesInLibrary")}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium">{games.length}</span>
+                    </div>
+
+                    {/* Storage section */}
+                    <div>
+                      <div className="mb-1 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <SquareLibrary className="h-4 w-4 text-primary" />
+                          <HardDrive className="h-4 w-4 text-primary" />
                           <span className="text-sm text-muted-foreground">
-                            {t("library.gamesInLibrary")}
+                            {t("library.availableSpace")}
                           </span>
                         </div>
-                        <span className="text-sm font-medium">{games.length}</span>
+                        <span className="text-sm font-medium">
+                          {formatBytes(storageInfo.freeSpace)}
+                        </span>
                       </div>
+                      <div className="relative mb-2">
+                        {/* Ascendara Games Space */}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
+                                style={{
+                                  width: `${(totalGamesSize / storageInfo.totalSpace) * 100}%`,
+                                  zIndex: 2,
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent className="text-secondary">
+                              {t("library.spaceTooltip.games", {
+                                size: formatBytes(totalGamesSize),
+                              })}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
 
-                      {/* Storage section */}
-                      <div>
-                        <div className="mb-1 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <HardDrive className="h-4 w-4 text-primary" />
-                            <span className="text-sm text-muted-foreground">
-                              {t("library.availableSpace")}
-                            </span>
-                          </div>
-                          <span className="text-sm font-medium">
-                            {formatBytes(storageInfo.freeSpace)}
-                          </span>
-                        </div>
-                        <div className="relative mb-2">
-                          {/* Ascendara Games Space */}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
-                                  style={{
-                                    width: `${(totalGamesSize / storageInfo.totalSpace) * 100}%`,
-                                    zIndex: 2,
-                                  }}
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent className="text-secondary">
-                                {t("library.spaceTooltip.games", {
-                                  size: formatBytes(totalGamesSize),
-                                })}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                        {/* Other Used Space */}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
+                                style={{
+                                  width: `${((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100}%`,
+                                  zIndex: 1,
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent className="text-secondary">
+                              {t("library.spaceTooltip.other", {
+                                size: formatBytes(
+                                  storageInfo.totalSpace -
+                                    storageInfo.freeSpace -
+                                    totalGamesSize
+                                ),
+                              })}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
 
-                          {/* Other Used Space */}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div
-                                  className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
-                                  style={{
-                                    width: `${((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100}%`,
-                                    zIndex: 1,
-                                  }}
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent className="text-secondary">
-                                {t("library.spaceTooltip.other", {
-                                  size: formatBytes(
-                                    storageInfo.totalSpace -
-                                      storageInfo.freeSpace -
-                                      totalGamesSize
-                                  ),
-                                })}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-
-                          {/* Background */}
-                          <div className="h-2 w-full rounded-full bg-muted/30" />
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>
-                            {t("library.gamesSpace")}:{" "}
-                            {isCalculatingSize
-                              ? t("library.calculatingSize")
-                              : formatBytes(totalGamesSize)}
-                          </span>
-                        </div>
+                        {/* Background */}
+                        <div className="h-2 w-full rounded-full bg-muted/30" />
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>
+                          {t("library.gamesSpace")}:{" "}
+                          {isCalculatingSize
+                            ? t("library.calculatingSize")
+                            : formatBytes(totalGamesSize)}
+                        </span>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
