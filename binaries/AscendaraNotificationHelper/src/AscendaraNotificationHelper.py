@@ -3,7 +3,7 @@
 # ==============================================================================
 # A command-line tool for handling Ascendara notifications
 # Read more about the Notification Helper Tool here:
-# https://ascendara.app/docs/developer/notification-helper
+# https://ascendara.app/docs/binary-tool/notification-helper
 
 
 

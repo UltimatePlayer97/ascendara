@@ -4,7 +4,7 @@
 # Specialized downloader component for handling GoFile.io downloads in Ascendara.
 # Manages authentication, file downloads, and extraction.
 # support. Read more about the GoFile Helper Tool here:
-# https://ascendara.app/docs/developer/gofile-helper
+# https://ascendara.app/docs/binary-tool/gofile-helper
 
 
 

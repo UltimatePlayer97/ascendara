@@ -4,7 +4,7 @@
 # A GUI-based error reporting tool that handles application crashes and errors
 # across all Ascendara components. Provides user-friendly error messages and
 # crash reporting capabilities. Read more about the Crash Reporter tool here:
-# https://ascendara.app/docs/developer/crash-reporter
+# https://ascendara.app/docs/binary-tool/crash-reporter
 
 
 

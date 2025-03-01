@@ -4,7 +4,7 @@
 # High-performance multi-threaded downloader for Ascendara.
 # Handles game downloads, and extracting processes with support for
 # resume and verification. Read more about the Download Manager Tool here:
-# https://ascendara.app/docs/developer/downloader
+# https://ascendara.app/docs/binary-tool/downloader
 
 
 

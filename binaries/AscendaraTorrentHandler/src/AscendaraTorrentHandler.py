@@ -3,7 +3,7 @@
 # ==============================================================================
 # A command-line tool for handling Ascendara torrents
 # Read more about the Torrent Handler Tool here:
-# https://ascendara.app/docs/developer/torrent-handler
+# https://ascendara.app/docs/binary-tool/torrent-handler
 
 
 
