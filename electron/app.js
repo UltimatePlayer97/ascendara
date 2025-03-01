@@ -25,7 +25,7 @@
  **/
 
 let isDev = false;
-let appVersion = "8.1.3";
+let appVersion = "8.2.3";
 
 const {
   app,
