@@ -25,6 +25,7 @@ import {
   Settings2,
   Download,
   PlayCircleIcon,
+  FileSearch,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -46,6 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import VerifyingGameDialog from "@/components/VerifyingGameDialog";
+import recentGamesService from "@/services/recentGamesService";
 import GamesBackupDialog from "@/components/GamesBackupDialog";
 import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
@@ -96,7 +98,14 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   </AlertDialog>
 );
 
-const UninstallConfirmationDialog = ({ open, onClose, onConfirm, gameName, t }) => (
+const UninstallConfirmationDialog = ({
+  open,
+  onClose,
+  onConfirm,
+  gameName,
+  isUninstalling,
+  t,
+}) => (
   <AlertDialog open={open} onOpenChange={onClose}>
     <AlertDialogContent>
       <AlertDialogHeader>
@@ -111,8 +120,15 @@ const UninstallConfirmationDialog = ({ open, onClose, onConfirm, gameName, t }) 
         <Button variant="outline" className="text-primary" onClick={onClose}>
           {t("common.cancel")}
         </Button>
-        <Button className="text-secondary" onClick={onConfirm}>
-          {t("library.delete", { game: gameName })}
+        <Button className="text-secondary" onClick={onConfirm} disabled={isUninstalling}>
+          {isUninstalling ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              {t("library.deleting")}
+            </>
+          ) : (
+            t("library.delete", { game: gameName })
+          )}
         </Button>
       </AlertDialogFooter>
     </AlertDialogContent>
@@ -417,20 +433,17 @@ export default function GameScreen() {
 
   // Handle delete game
   const handleDeleteGame = async () => {
-    if (!game || isUninstalling) return;
-
-    if (game.isCustom) {
-      await window.electron.removeCustomGame(game.game || game.name);
-      navigate("/library");
-    } else {
-      const uninstalled = await window.electron.uninstallGame(game.game || game.name);
-
-      if (uninstalled) {
-        navigate("/library");
+    try {
+      if (game.isCustom) {
+        await window.electron.removeCustomGame(game.game || game.name);
       } else {
-        setIsUninstalling(false);
-        toast.error(t("library.deleteFailed"));
+        await window.electron.deleteGame(game.game || game.name);
       }
+      navigate("/library");
+      return;
+    } catch (error) {
+      console.error("Error deleting game:", error);
+      setIsUninstalling(false);
     }
   };
 
@@ -655,29 +668,52 @@ export default function GameScreen() {
 
                 {/* Main actions */}
                 <div className="space-y-3">
-                  <Button
-                    className="w-full gap-2 py-6 text-lg text-secondary"
-                    size="lg"
-                    onClick={handlePlayGame}
-                    disabled={isLaunching || isRunning || !executableExists}
-                  >
-                    {isLaunching ? (
-                      <>
-                        <Loader className="h-5 w-5 animate-spin" />
-                        {t("library.launching")}
-                      </>
-                    ) : isRunning ? (
-                      <>
-                        <StopCircle className="h-5 w-5" />
-                        {t("library.running")}
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-5 w-5" />
-                        {t("library.play")}
-                      </>
-                    )}
-                  </Button>
+                  {executableExists ? (
+                    <Button
+                      className="w-full gap-2 py-6 text-lg text-secondary"
+                      size="lg"
+                      onClick={handlePlayGame}
+                      disabled={isLaunching || isRunning}
+                    >
+                      {isLaunching ? (
+                        <>
+                          <Loader className="h-5 w-5 animate-spin" />
+                          {t("library.launching")}
+                        </>
+                      ) : isRunning ? (
+                        <>
+                          <StopCircle className="h-5 w-5" />
+                          {t("library.running")}
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-5 w-5" />
+                          {t("library.play")}
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full gap-2 py-6 text-lg text-secondary"
+                      size="lg"
+                      onClick={async () => {
+                        const exePath = await window.electron.openFileDialog(
+                          game.executable
+                        );
+                        if (exePath) {
+                          await window.electron.modifyGameExecutable(
+                            game.game || game.name,
+                            exePath
+                          );
+                          const exists = await window.electron.checkFileExists(exePath);
+                          setExecutableExists(exists);
+                        }
+                      }}
+                    >
+                      <FileSearch className="h-5 w-5" />
+                      {t("library.setExecutable")}
+                    </Button>
+                  )}
 
                   <Button
                     variant="outline"
@@ -763,7 +799,9 @@ export default function GameScreen() {
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
-                    onClick={() => setIsDeleteDialogOpen(true)}
+                    onClick={() =>
+                      game.isCustom ? handleDeleteGame() : setIsDeleteDialogOpen(true)
+                    }
                     disabled={isUninstalling}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -926,15 +964,28 @@ export default function GameScreen() {
                       </div>
 
                       {game.executable && (
-                        <div className="flex items-center gap-2">
-                          <Monitor className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex items-center gap-3">
+                          <Monitor className="h-5 w-5 text-muted-foreground" />
                           <div>
                             <span className="text-sm text-muted-foreground">
-                              {t("library.executable")}
+                              {t("library.executable").toUpperCase()}
                             </span>
-                            <p className="max-w-[200px] truncate text-sm font-medium">
-                              {game.executable.split("\\").pop()}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="max-w-[220px] truncate text-sm font-medium text-foreground">
+                                {game.executable.split("\\").pop()}
+                              </p>
+                              {!executableExists && (
+                                <AlertTriangle
+                                  className="h-5 w-5 animate-pulse text-red-500"
+                                  title={t("library.executableNotFound")}
+                                />
+                              )}
+                            </div>
+                            {!executableExists && (
+                              <p className="text-sm text-muted-foreground">
+                                {t("library.executableNotFound")}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}
@@ -1136,6 +1187,7 @@ export default function GameScreen() {
         onConfirm={handleDeleteGame}
         gameName={game.game}
         open={isDeleteDialogOpen}
+        isUninstalling={isUninstalling}
         t={t}
       />
     </div>
