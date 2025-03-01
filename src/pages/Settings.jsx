@@ -318,11 +318,6 @@ function Settings() {
     initializeSettings();
   }, []); // Run only once on mount
 
-  const handleUpdateKeys = async () => {
-    await handleSettingChange("twitchSecret", twitchSecret);
-    await handleSettingChange("twitchClientId", twitchClientId);
-  };
-
   const handleSettingChange = async (key, value, ludusavi = false) => {
     if (key === "gameSource") {
       setPendingSourceChange(value);
@@ -1218,28 +1213,43 @@ function Settings() {
                   <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
                 </a>
               </div>
-              <div className="flex items-center space-x-4">
-                <Input
-                  type="password"
-                  value={twitchClientId}
-                  onChange={e => setTwitchClientId(e.target.value)}
-                  placeholder={t("settings.enterTwitchClientId")}
-                />
-                <Input
-                  type="password"
-                  value={twitchSecret}
-                  onChange={e => setTwitchSecret(e.target.value)}
-                  placeholder={t("settings.enterIgdbApiKey")}
-                />
-                <Button
-                  variant="outline"
-                  className="text-primary"
-                  onClick={() => {
-                    handleUpdateKeys();
-                  }}
-                >
-                  {t("settings.setKey")}
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="password"
+                    value={twitchClientId}
+                    onChange={e => setTwitchClientId(e.target.value)}
+                    placeholder={t("settings.enterTwitchClientId")}
+                    className="flex-grow"
+                  />
+                  <Button
+                    variant="outline"
+                    className="text-primary"
+                    onClick={() => {
+                      handleSettingChange("twitchClientId", twitchClientId);
+                    }}
+                  >
+                    {t("settings.setKey")}
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    type="password"
+                    value={twitchSecret}
+                    onChange={e => setTwitchSecret(e.target.value)}
+                    placeholder={t("settings.enterIgdbApiKey")}
+                    className="flex-grow"
+                  />
+                  <Button
+                    variant="outline"
+                    className="text-primary"
+                    onClick={() => {
+                      handleSettingChange("twitchSecret", twitchSecret);
+                    }}
+                  >
+                    {t("settings.setKey")}
+                  </Button>
+                </div>
               </div>
             </Card>
 
