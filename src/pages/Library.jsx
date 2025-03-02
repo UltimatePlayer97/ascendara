@@ -26,6 +26,7 @@ import {
   SquareLibrary,
   Tag,
   PackageOpen,
+  Loader,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -476,9 +477,11 @@ const Library = () => {
                           </span>
                         </div>
                         <span className="text-sm font-medium">
-                          {storageInfo
-                            ? formatBytes(storageInfo.freeSpace)
-                            : t("library.loading")}
+                          {storageInfo ? (
+                            formatBytes(storageInfo.freeSpace)
+                          ) : (
+                            <Loader className="h-4 w-4 animate-spin" />
+                          )}
                         </span>
                       </div>
                       <div className="relative mb-2">
@@ -534,11 +537,13 @@ const Library = () => {
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>
                           {t("library.gamesSpace")}:{" "}
-                          {isCalculatingSize
-                            ? t("library.calculatingSize")
-                            : storageInfo
-                              ? formatBytes(totalGamesSize)
-                              : t("library.loading")}
+                          {isCalculatingSize ? (
+                            t("library.calculatingSize")
+                          ) : storageInfo ? (
+                            formatBytes(totalGamesSize)
+                          ) : (
+                            <Loader className="h-4 w-4 animate-spin" />
+                          )}
                         </span>
                       </div>
                     </div>
