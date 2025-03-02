@@ -1870,25 +1870,6 @@ export default function DownloadPage() {
                         )}
                       </div>
                     )}
-
-                    {/* Game Features */}
-                    {igdbData.game_modes && igdbData.game_modes.length > 0 && (
-                      <div className="rounded-lg border border-border bg-card/50 p-4">
-                        <h3 className="mb-2 font-semibold text-foreground">
-                          {t("download.gameModes")}
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {igdbData.game_modes.map((mode, index) => (
-                            <span
-                              key={index}
-                              className="rounded-full bg-card px-3 py-1 text-xs font-medium text-foreground"
-                            >
-                              {mode.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 

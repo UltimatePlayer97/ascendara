@@ -132,40 +132,6 @@ const getGameScreenshots = async (gameId, clientId, accessToken) => {
  * @param {string} accessToken - Twitch Access Token
  * @returns {Promise<Array>} Game modes array
  */
-const getGameModes = async (gameId, clientId, accessToken) => {
-  try {
-    const headers = {
-      Accept: "application/json",
-      "Client-ID": clientId,
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    };
-
-    // In production, we need to add CORS headers
-    if (!isDev) {
-      headers["Access-Control-Allow-Origin"] = "*";
-    }
-
-    // Ensure we're using a properly formed URL
-    const url = isDev ? `${IGDB_API_URL}/game_modes` : `${IGDB_API_URL}/game_modes`;
-    console.log("IGDB API URL:", url); // Debug log
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: `fields *; where game = ${gameId}; limit 10;`,
-    });
-
-    if (!response.ok) {
-      throw new Error(`IGDB API error: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error getting game modes:", error);
-    return [];
-  }
-};
 
 /**
  * Format IGDB image URL to get the appropriate size
@@ -252,14 +218,6 @@ const getGameDetails = async (gameName, config = {}) => {
 
       if (additionalScreenshots.length > 0) {
         gameDetails.screenshots = additionalScreenshots;
-      }
-    }
-
-    // Get game modes if available
-    if (game.id) {
-      const gameModes = await getGameModes(game.id, clientId, accessToken);
-      if (gameModes.length > 0) {
-        gameDetails.game_modes = gameModes;
       }
     }
 
