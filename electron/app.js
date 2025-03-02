@@ -3260,7 +3260,20 @@ function showWindow() {
       mainWindow.show();
       mainWindowHidden = false;
     }
+
+    // Add these lines to ensure the window is brought to the front
+    if (mainWindow.isMinimized()) {
+      console.log("Restoring minimized window");
+      mainWindow.restore();
+    }
+
+    // Add setAlwaysOnTop temporarily to force focus
+    mainWindow.setAlwaysOnTop(true);
     mainWindow.focus();
+    // Remove the always on top flag after focusing
+    setTimeout(() => {
+      mainWindow.setAlwaysOnTop(false);
+    }, 100);
   } else {
     console.log("Creating new window from showWindow function");
     createWindow();
