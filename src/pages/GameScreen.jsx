@@ -248,7 +248,7 @@ export default function GameScreen() {
         );
 
         if (gameData && gameData.launchCount === 1) {
-          setRatingGame(gameData.game || gameData.name);
+          setRatingGame(game.game || game.name);
           setShowRateDialog(true);
         }
       }
@@ -477,7 +477,6 @@ export default function GameScreen() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-4 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">{t("common.loading")}</p>
         </div>
       </div>
     );
@@ -1096,7 +1095,7 @@ export default function GameScreen() {
 
       {ratingGame && (
         <GameRate
-          game={ratingGame}
+          game={game}
           isOpen={showRateDialog}
           onClose={() => {
             setShowRateDialog(false);
