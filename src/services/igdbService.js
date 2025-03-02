@@ -10,7 +10,10 @@
 import igdbCacheService from "./igdbCacheService";
 
 // Constants for API
-const IGDB_API_URL = "/api/igdb";
+const isDev = process.env.NODE_ENV === "development";
+// In production, we need to use the absolute URL to the IGDB API
+// In development, we use the proxy configured in vite.config.js
+const IGDB_API_URL = isDev ? "/api/igdb" : "https://api.igdb.com/v4";
 const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/token";
 
 /**
@@ -47,14 +50,24 @@ const getTwitchToken = async (clientId, clientSecret) => {
  */
 const searchGame = async (gameName, clientId, accessToken) => {
   try {
-    const response = await fetch(`${IGDB_API_URL}/games`, {
+    const headers = {
+      Accept: "application/json",
+      "Client-ID": clientId,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    };
+
+    if (!isDev) {
+      headers["Access-Control-Allow-Origin"] = "*";
+    }
+
+    // Ensure we're using a properly formed URL
+    const url = isDev ? `${IGDB_API_URL}/games` : `${IGDB_API_URL}/games`;
+    console.log("IGDB API URL:", url); // Debug log
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Client-ID": clientId,
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: `search "${gameName}"; fields name,summary,storyline,rating,cover.url,screenshots.url,genres.name,platforms.name,release_dates.human,involved_companies.company.name,involved_companies.developer,involved_companies.publisher; limit 1;`,
     });
 
@@ -79,14 +92,25 @@ const searchGame = async (gameName, clientId, accessToken) => {
  */
 const getGameScreenshots = async (gameId, clientId, accessToken) => {
   try {
-    const response = await fetch(`${IGDB_API_URL}/screenshots`, {
+    const headers = {
+      Accept: "application/json",
+      "Client-ID": clientId,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    };
+
+    // In production, we need to add CORS headers
+    if (!isDev) {
+      headers["Access-Control-Allow-Origin"] = "*";
+    }
+
+    // Ensure we're using a properly formed URL
+    const url = isDev ? `${IGDB_API_URL}/screenshots` : `${IGDB_API_URL}/screenshots`;
+    console.log("IGDB API URL:", url); // Debug log
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Client-ID": clientId,
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: `fields *; where game = ${gameId}; limit 10;`,
     });
 
@@ -110,14 +134,25 @@ const getGameScreenshots = async (gameId, clientId, accessToken) => {
  */
 const getGameModes = async (gameId, clientId, accessToken) => {
   try {
-    const response = await fetch(`${IGDB_API_URL}/game_modes`, {
+    const headers = {
+      Accept: "application/json",
+      "Client-ID": clientId,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    };
+
+    // In production, we need to add CORS headers
+    if (!isDev) {
+      headers["Access-Control-Allow-Origin"] = "*";
+    }
+
+    // Ensure we're using a properly formed URL
+    const url = isDev ? `${IGDB_API_URL}/game_modes` : `${IGDB_API_URL}/game_modes`;
+    console.log("IGDB API URL:", url); // Debug log
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Client-ID": clientId,
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: `fields *; where game = ${gameId}; limit 10;`,
     });
 
