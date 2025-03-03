@@ -45,7 +45,7 @@ const unzipper = require("unzipper");
 const fs = require("fs-extra");
 const os = require("os");
 const ip = require("ip");
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 require("dotenv").config();
 
 let has_launched = false;
@@ -2773,6 +2773,18 @@ ipcMain.handle("modify-game-executable", (event, game, executable) => {
     fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
   } catch (error) {
     console.error("Error reading the settings file:", error);
+  }
+});
+
+ipcMain.handle("is-steam-running", () => {
+  try {
+    const processes = execSync('tasklist /fi "imagename eq steam.exe" /fo csv /nh', {
+      encoding: "utf8",
+    });
+    return processes.toLowerCase().includes("steam.exe");
+  } catch (error) {
+    console.error("Error checking if Steam is running:", error);
+    return false;
   }
 });
 

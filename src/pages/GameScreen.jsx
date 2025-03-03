@@ -137,6 +137,26 @@ const UninstallConfirmationDialog = ({
   </AlertDialog>
 );
 
+const SteamNotRunningDialog = ({ open, onClose, t }) => (
+  <AlertDialog open={open} onOpenChange={onClose}>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle className="text-2xl font-bold text-foreground">
+          {t("library.steamNotRunning")}
+        </AlertDialogTitle>
+        <AlertDialogDescription className="space-y-4 text-muted-foreground">
+          {t("library.steamNotRunningMessage")}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter className="flex gap-2">
+        <Button variant="outline" className="text-primary" onClick={onClose}>
+          {t("common.ok")}
+        </Button>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
+
 export default function GameScreen() {
   const showError = (game, error) => {
     setErrorGame(game);
@@ -171,6 +191,7 @@ export default function GameScreen() {
   const [backupDialogOpen, setBackupDialogOpen] = useState(false);
   const [showVrWarning, setShowVrWarning] = useState(false);
   const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
+  const [showSteamNotRunningWarning, setShowSteamNotRunningWarning] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [ratingGame, setRatingGame] = useState(null);
   const [showRateDialog, setShowRateDialog] = useState(false);
@@ -361,6 +382,16 @@ export default function GameScreen() {
         toast.error(t("library.alreadyRunning", { game: gameName }));
         setIsLaunching(false);
         return;
+      }
+
+      // Check if Steam is running for onlinefix
+      if (game.online) {
+        if (!(await window.electron.isSteamRunning())) {
+          toast.error(t("library.steamNotRunning"));
+          setIsLaunching(false);
+          setShowSteamNotRunningWarning(true);
+          return;
+        }
       }
 
       // Check if game is VR and show warning
@@ -1187,6 +1218,13 @@ export default function GameScreen() {
         gameName={game.game}
         open={isDeleteDialogOpen}
         isUninstalling={isUninstalling}
+        t={t}
+      />
+
+      {/* Steam Not Running Dialog */}
+      <SteamNotRunningDialog
+        open={showSteamNotRunningWarning}
+        onClose={() => setShowSteamNotRunningWarning(false)}
         t={t}
       />
     </div>

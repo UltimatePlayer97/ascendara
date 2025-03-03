@@ -454,6 +454,8 @@
       "games": "Space used by Ascendara games: {{size}}",
       "other": "Space used by other files: {{size}}"
     },
+    "steamNotRunning": "Steam is not running",
+    "steamNotRunningMessage": "Online-Fix games require Steam to be running. Please start Steam and make sure you're signed into your account then launch the game again.",
     "verifyGameFiles": "Verify Game Files",
     "version": "Version",
     "versionPlaceholder": "e.g., 1.0.0",
