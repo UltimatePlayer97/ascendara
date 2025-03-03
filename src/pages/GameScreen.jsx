@@ -333,14 +333,13 @@ export default function GameScreen() {
 
   // Format playtime
   const formatPlaytime = playTime => {
-    if (playTime === undefined) return t("library.neverPlayed");
+    if (playTime === undefined) return t("library.neverPlayed2");
 
-    if (playTime < 60) return t("library.lessThanMinute");
-    if (playTime < 120) return `1 ${t("library.minute")} ${t("library.ofPlaytime")}`;
-    if (playTime < 3600)
-      return `${Math.floor(playTime / 60)} ${t("library.minutes")} ${t("library.ofPlaytime")}`;
-    if (playTime < 7200) return `1 ${t("library.hour")} ${t("library.ofPlaytime")}`;
-    return `${Math.floor(playTime / 3600)} ${t("library.hours")} ${t("library.ofPlaytime")}`;
+    if (playTime < 60) return t("library.lessThanMinute2");
+    if (playTime < 120) return `1 ${t("library.minute")}`;
+    if (playTime < 3600) return `${Math.floor(playTime / 60)} ${t("library.minutes")}`;
+    if (playTime < 7200) return `1 ${t("library.hour")}`;
+    return `${Math.floor(playTime / 3600)} ${t("library.hours")}`;
   };
 
   // Handle play game
