@@ -242,7 +242,7 @@ const Navigation = memo(({ items }) => {
                   <item.icon className="h-5 w-5" />
                   {item.icon === Download && downloadCount > 0 && (
                     <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                      {downloadCount}
+                      <span className="mb-0.5">{downloadCount}</span>
                     </div>
                   )}
                 </div>
