@@ -228,7 +228,7 @@ class AscendaraInstaller(ctk.CTk):
         self.log_button.place(relx=0.96, rely=0.05, anchor="ne")
         
         # Load and display logo
-        logo_url = "https://raw.githubusercontent.com/tagoWorks/ascendara/refs/heads/main/public/icon.png"
+        logo_url = "https://raw.githubusercontent.com/Ascendara/ascendara/refs/heads/main/src/public/icon.png"
         response = requests.get(logo_url)
         if response.status_code == 200:
             logo_image = Image.open(BytesIO(response.content))
