@@ -213,11 +213,32 @@ const WorkshopDownloader = () => {
               <AlertDialogDescription className="space-y-4">
                 <p>{t("workshopDownloader.downloadFailure.description")}</p>
                 <ul className="list-disc space-y-1 pl-6">
-                  {t("workshopDownloader.downloadFailure.reasons", {
-                    returnObjects: true,
-                  }).map((reason, index) => (
-                    <li key={index}>{reason}</li>
-                  ))}
+                  {(() => {
+                    const reasons = t("workshopDownloader.downloadFailure.reasons", {
+                      returnObjects: true,
+                    });
+                    // Handle both string and array formats
+                    if (typeof reasons === "string") {
+                      try {
+                        // Try to parse if it's a string representation of an array
+                        const parsedReasons = JSON.parse(reasons.replace(/'/g, '"'));
+                        return parsedReasons.map((reason, index) => (
+                          <li key={index}>{reason}</li>
+                        ));
+                      } catch (e) {
+                        // If parsing fails, just return the string as a single item
+                        return <li>{reasons}</li>;
+                      }
+                    } else if (Array.isArray(reasons)) {
+                      // If it's already an array, use it directly
+                      return reasons.map((reason, index) => (
+                        <li key={index}>{reason}</li>
+                      ));
+                    } else {
+                      // Fallback for any other case
+                      return <li>The download failed. Please try again.</li>;
+                    }
+                  })()}
                 </ul>
                 <p>{t("workshopDownloader.downloadFailure.suggestion")}</p>
               </AlertDialogDescription>
