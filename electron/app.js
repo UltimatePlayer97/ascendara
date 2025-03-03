@@ -24,7 +24,7 @@
  *
  **/
 
-let isDev = false;
+let isDev = true;
 let appVersion = "8.2.3";
 
 const {
@@ -3383,9 +3383,9 @@ let driveSpaceCache = {
 
 ipcMain.handle("get-drive-space", async (event, directory) => {
   try {
-    // Check if we have a recent cache (less than 30 seconds old)
+    // Check if we have a recent cache (less than 5 minutes old)
     const now = Date.now();
-    if (driveSpaceCache.lastCalculated > now - 30 * 1000) {
+    if (driveSpaceCache.lastCalculated > now - 5 * 60 * 1000) {
       return {
         freeSpace: driveSpaceCache.freeSpace,
         totalSpace: driveSpaceCache.totalSpace,
