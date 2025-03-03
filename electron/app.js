@@ -3291,13 +3291,18 @@ ipcMain.handle("close-window", async () => {
       console.log("Window hidden instead of closed");
     } else {
       win.close();
+      // If endOnClose is true, we should make sure the app fully quits
+      if (process.platform !== "darwin") {
+        app.quit();
+      }
     }
   }
 });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
+    // Force quit the app to ensure all processes are terminated
+    app.exit(0);
   }
 });
 
@@ -3748,7 +3753,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
   console.log("Another instance is running, quitting this instance");
-  app.quit();
+  app.exit(0);
 } else {
   // Register protocol handler
   if (process.defaultApp || isDev) {
@@ -3776,11 +3781,12 @@ if (!gotTheLock) {
     if (windows.length > 0) {
       const mainWindow = windows[0];
 
+      // Force show the window regardless of its current state
+      mainWindowHidden = false;
+
       // If the window is hidden, show it
-      if (mainWindowHidden || !mainWindow.isVisible()) {
-        console.log("Showing hidden window");
+      if (!mainWindow.isVisible()) {
         mainWindow.show();
-        mainWindowHidden = false;
       }
 
       // If minimized, restore
@@ -3789,8 +3795,16 @@ if (!gotTheLock) {
         mainWindow.restore();
       }
 
-      // Focus window
+      // Force focus by temporarily setting alwaysOnTop
+      mainWindow.setAlwaysOnTop(true);
       mainWindow.focus();
+      mainWindow.center(); // Center the window on screen
+      setTimeout(() => {
+        mainWindow.setAlwaysOnTop(false);
+      }, 100);
+
+      // Emit an event to the renderer process to notify it that the window was shown due to a second instance
+      mainWindow.webContents.send("second-instance-detected");
     } else {
       // No windows found, create a new one
       console.log("No windows found, creating new window");
