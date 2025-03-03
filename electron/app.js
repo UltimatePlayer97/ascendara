@@ -24,7 +24,7 @@
  *
  **/
 
-let isDev = true;
+let isDev = false;
 let appVersion = "8.2.3";
 
 const {
@@ -4244,19 +4244,39 @@ let dirSizeCache = {
   calculating: false,
 };
 
-// Calculate directory size recursively
+// Calculate directory size with improved performance
 async function calculateDirSize(dirPath) {
   let totalSize = 0;
-  const files = await fs.promises.readdir(dirPath);
 
-  for (const file of files) {
-    const filePath = path.join(dirPath, file);
-    const stats = await fs.promises.stat(filePath);
+  // Use a stack-based approach instead of recursion to prevent stack overflow
+  const pendingDirs = [dirPath];
 
-    if (stats.isDirectory()) {
-      totalSize += await calculateDirSize(filePath);
-    } else {
-      totalSize += stats.size;
+  while (pendingDirs.length > 0) {
+    const currentDir = pendingDirs.pop();
+
+    try {
+      const entries = await fs.promises.readdir(currentDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry.name);
+
+        try {
+          if (entry.isDirectory()) {
+            pendingDirs.push(fullPath);
+          } else if (entry.isFile()) {
+            const stats = await fs.promises.stat(fullPath);
+            totalSize += stats.size;
+          }
+        } catch (err) {
+          // Skip files with permission issues
+          console.warn(`Error accessing ${fullPath}: ${err.message}`);
+        }
+      }
+
+      // Yield to event loop to prevent blocking
+      await new Promise(resolve => setImmediate(resolve));
+    } catch (err) {
+      console.warn(`Error reading directory ${currentDir}: ${err.message}`);
     }
   }
 
@@ -4278,23 +4298,38 @@ ipcMain.handle("get-installed-games-size", async event => {
       return { success: true, calculating: true };
     }
 
-    // Calculate new size
+    // Use cache if it's recent (last 5 minutes)
+    const cacheAge = Date.now() - dirSizeCache.lastCalculated;
+    if (dirSizeCache.lastCalculated > 0 && cacheAge < 5 * 60 * 1000) {
+      return { success: true, totalSize: dirSizeCache.size, calculating: false };
+    }
+
+    // Start calculation in background
     dirSizeCache.calculating = true;
     event.sender.send("directory-size-status", { calculating: true });
 
-    const totalSize = await calculateDirSize(downloadDirectory);
+    // Use setImmediate to not block the main thread
+    setImmediate(async () => {
+      try {
+        const totalSize = await calculateDirSize(downloadDirectory);
 
-    // Update cache
-    dirSizeCache = {
-      size: totalSize,
-      lastCalculated: Date.now(),
-      calculating: false,
-    };
+        // Update cache
+        dirSizeCache = {
+          size: totalSize,
+          lastCalculated: Date.now(),
+          calculating: false,
+        };
 
-    event.sender.send("directory-size-status", { calculating: false });
-    console.log(`Actual download directory size: ${totalSize} bytes`);
+        event.sender.send("directory-size-status", { calculating: false });
+        console.log(`Actual download directory size: ${totalSize} bytes`);
+      } catch (error) {
+        dirSizeCache.calculating = false;
+        event.sender.send("directory-size-status", { calculating: false });
+        console.error("Error calculating directory size:", error);
+      }
+    });
 
-    return { success: true, totalSize };
+    return { success: true, calculating: true };
   } catch (error) {
     dirSizeCache.calculating = false;
     event.sender.send("directory-size-status", { calculating: false });
@@ -4303,9 +4338,8 @@ ipcMain.handle("get-installed-games-size", async event => {
   }
 });
 
-// Terminal intro function moved from src/lib/terminalIntro.js
 /**
- * Prints a stylish intro in the terminal when starting the Ascendara development server
+ * Prints a stylish intro in the terminal when starting the development build
  * @param {string} appVersion - The current version of the application
  * @param {string} nodeEnv - The current Node environment
  * @param {boolean} isDev - Whether the app is running in development mode
