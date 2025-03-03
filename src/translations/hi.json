@@ -103,7 +103,8 @@
     "retry": "पुनः प्रयास करें",
     "search": "खोज",
     "submit": "जमा करना",
-    "submitting": "सबमिटिंग ..."
+    "submitting": "सबमिटिंग ...",
+    "workshopDownloader": "कार्यशाला डाउनलोडर"
   },
   "download": {
     "aboutGame": "इस खेल के बारे में",
@@ -160,7 +161,9 @@
     "gameModes": "खेल के अंदाज़ में",
     "gameNeedsEmulator": "इसके लिए एक एमुलेटर को चलाने की आवश्यकता होती है।",
     "gameNeedsVR": "वीआर की आवश्यकता है",
+    "igdbLoading": "IGDB जानकारी लोड हो रहा है ...",
     "igdbRating": "इस गेम को {{rating}} सेब रेट किया गया है। Apple रेटिंग Ascendara पर स्टार रेटिंग से अलग हैं, और खेल की एक सामान्य रेटिंग से अधिक हैं।",
+    "infoMaybeInaccurate": "यदि जानकारी गलत है, तो कृपया इसे रिपोर्ट करें",
     "linkCopied": "लिंक क्लिपबोर्ड के लिए कॉपी किया गया",
     "newUserGuide": {
       "close": "बंद करना",
@@ -407,10 +410,12 @@
     "launchError": "प्रक्षेपण त्रुटि",
     "launchErrorMessage": "{{game}} चलाने में विफल रहा। कभी -कभी गेम निष्पादन को गेम नाम के समान नामित नहीं किया जाता है। कृपया सुनिश्चित करें कि Ascendara सही फ़ाइल को चलाने की कोशिश कर रहा है।",
     "launching": "लॉन्च करना ...",
-    "lessThanMinute": "एक मिनट से भी कम",
+    "lessThanMinute": "इस खेल पर एक मिनट से भी कम समय",
+    "lessThanMinute2": "एक मिनट से भी कम",
     "minute": "मिनट",
     "minutes": "मिनट",
-    "neverPlayed": "कभी नहीं खेला",
+    "neverPlayed": "आपने अभी तक यह गेम नहीं खेला है",
+    "neverPlayed2": "कभी नहीं खेला",
     "noResultsFound": "कोई परिणाम नहीं मिला। अपनी खोज के साथ सटीक रहें।",
     "ofPlaytime": "इस खेल पर",
     "openGameDirectory": "खुला खेल निर्देशिका",

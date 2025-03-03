@@ -103,7 +103,8 @@
     "retry": "Tente novamente",
     "search": "Procurar",
     "submit": "Enviar",
-    "submitting": "Enviando ..."
+    "submitting": "Enviando ...",
+    "workshopDownloader": "Workshop Downloader"
   },
   "download": {
     "aboutGame": "Sobre este jogo",
@@ -160,7 +161,9 @@
     "gameModes": "Modos de jogo",
     "gameNeedsEmulator": "Isso exige que um emulador seja executado.",
     "gameNeedsVR": "VR necessário",
+    "igdbLoading": "Carregando informações do IGDB ...",
     "igdbRating": "Este jogo é classificado como maçãs {{rating}}. As classificações da Apple são diferentes das classificações de estrelas em Ascendara e são mais uma classificação geral do jogo.",
+    "infoMaybeInaccurate": "Se as informações forem imprecisas, denuncie -as",
     "linkCopied": "Link copiado para a área de transferência",
     "newUserGuide": {
       "close": "Fechar",
@@ -407,10 +410,12 @@
     "launchError": "Erro de lançamento",
     "launchErrorMessage": "Falha ao executar {{game}}. Às vezes, os executáveis ​​dos jogos não são nomeados da mesma forma que o nome do jogo. Certifique -se de que Ascendara esteja tentando executar o arquivo correto.",
     "launching": "Lançamento ...",
-    "lessThanMinute": "Menos de um minuto",
+    "lessThanMinute": "Menos de um minuto neste jogo",
+    "lessThanMinute2": "Menos de um minuto",
     "minute": "minuto",
     "minutes": "minutos",
-    "neverPlayed": "Nunca tocou",
+    "neverPlayed": "Você ainda não jogou este jogo",
+    "neverPlayed2": "Nunca tocou",
     "noResultsFound": "Nenhum resultado encontrado. Seja preciso com sua pesquisa.",
     "ofPlaytime": "neste jogo",
     "openGameDirectory": "Diretório de jogos aberto",

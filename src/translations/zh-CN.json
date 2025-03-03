@@ -103,7 +103,8 @@
     "retry": "再试一次",
     "search": "搜索",
     "submit": "提交",
-    "submitting": "提交..."
+    "submitting": "提交...",
+    "workshopDownloader": "研讨会下载器"
   },
   "download": {
     "aboutGame": "关于这个游戏",
@@ -160,7 +161,9 @@
     "gameModes": "游戏模式",
     "gameNeedsEmulator": "这需要模拟器运行。",
     "gameNeedsVR": "需要VR",
+    "igdbLoading": "加载IGDB信息...",
     "igdbRating": "该游戏被评为{{rating}}苹果。 Apple评分与Ascendara的Star评分不同，并且更像是游戏的一般评级。",
+    "infoMaybeInaccurate": "如果信息不准确，请报告",
     "linkCopied": "链接复制到剪贴板",
     "newUserGuide": {
       "close": "关闭",
@@ -383,7 +386,7 @@
     "coverSearchError": "错误搜索图像",
     "createShortcut": "创建桌面快捷方式",
     "delete": "删除{{game}}",
-    "deleteConfirmMessage": "您确定要从库中删除{{game}}吗？这将从您的Ascendara库中删除游戏，并删除所有关联的文件。这一行动无法撤消。",
+    "deleteConfirmMessage": "您确定要从库中删除{{game}}吗？这将从您的Ascendara库中删除游戏，并删除所有关联的文件。该动作不能撤消。",
     "deleteGame": "删除游戏",
     "deleting": "删除...",
     "enterMoreChars": "图像结果将在您输入时出现在这里",
@@ -407,10 +410,12 @@
     "launchError": "启动错误",
     "launchErrorMessage": "无法运行{{game}}。有时游戏可执行文件的命名与游戏名称相同。请确保Ascendara试图运行正确的文件。",
     "launching": "发射...",
-    "lessThanMinute": "不到一分钟",
+    "lessThanMinute": "这场比赛不到一分钟",
+    "lessThanMinute2": "不到一分钟",
     "minute": "分钟",
     "minutes": "分钟",
-    "neverPlayed": "从未玩过",
+    "neverPlayed": "你还没有玩这个游戏",
+    "neverPlayed2": "从未玩过",
     "noResultsFound": "找不到结果。精确地进行搜索。",
     "ofPlaytime": "在这个游戏中",
     "openGameDirectory": "打开游戏目录",

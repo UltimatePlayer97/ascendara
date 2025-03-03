@@ -103,7 +103,8 @@
     "retry": "Try Again",
     "search": "Search",
     "submit": "Submit",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "workshopDownloader": "Workshop Downloader"
   },
   "download": {
     "aboutGame": "About This Game",
@@ -160,7 +161,9 @@
     "gameModes": "Game Modes",
     "gameNeedsEmulator": "This requires an emulator to run.",
     "gameNeedsVR": "VR Required",
+    "igdbLoading": "Loading IGDB info...",
     "igdbRating": "This game is rated {{rating}} apples. Apple ratings are different than Star ratings on Ascendara, and are more of a general rating of the game.",
+    "infoMaybeInaccurate": "If info is inaccurate, please report it",
     "linkCopied": "Link copied to clipboard",
     "newUserGuide": {
       "close": "Close",
@@ -407,10 +410,12 @@
     "launchError": "Launch Error",
     "launchErrorMessage": "Failed to run {{game}}. Sometimes game executables are not named the same as the game name. Please make sure Ascendara is trying to run the correct file.",
     "launching": "Launching...",
-    "lessThanMinute": "Less than a minute",
+    "lessThanMinute": "Less than a minute on this game",
+    "lessThanMinute2": "Less than a minute",
     "minute": "minute",
     "minutes": "minutes",
-    "neverPlayed": "Never Played",
+    "neverPlayed": "You haven't played this game yet",
+    "neverPlayed2": "Never Played",
     "noResultsFound": "No results found. Be precise with your search.",
     "ofPlaytime": "on this game",
     "openGameDirectory": "Open Game Directory",

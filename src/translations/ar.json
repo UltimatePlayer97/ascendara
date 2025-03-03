@@ -103,7 +103,8 @@
     "retry": "حاول ثانية",
     "search": "يبحث",
     "submit": "يُقدِّم",
-    "submitting": "تقديم..."
+    "submitting": "تقديم...",
+    "workshopDownloader": "تنزيل ورشة العمل"
   },
   "download": {
     "aboutGame": "حول هذه اللعبة",
@@ -160,7 +161,9 @@
     "gameModes": "أوضاع اللعبة",
     "gameNeedsEmulator": "هذا يتطلب تشغيل المحاكي.",
     "gameNeedsVR": "VR مطلوب",
+    "igdbLoading": "تحميل معلومات IGDB ...",
     "igdbRating": "تم تصنيف هذه اللعبة {{rating}} التفاح. تختلف تصنيفات Apple عن تصنيفات النجوم على Ascendara ، وأكثر من تصنيف عام للعبة.",
+    "infoMaybeInaccurate": "إذا كانت المعلومات غير دقيقة ، فيرجى الإبلاغ عنها",
     "linkCopied": "رابط نسخ إلى الحافظة",
     "newUserGuide": {
       "close": "يغلق",
@@ -407,10 +410,12 @@
     "launchError": "خطأ إطلاق",
     "launchErrorMessage": "فشل تشغيل {{game}}. في بعض الأحيان لا يتم تسمية Textables Game بنفس اسم اللعبة. يرجى التأكد من أن Ascendara تحاول تشغيل الملف الصحيح.",
     "launching": "إطلاق ...",
-    "lessThanMinute": "أقل من دقيقة",
+    "lessThanMinute": "أقل من دقيقة في هذه اللعبة",
+    "lessThanMinute2": "أقل من دقيقة",
     "minute": "دقيقة",
     "minutes": "دقائق",
-    "neverPlayed": "لم يلعب",
+    "neverPlayed": "لم تلعب هذه اللعبة بعد",
+    "neverPlayed2": "لم يلعب",
     "noResultsFound": "لم يتم العثور على نتائج. كن دقيقًا في بحثك.",
     "ofPlaytime": "على هذه اللعبة",
     "openGameDirectory": "دليل اللعبة المفتوح",

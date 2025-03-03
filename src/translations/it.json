@@ -103,7 +103,8 @@
     "retry": "Riprova",
     "search": "Ricerca",
     "submit": "Invia",
-    "submitting": "Invio ..."
+    "submitting": "Invio ...",
+    "workshopDownloader": "Downloader di workshop"
   },
   "download": {
     "aboutGame": "Su questo gioco",
@@ -160,7 +161,9 @@
     "gameModes": "Modalità di gioco",
     "gameNeedsEmulator": "Ciò richiede che un emulatore sia eseguito.",
     "gameNeedsVR": "VR richiesto",
+    "igdbLoading": "Caricamento di informazioni IgDB ...",
     "igdbRating": "Questo gioco è valutato {{rating}} mele. Le valutazioni di Apple sono diverse dalle valutazioni delle stelle su Ascendara e sono più una valutazione generale del gioco.",
+    "infoMaybeInaccurate": "Se le informazioni sono inaccurate, segnalarle",
     "linkCopied": "Link copiato negli appunti",
     "newUserGuide": {
       "close": "Vicino",
@@ -407,10 +410,12 @@
     "launchError": "Errore di avvio",
     "launchErrorMessage": "Impossibile eseguire {{game}}. A volte gli eseguibili del gioco non sono nominati come il nome del gioco. Assicurati che Ascendara stia cercando di eseguire il file corretto.",
     "launching": "Lancio...",
-    "lessThanMinute": "Meno di un minuto",
+    "lessThanMinute": "Meno di un minuto in questo gioco",
+    "lessThanMinute2": "Meno di un minuto",
     "minute": "minuto",
     "minutes": "minuti",
-    "neverPlayed": "Mai giocato",
+    "neverPlayed": "Non hai ancora giocato a questo gioco",
+    "neverPlayed2": "Mai giocato",
     "noResultsFound": "Nessun risultato trovato. Sii preciso con la tua ricerca.",
     "ofPlaytime": "In questo gioco",
     "openGameDirectory": "Directory di giochi aperti",

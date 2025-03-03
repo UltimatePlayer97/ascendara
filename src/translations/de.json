@@ -103,7 +103,8 @@
     "retry": "Versuchen Sie es erneut",
     "search": "Suchen",
     "submit": "Einreichen",
-    "submitting": "Senden ..."
+    "submitting": "Senden ...",
+    "workshopDownloader": "Workshop Downloader"
   },
   "download": {
     "aboutGame": "Über dieses Spiel",
@@ -137,7 +138,7 @@
       "invalidLink": "Bitte geben Sie einen gültigen Download -Link für ein",
       "manualInstructions": {
         "step1": "Kopieren und fügen Sie den Link in Ihren Browser ein und fügen Sie sie ein",
-        "step2": "Vervollständigen Sie den Captcha und starten Sie den Download",
+        "step2": "Vervollständigen Sie den Captcha und beginnen Sie den Download",
         "step3": "Stoppen Sie den Download, sobald er in Ihrem Browser beginnt",
         "step4": "Klicken Sie auf Strg+J, um Ihre Downloads zu öffnen",
         "step5": "Kopieren Sie den Link, den der Browser heruntergeladen hat",
@@ -160,7 +161,9 @@
     "gameModes": "Spielmodi",
     "gameNeedsEmulator": "Dies erfordert einen Emulator.",
     "gameNeedsVR": "VR erforderlich",
+    "igdbLoading": "Laden Sie IGDB -Info ...",
     "igdbRating": "Dieses Spiel ist {{rating}} -Apfel bewertet. Die Apple -Bewertungen unterscheiden sich von den Sternenbewertungen auf Ascendara und sind eher eine allgemeine Bewertung des Spiels.",
+    "infoMaybeInaccurate": "Wenn Informationen ungenau sind, melden Sie sie bitte",
     "linkCopied": "Link in die Zwischenablage kopiert",
     "newUserGuide": {
       "close": "Schließen",
@@ -407,10 +410,12 @@
     "launchError": "Startfehler",
     "launchErrorMessage": "Fehlgeschlagen {{game}}. Manchmal werden Spiele ausführbare Geräte nicht mit dem Spielnamen genannt. Bitte stellen Sie sicher, dass Ascendara versucht, die richtige Datei auszuführen.",
     "launching": "Start ...",
-    "lessThanMinute": "Weniger als eine Minute",
+    "lessThanMinute": "Weniger als eine Minute in diesem Spiel",
+    "lessThanMinute2": "Weniger als eine Minute",
     "minute": "Minute",
     "minutes": "Minuten",
-    "neverPlayed": "Nie gespielt",
+    "neverPlayed": "Sie haben dieses Spiel noch nicht gespielt",
+    "neverPlayed2": "Nie gespielt",
     "noResultsFound": "Keine Ergebnisse gefunden. Seien Sie genau mit Ihrer Suche.",
     "ofPlaytime": "In diesem Spiel",
     "openGameDirectory": "Open Game Directory",
@@ -753,7 +758,7 @@
     "notEnoughSpaceWarning": "Woah! Sie haben weniger als 40 GB freien Speicherplatz auf dem ausgewählten Laufwerk. Erwägen Sie, einen Platz zu löschen oder ein anderes Laufwerk auszuwählen.",
     "okay": "Okay",
     "optOutOfSharing": "Entscheiden Sie sich von der Freigabe anonymer Verwendungsdaten. Sie können dies immer später in Einstellungen aktivieren, wenn Sie Ihre Meinung ändern.",
-    "optOutOfSharingAnonymousUsageData": "Entscheiden Sie sich von der Freigabe anonymer Nutzungsdaten. Sie können dies immer später in Einstellungen aktivieren, wenn Sie Ihre Meinung ändern.",
+    "optOutOfSharingAnonymousUsageData": "Entscheiden Sie sich von der Freigabe anonymer Verwendungsdaten. Sie können dies immer später in Einstellungen aktivieren, wenn Sie Ihre Meinung ändern.",
     "personalizeYourExperience": "Personalisieren Sie Ihre Erfahrung mit einem Thema, das zu Ihrem Stil passt",
     "pleaseWaitAndRespondToAdminPrompts": "Bitte warten Sie und antworten Sie auf alle angezeigten Administratoraufforderungen. Schließen Sie die Anwendung nicht.",
     "privacyPolicy": "Datenschutzrichtlinie",

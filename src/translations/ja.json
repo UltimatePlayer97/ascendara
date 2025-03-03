@@ -103,7 +103,8 @@
     "retry": "もう一度やり直してください",
     "search": "検索",
     "submit": "提出する",
-    "submitting": "提出..."
+    "submitting": "提出...",
+    "workshopDownloader": "ワークショップダウンローダー"
   },
   "download": {
     "aboutGame": "このゲームについて",
@@ -160,7 +161,9 @@
     "gameModes": "ゲームモード",
     "gameNeedsEmulator": "これには、エミュレータを実行する必要があります。",
     "gameNeedsVR": "VRが必要です",
+    "igdbLoading": "IGDB情報の読み込み...",
     "igdbRating": "このゲームは{{rating}}リンゴと評価されています。 Appleの評価は、Ascendaraでの星評価とは異なり、ゲームの一般的な評価です。",
+    "infoMaybeInaccurate": "情報が不正確な場合は、報告してください",
     "linkCopied": "クリップボードにコピーされたリンク",
     "newUserGuide": {
       "close": "近い",
@@ -407,10 +410,12 @@
     "launchError": "起動エラー",
     "launchErrorMessage": "{{game}}の実行に失敗しました。ゲーム実行可能ファイルは、ゲーム名と同じ名前が付けられない場合があります。 Ascendaraが正しいファイルを実行しようとしていることを確認してください。",
     "launching": "発売...",
-    "lessThanMinute": "1分未満",
+    "lessThanMinute": "このゲームでは1分もかかりません",
+    "lessThanMinute2": "1分未満",
     "minute": "分",
     "minutes": "分",
-    "neverPlayed": "プレイしたことはありません",
+    "neverPlayed": "あなたはまだこのゲームをプレイしていません",
+    "neverPlayed2": "プレイしたことはありません",
     "noResultsFound": "結果は見つかりませんでした。検索で正確にしてください。",
     "ofPlaytime": "このゲームで",
     "openGameDirectory": "オープンゲームディレクトリ",

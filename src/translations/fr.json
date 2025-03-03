@@ -103,7 +103,8 @@
     "retry": "Essayer à nouveau",
     "search": "Recherche",
     "submit": "Soumettre",
-    "submitting": "Soumission..."
+    "submitting": "Soumission...",
+    "workshopDownloader": "Téléchargeur d'atelier"
   },
   "download": {
     "aboutGame": "À propos de ce jeu",
@@ -160,7 +161,9 @@
     "gameModes": "Modes de jeu",
     "gameNeedsEmulator": "Cela nécessite un émulateur pour fonctionner.",
     "gameNeedsVR": "VR requis",
+    "igdbLoading": "Chargement des informations IGDB ...",
     "igdbRating": "Ce jeu est classé {{rating}} pommes. Les notes Apple sont différentes des notes Star sur Ascendara et sont plus une note générale du jeu.",
+    "infoMaybeInaccurate": "Si les informations sont inexactes, veuillez les signaler",
     "linkCopied": "Lien copié dans le presse-papiers",
     "newUserGuide": {
       "close": "Fermer",
@@ -407,10 +410,12 @@
     "launchError": "Erreur de lancement",
     "launchErrorMessage": "Échec de l'exécution {{game}}. Parfois, les exécutables de jeu ne sont pas nommés les mêmes que le nom de jeu. Veuillez vous assurer qu'Ascendara essaie d'exécuter le fichier correct.",
     "launching": "Lancement...",
-    "lessThanMinute": "Moins d'une minute",
+    "lessThanMinute": "Moins d'une minute sur ce jeu",
+    "lessThanMinute2": "Moins d'une minute",
     "minute": "minute",
     "minutes": "minutes",
-    "neverPlayed": "Jamais joué",
+    "neverPlayed": "Tu n'as pas encore joué à ce jeu",
+    "neverPlayed2": "Jamais joué",
     "noResultsFound": "Aucun résultat trouvé. Soyez précis avec votre recherche.",
     "ofPlaytime": "sur ce jeu",
     "openGameDirectory": "Répertoire de jeu ouvert",
