@@ -1599,6 +1599,10 @@ export default function DownloadPage() {
         </div>
       </div>
 
+      {igdbData && (
+        <div className="mt-4 opacity-50">{t("download.scrollToViewMore")}</div>
+      )}
+
       {settings.gameSource !== "fitgirl" && (
         <TooltipProvider>
           <Tooltip open={showShareCopySuccess}>
@@ -1606,7 +1610,7 @@ export default function DownloadPage() {
               <Button
                 variant="outline"
                 onClick={handleShareLink}
-                className={`fixed ${igdbData ? "right-4 top-1/4 -translate-y-1/2" : "bottom-1/4 right-4"} z-50 gap-2`}
+                className="z-50 ml-auto gap-2"
               >
                 {showShareCopySuccess ? (
                   <CheckIcon className="h-4 w-4" />
@@ -1623,10 +1627,6 @@ export default function DownloadPage() {
         </TooltipProvider>
       )}
 
-      {igdbData && (
-        <div className="mt-4 opacity-50">{t("download.scrollToViewMore")}</div>
-      )}
-
       {/* IGDB Game Store-like Section */}
       {gameData && (
         <div
@@ -1634,8 +1634,9 @@ export default function DownloadPage() {
           className="mb-8 mt-48 overflow-hidden rounded-lg border border-border bg-card shadow-md"
         >
           {igdbLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex items-center justify-center px-16 py-16">
+              <Loader className="mr-2 h-4 w-4 animate-spin text-primary" />
+              {t("download.igdbLoading")}
             </div>
           ) : igdbData ? (
             <>
@@ -1872,7 +1873,6 @@ export default function DownloadPage() {
                     )}
                   </div>
                 </div>
-
                 {/* Screenshots Gallery - Full width */}
                 {igdbData.screenshots && igdbData.screenshots.length > 0 && (
                   <div className="mb-64 mt-8">
@@ -1880,7 +1880,7 @@ export default function DownloadPage() {
                       {t("download.screenshots")}
                     </h2>
                     <GameScreenshots
-                      screenshots={igdbData.screenshots.map(screenshot => ({
+                      screenshots={igdbData.screenshots.slice(0, 4).map(screenshot => ({
                         ...screenshot,
                         url: igdbService.formatImageUrl(screenshot.url, "screenshot_big"),
                         formatted_url: igdbService.formatImageUrl(
@@ -1902,6 +1902,10 @@ export default function DownloadPage() {
                   >
                     IGDB <ExternalLink className="ml-1 h-3 w-3" />
                   </a>
+                  .
+                  <span className="ml-1 text-xs text-muted-foreground">
+                    {t("download.infoMaybeInaccurate")}
+                  </span>
                 </div>
               </div>
             </>
