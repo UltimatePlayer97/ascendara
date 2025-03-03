@@ -410,10 +410,8 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
             # Create watching file for tracking extracted files
             watching_path = os.path.join(download_path, "filemap.ascendara.json")
             watching_data = {}
-
-            # Set extracting flag to true before starting extraction
-            game_info["downloadingData"]["extracting"] = True
             game_info["downloadingData"]["downloading"] = False
+            game_info["downloadingData"]["extracting"] = True
             safe_write_json(game_info_path, game_info)
 
             if sys.platform == "win32":
