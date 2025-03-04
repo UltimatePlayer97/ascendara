@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
   AccordionContent,
@@ -1192,65 +1192,155 @@ function Settings() {
               </div>
             </Card>
 
-            {/* IGDB API Key Card */}
+            {/* Additional Game Info Card */}
             <Card className="p-6">
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-primary">
-                  {t("settings.igdbApiKey")}
+                  {t("settings.additionalGameInfo") || "Additional Game Info"}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {t("settings.igdbApiKeyDescription")}
+                  {t("settings.additionalGameInfoDescription") ||
+                    "Configure API keys for enhanced game metadata, artwork, and information."}
                 </p>
-                <a
-                  onClick={() =>
-                    window.electron.openURL(
-                      "https://ascendara.app/docs/features/igdb-integration"
-                    )
-                  }
-                  className="cursor cursor-pointer text-sm text-primary hover:underline"
-                >
-                  {t("settings.igdbLearnHowtoGet")}
-                  <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
-                </a>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Input
-                    type="password"
-                    value={twitchClientId}
-                    onChange={e => setTwitchClientId(e.target.value)}
-                    placeholder={t("settings.enterTwitchClientId")}
-                    className="flex-grow"
-                  />
-                  <Button
-                    variant="outline"
-                    className="text-primary"
-                    onClick={() => {
-                      handleSettingChange("twitchClientId", twitchClientId);
-                    }}
-                  >
-                    {t("settings.setKey")}
-                  </Button>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    type="password"
-                    value={twitchSecret}
-                    onChange={e => setTwitchSecret(e.target.value)}
-                    placeholder={t("settings.enterIgdbApiKey")}
-                    className="flex-grow"
-                  />
-                  <Button
-                    variant="outline"
-                    className="text-primary"
-                    onClick={() => {
-                      handleSettingChange("twitchSecret", twitchSecret);
-                    }}
-                  >
-                    {t("settings.setKey")}
-                  </Button>
-                </div>
-              </div>
+
+              {/* API Tabs */}
+              <Tabs defaultValue="giantbomb" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="giantbomb">GiantBomb</TabsTrigger>
+                  <TabsTrigger value="igdb">IGDB</TabsTrigger>
+                </TabsList>
+
+                {/* IGDB Tab Content */}
+                <TabsContent value="igdb" className="mt-4 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">IGDB API</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {t("settings.igdbApiKeyDescription") ||
+                        "IGDB provides comprehensive game data including release dates, ratings, and screenshots."}
+                    </p>
+                    <a
+                      onClick={() =>
+                        window.electron.openURL(
+                          "https://ascendara.app/docs/features/igdb-integration"
+                        )
+                      }
+                      className="cursor inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
+                    >
+                      {t("settings.igdbLearnHowtoGet") || "Learn how to get API keys"}
+                      <ExternalLink className="ml-1 inline-block h-3 w-3" />
+                    </a>
+                  </div>
+                  <div className="space-y-3 pt-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="twitch-client-id">
+                        {t("settings.twitchClientId") || "Twitch Client ID"}
+                      </Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="twitch-client-id"
+                          type="password"
+                          value={twitchClientId}
+                          onChange={e => setTwitchClientId(e.target.value)}
+                          placeholder={
+                            t("settings.enterTwitchClientId") || "Enter Twitch Client ID"
+                          }
+                          className="flex-grow"
+                        />
+                        <Button
+                          variant="outline"
+                          className="text-primary"
+                          onClick={() => {
+                            handleSettingChange("twitchClientId", twitchClientId);
+                          }}
+                        >
+                          {t("settings.setKey") || "Set"}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="twitch-secret">
+                        {t("settings.twitchSecret") || "Twitch Secret"}
+                      </Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="twitch-secret"
+                          type="password"
+                          value={twitchSecret}
+                          onChange={e => setTwitchSecret(e.target.value)}
+                          placeholder={
+                            t("settings.enterIgdbApiKey") || "Enter Twitch Secret"
+                          }
+                          className="flex-grow"
+                        />
+                        <Button
+                          variant="outline"
+                          className="text-primary"
+                          onClick={() => {
+                            handleSettingChange("twitchSecret", twitchSecret);
+                          }}
+                        >
+                          {t("settings.setKey") || "Set"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* GiantBomb Tab Content */}
+                <TabsContent value="giantbomb" className="mt-4 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">GiantBomb API</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {t("settings.giantBombDescription") ||
+                        "GiantBomb provides detailed game information, reviews, and media content."}
+                    </p>
+                    <a
+                      onClick={() =>
+                        window.electron.openURL("https://www.giantbomb.com/api/")
+                      }
+                      className="cursor inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
+                    >
+                      {t("settings.giantBombLearnHowtoGet") || "Learn how to get API key"}
+                      <ExternalLink className="ml-1 inline-block h-3 w-3" />
+                    </a>
+                  </div>
+                  <div className="space-y-3 pt-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="giantbomb-key">
+                        {t("settings.giantBombApiKey") || "GiantBomb API Key"}
+                      </Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="giantbomb-key"
+                          type="password"
+                          value={settings.giantBombApiKey || ""}
+                          onChange={e =>
+                            handleSettingChange("giantBombApiKey", e.target.value)
+                          }
+                          placeholder={
+                            t("settings.enterGiantBombApiKey") ||
+                            "Enter GiantBomb API Key"
+                          }
+                          className="flex-grow"
+                        />
+                        <Button
+                          variant="outline"
+                          className="text-primary"
+                          onClick={() => {
+                            handleSettingChange(
+                              "giantBombApiKey",
+                              settings.giantBombApiKey || ""
+                            );
+                          }}
+                        >
+                          {t("settings.setKey") || "Set"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </Card>
 
             {/* Game Sources Card */}

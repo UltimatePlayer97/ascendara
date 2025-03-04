@@ -492,6 +492,7 @@ class SettingsManager {
       crackDirectory: "",
       twitchSecret: "",
       twitchClientId: "",
+      giantBombKey: "",
       ludusavi: {
         backupLocation: "",
         backupFormat: "zip",

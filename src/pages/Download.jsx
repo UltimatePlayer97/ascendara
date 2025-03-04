@@ -58,8 +58,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import checkQbittorrentStatus from "@/services/qbittorrentCheckService";
 import { toast } from "sonner";
 import TimemachineDialog from "@/components/TimemachineDialog";
-import igdbService from "@/services/igdbService";
-import { useIgdbConfig } from "@/services/igdbConfig";
+import igdbService from "@/services/gameInfoService";
+import { useIgdbConfig } from "@/services/gameInfoConfig";
 import GameScreenshots from "@/components/GameScreenshots";
 
 const isValidURL = (url, provider) => {

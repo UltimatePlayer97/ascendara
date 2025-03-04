@@ -30,7 +30,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
-import { useIgdbConfig } from "@/services/igdbConfig";
+import { useIgdbConfig } from "@/services/gameInfoConfig";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -52,7 +52,7 @@ import GamesBackupDialog from "@/components/GamesBackupDialog";
 import imageCacheService from "@/services/imageCacheService";
 import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
-import igdbService from "@/services/igdbService";
+import igdbService from "@/services/gameInfoService";
 import GameRate from "@/components/GameRate";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (

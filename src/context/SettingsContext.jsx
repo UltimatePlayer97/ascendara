@@ -30,6 +30,7 @@ export function SettingsProvider({ children }) {
     crackDirectory: "",
     twitchSecret: "",
     twitchClientId: "",
+    giantBombKey: "",
     ludusavi: {
       backupLocation: "",
       backupFormat: "zip",

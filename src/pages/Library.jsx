@@ -50,7 +50,7 @@ import gameService from "@/services/gameService";
 import { toast } from "sonner";
 import UserSettingsDialog from "@/components/UserSettingsDialog";
 import { useNavigate } from "react-router-dom";
-import igdbService from "@/services/igdbService";
+import igdbService from "@/services/gameInfoService";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
