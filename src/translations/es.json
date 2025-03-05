@@ -128,7 +128,7 @@
       "gofileInstructions": {
         "action": "Simplemente haga clic en Descargar ahora para comenzar a descargar este juego.",
         "description": "A diferencia de otros proveedores que requieren una verificación Captcha, GoFile permite descargas directas a través de su API.",
-        "thanks": "Gracias a LTSDW en GitHub"
+        "thanks": "Gracias a LTSDW en Github"
       },
       "handlerInstructions": {
         "step1": "Abra el enlace en su navegador y habilite la extensión",
@@ -161,7 +161,7 @@
     "gameModes": "Modos de juego",
     "gameNeedsEmulator": "Esto requiere un emulador para ejecutar.",
     "gameNeedsVR": "VR requerido",
-    "igdbLoading": "Cargando información de IGDB ...",
+    "igdbLoading": "Cargando información del juego ...",
     "igdbRating": "Este juego está clasificado {{rating}} manzanas. Las clasificaciones de Apple son diferentes a las clasificaciones de estrellas en Ascendara, y son más una calificación general del juego.",
     "infoMaybeInaccurate": "Si la información es inexacta, informe.",
     "linkCopied": "Enlace copiado al portapapeles",
@@ -177,7 +177,7 @@
       "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "Descargando con ascendara"
     },
-    "noGameInfoAvailable": "Configurar IGDB en preferencias para ver más información sobre este juego",
+    "noGameInfoAvailable": "Configurar Ascendara XTRA en preferencias para ver más información sobre este juego",
     "online": "EN LÍNEA",
     "onlineFixWarningDescription": "Este juego viene con FIX en línea instalado, cuando lo inicies, verás un aviso que te dice que el equipo en línea de fijación en línea. Esto es normal y solo debe mostrarse una vez para cada juego con él.",
     "onlineFixWarningTitle": "Información en línea fix en el lanzamiento",
@@ -301,10 +301,11 @@
   "gameScreen": {
     "backToLibrary": "Volver a la biblioteca",
     "backupSaves": "Guardar de copia de seguridad",
-    "configureIgdb": "Configurar IGDB en preferencias",
+    "configureIgdb": "Configurar Ascendara Xtra en Preferencias",
     "details": "Detalles",
     "gameInfo": "Información del juego",
     "gameNotFound": "Juego no encontrado",
+    "helpOthers": "Tómese un momento para calificar y revisar este juego de 5 estrellas. Sus comentarios ayuda a otros a comprender la calidad y la confiabilidad del juego.",
     "loadingGameInfo": "Cargando información del juego",
     "media": "Medios de comunicación",
     "noDetailsAvailable": "No hay detalles disponibles",
@@ -314,6 +315,8 @@
     "noSummaryAvailable": "No hay resumen disponible",
     "noSummaryDescription": "No hay descripción resumida disponible para este juego.",
     "overview": "Descripción general",
+    "rateNow": "Tasa",
+    "rateThisGame": "Dejar una calificación?",
     "screenshots": "Capturas de pantalla",
     "storyline": "Historia",
     "summary": "Resumen",
@@ -454,6 +457,8 @@
       "games": "Espacio utilizado por los juegos de Ascendara: {{size}}",
       "other": "Espacio utilizado por otros archivos: {{size}}"
     },
+    "steamNotRunning": "Steam no está funcionando",
+    "steamNotRunningMessage": "Los juegos en línea fijo requieren que Steam se ejecute. Comience a Steam y asegúrese de que haya iniciado sesión en su cuenta y luego vuelva a iniciar el juego.",
     "verifyGameFiles": "Verificar archivos de juego",
     "version": "Versión",
     "versionPlaceholder": "por ejemplo, 1.0.0",
@@ -502,16 +507,18 @@
     "visit-status-page": "Visitar la página de estado"
   },
   "settings": {
+    "additionalGameInfo": "Ascendara xtra",
+    "additionalGameInfoDescription": "Ascendara XTRA te permite configurar un proveedor de información del juego, permitiéndote leer información adicional sobre todos los juegos.",
     "advanced": "AVANZADO",
     "allDependenciesInstalled": "Todas las dependencias instaladas",
-    "ascendaraAnalytics": "Análisis de uso de Ascendara",
+    "ascendaraAnalytics": "Análisis de uso",
     "ascendaraAnalyticsDescription": "Ayuda a mejorar el Ascendara enviando datos de uso. Estos datos son anónimos y no se pueden usar para identificarlo.",
     "ascendaraTimechine": "Ascendara Timemachine",
     "ascendaraToggleAnalytics": "Optar y ayudar a mejorar el ascendara",
     "ascendaraUpdates": "Actualizaciones automáticas",
     "ascendaraUpdatesDescription": "Descargue automáticamente nuevas versiones de Ascendara y pídale que las instale cuando esté listo",
-    "ascendaraWorkshopDownloader": "Descargador de taller ascendara",
-    "ascendaraWorkshopDownloaderDescription": "El descargador del taller Ascendara le permite descargar elementos del taller Steam sin necesidad de tener una cuenta.",
+    "ascendaraWorkshopDownloader": "Descargador de taller",
+    "ascendaraWorkshopDownloaderDescription": "El descargador del taller le permite descargar elementos del taller Steam sin necesidad de tener una cuenta.",
     "ascendaraWorkshopDownloaderEnable": "Agregar a la barra de navegación",
     "autoCreateShortcuts": "Crear automáticamente atajos",
     "autoCreateShortcutsDescription": "Cree automáticamente atajos en el escritorio para juegos que se ejecutan con éxito por primera vez",
@@ -538,6 +545,7 @@
     },
     "downloaderRunningWarning": "No puede cambiar esta configuración mientras se está en progreso",
     "enableAscendaraTimechine": "Habilitar la Timemachine Ascendara",
+    "enterGiantBombApiKey": "Pega tu tecla API GiantBombbomb",
     "enterIgdbApiKey": "Pega tu tecla Secret Twitch",
     "enterTwitchClientId": "Pega tu identificación de cliente de Twitch",
     "experimental": "Característica experimental",
@@ -551,7 +559,7 @@
       "translatingDialog": "No cierres ascendara",
       "translatingDialogDesc": "Ascendara está traduciendo el idioma seleccionado. Esto puede tomar unos minutos, puede dejar esto pero no cierre ascendara."
     },
-    "fitgirlRepacksDescription": "Acceda a los juegos de más de 5500 juegos en Ascendara. Los juegos se obtienen a través de HydRalibrary y se combinan con una imagen usando el IGDB. No hay categorías ni pesos respaldados para estos juegos, parecerán completamente al azar.",
+    "fitgirlRepacksDescription": "Acceda a los juegos de más de 5500 juegos en Ascendara. Los juegos se obtienen a través de HydRalibrary y se combinan con imágenes utilizando servicios de datos del juego. No hay categorías ni pesos respaldados para estos juegos, parecerán completamente al azar.",
     "gameBackup": {
       "backupFormat": "Formato de copia de seguridad",
       "backupLocation": "Ubicación de respaldo",
@@ -576,9 +584,12 @@
     "gameSources": "Fuente de juego indexada",
     "gameSourcesDescription": "Ascendara utiliza principalmente SteamRip como su fuente de confianza para los juegos",
     "general": "General",
+    "giantBombApiKey": "Llave de la API de BiLingbomb",
+    "giantBombDescription": "GiantBomb proporciona información del juego de una wiki de juegos impulsada por la comunidad con descripciones en profundidad. Requiere una clave API.",
+    "giantBombLearnHowtoGet": "Aprenda a obtener la clave API",
     "highThreadWarning": "Los recuentos de hilos altos pueden causar problemas de descarga. Considere usar 4-8 hilos para una mejor confiabilidad.",
     "igdbApiKey": "Información del juego de IGDB",
-    "igdbApiKeyDescription": "Para obtener detalles adicionales del juego, Ascendara usa la API IGDB, que requiere una cuenta de desarrollador de Twitch. Deberá crear una aplicación en la consola de desarrolladores de Twitch para generar sus credenciales.",
+    "igdbApiKeyDescription": "IGDB proporciona información de juego más detallada con la base de datos respaldada por desarrolladores y las entradas oficiales del juego. Requiere que tenga una cuenta de Twitch y obtenga una identificación de cliente y un secreto.",
     "igdbLearnHowtoGet": "Aprende a configurar esto",
     "installGameDependencies": "Dependencia del juego",
     "languageSetNote": "Nota: Esto no cambiará los nombres de juegos, etiquetas o cualquier otra cosa que ver con los juegos proporcionados",
@@ -634,6 +645,8 @@
       "vpnWarning": "Su dirección IP será visible para otros pares. Use una VPN para proteger su privacidad y evitar posibles problemas legales."
     },
     "totalGames": "Total Juegos",
+    "twitchClientId": "ID de cliente de Twitch",
+    "twitchSecret": "Secreto del cliente de twitch",
     "userSettings": {
       "browseDirectory": "Navegar",
       "description": "Configure el nombre de usuario de su juego. Los nombres de usuario solo son compatibles con los juegos que usan Goldberg Crack.",
