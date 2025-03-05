@@ -334,6 +334,14 @@ export default function GameScreen() {
     };
   }, [game.game, game.name, igdbData?.cover?.url]); // Add igdbData.cover.url as dependency
 
+  // Log hasRated state changes
+  useEffect(() => {
+    console.log("gamedata:", game);
+    if (game && !game.hasRated && game.launchCount > 1) {
+      setHasRated(false);
+    }
+  }, [game, hasRated]);
+
   // Toggle favorite status
   const toggleFavorite = async () => {
     try {
@@ -474,14 +482,20 @@ export default function GameScreen() {
   // Fetch IGDB data
   const fetchIgdbData = async gameName => {
     try {
-      if (!igdbConfig.enabled) {
-        console.log("IGDB integration is not enabled");
-        return;
-      }
-
       setIgdbLoading(true);
 
-      const data = await igdbService.getGameDetails(gameName, igdbConfig);
+      // Create a config object that includes both IGDB and GiantBomb credentials
+      const apiConfig = {
+        ...igdbConfig,
+        giantBombKey: settings.giantBombKey || "",
+      };
+
+      console.log("Fetching game data with config:", {
+        igdbEnabled: igdbConfig.enabled,
+        giantBombKeySet: Boolean(settings.giantBombKey),
+      });
+
+      const data = await igdbService.getGameDetails(gameName, apiConfig);
 
       if (data) {
         if (data.screenshots && data.screenshots.length > 0) {
@@ -492,7 +506,7 @@ export default function GameScreen() {
         }
         setIgdbData(data);
       } else {
-        console.log("No IGDB data found for:", gameName);
+        console.log("No game data found for:", gameName);
       }
 
       setIgdbLoading(false);

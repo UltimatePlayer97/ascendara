@@ -122,25 +122,31 @@ export default function DownloadPage() {
   // Fetch IGDB data
   const fetchIgdbData = async gameName => {
     try {
-      // Skip if IGDB is not enabled
-      if (!igdbConfig.enabled) {
-        console.log("IGDB integration is not enabled");
+      // Create a config object that includes both IGDB and GiantBomb credentials
+      const apiConfig = {
+        ...igdbConfig,
+        giantBombKey: settings.giantBombKey || "",
+      };
+
+      // Skip if no API is enabled
+      if (!igdbConfig.enabled && !settings.giantBombKey) {
+        console.log("No game API integration is enabled");
         return;
       }
 
       setIgdbLoading(true);
 
-      const data = await igdbService.getGameDetails(gameName, igdbConfig);
+      const data = await igdbService.getGameDetails(gameName, apiConfig);
 
       if (data) {
         setIgdbData(data);
       } else {
-        console.log("No IGDB data found for:", gameData.game);
+        console.log("No game data found for:", gameData.game);
       }
 
       setIgdbLoading(false);
     } catch (error) {
-      console.error("Error fetching IGDB data:", error);
+      console.error("Error fetching game data:", error);
       setIgdbLoading(false);
     }
   };
@@ -940,7 +946,7 @@ export default function DownloadPage() {
             />
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
-                <h1 className="flex items-center text-2xl font-bold">
+                <h1 className="flex items-center gap-2 text-2xl font-bold">
                   {gameData.game}
                   {gameData.rating > 0 && (
                     <TooltipProvider>

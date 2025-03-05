@@ -41,6 +41,22 @@ export default defineConfig({
           });
         },
       },
+      "/api/giantbomb": {
+        target: "https://www.giantbomb.com/api",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api\/giantbomb/, ""),
+        configure: (proxy, _options) => {
+          proxy.on("error", (err, _req, _res) => {
+            console.log("GiantBomb proxy error", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, _res) => {
+            console.log("Sending GiantBomb Request:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req, _res) => {
+            console.log("Received GiantBomb Response:", proxyRes.statusCode, req.url);
+          });
+        },
+      },
     },
   },
   resolve: {

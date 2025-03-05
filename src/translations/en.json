@@ -589,7 +589,7 @@
     "giantBombLearnHowtoGet": "Learn how to get API key",
     "highThreadWarning": "High thread counts may cause download issues. Consider using 4-8 threads for better reliability.",
     "igdbApiKey": "IGDB Game Information",
-    "igdbApiKeyDescription": "IGDB provides game information with developer-backed database and official game details. Requires a Twitch Developer account with client ID and secret.",
+    "igdbApiKeyDescription": "IGDB provides more detailed game information with developer-backed database and official game entries. Requires you to have a Twitch account and get a client ID and secret.",
     "igdbLearnHowtoGet": "Learn how to set this up",
     "installGameDependencies": "Game Dependencies",
     "languageSetNote": "NOTE: This will not change game names, tags, or anything else to do with the games provided",

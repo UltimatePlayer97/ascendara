@@ -1205,7 +1205,16 @@ function Settings() {
               </div>
 
               {/* API Tabs */}
-              <Tabs defaultValue="giantbomb" className="w-full">
+              <Tabs
+                defaultValue={
+                  settings.giantBombKey
+                    ? "giantbomb"
+                    : settings.twitchClientId && settings.twitchSecret
+                      ? "igdb"
+                      : "giantbomb"
+                }
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="giantbomb">GiantBomb</TabsTrigger>
                   <TabsTrigger value="igdb">IGDB</TabsTrigger>
@@ -1314,9 +1323,9 @@ function Settings() {
                         <Input
                           id="giantbomb-key"
                           type="password"
-                          value={settings.giantBombApiKey || ""}
+                          value={settings.giantBombKey || ""}
                           onChange={e =>
-                            handleSettingChange("giantBombApiKey", e.target.value)
+                            handleSettingChange("giantBombKey", e.target.value)
                           }
                           placeholder={
                             t("settings.enterGiantBombApiKey") ||
@@ -1329,8 +1338,8 @@ function Settings() {
                           className="text-primary"
                           onClick={() => {
                             handleSettingChange(
-                              "giantBombApiKey",
-                              settings.giantBombApiKey || ""
+                              "giantBombKey",
+                              settings.giantBombKey || ""
                             );
                           }}
                         >

@@ -9,14 +9,14 @@
 import gameApiCache from "./gameInfoCacheService";
 
 // Constants for APIs
-const isDev = process.env.NODE_ENV === "development";
+const isDev = import.meta.env.DEV;
 
 // IGDB API endpoints
 const IGDB_API_URL = isDev ? "/api/igdb" : "https://api.igdb.com/v4";
 const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/token";
 
 // GiantBomb API endpoints
-const GIANTBOMB_API_URL = "https://www.giantbomb.com/api";
+const GIANTBOMB_API_URL = isDev ? "/api/giantbomb" : "https://www.giantbomb.com/api";
 
 /**
  * Get Twitch access token for IGDB
@@ -138,11 +138,20 @@ const searchGameGiantBomb = async (gameName, apiKey) => {
     const encodedGameName = encodeURIComponent(gameName);
     const url = `${GIANTBOMB_API_URL}/search/?api_key=${apiKey}&format=json&query=${encodedGameName}&resources=game&limit=1`;
 
+    // Set up headers
+    const headers = {
+      Accept: "application/json",
+      "User-Agent": "Ascendara Game Library (contact@ascendara.com)",
+    };
+
+    // In production, we need to add CORS headers
+    if (!isDev) {
+      headers["Access-Control-Allow-Origin"] = "*";
+    }
+
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -151,7 +160,9 @@ const searchGameGiantBomb = async (gameName, apiKey) => {
 
     const data = await response.json();
 
-    if (data.results && data.results.length > 0) {
+    console.log("GiantBomb search response:", data);
+
+    if (data.error === "OK" && data.results && data.results.length > 0) {
       return data.results[0];
     }
 
@@ -170,14 +181,13 @@ const searchGameGiantBomb = async (gameName, apiKey) => {
  */
 const getGameDetailByIdGiantBomb = async (gameId, apiKey) => {
   try {
-    const url = `${GIANTBOMB_API_URL}/game/${gameId}/?api_key=${apiKey}&format=json`;
+    console.log(`Fetching GiantBomb details for game ID: ${gameId}`);
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    // Construct the URL with the game ID and API key
+    // Include fields parameter to request specific data including images
+    const url = `https://www.giantbomb.com/api/game/${gameId}/?api_key=${apiKey}&format=json&field_list=id,name,deck,description,image,images,genres,platforms,videos,original_release_date,site_detail_url,aliases`;
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`GiantBomb API error: ${response.status}`);
@@ -185,7 +195,9 @@ const getGameDetailByIdGiantBomb = async (gameId, apiKey) => {
 
     const data = await response.json();
 
-    if (data.results) {
+    console.log("GiantBomb detail response:", data);
+
+    if (data.error === "OK" && data.results) {
       return data.results;
     }
 
@@ -197,17 +209,158 @@ const getGameDetailByIdGiantBomb = async (gameId, apiKey) => {
 };
 
 /**
- * Format IGDB image URL to get the appropriate size
- * @param {string} url - Original image URL from IGDB
- * @param {string} size - Size of the image (e.g., 'cover_big', 'screenshot_huge')
- * @returns {string} Formatted image URL
+ * Get game details from GiantBomb
+ * @param {string} gameName - Name of the game
+ * @param {Object} config - Configuration with apiKey
+ * @returns {Promise<Object>} Game details
  */
-const formatIgdbImageUrl = (url, size = "screenshot_big") => {
-  if (!url) return null;
+const getGameDetailsGiantBomb = async (gameName, config) => {
+  try {
+    console.log(`Fetching GiantBomb data for: ${gameName}`);
 
-  // Replace the size in the URL
-  // Original URL format: //images.igdb.com/igdb/image/upload/t_thumb/co1wyy.jpg
-  return url.replace("t_thumb", `t_${size}`).replace("//", "https://");
+    // Extract config values
+    const apiKey = config.apiKey;
+
+    // Skip if missing credentials
+    if (!apiKey) {
+      console.log("GiantBomb integration is missing API key");
+      return null;
+    }
+
+    // Search for the game
+    const searchResult = await searchGameGiantBomb(gameName, apiKey);
+
+    console.log("GiantBomb search result:", searchResult);
+
+    if (!searchResult) {
+      console.log(`No GiantBomb results found for: ${gameName}`);
+      return null;
+    }
+
+    // Get detailed game info
+    const gameDetails = await getGameDetailByIdGiantBomb(searchResult.guid, apiKey);
+
+    if (!gameDetails) {
+      console.log(
+        `No detailed GiantBomb data found for: ${gameName} (${searchResult.guid})`
+      );
+      // Format basic search result to match IGDB format
+      return formatGiantBombToIgdbFormat(searchResult);
+    }
+
+    // Process and format the game data to match IGDB format
+    const formattedDetails = formatGiantBombToIgdbFormat(gameDetails);
+
+    console.log(`Successfully processed GiantBomb data for: ${gameName}`);
+
+    // Cache the processed game data
+    gameApiCache.cacheGame(gameName, formattedDetails, "giantbomb");
+
+    return formattedDetails;
+  } catch (error) {
+    console.error("Error getting game details from GiantBomb:", error);
+    return null;
+  }
+};
+
+/**
+ * Format GiantBomb data to match IGDB format for compatibility
+ * @param {Object} giantBombData - Raw GiantBomb data
+ * @returns {Object} Formatted data in IGDB-compatible format
+ */
+const formatGiantBombToIgdbFormat = giantBombData => {
+  if (!giantBombData) return null;
+
+  // Extract image URLs
+  const screenshots = [];
+
+  // Add main image if available
+  if (giantBombData.image) {
+    screenshots.push({
+      id: `gb-main-${giantBombData.id}`,
+      url: giantBombData.image.original_url,
+      image_id: `gb-main-${giantBombData.id}`,
+      width: giantBombData.image.width || 1920,
+      height: giantBombData.image.height || 1080,
+      formatted_url: giantBombData.image.original_url,
+    });
+  }
+
+  // Add additional images if available
+  if (giantBombData.images && Array.isArray(giantBombData.images)) {
+    giantBombData.images.forEach((image, index) => {
+      // Only add screenshots (type: "screenshot")
+      if (image.tags && image.tags.includes("Screenshot")) {
+        screenshots.push({
+          id: `gb-${image.id || index}`,
+          image_id: `gb-${image.id || index}`,
+          url: image.original_url,
+          width: image.width || 1920,
+          height: image.height || 1080,
+          formatted_url: image.original_url,
+        });
+      }
+    });
+  }
+
+  // Extract platforms
+  const platforms = [];
+  if (giantBombData.platforms && Array.isArray(giantBombData.platforms)) {
+    giantBombData.platforms.forEach(platform => {
+      platforms.push({
+        id: platform.id,
+        name: platform.name,
+        abbreviation: platform.abbreviation || "",
+      });
+    });
+  }
+
+  // Extract genres
+  const genres = [];
+  if (giantBombData.genres && Array.isArray(giantBombData.genres)) {
+    giantBombData.genres.forEach(genre => {
+      genres.push({
+        id: genre.id,
+        name: genre.name,
+      });
+    });
+  }
+
+  // Format the data to match IGDB structure
+  return {
+    id: giantBombData.id,
+    name: giantBombData.name,
+    summary: giantBombData.deck || "",
+    description: giantBombData.description || "",
+    storyline: giantBombData.description || "",
+
+    // IGDB specific fields with GiantBomb data
+    cover: giantBombData.image
+      ? {
+          id: giantBombData.id,
+          image_id: giantBombData.id,
+          url: giantBombData.image.original_url,
+          width: giantBombData.image.width || 1920,
+          height: giantBombData.image.height || 1080,
+          formatted_url: giantBombData.image.original_url,
+        }
+      : null,
+
+    screenshots: screenshots,
+    formatted_screenshots: screenshots,
+    videos: giantBombData.videos || [],
+    similar_games: [],
+    genres: genres,
+    platforms: platforms,
+
+    // Additional GiantBomb specific fields
+    aliases: giantBombData.aliases || "",
+    release_date: giantBombData.original_release_date,
+    site_detail_url: giantBombData.site_detail_url,
+
+    // Source information
+    source: "giantbomb",
+  };
 };
 
 /**
@@ -218,21 +371,15 @@ const formatIgdbImageUrl = (url, size = "screenshot_big") => {
  */
 const getGameDetailsIGDB = async (gameName, config = {}) => {
   try {
-    // Check if we have this game in cache first
-    const cachedData = gameApiCache.getCachedGame(gameName, "igdb");
-    if (cachedData) {
-      console.log(`Using cached IGDB data for: ${gameName}`);
-      return cachedData;
-    }
-
     console.log(`Fetching IGDB data for: ${gameName}`);
 
     // Extract config values
-    const { clientId, clientSecret, enabled = true } = config;
+    const clientId = config.clientId;
+    const clientSecret = config.clientSecret;
 
-    // Skip if not enabled or missing credentials
-    if (!enabled || !clientId || !clientSecret) {
-      console.log("IGDB integration is not enabled or missing credentials");
+    // Skip if missing credentials
+    if (!clientId || !clientSecret) {
+      console.log("IGDB integration is missing credentials");
       return null;
     }
 
@@ -295,126 +442,119 @@ const getGameDetailsIGDB = async (gameName, config = {}) => {
 };
 
 /**
- * Get game details from GiantBomb
- * @param {string} gameName - Name of the game
- * @param {Object} config - Configuration with apiKey
- * @returns {Promise<Object>} Game details
- */
-const getGameDetailsGiantBomb = async (gameName, config = {}) => {
-  try {
-    // Check if we have this game in cache first
-    const cachedData = gameApiCache.getCachedGame(gameName, "giantbomb");
-    if (cachedData) {
-      console.log(`Using cached GiantBomb data for: ${gameName}`);
-      return cachedData;
-    }
-
-    console.log(`Fetching GiantBomb data for: ${gameName}`);
-
-    // Extract config values
-    const { apiKey, enabled = true } = config;
-
-    // Skip if not enabled or missing credentials
-    if (!enabled || !apiKey) {
-      console.log("GiantBomb integration is not enabled or missing API key");
-      return null;
-    }
-
-    // Search for the game
-    const searchResult = await searchGameGiantBomb(gameName, apiKey);
-
-    if (!searchResult) {
-      return null;
-    }
-
-    // Get detailed game info
-    const gameDetails = await getGameDetailByIdGiantBomb(searchResult.guid, apiKey);
-
-    if (!gameDetails) {
-      return searchResult; // Return basic search result if detailed info not available
-    }
-
-    // Process and return the game data
-    const processedDetails = {
-      id: gameDetails.id,
-      guid: gameDetails.guid,
-      name: gameDetails.name,
-      deck: gameDetails.deck,
-      description: gameDetails.description,
-      image: gameDetails.image,
-      images: gameDetails.images || [],
-      videos: gameDetails.videos || [],
-      similar_games: gameDetails.similar_games || [],
-      genres: gameDetails.genres || [],
-      platforms: gameDetails.platforms || [],
-      developers: gameDetails.developers || [],
-      publishers: gameDetails.publishers || [],
-      release_date: gameDetails.original_release_date,
-      site_detail_url: gameDetails.site_detail_url,
-    };
-
-    // Cache the processed game data
-    gameApiCache.cacheGame(gameName, processedDetails, "giantbomb");
-
-    return processedDetails;
-  } catch (error) {
-    console.error("Error getting game details from GiantBomb:", error);
-    return null;
-  }
-};
-
-/**
  * Get game details from all available APIs
  * @param {string} gameName - Name of the game
  * @param {Object} config - Configuration with API credentials
  * @returns {Promise<Object>} Combined game details from all APIs
  */
 const getGameDetails = async (gameName, config = {}) => {
-  // Default to using all enabled APIs
-  const useIgdb = config.igdb?.enabled !== false;
-  const useGiantBomb = config.giantbomb?.enabled !== false;
+  console.log("getGameDetails config:", config);
+
+  // Extract credentials from config
+  const clientId = config.clientId || "";
+  const clientSecret = config.clientSecret || "";
+
+  // Extract GiantBomb API key - check both formats for backward compatibility
+  let giantBombApiKey = "";
+  if (config.giantbomb && config.giantbomb.apiKey) {
+    giantBombApiKey = config.giantbomb.apiKey;
+  } else if (config.giantBombKey) {
+    giantBombApiKey = config.giantBombKey;
+  }
+
+  console.log(
+    "IGDB credentials:",
+    clientId ? "Set" : "Not set",
+    clientSecret ? "Set" : "Not set"
+  );
+  console.log("GiantBomb API key:", giantBombApiKey ? "Set" : "Not set");
+
+  // Check if IGDB is enabled (has valid credentials)
+  const useIgdb =
+    clientId && clientSecret && clientId.trim() !== "" && clientSecret.trim() !== "";
+
+  // Check if GiantBomb is enabled (has valid API key)
+  const useGiantBomb = giantBombApiKey && giantBombApiKey.trim() !== "";
+
+  console.log("Using IGDB:", useIgdb);
+  console.log("Using GiantBomb:", useGiantBomb);
+
+  // If no API is enabled, return null
+  if (!useIgdb && !useGiantBomb) {
+    console.log("No game API integration is enabled");
+    return null;
+  }
+
+  // Check cache first
+  let cachedData = gameApiCache.getCachedGame(gameName, "combined");
+  if (cachedData) {
+    console.log(`Using cached combined data for: ${gameName}`);
+    return cachedData;
+  }
 
   // Results object
-  const results = {};
+  let gameData = null;
 
-  // Run API calls in parallel
-  const promises = [];
-
+  // Try IGDB first if enabled
   if (useIgdb) {
-    promises.push(
-      getGameDetailsIGDB(gameName, config.igdb)
-        .then(data => {
-          results.igdb = data;
-        })
-        .catch(error => {
-          console.error("IGDB API error:", error);
-          results.igdb = null;
-        })
-    );
+    gameData = await getGameDetailsIGDB(gameName, {
+      clientId,
+      clientSecret,
+      enabled: true,
+    });
+
+    if (gameData) {
+      gameData.source = "igdb";
+
+      // Format screenshots for IGDB data
+      if (gameData.screenshots && gameData.screenshots.length > 0) {
+        gameData.formatted_screenshots = gameData.screenshots.map(screenshot => ({
+          ...screenshot,
+          formatted_url: formatImageUrl(screenshot.url, "screenshot_huge"),
+        }));
+      }
+    }
   }
 
-  if (useGiantBomb) {
-    promises.push(
-      getGameDetailsGiantBomb(gameName, config.giantbomb)
-        .then(data => {
-          results.giantbomb = data;
-        })
-        .catch(error => {
-          console.error("GiantBomb API error:", error);
-          results.giantbomb = null;
-        })
-    );
+  // If no IGDB data or IGDB not enabled, try GiantBomb
+  if (!gameData && useGiantBomb) {
+    gameData = await getGameDetailsGiantBomb(gameName, {
+      apiKey: giantBombApiKey,
+      enabled: true,
+    });
+
+    // GiantBomb data is already formatted to match IGDB format in the formatGiantBombToIgdbFormat function
   }
 
-  // Wait for all API calls to complete
-  await Promise.all(promises);
-
-  // For backward compatibility, if IGDB is the only API used, return its results directly
-  if (useIgdb && !useGiantBomb) {
-    return results.igdb;
+  // Cache the data if we found any
+  if (gameData) {
+    gameApiCache.cacheGame(gameName, gameData, "combined");
+  } else {
+    console.log(`No game data found for: ${gameName}`);
   }
 
-  return results;
+  return gameData;
+};
+
+/**
+ * Format image URL to get the appropriate size
+ * @param {string} url - Original image URL from IGDB or GiantBomb
+ * @param {string} size - Size of the image (e.g., 'cover_big', 'screenshot_huge')
+ * @returns {string} Formatted image URL
+ */
+const formatImageUrl = (url, size = "screenshot_big") => {
+  if (!url) return null;
+
+  // Check if it's a GiantBomb URL
+  if (url.includes("giantbomb.com")) {
+    // GiantBomb URLs don't need size formatting, just return the original
+    return url;
+  }
+
+  // Handle IGDB URL
+  // Replace the size in the URL
+  // Original URL format: //images.igdb.com/igdb/image/upload/t_thumb/co1wyy.jpg
+  return url.replace("t_thumb", `t_${size}`).replace("//", "https://");
 };
 
 // Export the service functions
@@ -427,6 +567,5 @@ export default {
   getGameDetailsGiantBomb,
 
   // Helper functions
-  formatImageUrl: formatIgdbImageUrl, // For backward compatibility
-  formatIgdbImageUrl,
+  formatImageUrl,
 };
