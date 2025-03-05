@@ -53,6 +53,7 @@ contextBridge.exposeInMainWorld("electron", {
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),
   getCustomGames: () => ipcRenderer.invoke("get-custom-games"),
+  gameRated: (game, isCustom) => ipcRenderer.invoke("game-rated", game, isCustom),
   enableGameAutoBackups: (game, isCustom) =>
     ipcRenderer.invoke("enable-game-auto-backups", game, isCustom),
   disableGameAutoBackups: (game, isCustom) =>

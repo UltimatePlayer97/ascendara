@@ -26,6 +26,8 @@ import {
   Download,
   PlayCircleIcon,
   FileSearch,
+  ThumbsUp,
+  HandHelping,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -193,7 +195,7 @@ export default function GameScreen() {
   const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
   const [showSteamNotRunningWarning, setShowSteamNotRunningWarning] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [ratingGame, setRatingGame] = useState(null);
+  const [hasRated, setHasRated] = useState(true);
   const [showRateDialog, setShowRateDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [errorGame, setErrorGame] = useState("");
@@ -269,7 +271,6 @@ export default function GameScreen() {
         );
 
         if (gameData && gameData.launchCount === 1) {
-          setRatingGame(game.game || game.name);
           setShowRateDialog(true);
         }
       }
@@ -285,7 +286,7 @@ export default function GameScreen() {
       );
       window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
     };
-  }, [isInitialized, setRatingGame, setShowRateDialog]); // Add required dependencies
+  }, [isInitialized, setShowRateDialog]); // Add required dependencies
 
   // Update favorite status when game or favorites change
   useEffect(() => {
@@ -496,7 +497,7 @@ export default function GameScreen() {
 
       setIgdbLoading(false);
     } catch (error) {
-      console.error("Error fetching IGDB data:", error);
+      console.error("Error fetching game data:", error);
       setIgdbLoading(false);
     }
   };
@@ -867,6 +868,35 @@ export default function GameScreen() {
                 )}
               </TabsList>
 
+              {!hasRated && (
+                <Card className="mb-4 overflow-hidden bg-gradient-to-br from-primary/80 via-primary to-primary/90 shadow-lg transition-all hover:shadow-xl">
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="flex items-center space-x-4 text-secondary">
+                      <div className="bg-primary-foreground/20 rounded-full p-3 shadow-inner">
+                        <Star className="text-primary-foreground h-6 w-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-primary-foreground text-xl font-bold">
+                          {t("gameScreen.rateThisGame")}
+                        </span>
+                        <p className="text-primary-foreground/80 text-sm">
+                          {t("gameScreen.helpOthers")}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="bg-primary-foreground/10 hover:bg-primary-foreground/20 transform text-secondary transition-all duration-300 ease-in-out hover:scale-105"
+                      onClick={() => setShowRateDialog(true)}
+                    >
+                      <ThumbsUp className="mr-2 h-5 w-5" />
+                      {t("gameScreen.rateNow")}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Overview tab */}
               <TabsContent value="overview" className="space-y-6">
                 <Card>
@@ -1123,16 +1153,14 @@ export default function GameScreen() {
         onOpenChange={setBackupDialogOpen}
       />
 
-      {ratingGame && (
-        <GameRate
-          game={game}
-          isOpen={showRateDialog}
-          onClose={() => {
-            setShowRateDialog(false);
-            setRatingGame(null);
-          }}
-        />
-      )}
+      {/* Rate game dialog */}
+      <GameRate
+        game={game}
+        isOpen={showRateDialog}
+        onClose={() => {
+          setShowRateDialog(false);
+        }}
+      />
 
       {/* VR Warning Dialog */}
       <AlertDialog

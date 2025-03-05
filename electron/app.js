@@ -1287,6 +1287,37 @@ ipcMain.handle("disable-game-auto-backups", async (event, game, isCustom) => {
   }
 });
 
+ipcMain.handle("game-rated", async (event, game, isCustom) => {
+  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    const settings = JSON.parse(data);
+    if (!settings.downloadDirectory) {
+      throw new Error("Download directory not set");
+    }
+
+    if (isCustom) {
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+      if (!gameInfo) throw new Error("Custom game not found");
+      gameInfo.hasRated = true;
+      fs.writeFileSync(gamesFilePath, JSON.stringify(gamesData, null, 2));
+    } else {
+      const gameDirectory = path.join(settings.downloadDirectory, game);
+      const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+      const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+      const gameInfo = JSON.parse(gameInfoData);
+      gameInfo.hasRated = true;
+      fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+    }
+    return true;
+  } catch (error) {
+    console.error("Error setting game as rated:", error);
+    return false;
+  }
+});
+
 ipcMain.handle("delete-game-directory", async (event, game) => {
   try {
     const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");

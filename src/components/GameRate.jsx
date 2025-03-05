@@ -100,6 +100,8 @@ const GameRate = ({ game, isOpen, onClose }) => {
         throw new Error("Failed to submit rating");
       }
 
+      await window.electron.gameRated(game.game || game.name, game.isCustom);
+
       toast.success(t("library.rateGame.success"), {
         description: t("library.rateGame.successDesc", { game: game.name }),
       });
