@@ -176,6 +176,7 @@ contextBridge.exposeInMainWorld("electron", {
   // Welcome flow functions
   isNew: () => ipcRenderer.invoke("is-new"),
   isV7: () => ipcRenderer.invoke("is-v7"),
+  timestampTime: () => ipcRenderer.invoke("timestamp-time"),
   hasLaunched: () => ipcRenderer.invoke("has-launched"),
 
   // Callback handling

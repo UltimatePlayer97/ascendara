@@ -1074,35 +1074,35 @@ function Settings() {
                         disabled={!isOnWindows || !settings.ludusavi.backupLocation}
                       />
                     </div>
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="space-y-2">
-                        <Label>{t("settings.gameBackup.skipManifestCheck")}</Label>
-                        <p className="max-w-[70%] text-sm text-muted-foreground">
-                          {t("settings.gameBackup.skipManifestCheckDesc")}&nbsp;
-                        </p>
-                      </div>
-                      <Switch
-                        checked={settings.ludusavi.backupOptions.skipManifestCheck}
-                        onCheckedChange={value => {
-                          setSettings(prev => ({
-                            ...prev,
-                            ludusavi: {
-                              ...prev.ludusavi,
-                              backupOptions: {
-                                ...prev.ludusavi.backupOptions,
-                                skipManifestCheck: value,
-                              },
-                            },
-                          }));
-                        }}
-                        disabled={!isOnWindows}
-                      />
-                    </div>
                   </div>
                 </div>
                 <div
                   className={`mt-6 space-y-6 ${!isOnWindows || !settings.ludusavi.enabled ? "pointer-events-none opacity-50" : ""}`}
                 >
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="space-y-2">
+                      <Label>{t("settings.gameBackup.skipManifestCheck")}</Label>
+                      <p className="max-w-[70%] text-sm text-muted-foreground">
+                        {t("settings.gameBackup.skipManifestCheckDesc")}&nbsp;
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.ludusavi.backupOptions.skipManifestCheck}
+                      onCheckedChange={value => {
+                        setSettings(prev => ({
+                          ...prev,
+                          ludusavi: {
+                            ...prev.ludusavi,
+                            backupOptions: {
+                              ...prev.ludusavi.backupOptions,
+                              skipManifestCheck: value,
+                            },
+                          },
+                        }));
+                      }}
+                      disabled={!isOnWindows}
+                    />
+                  </div>
                   <div className="space-y-4">
                     {/* Backup Format */}
                     <div className="space-y-2">
@@ -1255,7 +1255,7 @@ function Settings() {
                     <a
                       onClick={() =>
                         window.electron.openURL(
-                          "https://ascendara.app/docs/features/igdb-integration"
+                          "https://ascendara.app/docs/features/ascendara-xtra#setting-up-igdb"
                         )
                       }
                       className="cursor inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
@@ -1313,7 +1313,7 @@ function Settings() {
                             handleSettingChange("twitchSecret", twitchSecret);
                           }}
                         >
-                          {t("settings.setKey") || "Set"}
+                          {t("settings.setKey")}
                         </Button>
                       </div>
                     </div>
@@ -1330,7 +1330,9 @@ function Settings() {
                     </p>
                     <a
                       onClick={() =>
-                        window.electron.openURL("https://www.giantbomb.com/api/")
+                        window.electron.openURL(
+                          "https://ascendara.app/docs/features/ascendara-xtra#setting-up-giantbomb"
+                        )
                       }
                       className="cursor inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
                     >

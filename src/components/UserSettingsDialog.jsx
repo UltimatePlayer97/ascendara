@@ -11,6 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Pencil, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
@@ -20,6 +21,8 @@ const UserSettingsDialog = () => {
   const [directory, setDirectory] = useState("");
   const [canCreateFiles, setCanCreateFiles] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const [useGoldbergName, setUseGoldbergName] = useState(true);
+  const [generalUsername, setGeneralUsername] = useState("");
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -32,6 +35,8 @@ const UserSettingsDialog = () => {
     try {
       const savedUsername = await window.electron.getLocalCrackUsername();
       const savedDirectory = await window.electron.getLocalCrackDirectory();
+      const savedGeneralUsername = localStorage.getItem("general-username");
+      const savedUseGoldberg = localStorage.getItem("use-goldberg-name");
 
       if (savedUsername) {
         setUsername(savedUsername);
@@ -39,6 +44,13 @@ const UserSettingsDialog = () => {
         const systemUsername = "Guest";
         setUsername(systemUsername);
       }
+
+      if (savedGeneralUsername) {
+        setGeneralUsername(savedGeneralUsername);
+      }
+
+      setUseGoldbergName(savedUseGoldberg === null ? true : savedUseGoldberg === "true");
+
       if (savedDirectory) {
         setDirectory(savedDirectory);
         const canCreate = await window.electron.canCreateFiles(savedDirectory);
@@ -68,8 +80,16 @@ const UserSettingsDialog = () => {
         return;
       }
 
+      // Save general username settings
+      localStorage.setItem("general-username", generalUsername);
+      localStorage.setItem("use-goldberg-name", useGoldbergName.toString());
+
       // Emit custom event when username is updated
-      window.dispatchEvent(new CustomEvent("usernameUpdated"));
+      window.dispatchEvent(
+        new CustomEvent("usernameUpdated", {
+          detail: { useGoldbergName, generalUsername, goldbergUsername: username },
+        })
+      );
 
       toast.success(t("settings.userSettings.saveSuccess"));
       setIsOpen(false);
@@ -102,7 +122,7 @@ const UserSettingsDialog = () => {
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        <Button variant="ghost" size="icon">
           <Pencil className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>
@@ -135,17 +155,44 @@ const UserSettingsDialog = () => {
 
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label className="text-muted-foreground" htmlFor="username">
-              {t("settings.userSettings.username")}
+            <Label className="text-muted-foreground" htmlFor="generalUsername">
+              {t("settings.userSettings.generalUsername")}
             </Label>
             <Input
-              id="username"
-              value={username}
+              id="generalUsername"
+              value={generalUsername}
               className="text-foreground"
-              onChange={e => setUsername(e.target.value)}
-              placeholder={t("settings.userSettings.usernamePlaceholder")}
+              onChange={e => setGeneralUsername(e.target.value)}
+              placeholder={t("settings.userSettings.generalUsernamePlaceholder")}
             />
           </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="privacy"
+              checked={useGoldbergName}
+              onCheckedChange={setUseGoldbergName}
+              className="data-[state=checked]:text-primary-foreground data-[state=checked]:bg-primary"
+            />
+            <Label htmlFor="useGoldbergName" className="text-muted-foreground">
+              {t("settings.userSettings.useForGoldberg")}
+            </Label>
+          </div>
+
+          {!useGoldbergName && (
+            <div className="grid gap-2">
+              <Label className="text-muted-foreground" htmlFor="username">
+                {t("settings.userSettings.goldbergUsername")}
+              </Label>
+              <Input
+                id="username"
+                value={username}
+                className="text-foreground"
+                onChange={e => setUsername(e.target.value)}
+                placeholder={t("settings.userSettings.goldbergUsernamePlaceholder")}
+              />
+            </div>
+          )}
 
           <div className="grid gap-2">
             <Label className="text-muted-foreground" htmlFor="directory">

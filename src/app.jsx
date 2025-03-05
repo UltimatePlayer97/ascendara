@@ -32,6 +32,7 @@ import ExtraLanguages from "./pages/ExtraLanguages";
 import Home from "./pages/Home";
 import WorkshopDownloader from "./pages/WorkshopDownloader";
 import GameScreen from "./pages/GameScreen";
+import Profile from "./pages/Profile";
 import Library from "./pages/Library";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
@@ -555,6 +556,16 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="settings">
                     <Settings />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="profile">
+                    <Profile />
                   </PageTransition>
                 </AnimatePresence>
               }

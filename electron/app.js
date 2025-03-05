@@ -279,6 +279,24 @@ ipcMain.handle("is-steamcmd-installed", async () => {
   }
 });
 
+ipcMain.handle("timestamp-time", async () => {
+  try {
+    if (!fs.existsSync(TIMESTAMP_FILE)) return "No timestamp available";
+    const data = JSON.parse(await fs.promises.readFile(TIMESTAMP_FILE, "utf8"));
+    if (!data.timestamp) return "No timestamp recorded";
+    return new Date(data.timestamp).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch (error) {
+    console.error("Error reading timestamp file:", error);
+    return "Error retrieving timestamp";
+  }
+});
+
 // Install steamcmd.exe from Ascendara CDN and store it in the ascendaraSteamcmd directory
 ipcMain.handle("install-steamcmd", async () => {
   try {

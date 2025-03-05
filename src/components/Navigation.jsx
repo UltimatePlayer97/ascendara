@@ -11,6 +11,7 @@ import {
   Download,
   ChevronRight,
   Package,
+  User,
 } from "lucide-react";
 
 const Navigation = memo(({ items }) => {
@@ -114,10 +115,10 @@ const Navigation = memo(({ items }) => {
     ];
 
     items.push({
-      path: "/settings",
-      label: t("common.preferences"),
-      icon: Settings2,
-      color: "from-slate-500 to-gray-400",
+      path: "/profile",
+      label: t("common.profile"),
+      icon: User,
+      color: "from-red-500 to-pink-400",
     });
 
     if (settings.viewWorkshopPage) {
@@ -128,6 +129,13 @@ const Navigation = memo(({ items }) => {
         color: "from-rose-500 to-red-400",
       });
     }
+
+    items.push({
+      path: "/settings",
+      label: t("common.preferences"),
+      icon: Settings2,
+      color: "from-slate-500 to-gray-400",
+    });
 
     return items;
   }, [t, settings.viewWorkshopPage]);
