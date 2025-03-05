@@ -497,6 +497,7 @@ class SettingsManager {
         backupLocation: "",
         backupFormat: "zip",
         enabled: false,
+        skipManifestCheck: false,
         backupOptions: {
           backupsToKeep: 5,
           compressionLevel: "default",
