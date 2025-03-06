@@ -16,7 +16,7 @@ import { ExternalLink, Pencil, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 
-const UserSettingsDialog = () => {
+const UsernameDialog = () => {
   const [username, setUsername] = useState("");
   const [directory, setDirectory] = useState("");
   const [canCreateFiles, setCanCreateFiles] = useState(true);
@@ -122,7 +122,11 @@ const UserSettingsDialog = () => {
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="transition-transform duration-200 hover:scale-110 hover:bg-transparent"
+        >
           <Pencil className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>
@@ -196,40 +200,35 @@ const UserSettingsDialog = () => {
 
           <div className="grid gap-2">
             <Label className="text-muted-foreground" htmlFor="directory">
-              {t("settings.userSettings.directory")}
+              {t("settings.userSettings.goldbergSettingsDir")}
             </Label>
             <div className="flex gap-2">
               <Input
                 id="directory"
                 value={directory}
+                className="text-foreground"
                 onChange={e => setDirectory(e.target.value)}
-                placeholder={t("settings.userSettings.directoryDescription")}
-                className="flex-1 text-foreground"
               />
-              <Button className="text-secondary" onClick={handleDirectorySelect}>
+              <Button
+                variant="outline"
+                onClick={handleDirectorySelect}
+                className="shrink-0"
+              >
                 {t("settings.userSettings.browseDirectory")}
               </Button>
             </div>
-            {!canCreateFiles && (
-              <p className="text-sm text-muted-foreground">
-                {t("settings.userSettings.directoryPermissionError")}
-              </p>
-            )}
           </div>
         </div>
 
         <AlertDialogFooter>
-          <Button
-            className="text-secondary"
-            onClick={handleSave}
-            disabled={!canCreateFiles}
-          >
-            {t("settings.userSettings.saveChanges")}
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            {t("common.cancel")}
           </Button>
+          <Button onClick={handleSave}>{t("settings.userSettings.saveChanges")}</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 };
 
-export default UserSettingsDialog;
+export default UsernameDialog;
