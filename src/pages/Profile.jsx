@@ -18,15 +18,13 @@ import {
 const Profile = () => {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const [joinDate, setJoinDate] = useState("");
   const [username, setUsername] = useState("");
-  const [newUsername, setNewUsername] = useState("");
   const [useGoldbergName, setUseGoldbergName] = useState(true);
   const [generalUsername, setGeneralUsername] = useState("");
-  const [selectedEmoji, setSelectedEmoji] = useState(
-    localStorage.getItem("profile-emoji") || "😊"
-  );
-  const [bio, setBio] = useState(localStorage.getItem("profile-bio") || "");
-  const [downloadHistory, setDownloadHistory] = useState([]);
+  const [selectedEmoji, setSelectedEmoji] = useState(() => {
+    return localStorage.getItem("selectedEmoji") || "😊";
+  });
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -39,7 +37,6 @@ const Profile = () => {
     xp: 0,
     currentXP: 0,
     nextLevelXp: 100,
-    joinDate: "",
     gamesCompleted: 0,
     totalDownloads: 0,
     achievements: [],
@@ -48,8 +45,10 @@ const Profile = () => {
     genreDistribution: {},
   });
   const [gameImages, setGameImages] = useState({});
-  const fileInputRef = useRef(null);
-  const avatarInputRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("selectedEmoji", selectedEmoji);
+  }, [selectedEmoji]);
 
   const emojiCategories = [
     {
@@ -161,7 +160,6 @@ const Profile = () => {
 
   const handleEmojiSelect = emoji => {
     setSelectedEmoji(emoji);
-    localStorage.setItem("profile-emoji", emoji);
   };
 
   const getDisplayUsername = () => {
@@ -171,169 +169,49 @@ const Profile = () => {
     return generalUsername || "Guest";
   };
 
-  useEffect(() => {
-    const handleUsernameUpdate = event => {
-      const {
-        useGoldbergName: newUseGoldberg,
-        generalUsername: newGeneralUsername,
-        goldbergUsername,
-      } = event.detail || {};
-
-      if (newUseGoldberg !== undefined) {
-        setUseGoldbergName(newUseGoldberg);
-      }
-
-      if (newGeneralUsername !== undefined) {
-        setGeneralUsername(newGeneralUsername);
-      }
-
-      if (goldbergUsername !== undefined) {
-        setUsername(goldbergUsername);
-        setNewUsername(goldbergUsername);
-      } else {
-        window.electron.getLocalCrackUsername().then(newUsername => {
-          setUsername(newUsername || "");
-          setNewUsername(newUsername || "");
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      const profile = await window.electron.readProfile();
+      const joinDate = await window.electron.timestampTime();
+      setJoinDate(joinDate);
+      if (profile && profile.statistics) {
+        const stats = profile.statistics;
+        setStats({
+          ...stats,
+          totalPlayTime: stats.totalPlaytime || 0,
+          xp: stats.xp || 0,
+          currentXP: stats.currentXP || 0,
+          nextLevelXp: stats.nextLevelXp || 100,
+          level: stats.level || 1,
+          gamesPlayed: stats.gamesPlayed || 0,
+          totalGames: stats.totalGames || 0,
         });
+        setGames(profile.allGames || []);
+        setUseGoldbergName(profile.useGoldbergName ?? false);
+        setGeneralUsername(profile.generalUsername || "");
+        setUsername(profile.username || "");
       }
-    };
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+      setLoading(false);
+    }
+  };
 
-    window.addEventListener("usernameUpdated", handleUsernameUpdate);
-    return () => window.removeEventListener("usernameUpdated", handleUsernameUpdate);
+  useEffect(() => {
+    loadProfile();
   }, []);
 
   useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        // Load usernames
-        const savedUsername = await window.electron.getLocalCrackUsername();
-        const savedGeneralUsername = localStorage.getItem("general-username");
-        const savedUseGoldberg = localStorage.getItem("use-goldberg-name");
-
-        setUsername(savedUsername || "");
-        setNewUsername(savedUsername || "");
-        setGeneralUsername(savedGeneralUsername || "");
-        setUseGoldbergName(
-          savedUseGoldberg === null ? true : savedUseGoldberg === "true"
-        );
-
-        const installedGames = await window.electron.getGames();
-        const customGames = await window.electron.getCustomGames();
-        const joinDate = await window.electron.timestampTime();
-
-        // Filter out games that are being verified
-        const filteredInstalledGames = installedGames.filter(
-          game => !game.downloadingData?.verifying
-        );
-
-        // Combine both types of games
-        const allGames = [
-          ...(filteredInstalledGames || []).map(game => ({
-            ...game,
-            isCustom: false,
-          })),
-          ...(customGames || []).map(game => ({
-            name: game.game,
-            game: game.game,
-            version: game.version,
-            online: game.online,
-            dlc: game.dlc,
-            isCustom: true,
-            custom: true,
-          })),
-        ];
-
-        const favorites = JSON.parse(localStorage.getItem("game-favorites") || "[]");
-
-        // Calculate total play time from installed games
-        const totalPlayTime = allGames.reduce(
-          (total, game) => total + (game.playTime || 0),
-          0
-        );
-
-        // Calculate level and XP
-        const calculateGameXP = game => {
-          const playtimeXP = Math.floor((game.playTime || 0) / 60) * 8; // 8 XP per hour played
-          const launchXP = Math.min((game.launchCount || 0) * 3, 75); // 3 XP per launch, max 75 XP per game
-          const baseGameXP = 50; // One-time XP for adding a game
-          return playtimeXP + launchXP + baseGameXP;
-        };
-
-        const totalXP = allGames.reduce(
-          (total, game) => total + calculateGameXP(game),
-          0
-        );
-
-        // Level calculation: Each level requires more XP than the last
-        const calculateLevel = xp => {
-          let level = 1;
-          let xpForNextLevel = 150; // Starting XP requirement
-          let currentXP = xp;
-
-          while (currentXP >= xpForNextLevel) {
-            level++;
-            currentXP -= xpForNextLevel;
-            xpForNextLevel = Math.floor(xpForNextLevel * 1.5); // Each level requires 50% more XP
-          }
-
-          return {
-            level,
-            currentXP,
-            nextLevelXp: xpForNextLevel,
-          };
-        };
-
-        const levelInfo = calculateLevel(totalXP);
-
-        // Calculate genre distribution
-        const genreCount = {};
-        allGames.forEach(game => {
-          if (game.genre) {
-            genreCount[game.genre] = (genreCount[game.genre] || 0) + 1;
-          }
-        });
-
-        const totalGames = Object.values(genreCount).reduce((a, b) => a + b, 0);
-        const sortedGenres = Object.entries(genreCount)
-          .sort(([, a], [, b]) => b - a)
-          .reduce((acc, [genre, count]) => {
-            acc[genre] = {
-              count,
-              percentage: Math.round((count / totalGames) * 100),
-            };
-            return acc;
-          }, {});
-
-        setStats({
-          gamesPlayed: allGames.length,
-          totalPlayTime,
-          favoriteGames: favorites,
-          totalGames: allGames.length,
-          level: levelInfo.level,
-          xp: totalXP,
-          currentXP: levelInfo.currentXP,
-          nextLevelXp: levelInfo.nextLevelXp,
-          joinDate,
-          gamesCompleted: allGames.filter(game => game.playTime > 0).length,
-          totalDownloads: allGames.length,
-          genreDistribution: sortedGenres,
-          achievements: [],
-          recentActivity: [],
-          favoriteGenres: Object.entries(sortedGenres)
-            .sort(([, a], [, b]) => b.count - a.count)
-            .slice(0, 3)
-            .map(([genre]) => genre),
-        });
-
-        setGames(allGames);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-        setLoading(false);
+    const reloadOnDialogClose = event => {
+      if (event.target.closest(".AlertDialog") === null) {
+        loadProfile();
       }
     };
 
-    loadUserProfile();
+    document.addEventListener("click", reloadOnDialogClose);
+    return () => document.removeEventListener("click", reloadOnDialogClose);
   }, []);
 
   useEffect(() => {
@@ -414,27 +292,6 @@ const Profile = () => {
     );
   };
 
-  const saveBio = async () => {
-    setEditingBio(false);
-    await saveProfile();
-  };
-
-  const saveProfile = async () => {
-    try {
-      const profileData = {
-        username,
-        generalUsername,
-        useGoldbergName,
-        bio,
-        statistics: stats,
-      };
-      await window.electron.saveProfile(profileData);
-    } catch (error) {
-      console.error("Error saving profile:", error);
-      toast.error(t("profile.saveError"));
-    }
-  };
-
   const formatPlayTime = seconds => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -489,7 +346,7 @@ const Profile = () => {
       {/* Profile Info Section */}
       <div className="mx-auto max-w-2xl text-center">
         <p className="mt-2 text-muted-foreground">
-          {t("profile.memberSince", { date: stats.joinDate })}
+          {t("profile.memberSince", { date: joinDate })}
         </p>
       </div>
 

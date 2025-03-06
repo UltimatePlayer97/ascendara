@@ -1970,10 +1970,58 @@ const decrypt = data => {
   }
 };
 
-const createProfile = async () => {
+// Profile calculation and management
+async function calculateProfileStats(games, customGames) {
+  const allGames = [...(games || []), ...(customGames || [])];
+
+  // Calculate total playtime and XP from games
+  let totalXP = 0;
+  let totalPlaytime = 0;
+
+  allGames.forEach(game => {
+    // Base XP for having the game
+    let gameXP = 100; // Increased base XP
+
+    // XP from playtime (20 XP per hour)
+    const playtimeHours = (game.playTime || 0) / 3600;
+    gameXP += Math.floor(playtimeHours * 20); // Doubled XP per hour
+
+    // XP from launches (10 XP per launch, max 100)
+    gameXP += Math.min((game.launchCount || 0) * 10, 100); // Increased launch XP
+
+    totalXP += gameXP;
+    totalPlaytime += game.playTime || 0;
+  });
+
+  // Calculate level with lower XP requirements
+  let level = 1;
+  let xpForNextLevel = 100; // Lower initial XP requirement
+  let currentXP = totalXP;
+
+  while (currentXP >= xpForNextLevel) {
+    level++;
+    currentXP -= xpForNextLevel;
+    xpForNextLevel = Math.floor(xpForNextLevel * 1.2); // Slower XP scaling
+  }
+
+  return {
+    totalPlaytime,
+    gamesPlayed: allGames.filter(game => game.playTime > 0).length,
+    totalGames: allGames.length,
+    level,
+    xp: totalXP,
+    currentXP,
+    nextLevelXp: xpForNextLevel,
+    allGames,
+  };
+}
+
+// Modified createProfile function
+async function createProfile() {
   try {
     const settings = settingsManager.getSettings();
     let games = [];
+
     if (settings.downloadDirectory) {
       // Get all subdirectories in the download directory
       const subdirectories = await fs.promises.readdir(settings.downloadDirectory, {
@@ -2004,40 +2052,20 @@ const createProfile = async () => {
 
     // Get custom games from settings
     const customGames = settings.customGames || [];
-    const allGames = [...games, ...customGames];
 
-    // Calculate total playtime and other statistics
-    const gamesWithPlaytime = allGames.filter(game => game.playTime > 0);
-    const totalPlaytime = gamesWithPlaytime.reduce(
-      (total, game) => total + (game.playTime || 0),
-      0
-    );
+    // Calculate statistics
+    const statistics = await calculateProfileStats(games, customGames);
 
-    // Calculate level based on playtime (1 hour = 10 XP)
-    const xpPerHour = 10;
-    const totalXP = Math.floor((totalPlaytime / 3600) * xpPerHour); // Convert seconds to hours
-    const level = Math.floor(Math.sqrt(totalXP / 100)) + 1; // Simple level progression
-    const currentLevelXP = totalXP - Math.pow(level - 1, 2) * 100;
-
-    // Create default profile data
+    // Create profile data
     const profileData = {
       username: "Guest",
       useGoldbergName: false,
-      bio: "",
-      bannerColor: "#1e293b", // Default slate-800
-      avatarColor: "#0f172a", // Default slate-900
-      statistics: {
-        totalPlaytime,
-        gamesPlayed: gamesWithPlaytime.length,
-        totalGames: allGames.length,
-        level,
-        currentXP: currentLevelXP,
-        nextLevelXp: 100,
-      },
-      achievements: [],
+      statistics,
+      allGames: [...games, ...customGames],
     };
-    console.log(profileData);
-    console.log(games);
+
+    console.log("Profile data:", profileData);
+
     // Encrypt and save the profile
     const encryptedData = encrypt(profileData);
     await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
@@ -2047,38 +2075,51 @@ const createProfile = async () => {
     console.error("Error creating profile:", error);
     throw error;
   }
-};
+}
 
+// Add IPC handlers
 ipcMain.handle("read-profile", async () => {
   try {
-    if (!fs.existsSync(PROFILE_FILE)) {
-      // Create and return a new profile if none exists
-      return await createProfile();
+    if (await fs.promises.access(PROFILE_FILE).catch(() => false)) {
+      const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
+      return decrypt(encryptedData);
     }
-    const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
-    const decryptedData = decrypt(encryptedData);
-    return decryptedData || (await createProfile());
+    return await createProfile();
   } catch (error) {
     console.error("Error reading profile:", error);
-    throw error;
+    return await createProfile();
   }
 });
 
 ipcMain.handle("write-profile", async (event, profileData) => {
   try {
-    let existingData;
-    if (!fs.existsSync(PROFILE_FILE)) {
-      existingData = await createProfile();
-    } else {
+    // First read the existing profile to preserve any data
+    let existingProfile;
+    try {
       const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
-      existingData = decrypt(encryptedData) || {};
+      existingProfile = decrypt(encryptedData);
+    } catch (error) {
+      existingProfile = await createProfile();
     }
-    const mergedData = { ...existingData, ...profileData };
-    const encryptedData = encrypt(mergedData);
+
+    // Merge the existing profile with the new data
+    const updatedProfile = {
+      ...existingProfile, // Keep existing data
+      ...profileData, // Update with new data
+      statistics: {
+        ...(existingProfile.statistics || {}), // Keep existing stats
+        ...(profileData.statistics || {}), // Update with new stats
+      },
+      allGames: profileData.allGames || existingProfile.allGames || [],
+    };
+
+    console.log("Writing profile:", updatedProfile);
+
+    const encryptedData = encrypt(updatedProfile);
     await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
     return true;
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.error("Error writing profile:", error);
     throw error;
   }
 });

@@ -35,8 +35,7 @@ const UsernameDialog = () => {
     try {
       const savedUsername = await window.electron.getLocalCrackUsername();
       const savedDirectory = await window.electron.getLocalCrackDirectory();
-      const savedGeneralUsername = localStorage.getItem("general-username");
-      const savedUseGoldberg = localStorage.getItem("use-goldberg-name");
+      const profile = await window.electron.readProfile();
 
       if (savedUsername) {
         setUsername(savedUsername);
@@ -45,11 +44,10 @@ const UsernameDialog = () => {
         setUsername(systemUsername);
       }
 
-      if (savedGeneralUsername) {
-        setGeneralUsername(savedGeneralUsername);
+      if (profile) {
+        setGeneralUsername(profile.generalUsername || "");
+        setUseGoldbergName(profile.useGoldbergName ?? true);
       }
-
-      setUseGoldbergName(savedUseGoldberg === null ? true : savedUseGoldberg === "true");
 
       if (savedDirectory) {
         setDirectory(savedDirectory);
@@ -80,17 +78,18 @@ const UsernameDialog = () => {
         return;
       }
 
-      // Save general username settings
-      localStorage.setItem("general-username", generalUsername);
-      localStorage.setItem("use-goldberg-name", useGoldbergName.toString());
+      // Update profile with new username settings
+      const profile = await window.electron.readProfile();
+      const updatedProfile = {
+        ...profile,
+        username, // This is the goldberg username
+        generalUsername,
+        useGoldbergName,
+        statistics: profile.statistics || {},
+        allGames: profile.allGames || [],
+      };
 
-      // Emit custom event when username is updated
-      window.dispatchEvent(
-        new CustomEvent("usernameUpdated", {
-          detail: { useGoldbergName, generalUsername, goldbergUsername: username },
-        })
-      );
-
+      await window.electron.writeProfile(updatedProfile);
       toast.success(t("settings.userSettings.saveSuccess"));
       setIsOpen(false);
     } catch (error) {
