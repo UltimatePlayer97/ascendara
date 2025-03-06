@@ -18,13 +18,11 @@
 
 ## 🎮 About
 
-#### The website, API, and application were all completely developed and stay maintained by a [single developer](https://tago.works).
-
-Ascendara simplifies your pirating experience by providing a seamless way to download, manage, and play the pre-installed games. No more hassle with extracting, installing, or moving files. The game library is powered by a custom webscraper, currently featuring games from [STEAMRIP](https://steamrip.com/), with plans to expand to more sources.
+Ascendara simplifies your pirating experience by providing a seamless way to download, manage, and play the pre-installed games. No more hassle with extracting, installing, or moving files. The game library is powered by a custom webscraper, currently featuring games from [STEAMRIP](https://ascendara.app/sources/steamrip) and [FitGirl](https://ascendara.app/sources/fitgirl), with plans to expand to more sources.
 
 ### 👥 Community
 
-- [Join our Discord](https://discord.gg/ascendara) for discussions and support
+- [Join the Discord](https://discord.gg/ascendara) for discussions and support
 - [Submit feedback for Ascendara](https://ascendara.app/feedback)
 - [Read the latest changelog](https://ascendara.app/changelog)
 - [Check latest releases on Github](https://github.com/tagoWorks/ascendara/releases)
@@ -266,11 +264,7 @@ Before building, ensure you have all required dependencies. [View full requireme
    yarn start
    ```
 
-5. **Build the Application**
-
-   ```sh
-   yarn build
-   ```
+To build the source code into an executable, read the [Developer Docs](https://ascendara.app/docs/developer/build-from-source).
 
 ## 🗺️ Development Roadmap
 
