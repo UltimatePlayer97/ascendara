@@ -48,7 +48,6 @@ import {
 } from "@/components/ui/tooltip";
 import gameService from "@/services/gameService";
 import { toast } from "sonner";
-import UserSettingsDialog from "@/components/UserSettingsDialog";
 import { useNavigate } from "react-router-dom";
 import igdbService from "@/services/gameInfoService";
 
@@ -448,13 +447,14 @@ const Library = () => {
                         <User className="h-4 w-4 text-primary" />
                         <span className="text-sm font-medium">{username || "Guest"}</span>
                       </div>
-                      {isOnWindows ? (
-                        <UserSettingsDialog />
-                      ) : (
-                        <Button variant="ghost" disabled size="icon" className="h-9 w-9">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9"
+                        onClick={() => navigate("/profile")}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                     </div>
 
                     <div className="mt-2 flex items-center justify-between">

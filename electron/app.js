@@ -37,6 +37,8 @@ const {
   screen,
   Notification,
 } = require("electron");
+// Only used for profile handling. See line 1905.
+const crypto = require("crypto");
 const { Client } = require("discord-rpc");
 const disk = require("diskusage");
 const path = require("path");
@@ -65,6 +67,10 @@ let electronDl;
 const TIMESTAMP_FILE = !isWindows
   ? path.join(os.homedir(), "timestamp.ascendara.json")
   : path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
+
+const PROFILE_FILE = !isWindows
+  ? path.join(os.homedir(), "profile.asc")
+  : path.join(process.env.USERPROFILE, "profile.asc");
 
 const LANG_DIR = !isWindows
   ? path.join(app.getPath("userData"), "Ascendara", "languages")
@@ -1673,11 +1679,26 @@ ipcMain.handle(
               settings.notifications ? [`--withNotification`, settings.theme] : []
             );
 
-      const downloadProcess = spawn(executablePath, spawnCommand, {
-        detached: true,
-        stdio: "ignore",
-        windowsHide: false,
+      // Add the new game to the downloadedHistory in the timestamp file
+      const timestampFilePath = path.join(app.getPath("userData"), "timestamp.json");
+      let timestampData = {};
+      try {
+        const data = await fs.promises.readFile(timestampFilePath, "utf8");
+        timestampData = JSON.parse(data);
+      } catch (error) {
+        console.error("Error reading timestamp file:", error);
+      }
+      if (!timestampData.downloadedHistory) {
+        timestampData.downloadedHistory = [];
+      }
+      timestampData.downloadedHistory.push({
+        game,
+        timestamp: new Date().toISOString(),
       });
+      await fs.promises.writeFile(
+        timestampFilePath,
+        JSON.stringify(timestampData, null, 2)
+      );
 
       downloadProcess.on("error", err => {
         console.error(`Failed to start download process: ${err}`);
@@ -1703,6 +1724,17 @@ function getExtensionFromMimeType(mimeType) {
       return "";
   }
 }
+
+ipcMain.handle("get-download-history", async () => {
+  try {
+    const data = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
+    const timestamp = JSON.parse(data);
+    return timestamp.downloadedHistory || [];
+  } catch (error) {
+    console.error("Error reading download history:", error);
+    return [];
+  }
+});
 
 ipcMain.handle("check-retry-extract", async (event, game) => {
   const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
@@ -1892,6 +1924,162 @@ ipcMain.handle("set-v7", () => {
   } catch (error) {
     console.error("Error setting v7:", error);
     return false;
+  }
+});
+
+// Note: This file is not encrypted for malicious purposes, but rather to prevent
+// easy modification of profile data. This helps maintain the integrity of user
+// profiles and discourages tampering with sensitive information.
+const ENCRYPTION_KEY = "ascendara-profile";
+const IV_LENGTH = 16; // For AES, this is always 16
+
+// Utility functions for encryption/decryption
+const encrypt = data => {
+  // Create a 32 byte key from our password using SHA-256
+  const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
+  // Generate a random initialization vector
+  const iv = crypto.randomBytes(IV_LENGTH);
+  // Create cipher with key and iv
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  // Encrypt the data
+  let encrypted = cipher.update(JSON.stringify(data), "utf8", "hex");
+  encrypted += cipher.final("hex");
+  // Prepend the IV to the encrypted data (we'll need it for decryption)
+  return iv.toString("hex") + ":" + encrypted;
+};
+
+const decrypt = data => {
+  try {
+    // Split the encrypted data to get the IV and the encrypted content
+    const [ivHex, encryptedData] = data.split(":");
+    if (!ivHex || !encryptedData) {
+      throw new Error("Invalid encrypted data format");
+    }
+    // Convert the key and IV back to buffers
+    const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
+    const iv = Buffer.from(ivHex, "hex");
+    // Create decipher with key and iv
+    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+    // Decrypt the data
+    let decrypted = decipher.update(encryptedData, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return JSON.parse(decrypted);
+  } catch (error) {
+    console.error("Error decrypting profile:", error);
+    return null;
+  }
+};
+
+const createProfile = async () => {
+  try {
+    const settings = settingsManager.getSettings();
+    let games = [];
+    if (settings.downloadDirectory) {
+      // Get all subdirectories in the download directory
+      const subdirectories = await fs.promises.readdir(settings.downloadDirectory, {
+        withFileTypes: true,
+      });
+      const gameDirectories = subdirectories
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
+
+      // Read {game}.ascendara.json from each subdirectory
+      const gamesData = await Promise.all(
+        gameDirectories.map(async dir => {
+          const gameInfoPath = path.join(
+            settings.downloadDirectory,
+            dir,
+            `${dir}.ascendara.json`
+          );
+          try {
+            const gameInfoData = await fs.promises.readFile(gameInfoPath, "utf8");
+            return JSON.parse(gameInfoData);
+          } catch (error) {
+            return null;
+          }
+        })
+      );
+      games = gamesData.filter(game => game !== null);
+    }
+
+    // Get custom games from settings
+    const customGames = settings.customGames || [];
+    const allGames = [...games, ...customGames];
+
+    // Calculate total playtime and other statistics
+    const gamesWithPlaytime = allGames.filter(game => game.playTime > 0);
+    const totalPlaytime = gamesWithPlaytime.reduce(
+      (total, game) => total + (game.playTime || 0),
+      0
+    );
+
+    // Calculate level based on playtime (1 hour = 10 XP)
+    const xpPerHour = 10;
+    const totalXP = Math.floor((totalPlaytime / 3600) * xpPerHour); // Convert seconds to hours
+    const level = Math.floor(Math.sqrt(totalXP / 100)) + 1; // Simple level progression
+    const currentLevelXP = totalXP - Math.pow(level - 1, 2) * 100;
+
+    // Create default profile data
+    const profileData = {
+      username: "Guest",
+      useGoldbergName: false,
+      bio: "",
+      bannerColor: "#1e293b", // Default slate-800
+      avatarColor: "#0f172a", // Default slate-900
+      statistics: {
+        totalPlaytime,
+        gamesPlayed: gamesWithPlaytime.length,
+        totalGames: allGames.length,
+        level,
+        currentXP: currentLevelXP,
+        nextLevelXp: 100,
+      },
+      achievements: [],
+    };
+    console.log(profileData);
+    console.log(games);
+    // Encrypt and save the profile
+    const encryptedData = encrypt(profileData);
+    await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
+
+    return profileData;
+  } catch (error) {
+    console.error("Error creating profile:", error);
+    throw error;
+  }
+};
+
+ipcMain.handle("read-profile", async () => {
+  try {
+    if (!fs.existsSync(PROFILE_FILE)) {
+      // Create and return a new profile if none exists
+      return await createProfile();
+    }
+    const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
+    const decryptedData = decrypt(encryptedData);
+    return decryptedData || (await createProfile());
+  } catch (error) {
+    console.error("Error reading profile:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("write-profile", async (event, profileData) => {
+  try {
+    let existingData;
+    if (!fs.existsSync(PROFILE_FILE)) {
+      existingData = await createProfile();
+    } else {
+      const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
+      existingData = decrypt(encryptedData) || {};
+    }
+    const mergedData = { ...existingData, ...profileData };
+    const encryptedData = encrypt(mergedData);
+    await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
+    return true;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error;
   }
 });
 
