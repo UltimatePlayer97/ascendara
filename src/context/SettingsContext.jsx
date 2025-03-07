@@ -35,9 +35,9 @@ export function SettingsProvider({ children }) {
       backupLocation: "",
       backupFormat: "zip",
       enabled: false,
-      skipManifestCheck: false,
       backupOptions: {
         backupsToKeep: 5,
+        skipManifestCheck: false,
         compressionLevel: "default",
       },
     },
