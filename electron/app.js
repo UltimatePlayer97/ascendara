@@ -2059,8 +2059,19 @@ async function createProfile() {
       games = gamesData.filter(game => game !== null);
     }
 
-    // Get custom games from settings
-    const customGames = settings.customGames || [];
+    // Get custom games from games.json file in the download directory
+    let customGames = [];
+    const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+    try {
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      customGames = gamesData.games || [];
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        console.error("Error reading games.json:", error);
+      }
+      // If file doesn't exist or there's another error, use empty array
+      customGames = [];
+    }
 
     // Calculate statistics
     const statistics = await calculateProfileStats(games, customGames);
