@@ -1703,6 +1703,12 @@ ipcMain.handle(
         JSON.stringify(timestampData, null, 2)
       );
 
+      const downloadProcess = spawn(executablePath, spawnCommand, {
+        detached: true,
+        stdio: "ignore",
+        windowsHide: false,
+      });
+
       downloadProcess.on("error", err => {
         console.error(`Failed to start download process: ${err}`);
         event.sender.send("download-error", { game, error: err.message });
