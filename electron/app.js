@@ -684,7 +684,10 @@ ipcMain.handle("ludusavi", async (event, action, game, backupName) => {
 
       switch (action) {
         case "backup":
-          args = ["backup"];
+          if (ludusaviSettings.backupOptions.skipManifestCheck) {
+            args.push("--no-manifest-update");
+          }
+          args.push("backup");
 
           // Add game title if provided
           if (game) {
@@ -1557,7 +1560,7 @@ ipcMain.handle("get-game-image", async (event, game) => {
     const settings = JSON.parse(data);
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
-      return null;
+      return;
     }
     const downloadDirectory = settings.downloadDirectory;
     const gameDirectory = path.join(downloadDirectory, game);

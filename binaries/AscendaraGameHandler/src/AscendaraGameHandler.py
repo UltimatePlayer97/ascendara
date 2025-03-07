@@ -159,16 +159,18 @@ def run_ludusavi_backup(game_name):
         # Build the command with correct syntax
         cmd = [
             ludusavi_path,
-            "backup",
             "--path", backup_location,
             "--format", backup_format,
             "--full-limit", str(backups_to_keep),
             "--compression", compression_level,
-            "--force",  # Always skip confirmations
-            game_name  # Game name as positional argument
+            "--force"
         ]
 
-        # Run the backup process
+        if ludusavi_settings.get('backupOptions', {}).get('skipManifestCheck', False):
+            cmd.append("--no-manifest-update")
+
+        cmd.extend(["backup", game_name])
+
         logging.info(f"Running Ludusavi backup for {game_name} with command: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True)
         
