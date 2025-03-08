@@ -295,6 +295,24 @@ const Profile = () => {
       // Load user preferences from localStorage
       const userPrefs = JSON.parse(localStorage.getItem("userProfile") || "{}");
 
+      // Check if profileName is missing but cracked username exists
+      if (!userPrefs.profileName) {
+        try {
+          // Try to get the cracked username
+          const crackedUsername = await window.electron.getLocalCrackUsername();
+          if (crackedUsername) {
+            // Update userPrefs with the cracked username
+            userPrefs.profileName = crackedUsername;
+            // Save updated preferences to localStorage
+            localStorage.setItem("userProfile", JSON.stringify(userPrefs));
+            // Dispatch event to notify other components
+            window.dispatchEvent(new Event("username-updated"));
+          }
+        } catch (error) {
+          console.error("Error fetching cracked username:", error);
+        }
+      }
+
       // Set username values based on localStorage
       setUsername(userPrefs.username || "");
       setGeneralUsername(userPrefs.profileName || "");
