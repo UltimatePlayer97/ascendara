@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
 import UsernameDialog from "@/components/UsernameDialog";
@@ -6,16 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Trophy, Clock, Smile, Timer, Download, Archive } from "lucide-react";
+import { Trophy, Clock, Smile, Timer, Archive, FileDown } from "lucide-react";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
-import { formatDistanceToNow } from "date-fns";
 import LevelingCard from "@/components/LevelingCard";
 
 const Profile = () => {
@@ -373,7 +371,7 @@ const Profile = () => {
               <div className="relative flex h-24 w-24 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-card text-4xl shadow-lg transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:opacity-90 hover:shadow-xl">
                 {selectedEmoji}
                 <div className="absolute bottom-0 right-0 rounded-full bg-primary p-1.5 shadow-md">
-                  <Smile className="text-primary-foreground h-4 w-4" />
+                  <Smile className="h-4 w-4 text-secondary" />
                 </div>
               </div>
             </PopoverTrigger>
@@ -653,7 +651,7 @@ const Profile = () => {
               {t("profile.downloadHistory") || "Download History"}
             </h2>
           </div>
-          <ScrollArea className="h-[100px] pr-4">
+          <ScrollArea className="h-[200px] pr-4">
             <div className="space-y-3">
               {downloadHistory.length > 0 ? (
                 downloadHistory.map((item, index) => (
@@ -662,7 +660,7 @@ const Profile = () => {
                     className="flex items-center gap-3 rounded-lg border bg-card/50 p-3 backdrop-blur transition-all hover:bg-accent/50"
                   >
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <Archive className="h-5 w-5 text-primary" />
+                      <FileDown className="h-5 w-5 text-primary" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="truncate font-medium text-foreground">
@@ -676,7 +674,7 @@ const Profile = () => {
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Download className="mb-2 h-10 w-10 text-muted-foreground/50" />
+                  <Archive className="mb-2 h-10 w-10 text-muted-foreground/50" />
                   <h3 className="text-lg font-medium">No download history yet</h3>
                   <p className="text-sm text-muted-foreground">
                     Your game download history will appear here

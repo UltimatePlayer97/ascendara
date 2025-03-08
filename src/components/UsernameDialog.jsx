@@ -204,7 +204,7 @@ const UsernameDialog = () => {
                   placeholder={t("settings.userSettings.goldbergSettingsDir")}
                   className="flex-1 text-foreground"
                 />
-                <Button onClick={handleDirectorySelect}>
+                <Button className="text-secondary" onClick={handleDirectorySelect}>
                   {t("settings.userSettings.browseDirectory")}
                 </Button>
               </div>
@@ -221,7 +221,9 @@ const UsernameDialog = () => {
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSave}>{t("settings.userSettings.saveChanges")}</Button>
+          <Button className="text-secondary" onClick={handleSave}>
+            {t("settings.userSettings.saveChanges")}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
