@@ -51,6 +51,13 @@ const getSteps = t => [
     navigateTo: "/downloads",
   },
   {
+    title: t("tour.profile.title"),
+    content: t("tour.profile.content"),
+    spotlight: "a[href='/profile']",
+    position: "right",
+    navigateTo: "/profile",
+  },
+  {
     title: t("tour.settings.title"),
     content: t("tour.settings.content"),
     spotlight: "a[href='/settings']",

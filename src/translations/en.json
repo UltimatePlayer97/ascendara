@@ -704,6 +704,10 @@
       "content": "This is your navigation bar, it is where you can access all main features.",
       "title": "Navigation Bar"
     },
+    "profile": {
+      "content": "This is your Ascendara profile. You can level up having high playtime and playing games, it's all for fun! Nothing will ever be uploaded to any servers.",
+      "title": "Profile"
+    },
     "resizing": {
       "content": "Too big or too small? You can resize the navigation bar by dragging these corners!",
       "title": "Resizing Navigation"
