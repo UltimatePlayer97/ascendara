@@ -76,6 +76,7 @@
     "ok": "OK",
     "preferences": "Vorlieben",
     "prev": "Vorherige",
+    "profile": "Profil",
     "reportDialog": {
       "authFailed": "Authentifizierung fehlgeschlagen",
       "authFailedDesc": "Authentifizieren nicht. Bitte versuchen Sie es später erneut.",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "Warten Sie darauf, dass Ihr Browser den Download sendet ..."
     },
     "firstReleasedOn": "Spiel veröffentlicht",
-    "gameModes": "Spielmodi",
     "gameNeedsEmulator": "Dies erfordert einen Emulator.",
-    "gameNeedsVR": "VR erforderlich",
+    "gameNeedsVR": "Für dieses Spiel kann VR erforderlich sein.",
     "igdbLoading": "Ladespielinformationen ...",
     "igdbRating": "Dieses Spiel ist {{rating}} -Apfel bewertet. Die Apple -Bewertungen unterscheiden sich von den Sternenbewertungen auf Ascendara und sind eher eine allgemeine Bewertung des Spiels.",
     "infoMaybeInaccurate": "Wenn Informationen ungenau sind, melden Sie sie bitte",
@@ -367,7 +367,7 @@
       "restoreFailed": "Wiederherstellung fehlgeschlagen",
       "restoreLatest": "Stellen Sie die neueste Sicherung wieder her",
       "restoreResult": "Ergebnis wiederherstellen",
-      "restoreSpecificWarningDesc": "Sie sind kurz davor, Daten für {{game}} aus der auf {{backup}} erstellten Sicherung wiederherzustellen.",
+      "restoreSpecificWarningDesc": "Sie stehen kurz davor, Daten für {{game}} aus der auf {{backup}} erstellten Sicherung wiederherzustellen.",
       "restoreSuccess": "Erfolgreich wiederherstellen",
       "restoreSuccessDesc": "Erfolgreich restaurierte Daten für {{game}} Speicherdaten",
       "restoreWarningDesc": "Sie sind kurz davor, Daten für {{game}} von Ihrem neuesten Sicherungsbetrag wiederherzustellen.",
@@ -468,6 +468,24 @@
       "learnMore": "Erfahren Sie mehr über das Ausführen von VR -Spielen",
       "title": "VR -Spiele und Ascendara"
     }
+  },
+  "profile": {
+    "acrossGames": "Über alle Ihre heruntergeladenen Spiele",
+    "avgSession": "Durchschnittliche Sitzung",
+    "downloadHistory": "Download History",
+    "games": "Spiele, die du spielst",
+    "gamesPlayed": "Spiele gespielt",
+    "levelProgress": "Verdienen Sie Erfahrung und Level, indem Sie Spiele auf Ascendara spielen!",
+    "memberSince": "Sie verwenden Ascendara auf {{date}}",
+    "mostPlayed": "Am meisten spielte Spiel",
+    "nextLevel": "Weiter: Ebene {{level}}",
+    "notreallol": "Dieses Level basiert auf Ihren Spielzeit und den Starts. Es ist völlig lokal und wird nicht auf Server hochgeladen.",
+    "perGameAvg": "Der Spielzeit pro Spiel",
+    "playTimeDistribution": "Verbreitung der Spielzeit in Ihren Top 5 gespielte Spiele",
+    "topGames": "Ihre Top -Spiele",
+    "totalPlaytime": "Total Playtime",
+    "totalXP": "Gesamt XP: {{xp}}",
+    "yourLevel": "Ihr Level"
   },
   "search": {
     "alphabeticalAZ": "Alphabetische A-Z",
@@ -579,6 +597,8 @@
       "formatSimple": "Einfach (Verzeichnisstruktur)",
       "formatZip": "ZIP (empfohlen)",
       "selectDirectory": "Wählen Sie das Sicherungsverzeichnis",
+      "skipManifestCheck": "Manifest -Check überspringen",
+      "skipManifestCheckDesc": "Überspringen Sie Überprüfung, wenn das Sichern des Spiels Probleme hat. Aktivieren Sie nur, wenn Sie wissen, was Sie tun.",
       "title": "Spiel Backups"
     },
     "gameSources": "Indexierte Spielquelle",
@@ -588,7 +608,6 @@
     "giantBombDescription": "Giantbomb bietet Spielinformationen von einem Community-gesteuerten Gaming-Wiki mit detaillierten Beschreibungen. Benötigt einen API -Schlüssel.",
     "giantBombLearnHowtoGet": "Erfahren Sie, wie Sie den API -Schlüssel erhalten",
     "highThreadWarning": "Hohe Thread -Zählungen können zu Download -Problemen führen. Erwägen Sie, 4-8 Threads für eine bessere Zuverlässigkeit zu verwenden.",
-    "igdbApiKey": "IGDB -Spielinformationen",
     "igdbApiKeyDescription": "IGDB bietet detailliertere Spielinformationen mit Entwickler-gestützter Datenbank und offiziellen Spieleinträgen. Erfordert, dass Sie ein Twitch -Konto haben und eine Client -ID und ein Geheimnis erhalten.",
     "igdbLearnHowtoGet": "Erfahren Sie, wie Sie dies einrichten können",
     "installGameDependencies": "Spielabhängigkeiten",
@@ -649,17 +668,17 @@
     "twitchSecret": "Twitch Client Secret",
     "userSettings": {
       "browseDirectory": "Durchsuchen",
-      "description": "Konfigurieren Sie Ihren Spiel -Benutzernamen. Benutzernamen werden nur für Spiele mit Goldberg Crack unterstützt.",
-      "directory": "Goldberg -Einstellungsverzeichnis",
-      "directoryDescription": "Ort, an dem spielspezifische Einstellungen gespeichert werden",
-      "directoryError": "Verzeichnis nicht festgelegt",
-      "directoryPermissionError": "Kann nicht in dieses Verzeichnis schreiben. Bitte wählen Sie ein Verzeichnis, in dem Sie Berechtigungen schreiben.",
-      "saveChanges": "Änderungen speichern",
-      "saveSuccess": "Einstellungen erfolgreich gespeichert",
-      "title": "Aktualisieren Sie Ihren Benutzernamen",
-      "username": "Benutzername",
-      "usernameError": "Den Benutzernamen nicht retten",
-      "usernamePlaceholder": "Geben Sie Ihren Spiel -Benutzernamen ein"
+      "description": "Aktualisieren Sie Ihren Anzeigenamen, der auf dieser Seite angezeigt wird. Sie können diesen Namen auch für Goldberg -Risse verwenden.",
+      "directoryError": "Kann nicht in das ausgewählte Verzeichnis schreiben",
+      "directoryPermissionError": "Keine Schreibberechtigungen für ausgewähltes Verzeichnis",
+      "generalUsername": "Anzeigename",
+      "generalUsernamePlaceholder": "Geben Sie Ihren Anzeigenamen ein",
+      "goldbergSettingsDir": "Goldberg -Einstellungsverzeichnis",
+      "saveChanges": "Benutzernamen retten",
+      "saveSuccess": "Benutzername erfolgreich gerettet",
+      "title": "Ändern Sie Ihren Namen",
+      "useForGoldberg": "Verwenden Sie diesen Namen für Goldberg -Risse",
+      "usernameError": "Den Benutzernamen nicht retten"
     },
     "warningDescription": "Ascendara wurde als Testplattform für Videospiele konzipiert, mit der Benutzer das Gameplay, die Leistung und die Kompatibilität bewerten können, bevor sie eine Kaufentscheidung treffen. Ascendara ermutigt die Benutzer nachdrücklich, Spieleentwickler durch den Kauf von Spielen zu unterstützen, die sie genießen.",
     "warningSupportDevelopers": "Spieleentwickler investieren erhebliche Zeit, Ressourcen und Kreativität in die Schaffung der Erfahrungen, die wir alle genießen. Ihr Kauf unterstützt ihre Fähigkeit, weiterhin großartige Spiele zu machen und die Spielebranche zu erhalten.",
@@ -682,6 +701,10 @@
     "navigationBar": {
       "content": "Dies ist Ihre Navigationsleiste. Hier können Sie auf alle Hauptfunktionen zugreifen.",
       "title": "Navigationsleiste"
+    },
+    "profile": {
+      "content": "Dies ist Ihr Ascendara -Profil. Sie können hohe Spielzeit und Spiele spielen, es ist alles zum Spaß! Nichts wird jemals auf Server hochgeladen werden.",
+      "title": "Profil"
     },
     "resizing": {
       "content": "Zu groß oder zu klein? Sie können die Größe der Navigationsleiste ändern, indem Sie diese Ecken ziehen!",

@@ -76,6 +76,7 @@
     "ok": "わかりました",
     "preferences": "好み",
     "prev": "前の",
+    "profile": "プロフィール",
     "reportDialog": {
       "authFailed": "認証に失敗しました",
       "authFailedDesc": "認証できません。後でもう一度やり直してください。",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "ブラウザがダウンロードを送信するのを待っています..."
     },
     "firstReleasedOn": "ゲームがリリースされました",
-    "gameModes": "ゲームモード",
     "gameNeedsEmulator": "これには、エミュレータを実行する必要があります。",
-    "gameNeedsVR": "VRが必要です",
+    "gameNeedsVR": "このゲームにはVRが必要になる場合があります。",
     "igdbLoading": "ゲーム情報の読み込み...",
     "igdbRating": "このゲームは{{rating}}リンゴと評価されています。 Appleの評価は、Ascendaraでの星評価とは異なり、ゲームの一般的な評価です。",
     "infoMaybeInaccurate": "情報が不正確な場合は、報告してください",
@@ -469,6 +469,24 @@
       "title": "VRゲームとアセンダラ"
     }
   },
+  "profile": {
+    "acrossGames": "ダウンロードされたすべてのゲームにわたって",
+    "avgSession": "平均セッション",
+    "downloadHistory": "履歴をダウンロードしてください",
+    "games": "あなたがプレイするゲーム",
+    "gamesPlayed": "ゲームが再生されました",
+    "levelProgress": "Ascendaraでゲームをプレイして、経験を獲得し、レベルアップしてください！",
+    "memberSince": "{{date}}でascendaraを使用し始めました",
+    "mostPlayed": "ほとんどのプレイゲーム",
+    "nextLevel": "次：レベル{{level}}",
+    "notreallol": "このレベルは、プレイタイムと起動に基づいています。完全にローカルで、サーバーにアップロードされていません。",
+    "perGameAvg": "ゲームごとのプレイタイム",
+    "playTimeDistribution": "トップ5のプレイゲームにわたるプレイタイムの分布",
+    "topGames": "あなたのトップゲーム",
+    "totalPlaytime": "合計プレイタイム",
+    "totalXP": "合計XP：{{xp}}",
+    "yourLevel": "あなたのレベル"
+  },
   "search": {
     "alphabeticalAZ": "アルファベットA-Z",
     "alphabeticalZA": "アルファベットZ-A",
@@ -579,6 +597,8 @@
       "formatSimple": "シンプル（ディレクトリ構造）",
       "formatZip": "zip（推奨）",
       "selectDirectory": "バックアップディレクトリを選択します",
+      "skipManifestCheck": "マニフェストチェックをスキップします",
+      "skipManifestCheckDesc": "ゲームをバックアップしているかどうかを確認してください。自分が何をしているのかを知っている場合にのみ有効にします。",
       "title": "ゲームのバックアップ"
     },
     "gameSources": "インデックス付きゲームソース",
@@ -588,7 +608,6 @@
     "giantBombDescription": "GiantBombは、コミュニティ主導のゲームWikiからのゲーム情報を詳細な説明で提供します。 APIキーが必要です。",
     "giantBombLearnHowtoGet": "APIキーを取得する方法を学びます",
     "highThreadWarning": "スレッド数が高いとダウンロードの問題が発生する場合があります。信頼性を向上させるために、4〜8個のスレッドを使用することを検討してください。",
-    "igdbApiKey": "IGDBゲーム情報",
     "igdbApiKeyDescription": "IGDBは、開発者が支援するデータベースと公式ゲームエントリを使用して、より詳細なゲーム情報を提供します。 Twitchアカウントを取得し、クライアントIDと秘密を取得する必要があります。",
     "igdbLearnHowtoGet": "これをセットアップする方法を学びます",
     "installGameDependencies": "ゲームの依存関係",
@@ -649,17 +668,17 @@
     "twitchSecret": "クライアントの秘密をひねります",
     "userSettings": {
       "browseDirectory": "ブラウズ",
-      "description": "ゲームのユーザー名を構成します。ユーザー名は、Goldberg Crackを使用したゲームでのみサポートされています。",
-      "directory": "Goldberg Settings Directory",
-      "directoryDescription": "ゲーム固有の設定が保存される場所",
-      "directoryError": "ディレクトリの設定に失敗しました",
-      "directoryPermissionError": "このディレクトリに書き込むことはできません。書き込み許可があるディレクトリを選択してください。",
-      "saveChanges": "変更を保存します",
-      "saveSuccess": "設定は正常に保存されました",
-      "title": "ユーザー名を更新します",
-      "username": "ユーザー名",
-      "usernameError": "ユーザー名の保存に失敗しました",
-      "usernamePlaceholder": "ゲームのユーザー名を入力します"
+      "description": "このページに表示されているディスプレイ名を更新します。この名前をゴールドバーグクラックに使用することもできます。",
+      "directoryError": "選択したディレクトリに書き込むことはできません",
+      "directoryPermissionError": "選択したディレクトリの書き込みアクセス許可はありません",
+      "generalUsername": "表示名",
+      "generalUsernamePlaceholder": "ディスプレイ名を入力します",
+      "goldbergSettingsDir": "Goldberg Settings Directory",
+      "saveChanges": "ユーザー名を保存します",
+      "saveSuccess": "ユーザー名は正常に保存されました",
+      "title": "あなたの名前を変えてください",
+      "useForGoldberg": "ゴールドバーグクラックにはこの名前を使用してください",
+      "usernameError": "ユーザー名の保存に失敗しました"
     },
     "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーが購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できるようにします。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
     "warningSupportDevelopers": "ゲーム開発者は、かなりの時間、リソース、創造性を投資して、私たち全員が楽しんでいる体験を生み出します。あなたの購入は、優れたゲームを継続し続け、ゲーム業界を維持する能力を直接サポートします。",
@@ -682,6 +701,10 @@
     "navigationBar": {
       "content": "これはあなたのナビゲーションバーであり、すべての主要な機能にアクセスできる場所です。",
       "title": "ナビゲーションバー"
+    },
+    "profile": {
+      "content": "これはあなたのアセンダラプロフィールです。プレイタイムが高いとゲームをプレイすることができます。それはすべて楽しみのためです！サーバーにアップロードされるものはありません。",
+      "title": "プロフィール"
     },
     "resizing": {
       "content": "大きすぎるか小さすぎますか？これらのコーナーをドラッグして、ナビゲーションバーをサイズ変更できます！",
@@ -731,7 +754,7 @@
     "continue": "続く",
     "continueWithoutSharing": "共有せずに続行します",
     "darkThemes": "暗いテーマ",
-    "dependenciesDesc": "新しいPCで再生している場合、または最近Windowsをインストールした場合、Ascendaraはこれらの必須コンポーネントをインストールして最高の体験を確保するのに役立ちます",
+    "dependenciesDesc": "新しいPCで再生されている場合、または最近Windowsをインストールした場合、Ascendaraはこれらの必須コンポーネントをインストールして最高の体験を確保するのに役立ちます",
     "downloadGamesFaster": "ゲームをより速くダウンロードします",
     "enableAutoUpdates": "自動更新を有効にします",
     "errorInstallingDependencies": "依存関係のインストールエラー",
@@ -795,7 +818,7 @@
     "skipTour": "ツアーをスキップします",
     "smartOrganizationDesc": "ゲームの検索とダウンロードを管理するための新しいフィルタリングとソートオプション",
     "smartOrganizationTitle": "スマート組織",
-    "startTheDownload": "ゲームをダウンロードしてアセンダラで抽出している間、あなたは座ってリラックスします",
+    "startTheDownload": "ゲームをダウンロードしてアセンダラで抽出している間、座ってリラックスしてください",
     "stayPrivate": "プライベートな状態を保ちます",
     "stayUpToDate": "アセンダラを最新の状態に保ちます",
     "takeTour": "ツアーに参加してください",
@@ -827,7 +850,7 @@
     "installSteamCMDDescription": "まず、SteamCMDをインストールする必要があります。このCLIツールを使用すると、UIなしでSteamワークショップからアイテムをダウンロードできます。",
     "installSuccess": "インストール完了！",
     "installingSteamCMD": "Steamcmdのインストール...",
-    "mainDescription": "ここにワークショップアイテムのリンクを貼り付けてダウンロードします。アセンダラは、あなた自身を管理するためにそれらをディレクトリに追加します。",
+    "mainDescription": "ここにワークショップアイテムのリンクを貼り付けてダウンロードします。 Ascendaraは、あなた自身を管理するためにそれらをディレクトリに追加します。",
     "mainTitle": "ワークショップアイテムをダウンロードします",
     "waitingForLogs": "ダウンロードが開始されるのを待っています...",
     "welcome": "アセンダラのワークショップダウンローダーへようこそ",

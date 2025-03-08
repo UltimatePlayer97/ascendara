@@ -76,6 +76,7 @@
     "ok": "DE ACUERDO",
     "preferences": "Preferencias",
     "prev": "Anterior",
+    "profile": "Perfil",
     "reportDialog": {
       "authFailed": "La autenticación falló",
       "authFailedDesc": "Incapaz de autenticarse. Vuelva a intentarlo más tarde.",
@@ -128,7 +129,7 @@
       "gofileInstructions": {
         "action": "Simplemente haga clic en Descargar ahora para comenzar a descargar este juego.",
         "description": "A diferencia de otros proveedores que requieren una verificación Captcha, GoFile permite descargas directas a través de su API.",
-        "thanks": "Gracias a LTSDW en Github"
+        "thanks": "Gracias a LTSDW en GitHub"
       },
       "handlerInstructions": {
         "step1": "Abra el enlace en su navegador y habilite la extensión",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "Esperando que su navegador envíe la descarga ..."
     },
     "firstReleasedOn": "Juego lanzado",
-    "gameModes": "Modos de juego",
     "gameNeedsEmulator": "Esto requiere un emulador para ejecutar.",
-    "gameNeedsVR": "VR requerido",
+    "gameNeedsVR": "Se puede requerir una realidad virtual para este juego.",
     "igdbLoading": "Cargando información del juego ...",
     "igdbRating": "Este juego está clasificado {{rating}} manzanas. Las clasificaciones de Apple son diferentes a las clasificaciones de estrellas en Ascendara, y son más una calificación general del juego.",
     "infoMaybeInaccurate": "Si la información es inexacta, informe.",
@@ -469,6 +469,24 @@
       "title": "Juegos de realidad virtual y ascendara"
     }
   },
+  "profile": {
+    "acrossGames": "En todos tus juegos descargados",
+    "avgSession": "Sesión promedio",
+    "downloadHistory": "Descargar Historial",
+    "games": "Juegos que juegas",
+    "gamesPlayed": "Juegos jugados",
+    "levelProgress": "¡Gane experiencia y nivele jugando en Ascendara!",
+    "memberSince": "Empezaste a usar Ascendara en {{date}}",
+    "mostPlayed": "El juego más jugado",
+    "nextLevel": "Siguiente: Nivel {{level}}",
+    "notreallol": "Este nivel se basa en su tiempo de juego y lanzamiento. Es completamente local y no se carga en ningún servidor.",
+    "perGameAvg": "De tiempo de juego por juego",
+    "playTimeDistribution": "Distribución de tiempo de juego en tus 5 mejores juegos jugados",
+    "topGames": "Tus mejores juegos",
+    "totalPlaytime": "Total de juego",
+    "totalXP": "Total XP: {{xp}}",
+    "yourLevel": "Tu nivel"
+  },
   "search": {
     "alphabeticalAZ": "A-Z alfabético",
     "alphabeticalZA": "Z-A alfabético",
@@ -579,6 +597,8 @@
       "formatSimple": "Simple (estructura de directorio)",
       "formatZip": "Zip (recomendado)",
       "selectDirectory": "Seleccionar directorio de copia de seguridad",
+      "skipManifestCheck": "Skip Manifest Check",
+      "skipManifestCheckDesc": "Saltar a la comprobación si hacer una copia de seguridad del juego está teniendo problemas. Solo habilite si sabes lo que estás haciendo.",
       "title": "Copias de seguridad del juego"
     },
     "gameSources": "Fuente de juego indexada",
@@ -588,7 +608,6 @@
     "giantBombDescription": "GiantBomb proporciona información del juego de una wiki de juegos impulsada por la comunidad con descripciones en profundidad. Requiere una clave API.",
     "giantBombLearnHowtoGet": "Aprenda a obtener la clave API",
     "highThreadWarning": "Los recuentos de hilos altos pueden causar problemas de descarga. Considere usar 4-8 hilos para una mejor confiabilidad.",
-    "igdbApiKey": "Información del juego de IGDB",
     "igdbApiKeyDescription": "IGDB proporciona información de juego más detallada con la base de datos respaldada por desarrolladores y las entradas oficiales del juego. Requiere que tenga una cuenta de Twitch y obtenga una identificación de cliente y un secreto.",
     "igdbLearnHowtoGet": "Aprende a configurar esto",
     "installGameDependencies": "Dependencia del juego",
@@ -649,17 +668,17 @@
     "twitchSecret": "Secreto del cliente de twitch",
     "userSettings": {
       "browseDirectory": "Navegar",
-      "description": "Configure el nombre de usuario de su juego. Los nombres de usuario solo son compatibles con los juegos que usan Goldberg Crack.",
-      "directory": "Directorio de configuración de Goldberg",
-      "directoryDescription": "Ubicación donde se almacenan la configuración específica del juego",
-      "directoryError": "No se pudo establecer el directorio",
-      "directoryPermissionError": "No puedo escribir en este directorio. Elija un directorio donde tenga permisos de escritura.",
-      "saveChanges": "Guardar cambios",
-      "saveSuccess": "Configuración guardada correctamente",
-      "title": "Actualice su nombre de usuario",
-      "username": "Nombre de usuario",
-      "usernameError": "No se pudo guardar el nombre de usuario",
-      "usernamePlaceholder": "Ingrese el nombre de usuario de su juego"
+      "description": "Actualice su nombre de pantalla que se muestra en esta página. También puede usar este nombre para las grietas de Goldberg.",
+      "directoryError": "No se puede escribir en el directorio seleccionado",
+      "directoryPermissionError": "No hay permisos de escritura para el directorio seleccionado",
+      "generalUsername": "Nombre para mostrar",
+      "generalUsernamePlaceholder": "Ingrese su nombre de pantalla",
+      "goldbergSettingsDir": "Directorio de configuración de Goldberg",
+      "saveChanges": "Guardar nombre de usuario",
+      "saveSuccess": "Nombre de usuario guardado con éxito",
+      "title": "Cambia tu nombre",
+      "useForGoldberg": "Usa este nombre para Goldberg Cracks",
+      "usernameError": "No se pudo guardar el nombre de usuario"
     },
     "warningDescription": "Ascendara está diseñado como una plataforma de prueba para videojuegos, lo que permite a los usuarios evaluar el juego, el rendimiento y la compatibilidad antes de tomar una decisión de compra. Ascendara alienta a los usuarios a apoyar a los desarrolladores de juegos comprando juegos que disfrutan.",
     "warningSupportDevelopers": "Los desarrolladores de juegos invierten tiempo, recursos y creatividad significativos para crear las experiencias que todos disfrutamos. Su compra apoya directamente su capacidad para continuar haciendo grandes juegos y sostiene la industria del juego.",
@@ -682,6 +701,10 @@
     "navigationBar": {
       "content": "Esta es su barra de navegación, es donde puede acceder a todas las características principales.",
       "title": "Barra de navegación"
+    },
+    "profile": {
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
+      "title": "Perfil"
     },
     "resizing": {
       "content": "¿Demasiado grande o demasiado pequeño? ¡Puede cambiar el tamaño de la barra de navegación arrastrando estas esquinas!",

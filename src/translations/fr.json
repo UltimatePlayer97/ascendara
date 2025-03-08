@@ -43,7 +43,7 @@
       "donate": "Soutenir le développement",
       "feedback": "Donner des commentaires",
       "message": "Je sais que je n'ai dit pas d'annonces mais est-ce vraiment une annonce? Vous commencez à utiliser Ascendara et j'aimerais que vous le notiez ou me donnez des commentaires. Vous ne reverrez plus jamais ce message.",
-      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore meilleur.",
+      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore mieux.",
       "title": "Faites-moi savoir comment vous l'aimez"
     },
     "toasts": {
@@ -76,6 +76,7 @@
     "ok": "D'ACCORD",
     "preferences": "Préférences",
     "prev": "Précédent",
+    "profile": "Profil",
     "reportDialog": {
       "authFailed": "L'authentification a échoué",
       "authFailedDesc": "Impossible d'authentifier. Veuillez réessayer plus tard.",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "En attendant que votre navigateur envoie le téléchargement ..."
     },
     "firstReleasedOn": "Jeu sorti",
-    "gameModes": "Modes de jeu",
     "gameNeedsEmulator": "Cela nécessite un émulateur pour fonctionner.",
-    "gameNeedsVR": "VR requis",
+    "gameNeedsVR": "VR peut être nécessaire pour ce jeu.",
     "igdbLoading": "Chargement des informations sur le jeu ...",
     "igdbRating": "Ce jeu est classé {{rating}} pommes. Les notes Apple sont différentes des notes Star sur Ascendara, et sont plus une note générale du jeu.",
     "infoMaybeInaccurate": "Si les informations sont inexactes, veuillez les signaler",
@@ -244,7 +244,7 @@
     },
     "activeDownloads": "Jeux à télécharger",
     "alreadyReported": "Déjà signalé",
-    "contentTypeError": "Erreur de type de contenu reçu de Downloader. Télécharger le lien très probablement expiré",
+    "contentTypeError": "Erreur de type de contenu reçu par le téléchargeur. Télécharger le lien très probablement expiré",
     "currentTotalSpeed": "Vitesse totale actuelle",
     "downloadError": "Erreur de téléchargement",
     "errorHelp": "Le problème de téléchargement doit déjà être signalé. Si le problème persiste, veuillez rejoindre le serveur Discord Spored pour le support.",
@@ -469,6 +469,24 @@
       "title": "Jeux VR et Ascendara"
     }
   },
+  "profile": {
+    "acrossGames": "Sur tous vos jeux téléchargés",
+    "avgSession": "Session moyenne",
+    "downloadHistory": "Télécharger l'histoire",
+    "games": "Jeux auxquels vous jouez",
+    "gamesPlayed": "Jeux joués",
+    "levelProgress": "Gagnez de l'expérience et montez en niveau en jouant à des jeux sur Ascendara!",
+    "memberSince": "Vous avez commencé à utiliser Ascencerara sur {{date}}",
+    "mostPlayed": "Jeu le plus joué",
+    "nextLevel": "Suivant: Niveau {{level}}",
+    "notreallol": "Ce niveau est basé sur votre temps de jeu et vos lancements. Il est complètement local et non téléchargé sur des serveurs.",
+    "perGameAvg": "Du temps de jeu par match",
+    "playTimeDistribution": "Distribution de temps de jeu dans vos 5 meilleurs jeux joués",
+    "topGames": "Vos meilleurs jeux",
+    "totalPlaytime": "Temps de jeu total",
+    "totalXP": "Total xp: {{xp}}",
+    "yourLevel": "Votre niveau"
+  },
   "search": {
     "alphabeticalAZ": "Alphabétique A-Z",
     "alphabeticalZA": "Z-A alphabétique",
@@ -579,6 +597,8 @@
       "formatSimple": "Simple (structure du répertoire)",
       "formatZip": "Zip (recommandé)",
       "selectDirectory": "Sélectionner le répertoire de sauvegarde",
+      "skipManifestCheck": "Skip Manifest Check",
+      "skipManifestCheckDesc": "Sautez la vérification si la sauvegarde du jeu a des problèmes. Activez uniquement si vous savez ce que vous faites.",
       "title": "Sauvegardes du jeu"
     },
     "gameSources": "Source de jeu indexée",
@@ -588,7 +608,6 @@
     "giantBombDescription": "GiantBomb fournit des informations de jeu d'un wiki de jeu axé sur la communauté des descriptions approfondies. Nécessite une clé API.",
     "giantBombLearnHowtoGet": "Apprenez à obtenir une clé API",
     "highThreadWarning": "Un nombre élevé de threads peut entraîner des problèmes de téléchargement. Envisagez d'utiliser 4-8 threads pour une meilleure fiabilité.",
-    "igdbApiKey": "Informations sur le jeu IGDB",
     "igdbApiKeyDescription": "IGDB fournit des informations de jeu plus détaillées avec la base de données soutenue par les développeurs et les entrées de jeu officielles. Vous oblige à avoir un compte Twitch et à obtenir un identifiant client et un secret.",
     "igdbLearnHowtoGet": "Apprenez à configurer cela",
     "installGameDependencies": "Dépendances de jeu",
@@ -649,17 +668,17 @@
     "twitchSecret": "Twitch Client Secret",
     "userSettings": {
       "browseDirectory": "Parcourir",
-      "description": "Configurez votre nom d'utilisateur de jeu. Les noms d'utilisateur ne sont pris en charge que pour les jeux à l'aide de Goldberg Crack.",
-      "directory": "Répertoire des paramètres de Goldberg",
-      "directoryDescription": "Emplacement où les paramètres spécifiques au jeu sont stockés",
-      "directoryError": "Échec de la définition du répertoire",
-      "directoryPermissionError": "Impossible d'écrire à ce répertoire. Veuillez choisir un répertoire où vous avez des autorisations d'écriture.",
-      "saveChanges": "Enregistrer les modifications",
-      "saveSuccess": "Paramètres enregistrés avec succès",
-      "title": "Mettez à jour votre nom d'utilisateur",
-      "username": "Nom d'utilisateur",
-      "usernameError": "Échec de l'enregistrement du nom d'utilisateur",
-      "usernamePlaceholder": "Entrez votre nom d'utilisateur de jeu"
+      "description": "Mettez à jour votre nom d'affichage affiché sur cette page. Vous pouvez également utiliser ce nom pour les fissures de Goldberg.",
+      "directoryError": "Impossible d'écrire dans le répertoire sélectionné",
+      "directoryPermissionError": "Aucune autorisation d'écriture pour le répertoire sélectionné",
+      "generalUsername": "Nom d'affichage",
+      "generalUsernamePlaceholder": "Entrez votre nom d'affichage",
+      "goldbergSettingsDir": "Répertoire des paramètres de Goldberg",
+      "saveChanges": "Enregistrer le nom d'utilisateur",
+      "saveSuccess": "Le nom d'utilisateur a été enregistré avec succès",
+      "title": "Changez votre nom",
+      "useForGoldberg": "Utilisez ce nom pour les fissures de Goldberg",
+      "usernameError": "Échec de l'enregistrement du nom d'utilisateur"
     },
     "warningDescription": "Ascendara est conçu comme une plate-forme de test pour les jeux vidéo, permettant aux utilisateurs d'évaluer le gameplay, les performances et la compatibilité avant de prendre une décision d'achat. Ascendara encourage fortement les utilisateurs à soutenir les développeurs de jeux en achetant des jeux qu'ils jouissent.",
     "warningSupportDevelopers": "Les développeurs de jeux investissent beaucoup de temps, de ressources et de créativité dans la création des expériences que nous apprécions tous. Votre achat soutient directement leur capacité à continuer à faire de grands jeux et à soutenir l'industrie du jeu.",
@@ -682,6 +701,10 @@
     "navigationBar": {
       "content": "Ceci est votre barre de navigation, c'est là que vous pouvez accéder à toutes les principales fonctionnalités.",
       "title": "Barre de navigation"
+    },
+    "profile": {
+      "content": "Ceci est votre profil Ascendara. Vous pouvez progresser en termes de jeux élevés et jouer à des jeux, c'est tout pour le plaisir! Rien ne sera jamais téléchargé sur des serveurs.",
+      "title": "Profil"
     },
     "resizing": {
       "content": "Trop grand ou trop petit? Vous pouvez redimensionner la barre de navigation en faisant glisser ces coins!",
@@ -800,11 +823,11 @@
     "stayUpToDate": "Gardez Ascendara à jour",
     "takeTour": "Faire la tournée",
     "termsOfService": "Conditions de service",
-    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements des fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
+    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements de fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Maintenant, vous n'aurez plus à vous soucier de l'extraction, de l'installation ou du déplacement de fichiers. Avant de commencer, veuillez lire et accepter les conditions d'utilisation et la politique de confidentialité.",
-    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascencera",
+    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascendara",
     "youCanChangeThisLater": "Vous pouvez toujours mettre à jour votre langue plus tard dans les paramètres.",
     "youCanChangeThisSettingLater": "Vous pouvez le modifier plus tard dans les paramètres.",
     "youWillReceiveAdminPrompts": "Vous recevrez des invites d'administrateur des installateurs officiels de Microsoft pour installer les composants requis. Votre ordinateur peut redémarrer après l'installation.",

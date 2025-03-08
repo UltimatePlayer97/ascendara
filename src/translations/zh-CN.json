@@ -76,6 +76,7 @@
     "ok": "好的",
     "preferences": "偏好",
     "prev": "以前的",
+    "profile": "轮廓",
     "reportDialog": {
       "authFailed": "身份验证失败",
       "authFailedDesc": "无法验证。请稍后再试。",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "等待您的浏览器发送下载..."
     },
     "firstReleasedOn": "游戏发布",
-    "gameModes": "游戏模式",
     "gameNeedsEmulator": "这需要模拟器运行。",
-    "gameNeedsVR": "需要VR",
+    "gameNeedsVR": "该游戏可能需要VR。",
     "igdbLoading": "加载游戏信息...",
     "igdbRating": "该游戏被评为{{rating}}苹果。 Apple评分与Ascendara的Star评分不同，并且更像是游戏的一般评级。",
     "infoMaybeInaccurate": "如果信息不准确，请报告",
@@ -469,6 +469,24 @@
       "title": "VR游戏和Ascendara"
     }
   },
+  "profile": {
+    "acrossGames": "在所有下载的游戏中",
+    "avgSession": "平均会议",
+    "downloadHistory": "下载历史记录",
+    "games": "您玩的游戏",
+    "gamesPlayed": "玩游戏",
+    "levelProgress": "通过在Ascendara上玩游戏来赚取经验和升级！",
+    "memberSince": "您开始在{{date}}上使用ascendara",
+    "mostPlayed": "大多数玩游戏",
+    "nextLevel": "下一步：level {{level}}",
+    "notreallol": "此级别基于您的游戏时间和启动。它是完全本地的，并且没有上传到任何服务器。",
+    "perGameAvg": "每场比赛的游戏时间",
+    "playTimeDistribution": "在您的前五名游戏中分发游戏时间",
+    "topGames": "您的顶级游戏",
+    "totalPlaytime": "总播放时间",
+    "totalXP": "总XP：{{xp}}",
+    "yourLevel": "您的水平"
+  },
   "search": {
     "alphabeticalAZ": "字母顺序的A-Z",
     "alphabeticalZA": "字母顺序的Z-A",
@@ -579,6 +597,8 @@
       "formatSimple": "简单（目录结构）",
       "formatZip": "拉链（推荐）",
       "selectDirectory": "选择备份目录",
+      "skipManifestCheck": "跳过清单检查",
+      "skipManifestCheckDesc": "跳过检查备份游戏是否存在问题。只有在您知道自己在做什么时才启用。",
       "title": "游戏备份"
     },
     "gameSources": "索引游戏源",
@@ -588,7 +608,6 @@
     "giantBombDescription": "GiantBomb提供了来自社区驱动的游戏Wiki的游戏信息，并具有深入的描述。需要一个API键。",
     "giantBombLearnHowtoGet": "了解如何获取API密钥",
     "highThreadWarning": "高线程计数可能会导致下载问题。考虑使用4-8个线程以提高可靠性。",
-    "igdbApiKey": "IGDB游戏信息",
     "igdbApiKeyDescription": "IGDB通过开发人员支持的数据库和官方游戏条目提供了更详细的游戏信息。要求您拥有一个Twitch帐户并获得客户ID和秘密。",
     "igdbLearnHowtoGet": "了解如何设置",
     "installGameDependencies": "游戏依赖性",
@@ -649,17 +668,17 @@
     "twitchSecret": "Twitch客户秘密",
     "userSettings": {
       "browseDirectory": "浏览",
-      "description": "配置您的游戏用户名。用户名仅用于使用Goldberg Crack的游戏。",
-      "directory": "Goldberg设置目录",
-      "directoryDescription": "存储特定于游戏的设置的位置",
-      "directoryError": "无法设置目录",
-      "directoryPermissionError": "无法写入此目录。请选择一个您的书面权限的目录。",
-      "saveChanges": "保存更改",
-      "saveSuccess": "设置成功保存",
-      "title": "更新您的用户名",
-      "username": "用户名",
-      "usernameError": "无法保存用户名",
-      "usernamePlaceholder": "输入您的游戏用户名"
+      "description": "更新此页面上显示的显示名称。您也可以将此名称用于Goldberg裂缝。",
+      "directoryError": "无法写入选定目录",
+      "directoryPermissionError": "无需写入选定目录的权限",
+      "generalUsername": "显示名称",
+      "generalUsernamePlaceholder": "输入您的显示名称",
+      "goldbergSettingsDir": "Goldberg设置目录",
+      "saveChanges": "保存用户名",
+      "saveSuccess": "用户名成功保存",
+      "title": "更改您的名字",
+      "useForGoldberg": "将此名称用于Goldberg Cracks",
+      "usernameError": "无法保存用户名"
     },
     "warningDescription": "Ascendara被设计为视频游戏的测试平台，使用户可以在做出购买决定之前评估游戏玩法，性能和兼容性。 Ascendara强烈鼓励用户通过购买自己喜欢的游戏来支持游戏开发人员。",
     "warningSupportDevelopers": "游戏开发人员投入大量时间，资源和创造力来创造我们所有人都喜欢的体验。您的购买直接支持他们继续制作出色游戏并维持游戏行业的能力。",
@@ -682,6 +701,10 @@
     "navigationBar": {
       "content": "这是您的导航栏，您可以在这里访问所有主要功能。",
       "title": "导航栏"
+    },
+    "profile": {
+      "content": "这是您的Ascendara个人资料。您可以升级较高的游戏时间和玩游戏，这一切都是为了好玩！任何服务器都不会上传到任何服务器。",
+      "title": "轮廓"
     },
     "resizing": {
       "content": "太大还是太小？您可以通过拖动这些角来调整导航栏！",
@@ -771,7 +794,7 @@
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
     "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
-    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
+    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
     "privacyPolicy": "隐私政策",
@@ -800,7 +823,7 @@
     "stayUpToDate": "保持Ascendara最新",
     "takeTour": "参加游览",
     "termsOfService": "服务条款",
-    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara下载",
+    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara进行下载",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "这是您所有下载的游戏都将存储的地方",
     "welcomeTo": "欢迎来",
     "welcomeToAscendaraDescription": "现在，您不必担心提取，安装或移动文件。在开始之前，请阅读并同意服务条款和隐私政策。",

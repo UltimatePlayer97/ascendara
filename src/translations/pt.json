@@ -43,7 +43,7 @@
       "donate": "Desenvolvimento de Apoio",
       "feedback": "Dê feedback",
       "message": "Eu sei que disse não anúncios, mas isso é realmente um anúncio? Você está começando a usar ascendara e eu adoraria que você avaliasse ou me dê algum feedback. Você nunca mais verá esta mensagem.",
-      "note": "Passei tanto tempo criando Ascendara como um projeto de paixão. Todo recurso, toda linha de código é criada com cuidado. Seu apoio significa tudo para mim e me ajuda a continuar tornando as Ascendara ainda melhores.",
+      "note": "Passei tanto tempo criando Ascendara como um projeto de paixão. Todo recurso, toda linha de código é criada com cuidado. Seu apoio significa tudo para mim e me ajuda a continuar tornando ascendara ainda melhor.",
       "title": "Deixe -me saber como você gosta"
     },
     "toasts": {
@@ -76,6 +76,7 @@
     "ok": "OK",
     "preferences": "Preferências",
     "prev": "Anterior",
+    "profile": "Perfil",
     "reportDialog": {
       "authFailed": "Autenticação falhou",
       "authFailedDesc": "Incapaz de autenticar. Por favor, tente novamente mais tarde.",
@@ -119,7 +120,7 @@
     "downloadOptions": {
       "ascendaraHandler": "Manipulador de download de Ascendara",
       "downloadLink": "Baixar link:",
-      "downloadNow": "Baixe agora",
+      "downloadNow": "Baixar agora",
       "downloadOptions": "Baixar opções",
       "downloadSource": "Baixar fonte",
       "downloadTorrent": "Baixar torrent",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "Esperando o seu navegador enviar o download ..."
     },
     "firstReleasedOn": "Jogo lançado",
-    "gameModes": "Modos de jogo",
     "gameNeedsEmulator": "Isso exige que um emulador seja executado.",
-    "gameNeedsVR": "VR necessário",
+    "gameNeedsVR": "A VR pode ser necessária para este jogo.",
     "igdbLoading": "Carregando informações do jogo ...",
     "igdbRating": "Este jogo é classificado como maçãs {{rating}}. As classificações da Apple são diferentes das classificações de estrelas em Ascendara e são mais uma classificação geral do jogo.",
     "infoMaybeInaccurate": "Se as informações forem imprecisas, denuncie -as",
@@ -430,7 +430,7 @@
       "commentsLabel": "Comentários (opcional)",
       "description": "Compartilhe sua experiência com {{game}}. Sua classificação ajuda outros jogadores a determinar se vale a pena jogar {{game}}.",
       "error": "Falhou em enviar classificação",
-      "errorDesc": "Incapaz de enviar sua classificação. Por favor, tente novamente mais tarde.",
+      "errorDesc": "Não é possível enviar sua classificação. Por favor, tente novamente mais tarde.",
       "excellent": "O jogo correu ótimo",
       "fair": "Teve alguns problemas",
       "good": "Estava tudo bem",
@@ -465,9 +465,27 @@
     "vrWarning": {
       "confirm": "Eu entendo, correr de qualquer maneira",
       "description": "Este é um jogo de realidade virtual e pode exigir que você inicie o jogo através do SteamVR ou do seu aplicativo Meta Quest. Executar o jogo diretamente pode fazer com que seu fone de ouvido não se conecte ao jogo.",
-      "learnMore": "Saiba mais sobre a execução de jogos VR",
+      "learnMore": "Saiba mais sobre a execução de jogos de VR",
       "title": "Jogos de VR e Ascendara"
     }
+  },
+  "profile": {
+    "acrossGames": "Em todos os seus jogos baixados",
+    "avgSession": "Sessão média",
+    "downloadHistory": "Baixar histórico",
+    "games": "Jogos que você joga",
+    "gamesPlayed": "Jogos jogados",
+    "levelProgress": "Ganhe experiência e subir de nível jogando jogos em Ascendara!",
+    "memberSince": "Você começou a usar ascendara em {{date}}",
+    "mostPlayed": "Mais jogou jogo",
+    "nextLevel": "Próximo: Nível {{level}}",
+    "notreallol": "Esse nível é baseado no seu tempo de reprodução e lançamentos. É completamente local e não é enviado para nenhum servidor.",
+    "perGameAvg": "De Playtime por jogo",
+    "playTimeDistribution": "Distribuição do tempo de reprodução nos seus 5 melhores jogos jogados",
+    "topGames": "Seus melhores jogos",
+    "totalPlaytime": "Total de jogo",
+    "totalXP": "Total XP: {{xp}}",
+    "yourLevel": "Seu nível"
   },
   "search": {
     "alphabeticalAZ": "A-Z alfabético",
@@ -579,6 +597,8 @@
       "formatSimple": "Simples (estrutura de diretório)",
       "formatZip": "Zip (recomendado)",
       "selectDirectory": "Selecione o diretório de backup",
+      "skipManifestCheck": "Pule a verificação do manifesto",
+      "skipManifestCheckDesc": "Pule a verificação se o backup do jogo estiver tendo problemas. Só habilite se você souber o que está fazendo.",
       "title": "Backups de jogo"
     },
     "gameSources": "Fonte do jogo indexado",
@@ -588,7 +608,6 @@
     "giantBombDescription": "A GiantBomb fornece informações de jogo de um wiki de jogos orientado pela comunidade com descrições aprofundadas. Requer uma chave de API.",
     "giantBombLearnHowtoGet": "Aprenda a obter a chave da API",
     "highThreadWarning": "A contagem alta de threads pode causar problemas de download. Considere usar 4-8 threads para melhor confiabilidade.",
-    "igdbApiKey": "Informações do jogo IGDB",
     "igdbApiKeyDescription": "O IGDB fornece informações mais detalhadas do jogo com banco de dados apoiado pelo desenvolvedor e entradas oficiais de jogos. Requer que você tenha uma conta Twitch e obtenha um ID de cliente e segredo.",
     "igdbLearnHowtoGet": "Aprenda a configurar isso",
     "installGameDependencies": "Dependências de jogos",
@@ -649,17 +668,17 @@
     "twitchSecret": "Twitch Client Secret",
     "userSettings": {
       "browseDirectory": "Navegar",
-      "description": "Configure o nome de usuário do seu jogo. Os nomes de usuário são suportados apenas para jogos usando Goldberg Crack.",
-      "directory": "Diretório de Configurações de Goldberg",
-      "directoryDescription": "Localização onde as configurações específicas do jogo são armazenadas",
-      "directoryError": "Falha ao definir diretório",
-      "directoryPermissionError": "Não é possível escrever para este diretório. Escolha um diretório onde você tenha permissões de gravação.",
-      "saveChanges": "Salvar alterações",
-      "saveSuccess": "Configurações salvas com sucesso",
-      "title": "Atualize seu nome de usuário",
-      "username": "Nome de usuário",
-      "usernameError": "Falhou em salvar o nome de usuário",
-      "usernamePlaceholder": "Digite seu nome de usuário de jogo"
+      "description": "Atualize seu nome de exibição mostrado nesta página. Você também pode usar esse nome para rachaduras de Goldberg.",
+      "directoryError": "Não é possível escrever para diretório selecionado",
+      "directoryPermissionError": "Sem permissões de gravação para diretório selecionado",
+      "generalUsername": "Nome de exibição",
+      "generalUsernamePlaceholder": "Digite seu nome de exibição",
+      "goldbergSettingsDir": "Diretório de Configurações de Goldberg",
+      "saveChanges": "Salve o nome de usuário",
+      "saveSuccess": "Nome de usuário salvo com sucesso",
+      "title": "Mude seu nome",
+      "useForGoldberg": "Use este nome para rachaduras de Goldberg",
+      "usernameError": "Falhou em salvar o nome de usuário"
     },
     "warningDescription": "Ascendara é projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
     "warningSupportDevelopers": "Os desenvolvedores de jogos investem tempo, recursos e criatividade significativos na criação das experiências que todos gostamos. Sua compra suporta diretamente a capacidade deles de continuar fazendo ótimos jogos e sustenta a indústria de jogos.",
@@ -683,6 +702,10 @@
       "content": "Esta é a sua barra de navegação, é onde você pode acessar todos os recursos principais.",
       "title": "Barra de navegação"
     },
+    "profile": {
+      "content": "Este é o seu perfil de Ascendara. Você pode subir de nível tendo tempo de jogo alto e jogando, é tudo por diversão! Nada será enviado para nenhum servidor.",
+      "title": "Perfil"
+    },
     "resizing": {
       "content": "Muito grande ou muito pequeno? Você pode redimensionar a barra de navegação arrastando esses cantos!",
       "title": "Redimensionamento de navegação"
@@ -692,7 +715,7 @@
       "title": "Pesquise e download"
     },
     "serverStatus": {
-      "content": "Este ponto verde indica que todos os sistemas estão operacionais. Clique nele a qualquer momento para verificar o status detalhado do servidor.",
+      "content": "Este ponto verde indica que todos os sistemas estão operacionais. Clique nele a qualquer momento para verificar o status do servidor detalhado.",
       "title": "Status do servidor"
     },
     "settings": {

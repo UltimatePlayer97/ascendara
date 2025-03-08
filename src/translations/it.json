@@ -76,6 +76,7 @@
     "ok": "OK",
     "preferences": "Preferenze",
     "prev": "Precedente",
+    "profile": "Profilo",
     "reportDialog": {
       "authFailed": "Autenticazione non riuscita",
       "authFailedDesc": "Impossibile autenticare. Per favore riprova più tardi.",
@@ -158,9 +159,8 @@
       "waitingForBrowser": "Aspettando che il tuo browser invii il download ..."
     },
     "firstReleasedOn": "Gioco rilasciato",
-    "gameModes": "Modalità di gioco",
     "gameNeedsEmulator": "Ciò richiede che un emulatore sia eseguito.",
-    "gameNeedsVR": "VR richiesto",
+    "gameNeedsVR": "Per questo gioco potrebbe essere richiesto VR.",
     "igdbLoading": "Caricamento delle informazioni sul gioco ...",
     "igdbRating": "Questo gioco è valutato {{rating}} mele. Le valutazioni di Apple sono diverse dalle valutazioni delle stelle su Ascendara e sono più una valutazione generale del gioco.",
     "infoMaybeInaccurate": "Se le informazioni sono inaccurate, segnalarle",
@@ -338,7 +338,7 @@
     "alreadyRunning": "{{game}} è già in esecuzione",
     "availableSpace": "Spazio disponibile",
     "backups": {
-      "autoBackupDesc": "Backup automatico di salvataggio dei dati quando il gioco si chiude",
+      "autoBackupDesc": "Backup automatico di backup Salva dati quando il gioco si chiude",
       "autoBackupDisabled": "Auto-backup disabilitato",
       "autoBackupDisabledDesc": "Auto-backup disabilitato per {{game}}",
       "autoBackupEnabled": "Auto-backup abilitato",
@@ -469,6 +469,24 @@
       "title": "Giochi VR e Ascendara"
     }
   },
+  "profile": {
+    "acrossGames": "In tutti i tuoi giochi scaricati",
+    "avgSession": "Sessione media",
+    "downloadHistory": "Scarica la cronologia",
+    "games": "Giochi a cui giochi",
+    "gamesPlayed": "Giochi giocati",
+    "levelProgress": "Guadagna esperienza e di livello giocando su Ascendara!",
+    "memberSince": "Hai iniziato a usare Ascendara su {{date}}",
+    "mostPlayed": "Il gioco più giocato",
+    "nextLevel": "Next: Livello {{level}}",
+    "notreallol": "Questo livello si basa sul tuo tempo di gioco e il lancio. È completamente locale e non caricato su nessun server.",
+    "perGameAvg": "Di gioco per gioco",
+    "playTimeDistribution": "Distribuzione del tempo di gioco tra i migliori 5 giochi giocati",
+    "topGames": "I tuoi migliori giochi",
+    "totalPlaytime": "Playtime totale",
+    "totalXP": "Totale XP: {{xp}}",
+    "yourLevel": "Il tuo livello"
+  },
   "search": {
     "alphabeticalAZ": "A-Z alfabetico",
     "alphabeticalZA": "Alfabetico Z-A",
@@ -579,6 +597,8 @@
       "formatSimple": "Semplice (struttura directory)",
       "formatZip": "Zip (consigliato)",
       "selectDirectory": "Seleziona la directory di backup",
+      "skipManifestCheck": "Saltare il controllo manifest",
+      "skipManifestCheckDesc": "Salta il controllo se il backup del gioco ha problemi. Abilita solo se sai cosa stai facendo.",
       "title": "Backup di gioco"
     },
     "gameSources": "Fonte di gioco indicizzata",
@@ -588,7 +608,6 @@
     "giantBombDescription": "Giantbomb fornisce informazioni sul gioco da un wiki di gioco guidato dalla comunità con descrizioni approfondite. Richiede una chiave API.",
     "giantBombLearnHowtoGet": "Impara come ottenere la chiave API",
     "highThreadWarning": "I conteggi di thread elevati possono causare problemi di download. Prendi in considerazione l'utilizzo di 4-8 thread per una migliore affidabilità.",
-    "igdbApiKey": "Informazioni sul gioco IGDB",
     "igdbApiKeyDescription": "IGDB fornisce informazioni di gioco più dettagliate con il database sostenuto dagli sviluppatori e le voci ufficiali di gioco. Richiede di avere un account Twitch e di ottenere un ID client e segreto.",
     "igdbLearnHowtoGet": "Impara come configurarlo",
     "installGameDependencies": "Dipendenze di gioco",
@@ -640,7 +659,7 @@
       "continue": "Capisco i rischi",
       "description": "Si prega di leggere attentamente questo prima di abilitare la funzionalità torrent:",
       "legalWarning": "Il download di contenuti protetti da copyright può essere illegale nella tua regione. Sei responsabile delle tue azioni.",
-      "qbitWarning": "Questa funzione richiede QbitTorrent. Assicurati che sia correttamente configurato con la VPN.",
+      "qbitWarning": "Questa funzione richiede QbitTorrent. Assicurati che sia configurato correttamente con la VPN.",
       "title": "Abilita il supporto torrent",
       "vpnWarning": "Il tuo indirizzo IP sarà visibile ad altri colleghi. Usa una VPN per proteggere la tua privacy ed evitare potenziali problemi legali."
     },
@@ -649,17 +668,17 @@
     "twitchSecret": "Twitch Client Secret",
     "userSettings": {
       "browseDirectory": "Sfoglia",
-      "description": "Configura il nome utente del gioco. I nomi utente sono supportati solo per i giochi usando Goldberg Crack.",
-      "directory": "Directory Impostazioni Goldberg",
-      "directoryDescription": "Posizione in cui vengono memorizzate le impostazioni specifiche del gioco",
-      "directoryError": "Impossibile impostare la directory",
-      "directoryPermissionError": "Non può scrivere a questa directory. Scegli una directory in cui hai autorizzazioni di scrittura.",
-      "saveChanges": "Salva le modifiche",
-      "saveSuccess": "Impostazioni salvate con successo",
-      "title": "Aggiorna il tuo nome utente",
-      "username": "Nome utente",
-      "usernameError": "Impossibile salvare il nome utente",
-      "usernamePlaceholder": "Inserisci il nome utente del gioco"
+      "description": "Aggiorna il nome di visualizzazione mostrato in questa pagina. Puoi anche usare questo nome per le crepe Goldberg.",
+      "directoryError": "Non può scrivere nella directory selezionata",
+      "directoryPermissionError": "Nessuna autorizzazione di scrittura per la directory selezionata",
+      "generalUsername": "Nome da visualizzare",
+      "generalUsernamePlaceholder": "Inserisci il tuo nome visualizzato",
+      "goldbergSettingsDir": "Directory Impostazioni Goldberg",
+      "saveChanges": "Salva nome utente",
+      "saveSuccess": "Nome utente salvato con successo",
+      "title": "Cambia il tuo nome",
+      "useForGoldberg": "Usa questo nome per le crepe Goldberg",
+      "usernameError": "Impossibile salvare il nome utente"
     },
     "warningDescription": "Ascendara è progettata come piattaforma di test per i videogiochi, consentendo agli utenti di valutare il gameplay, le prestazioni e la compatibilità prima di prendere una decisione di acquisto. Ascendara incoraggia fortemente gli utenti a supportare gli sviluppatori di giochi acquistando giochi di cui godono.",
     "warningSupportDevelopers": "Gli sviluppatori di giochi investono tempo, risorse e creatività significative nella creazione delle esperienze che tutti ci piacciono. Il tuo acquisto supporta direttamente la loro capacità di continuare a realizzare grandi giochi e sostenere l'industria dei giochi.",
@@ -683,6 +702,10 @@
       "content": "Questa è la barra di navigazione, è dove puoi accedere a tutte le funzionalità principali.",
       "title": "Barra di navigazione"
     },
+    "profile": {
+      "content": "Questo è il tuo profilo Ascendara. Puoi salire di livello per avere un alto tempo di gioco e giocare, è tutto per divertimento! Nulla sarà mai caricato su nessun server.",
+      "title": "Profilo"
+    },
     "resizing": {
       "content": "Troppo grande o troppo piccolo? Puoi ridimensionare la barra di navigazione trascinando questi angoli!",
       "title": "Ridimensionare la navigazione"
@@ -700,7 +723,7 @@
       "title": "Impostazioni"
     },
     "title": "Ascendara Guide",
-    "welcome": "Benvenuto! Facciamo un breve tour dell'interfaccia di Ascendara."
+    "welcome": "Benvenuto! Facciamo un rapido tour dell'interfaccia di Ascendara."
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "Tutte le dipendenze richieste sono state installate con successo. Benvenuti ad Ascendara.",
@@ -800,11 +823,11 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Ora non dovrai preoccuparti di estrarre, installare o spostare i file. Prima di iniziare, si prega di leggere e accettare i termini di servizio e l'informativa sulla privacy.",
-    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverterà in Ascendara",
+    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverrà in Ascendara",
     "youCanChangeThisLater": "Puoi sempre aggiornare la tua lingua in seguito nelle impostazioni.",
     "youCanChangeThisSettingLater": "Puoi modificarlo in seguito nelle impostazioni.",
     "youWillReceiveAdminPrompts": "Riceverai istruzioni di amministratore da installatori ufficiali di Microsoft per installare i componenti richiesti. Potrebbe essere necessario riavviare il computer dopo l'installazione.",
