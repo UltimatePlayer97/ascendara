@@ -49,11 +49,7 @@ contextBridge.exposeInMainWorld("electron", {
   getImageKey: () => ipcRenderer.invoke("get-image-key"),
   hasLaunched: () => ipcRenderer.invoke("has-launched"),
   imageSecret: () => ipcRenderer.invoke("get-image-key"),
-
-  // Profile Management
   getDownloadHistory: () => ipcRenderer.invoke("get-download-history"),
-  readProfile: () => ipcRenderer.invoke("read-profile"),
-  writeProfile: profileData => ipcRenderer.invoke("write-profile", profileData),
 
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),

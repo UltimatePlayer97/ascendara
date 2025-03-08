@@ -472,17 +472,20 @@
   "profile": {
     "acrossGames": "Across all your downloaded games",
     "avgSession": "Average Session",
-    "games": "Games",
+    "downloadHistory": "Download History",
+    "games": "Games You Play",
     "gamesPlayed": "Games Played",
     "levelProgress": "Earn experience and level up by playing games on Ascendara!",
     "memberSince": "You started using Ascendara on {{date}}",
     "mostPlayed": "Most Played Game",
     "nextLevel": "Next: Level {{level}}",
+    "notreallol": "This level is based on your playtime and launches. It's completely local and not uploaded to any servers.",
     "perGameAvg": "Of playtime per game",
     "playTimeDistribution": "Distribution of playtime across your top 5 played games",
     "topGames": "Your Top Games",
     "totalPlaytime": "Total Playtime",
-    "totalXP": "Total XP: {{xp}}"
+    "totalXP": "Total XP: {{xp}}",
+    "yourLevel": "Your Level"
   },
   "search": {
     "alphabeticalAZ": "Alphabetical A-Z",

@@ -1554,37 +1554,53 @@ const deleteGameDirectory = async game => {
 };
 
 ipcMain.handle("get-game-image", async (event, game) => {
-  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  const settings = settingsManager.getSettings();
   try {
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
-      return;
+      return null;
     }
+
     const downloadDirectory = settings.downloadDirectory;
-    const gameDirectory = path.join(downloadDirectory, game);
+    const gamesDirectory = path.join(downloadDirectory, "games");
 
-    if (!fs.existsSync(gameDirectory)) {
-      fs.mkdirSync(gameDirectory, { recursive: true });
+    // Ensure the games directory exists
+    if (!fs.existsSync(gamesDirectory)) {
+      fs.mkdirSync(gamesDirectory, { recursive: true });
     }
-    const imageFiles = fs.readdirSync(gameDirectory);
 
-    for (const file of imageFiles) {
-      if (
-        file === "header.ascendara.jpg" ||
-        file === "header.ascendara.png" ||
-        file === "header.jpeg"
-      ) {
-        const imagePath = path.join(gameDirectory, file);
+    // Check for game image with different possible extensions
+    const possibleExtensions = [".jpg", ".jpeg", ".png"];
+
+    for (const ext of possibleExtensions) {
+      const imagePath = path.join(gamesDirectory, `${game}.ascendara${ext}`);
+      if (fs.existsSync(imagePath)) {
         const imageBuffer = fs.readFileSync(imagePath);
         return imageBuffer.toString("base64");
       }
     }
 
+    // Fallback to check the old location (individual game directory) for backward compatibility
+    const gameDirectory = path.join(downloadDirectory, game);
+    if (fs.existsSync(gameDirectory)) {
+      const imageFiles = fs.readdirSync(gameDirectory);
+
+      for (const file of imageFiles) {
+        if (
+          file === "header.ascendara.jpg" ||
+          file === "header.ascendara.png" ||
+          file === "header.jpeg"
+        ) {
+          const imagePath = path.join(gameDirectory, file);
+          const imageBuffer = fs.readFileSync(imagePath);
+          return imageBuffer.toString("base64");
+        }
+      }
+    }
+
     return null;
   } catch (error) {
-    console.error("Error reading the settings file:", error);
+    console.error("Error reading game image:", error);
     return null;
   }
 });
@@ -1682,11 +1698,8 @@ ipcMain.handle(
               settings.notifications ? [`--withNotification`, settings.theme] : []
             );
 
-      // Add the new game to the downloadedHistory in the timestamp file
-      const timestampFilePath = path.join(app.getPath("userData"), "timestamp.json");
-      let timestampData = {};
       try {
-        const data = await fs.promises.readFile(timestampFilePath, "utf8");
+        const data = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
         timestampData = JSON.parse(data);
       } catch (error) {
         console.error("Error reading timestamp file:", error);
@@ -1698,10 +1711,7 @@ ipcMain.handle(
         game,
         timestamp: new Date().toISOString(),
       });
-      await fs.promises.writeFile(
-        timestampFilePath,
-        JSON.stringify(timestampData, null, 2)
-      );
+      await fs.promises.writeFile(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
 
       const downloadProcess = spawn(executablePath, spawnCommand, {
         detached: true,
@@ -1933,214 +1943,6 @@ ipcMain.handle("set-v7", () => {
   } catch (error) {
     console.error("Error setting v7:", error);
     return false;
-  }
-});
-
-// Note: This file is not encrypted for malicious purposes, but rather to prevent
-// easy modification of profile data. This helps maintain the integrity of user
-// profiles and discourages tampering with sensitive information.
-const ENCRYPTION_KEY = "ascendara-profile";
-const IV_LENGTH = 16; // For AES, this is always 16
-
-// Utility functions for encryption/decryption
-const encrypt = data => {
-  // Create a 32 byte key from our password using SHA-256
-  const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
-  // Generate a random initialization vector
-  const iv = crypto.randomBytes(IV_LENGTH);
-  // Create cipher with key and iv
-  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
-  // Encrypt the data
-  let encrypted = cipher.update(JSON.stringify(data), "utf8", "hex");
-  encrypted += cipher.final("hex");
-  // Prepend the IV to the encrypted data (we'll need it for decryption)
-  return iv.toString("hex") + ":" + encrypted;
-};
-
-const decrypt = data => {
-  try {
-    // Split the encrypted data to get the IV and the encrypted content
-    const [ivHex, encryptedData] = data.split(":");
-    if (!ivHex || !encryptedData) {
-      throw new Error("Invalid encrypted data format");
-    }
-    // Convert the key and IV back to buffers
-    const key = crypto.createHash("sha256").update(ENCRYPTION_KEY).digest();
-    const iv = Buffer.from(ivHex, "hex");
-    // Create decipher with key and iv
-    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
-    // Decrypt the data
-    let decrypted = decipher.update(encryptedData, "hex", "utf8");
-    decrypted += decipher.final("utf8");
-    return JSON.parse(decrypted);
-  } catch (error) {
-    console.error("Error decrypting profile:", error);
-    return null;
-  }
-};
-
-// Profile calculation and management
-async function calculateProfileStats(games, customGames) {
-  const allGames = [...(games || []), ...(customGames || [])];
-
-  // Calculate total playtime and XP from games
-  let totalXP = 0;
-  let totalPlaytime = 0;
-
-  allGames.forEach(game => {
-    // Base XP for having the game
-    let gameXP = 100; // Increased base XP
-
-    // XP from playtime (20 XP per hour)
-    const playtimeHours = (game.playTime || 0) / 3600;
-    gameXP += Math.floor(playtimeHours * 20); // Doubled XP per hour
-
-    // XP from launches (10 XP per launch, max 100)
-    gameXP += Math.min((game.launchCount || 0) * 10, 100); // Increased launch XP
-
-    totalXP += gameXP;
-    totalPlaytime += game.playTime || 0;
-  });
-
-  // Calculate level with lower XP requirements
-  let level = 1;
-  let xpForNextLevel = 100; // Lower initial XP requirement
-  let currentXP = totalXP;
-
-  while (currentXP >= xpForNextLevel) {
-    level++;
-    currentXP -= xpForNextLevel;
-    xpForNextLevel = Math.floor(xpForNextLevel * 1.2); // Slower XP scaling
-  }
-
-  return {
-    totalPlaytime,
-    gamesPlayed: allGames.filter(game => game.playTime > 0).length,
-    totalGames: allGames.length,
-    level,
-    xp: totalXP,
-    currentXP,
-    nextLevelXp: xpForNextLevel,
-    allGames,
-  };
-}
-
-// Modified createProfile function
-async function createProfile() {
-  try {
-    const settings = settingsManager.getSettings();
-    let games = [];
-
-    if (settings.downloadDirectory) {
-      // Get all subdirectories in the download directory
-      const subdirectories = await fs.promises.readdir(settings.downloadDirectory, {
-        withFileTypes: true,
-      });
-      const gameDirectories = subdirectories
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
-
-      // Read {game}.ascendara.json from each subdirectory
-      const gamesData = await Promise.all(
-        gameDirectories.map(async dir => {
-          const gameInfoPath = path.join(
-            settings.downloadDirectory,
-            dir,
-            `${dir}.ascendara.json`
-          );
-          try {
-            const gameInfoData = await fs.promises.readFile(gameInfoPath, "utf8");
-            return JSON.parse(gameInfoData);
-          } catch (error) {
-            return null;
-          }
-        })
-      );
-      games = gamesData.filter(game => game !== null);
-    }
-
-    // Get custom games from games.json file in the download directory
-    let customGames = [];
-    const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
-    try {
-      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
-      customGames = gamesData.games || [];
-    } catch (error) {
-      if (error.code !== "ENOENT") {
-        console.error("Error reading games.json:", error);
-      }
-      // If file doesn't exist or there's another error, use empty array
-      customGames = [];
-    }
-
-    // Calculate statistics
-    const statistics = await calculateProfileStats(games, customGames);
-
-    // Create profile data
-    const profileData = {
-      username: "Guest",
-      useGoldbergName: false,
-      statistics,
-      allGames: [...games, ...customGames],
-    };
-
-    console.log("Profile data:", profileData);
-
-    // Encrypt and save the profile
-    const encryptedData = encrypt(profileData);
-    await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
-
-    return profileData;
-  } catch (error) {
-    console.error("Error creating profile:", error);
-    throw error;
-  }
-}
-
-// Add IPC handlers
-ipcMain.handle("read-profile", async () => {
-  try {
-    if (await fs.promises.access(PROFILE_FILE).catch(() => false)) {
-      const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
-      return decrypt(encryptedData);
-    }
-    return await createProfile();
-  } catch (error) {
-    console.error("Error reading profile:", error);
-    return await createProfile();
-  }
-});
-
-ipcMain.handle("write-profile", async (event, profileData) => {
-  try {
-    // First read the existing profile to preserve any data
-    let existingProfile;
-    try {
-      const encryptedData = await fs.promises.readFile(PROFILE_FILE, "utf8");
-      existingProfile = decrypt(encryptedData);
-    } catch (error) {
-      existingProfile = await createProfile();
-    }
-
-    // Merge the existing profile with the new data
-    const updatedProfile = {
-      ...existingProfile, // Keep existing data
-      ...profileData, // Update with new data
-      statistics: {
-        ...(existingProfile.statistics || {}), // Keep existing stats
-        ...(profileData.statistics || {}), // Update with new stats
-      },
-      allGames: profileData.allGames || existingProfile.allGames || [],
-    };
-
-    console.log("Writing profile:", updatedProfile);
-
-    const encryptedData = encrypt(updatedProfile);
-    await fs.promises.writeFile(PROFILE_FILE, encryptedData, "utf8");
-    return true;
-  } catch (error) {
-    console.error("Error writing profile:", error);
-    throw error;
   }
 });
 
@@ -2705,10 +2507,8 @@ ipcMain.handle("check-game-dependencies", async () => {
 });
 
 ipcMain.handle("get-games", async () => {
-  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  const settings = settingsManager.getSettings();
   try {
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
       return;
@@ -2852,21 +2652,19 @@ ipcMain.handle("uninstall-ascendara", async () => {
 ipcMain.handle(
   "save-custom-game",
   async (event, game, online, dlc, version, executable, imgID) => {
-    const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+    const settings = settingsManager.getSettings();
     try {
-      const data = fs.readFileSync(filePath, "utf8");
-      const settings = JSON.parse(data);
       if (!settings.downloadDirectory) {
         console.error("Download directory not set");
         return;
       }
       const downloadDirectory = settings.downloadDirectory;
       const gamesFilePath = path.join(downloadDirectory, "games.json");
-      const gameDirectory = path.join(downloadDirectory, game);
+      const gamesDirectory = path.join(downloadDirectory, "games");
 
-      // Create game directory if it doesn't exist
-      if (!fs.existsSync(gameDirectory)) {
-        fs.mkdirSync(gameDirectory, { recursive: true });
+      // Create games directory if it doesn't exist
+      if (!fs.existsSync(gamesDirectory)) {
+        fs.mkdirSync(gamesDirectory, { recursive: true });
       }
 
       // Download and save the cover image if imgID is provided
@@ -2882,12 +2680,12 @@ ipcMain.handle(
           responseType: "arraybuffer",
         });
 
-        // Save the image
+        // Save the image in the games directory
         const imageBuffer = Buffer.from(response.data);
         const mimeType = response.headers["content-type"];
         const extension = getExtensionFromMimeType(mimeType);
         await fs.promises.writeFile(
-          path.join(gameDirectory, `header.ascendara${extension}`),
+          path.join(gamesDirectory, `${game}.ascendara${extension}`),
           imageBuffer
         );
       }
@@ -2919,19 +2717,39 @@ ipcMain.handle(
 );
 
 ipcMain.handle("get-custom-games", () => {
-  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  const settings = settingsManager.getSettings();
   try {
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
       return [];
     }
     const downloadDirectory = settings.downloadDirectory;
     const gamesFilePath = path.join(downloadDirectory, "games.json");
+    const gamesDirectory = path.join(downloadDirectory, "games");
+
     try {
       const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
-      return gamesData.games;
+
+      // Add image path to each game
+      const gamesWithImagePaths = gamesData.games.map(game => {
+        const possibleExtensions = [".jpg", ".jpeg", ".png"];
+        let imagePath = null;
+
+        for (const ext of possibleExtensions) {
+          const potentialPath = path.join(gamesDirectory, `${game.game}.ascendara${ext}`);
+          if (fs.existsSync(potentialPath)) {
+            imagePath = potentialPath;
+            break;
+          }
+        }
+
+        return {
+          ...game,
+          imagePath: imagePath,
+        };
+      });
+
+      return gamesWithImagePaths;
     } catch (error) {
       if (error.code === "ENOENT") {
         return [];

@@ -21,8 +21,8 @@ const UsernameDialog = () => {
   const [directory, setDirectory] = useState("");
   const [canCreateFiles, setCanCreateFiles] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [useGoldbergName, setUseGoldbergName] = useState(true);
-  const [generalUsername, setGeneralUsername] = useState("");
+  const [isWindows, setIsWindows] = useState(false);
+  const [useForGoldberg, setUseForGoldberg] = useState(true);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -33,26 +33,22 @@ const UsernameDialog = () => {
 
   const loadSettings = async () => {
     try {
-      const savedUsername = await window.electron.getLocalCrackUsername();
-      const savedDirectory = await window.electron.getLocalCrackDirectory();
-      const profile = await window.electron.readProfile();
+      // Check if running on Windows
+      setIsWindows(window.electron.isOnWindows());
 
-      if (savedUsername) {
-        setUsername(savedUsername);
-      } else {
-        const systemUsername = "Guest";
-        setUsername(systemUsername);
-      }
+      // Load profile name from localStorage
+      const profileData = JSON.parse(localStorage.getItem("userProfile") || "{}");
+      setUsername(profileData.profileName || "");
+      setUseForGoldberg(profileData.useForGoldberg !== false);
 
-      if (profile) {
-        setGeneralUsername(profile.generalUsername || "");
-        setUseGoldbergName(profile.useGoldbergName ?? true);
-      }
-
-      if (savedDirectory) {
-        setDirectory(savedDirectory);
-        const canCreate = await window.electron.canCreateFiles(savedDirectory);
-        setCanCreateFiles(canCreate);
+      // Always load Goldberg directory on Windows
+      if (isWindows) {
+        const savedDirectory = await window.electron.getLocalCrackDirectory();
+        if (savedDirectory) {
+          setDirectory(savedDirectory);
+          const canCreate = await window.electron.canCreateFiles(savedDirectory);
+          setCanCreateFiles(canCreate);
+        }
       }
     } catch (error) {
       console.error("Error loading settings:", error);
@@ -60,36 +56,41 @@ const UsernameDialog = () => {
   };
 
   const handleSave = async () => {
-    if (!canCreateFiles) {
-      toast.error(t("settings.userSettings.directoryError"));
-      return;
-    }
-
     try {
-      const usernameResult = await window.electron.setLocalCrackUsername(username);
-      const directoryResult = await window.electron.setLocalCrackDirectory(directory);
-
-      if (!usernameResult) {
-        toast.error(t("settings.userSettings.usernameError"));
-        return;
-      }
-      if (!directoryResult) {
-        toast.error(t("settings.userSettings.directoryError"));
-        return;
-      }
-
-      // Update profile with new username settings
-      const profile = await window.electron.readProfile();
+      // Always save profile name to localStorage
+      const profileData = JSON.parse(localStorage.getItem("userProfile") || "{}");
       const updatedProfile = {
-        ...profile,
-        username, // This is the goldberg username
-        generalUsername,
-        useGoldbergName,
-        statistics: profile.statistics || {},
-        allGames: profile.allGames || [],
+        ...profileData,
+        profileName: username,
+        useForGoldberg: useForGoldberg,
       };
 
-      await window.electron.writeProfile(updatedProfile);
+      // Save to localStorage
+      localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
+
+      // If on Windows and using for Goldberg, save Goldberg settings
+      if (isWindows && useForGoldberg) {
+        if (!canCreateFiles) {
+          toast.error(t("settings.userSettings.directoryError"));
+          return;
+        }
+
+        const usernameResult = await window.electron.setLocalCrackUsername(username);
+        const directoryResult = await window.electron.setLocalCrackDirectory(directory);
+
+        if (!usernameResult) {
+          toast.error(t("settings.userSettings.usernameError"));
+          return;
+        }
+        if (!directoryResult) {
+          toast.error(t("settings.userSettings.directoryError"));
+          return;
+        }
+      }
+
+      // Dispatch event to update profile
+      window.dispatchEvent(new CustomEvent("username-updated"));
+
       toast.success(t("settings.userSettings.saveSuccess"));
       setIsOpen(false);
     } catch (error) {
@@ -129,6 +130,7 @@ const UsernameDialog = () => {
           <Pencil className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>
+
       <AlertDialogContent className="sm:max-w-[425px]">
         <AlertDialogHeader>
           <div className="fixed right-4 top-4 items-center justify-center">
@@ -157,66 +159,61 @@ const UsernameDialog = () => {
         </AlertDialogHeader>
 
         <div className="grid gap-4 py-4">
+          {/* Username field */}
           <div className="grid gap-2">
-            <Label className="text-muted-foreground" htmlFor="generalUsername">
+            <Label className="text-muted-foreground" htmlFor="username">
               {t("settings.userSettings.generalUsername")}
             </Label>
             <Input
-              id="generalUsername"
-              value={generalUsername}
+              id="username"
+              value={username}
               className="text-foreground"
-              onChange={e => setGeneralUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               placeholder={t("settings.userSettings.generalUsernamePlaceholder")}
             />
           </div>
 
+          {/* Use for Goldberg checkbox (disabled on non-Windows) */}
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="privacy"
-              checked={useGoldbergName}
-              onCheckedChange={setUseGoldbergName}
-              className="data-[state=checked]:text-primary-foreground data-[state=checked]:bg-primary"
+              id="useForGoldberg"
+              checked={useForGoldberg}
+              onCheckedChange={setUseForGoldberg}
+              disabled={!isWindows}
             />
-            <Label htmlFor="useGoldbergName" className="text-muted-foreground">
+            <Label
+              htmlFor="useForGoldberg"
+              className={`text-sm ${!isWindows ? "text-muted-foreground/50" : "text-muted-foreground"}`}
+            >
               {t("settings.userSettings.useForGoldberg")}
             </Label>
           </div>
 
-          {!useGoldbergName && (
+          {/* Goldberg directory (only shown on Windows and when useForGoldberg is true) */}
+          {isWindows && useForGoldberg && (
             <div className="grid gap-2">
-              <Label className="text-muted-foreground" htmlFor="username">
-                {t("settings.userSettings.goldbergUsername")}
+              <Label className="text-muted-foreground" htmlFor="directory">
+                {t("settings.userSettings.goldbergSettingsDir")}
               </Label>
-              <Input
-                id="username"
-                value={username}
-                className="text-foreground"
-                onChange={e => setUsername(e.target.value)}
-                placeholder={t("settings.userSettings.goldbergUsernamePlaceholder")}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="directory"
+                  value={directory}
+                  onChange={e => setDirectory(e.target.value)}
+                  placeholder={t("settings.userSettings.goldbergSettingsDir")}
+                  className="flex-1 text-foreground"
+                />
+                <Button onClick={handleDirectorySelect}>
+                  {t("settings.userSettings.browseDirectory")}
+                </Button>
+              </div>
+              {!canCreateFiles && (
+                <p className="text-sm text-muted-foreground">
+                  {t("settings.userSettings.directoryPermissionError")}
+                </p>
+              )}
             </div>
           )}
-
-          <div className="grid gap-2">
-            <Label className="text-muted-foreground" htmlFor="directory">
-              {t("settings.userSettings.goldbergSettingsDir")}
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="directory"
-                value={directory}
-                className="text-foreground"
-                onChange={e => setDirectory(e.target.value)}
-              />
-              <Button
-                variant="outline"
-                onClick={handleDirectorySelect}
-                className="shrink-0"
-              >
-                {t("settings.userSettings.browseDirectory")}
-              </Button>
-            </div>
-          </div>
         </div>
 
         <AlertDialogFooter>
