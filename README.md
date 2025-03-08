@@ -172,21 +172,40 @@ These languages come with the app by default:
 <details>
 <summary>📸 Screenshots</summary>
 
-### Home Page
-
-![Home Page](./readme/home.png)
-
-### Search Page
-
-![Search Page](./readme/search.png)
-
-### Library Page
-
-![Library Page](./readme/library.png)
-
-### Downloads Page
-
-![Downloads Page](./readme/downloads.png)
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Home Page</h3>
+    <img src="./readme/home.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Search Page</h3>
+    <img src="./readme/search.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Download Game</h3>
+    <img src="./readme/download-game.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Game Metadata</h3>
+    <img src="./readme/game-metadata.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Library</h3>
+    <img src="./readme/library.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Play Game</h3>
+    <img src="./readme/playgame.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Downloads</h3>
+    <img src="./readme/downloads.png" width="100%"/>
+  </div>
+  <div style="margin: 1%; width: 24%;">
+    <h3 style="text-align: center;">Profile</h3>
+    <img src="./readme/profile.png" width="100%"/>
+  </div>
+</div>
 
 </details>
 
