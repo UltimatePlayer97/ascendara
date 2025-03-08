@@ -34,7 +34,8 @@ const UsernameDialog = () => {
   const loadSettings = async () => {
     try {
       // Check if running on Windows
-      setIsWindows(window.electron.isOnWindows());
+      const isOnWindows = window.electron.isOnWindows();
+      setIsWindows(isOnWindows);
 
       // Load profile name from localStorage
       const profileData = JSON.parse(localStorage.getItem("userProfile") || "{}");
@@ -42,7 +43,7 @@ const UsernameDialog = () => {
       setUseForGoldberg(profileData.useForGoldberg !== false);
 
       // Always load Goldberg directory on Windows
-      if (isWindows) {
+      if (isOnWindows) {
         const savedDirectory = await window.electron.getLocalCrackDirectory();
         if (savedDirectory) {
           setDirectory(savedDirectory);
