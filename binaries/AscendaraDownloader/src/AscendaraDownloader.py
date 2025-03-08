@@ -485,6 +485,18 @@ def _verify_extracted_files(watching_path, download_path, game_info, game_info_p
         with open(watching_path, 'r') as f:
             watching_data = json.load(f)
 
+        # Find and delete _CommonRedist directories
+        for root, dirs, files in os.walk(download_path):
+            if "_CommonRedist" in dirs:
+                common_redist_path = os.path.join(root, "_CommonRedist")
+                print(f"Found _CommonRedist directory at {common_redist_path}, deleting...")
+                try:
+                    import shutil
+                    shutil.rmtree(common_redist_path)
+                    print(f"Successfully deleted {common_redist_path}")
+                except Exception as e:
+                    print(f"Error deleting _CommonRedist directory: {str(e)}")
+
         verify_errors = []
         for file_path, file_info in watching_data.items():
             full_path = os.path.join(download_path, file_path)
