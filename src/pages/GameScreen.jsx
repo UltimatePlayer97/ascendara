@@ -453,7 +453,7 @@ export default function GameScreen() {
   // Handle open directory
   const handleOpenDirectory = async () => {
     if (!game) return;
-    await window.electron.openGameDirectory(game.game || game.name);
+    await window.electron.openGameDirectory(game.game || game.name, game.isCustom);
   };
 
   // Handle delete game
