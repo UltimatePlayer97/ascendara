@@ -37,8 +37,6 @@ const {
   screen,
   Notification,
 } = require("electron");
-// Only used for profile handling. See line 1905.
-const crypto = require("crypto");
 const { Client } = require("discord-rpc");
 const disk = require("diskusage");
 const path = require("path");
@@ -56,7 +54,6 @@ let updateDownloaded = false;
 let notificationShown = false;
 let updateDownloadInProgress = false;
 let experiment = false;
-let mainWindowHidden = false;
 let installedTools = [];
 let isBrokenVersion = false;
 let isWindows = os.platform().startsWith("win");
