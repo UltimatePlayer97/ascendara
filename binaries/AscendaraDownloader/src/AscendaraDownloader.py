@@ -257,7 +257,6 @@ class DownloadManager:
                 time.sleep(2 ** retries)
 
 def download_file(link, game, online, dlc, isVr, version, size, download_dir, withNotification=None):
-    game = sanitize_folder_name(game)
     download_path = os.path.join(download_dir, game)
     os.makedirs(download_path, exist_ok=True)
     
