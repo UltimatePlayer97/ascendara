@@ -174,7 +174,36 @@
       "nextStep": "Next Step →",
       "noThanks": "No Thanks",
       "startGuide": "Start Guide",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don't have it, close the guide and click the \"Don't have the extension? Get it for Chrome or Firefox\" button to download it.",
+          "title": "The Ascendara Download Handler"
+        },
+        {
+          "description": "After installing the extension, click the extension icon to enable the handler.",
+          "title": "Step 1: Enable the Handler"
+        },
+        {
+          "description": "The extension can stay on as it will only send known providers to Ascendara.",
+          "title": "The Download Handler"
+        },
+        {
+          "description": "Complete the CAPTCHA, and start the download.",
+          "title": "Step 2: Start the download"
+        },
+        {
+          "description": "Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.",
+          "title": "Step 3: Using the Extension"
+        },
+        {
+          "description": "Click the button to Open Ascendara.",
+          "title": "Step 4: Downloading"
+        },
+        {
+          "description": "Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.",
+          "title": "That's it!"
+        }
+      ],
       "title": "Downloading with Ascendara"
     },
     "noGameInfoAvailable": "Setup Ascendara Xtra in Preferences to see more information about this game",
