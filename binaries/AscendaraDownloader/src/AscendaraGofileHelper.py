@@ -273,7 +273,8 @@ class GofileDownloader:
         files_info = {}
 
         if data["type"] == "folder":
-            folder_path = os.path.join(current_path, data["name"])
+            # Don't add the folder name to the path, keep files at the game root level
+            folder_path = current_path
             os.makedirs(os.path.join(self.download_dir, folder_path), exist_ok=True)
 
             for child_id in data["children"]:
@@ -485,7 +486,8 @@ class GofileDownloader:
             for file in files:
                 if file.endswith(('.zip', '.rar')):
                     archive_path = os.path.join(root, file)
-                    extract_dir = os.path.dirname(archive_path)  # Extract to same directory as archive
+                    # Always extract to the game directory instead of the archive's directory
+                    extract_dir = self.download_dir
                     print(f"Extracting {archive_path}")
                     
                     try:
@@ -563,6 +565,11 @@ class GofileDownloader:
 
             verify_errors = []
             for file_path, file_info in watching_data.items():
+                if "_CommonRedist" not in file_path:
+                    filtered_watching_data[file_path] = file_info
+            
+            verify_errors = []
+            for file_path, file_info in filtered_watching_data.items():
                 full_path = os.path.join(self.download_dir, file_path)
                 # Skip verification for directories
                 if os.path.isdir(full_path):

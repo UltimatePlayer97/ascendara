@@ -496,8 +496,14 @@ def _verify_extracted_files(watching_path, download_path, game_info, game_info_p
                 except Exception as e:
                     print(f"Error deleting _CommonRedist directory: {str(e)}")
 
-        verify_errors = []
+        # Filter out _CommonRedist entries from watching_data
+        filtered_watching_data = {}
         for file_path, file_info in watching_data.items():
+            if "_CommonRedist" not in file_path:
+                filtered_watching_data[file_path] = file_info
+        
+        verify_errors = []
+        for file_path, file_info in filtered_watching_data.items():
             full_path = os.path.join(download_path, file_path)
             # Skip verification for directories
             if os.path.isdir(full_path):
