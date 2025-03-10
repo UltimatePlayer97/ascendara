@@ -1902,12 +1902,21 @@ export default function DownloadPage() {
                 {/* IGDB Attribution */}
                 <div className="mt-8 flex items-center justify-end text-xs text-muted-foreground">
                   <span>{t("download.dataProvidedBy")}</span>
-                  <a
-                    onClick={() => window.electron.openURL("https://www.igdb.com")}
-                    className="ml-1 flex cursor-pointer items-center text-primary hover:underline"
-                  >
-                    IGDB <ExternalLink className="ml-1 h-3 w-3" />
-                  </a>
+                  {igdbData?.source === "giantbomb" ? (
+                    <a
+                      onClick={() => window.electron.openURL("https://www.giantbomb.com")}
+                      className="ml-1 flex cursor-pointer items-center text-primary hover:underline"
+                    >
+                      GiantBomb <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  ) : (
+                    <a
+                      onClick={() => window.electron.openURL("https://www.igdb.com")}
+                      className="ml-1 flex cursor-pointer items-center text-primary hover:underline"
+                    >
+                      IGDB <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  )}
                   .
                   <span className="ml-1 text-xs text-muted-foreground">
                     {t("download.infoMaybeInaccurate")}

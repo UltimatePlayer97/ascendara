@@ -264,6 +264,247 @@ const getGameDetailsGiantBomb = async (gameName, config) => {
 };
 
 /**
+ * Strip HTML tags from text
+ * @param {string} html - HTML text to strip
+ * @returns {string} Plain text without HTML tags
+ */
+const stripHtmlTags = html => {
+  if (!html) return "";
+  // Create a temporary div element
+  const tempDiv = document.createElement("div");
+  // Set the HTML content
+  tempDiv.innerHTML = html;
+  // Return the text content (strips all HTML tags)
+  return tempDiv.textContent || tempDiv.innerText || "";
+};
+
+/**
+ * Clean and format description text by properly handling section headers
+ * @param {string} description - Raw description text that may contain section headers
+ * @returns {string} Cleaned and formatted description text
+ */
+const cleanDescriptionText = description => {
+  if (!description) return "";
+
+  // First strip HTML tags
+  let cleanText = stripHtmlTags(description);
+
+  // Common section headers in game descriptions
+  const sectionHeaders = [
+    "Overview",
+    "Story",
+    "Gameplay",
+    "Features",
+    "System Requirements",
+    "Minimum",
+    "Recommended",
+    "External Links",
+    "About This Game",
+    "Description",
+  ];
+
+  // Replace common section headers with properly formatted versions (with newlines)
+  sectionHeaders.forEach(header => {
+    // Match the header at the beginning of a line or right after another header
+    // This regex looks for the header without proper formatting
+    const headerRegex = new RegExp(`(^|\\n)${header}([^\\n]|$)`, "gi");
+
+    // Replace with properly formatted header (with newlines before and after)
+    cleanText = cleanText.replace(headerRegex, (match, prefix, suffix) => {
+      // If the suffix is not a space or punctuation, we need to add a space
+      // This handles cases like "OverviewThe game is..." -> "Overview\nThe game is..."
+      if (suffix && !suffix.match(/[\s\.,;:]/)) {
+        return `${prefix}${header}\n\n${suffix}`;
+      }
+      return `${prefix}${header}\n\n${suffix}`;
+    });
+  });
+
+  // Fix any instances where section headers are directly followed by content without spacing
+  // This regex looks for capitalized words that might be headers stuck to content
+  cleanText = cleanText.replace(
+    /([A-Z][a-z]+)([A-Z][a-z]+)(\s|$)/g,
+    (match, word1, word2, suffix) => {
+      // Check if the first word might be a header
+      if (sectionHeaders.some(header => header.toLowerCase() === word1.toLowerCase())) {
+        return `${word1}\n\n${word2}${suffix}`;
+      }
+      return match;
+    }
+  );
+
+  // Additional cleanup for specific patterns seen in the example
+  // Fix "OverviewGameName" pattern
+  cleanText = cleanText.replace(/(Overview)([A-Z])/g, "$1\n\n$2");
+
+  // Fix "External LinksWebsite" pattern
+  cleanText = cleanText.replace(/(External Links)([A-Z])/g, "$1\n\n$2");
+
+  // Remove any triple or more consecutive newlines
+  cleanText = cleanText.replace(/\n{3,}/g, "\n\n");
+
+  return cleanText.trim();
+};
+
+/**
+ * Parse system requirements from description
+ * @param {string} description - Game description that may contain system requirements
+ * @returns {Object} Structured system requirements object
+ */
+const parseSystemRequirements = description => {
+  if (!description) return null;
+
+  // Default empty structure
+  const requirements = {
+    minimum: {
+      os: [],
+      processor: [],
+      memory: [],
+      graphics: [],
+      directx: [],
+      storage: [],
+      sound: [],
+    },
+    recommended: {
+      os: [],
+      processor: [],
+      memory: [],
+      graphics: [],
+      directx: [],
+      storage: [],
+      sound: [],
+    },
+  };
+
+  // Clean the description
+  const cleanDescription = stripHtmlTags(description);
+
+  // Look for system requirements section
+  const sysReqMatch = cleanDescription.match(/system\s+requirements/i);
+  if (!sysReqMatch) return null;
+
+  // Extract minimum requirements
+  const minMatch = cleanDescription.match(/minimum[:\s]+(.*?)(?=recommended|\n\n|$)/is);
+  if (minMatch && minMatch[1]) {
+    const minText = minMatch[1].trim();
+
+    // OS
+    const osMatch = minText.match(
+      /(?:os|operating system)[:\s]+(.*?)(?=\n|processor|cpu|$)/i
+    );
+    if (osMatch && osMatch[1]) requirements.minimum.os.push(osMatch[1].trim());
+
+    // Processor
+    const procMatch = minText.match(/(?:processor|cpu)[:\s]+(.*?)(?=\n|memory|ram|$)/i);
+    if (procMatch && procMatch[1])
+      requirements.minimum.processor.push(procMatch[1].trim());
+
+    // Memory
+    const memMatch = minText.match(/(?:memory|ram)[:\s]+(.*?)(?=\n|graphics|gpu|$)/i);
+    if (memMatch && memMatch[1]) requirements.minimum.memory.push(memMatch[1].trim());
+
+    // Graphics
+    const gpuMatch = minText.match(
+      /(?:graphics|gpu|video)[:\s]+(.*?)(?=\n|directx|storage|$)/i
+    );
+    if (gpuMatch && gpuMatch[1]) requirements.minimum.graphics.push(gpuMatch[1].trim());
+
+    // DirectX
+    const dxMatch = minText.match(/directx[:\s]+(.*?)(?=\n|storage|$)/i);
+    if (dxMatch && dxMatch[1]) requirements.minimum.directx.push(dxMatch[1].trim());
+
+    // Storage
+    const storageMatch = minText.match(
+      /(?:storage|hard drive|disk space)[:\s]+(.*?)(?=\n|sound|$)/i
+    );
+    if (storageMatch && storageMatch[1])
+      requirements.minimum.storage.push(storageMatch[1].trim());
+
+    // Sound
+    const soundMatch = minText.match(/(?:sound|audio)[:\s]+(.*?)(?=\n|$)/i);
+    if (soundMatch && soundMatch[1])
+      requirements.minimum.sound.push(soundMatch[1].trim());
+  }
+
+  // Extract recommended requirements
+  const recMatch = cleanDescription.match(/recommended[:\s]+(.*?)(?=\n\n|$)/is);
+  if (recMatch && recMatch[1]) {
+    const recText = recMatch[1].trim();
+
+    // OS
+    const osMatch = recText.match(
+      /(?:os|operating system)[:\s]+(.*?)(?=\n|processor|cpu|$)/i
+    );
+    if (osMatch && osMatch[1]) requirements.recommended.os.push(osMatch[1].trim());
+
+    // Processor
+    const procMatch = recText.match(/(?:processor|cpu)[:\s]+(.*?)(?=\n|memory|ram|$)/i);
+    if (procMatch && procMatch[1])
+      requirements.recommended.processor.push(procMatch[1].trim());
+
+    // Memory
+    const memMatch = recText.match(/(?:memory|ram)[:\s]+(.*?)(?=\n|graphics|gpu|$)/i);
+    if (memMatch && memMatch[1]) requirements.recommended.memory.push(memMatch[1].trim());
+
+    // Graphics
+    const gpuMatch = recText.match(
+      /(?:graphics|gpu|video)[:\s]+(.*?)(?=\n|directx|storage|$)/i
+    );
+    if (gpuMatch && gpuMatch[1])
+      requirements.recommended.graphics.push(gpuMatch[1].trim());
+
+    // DirectX
+    const dxMatch = recText.match(/directx[:\s]+(.*?)(?=\n|storage|$)/i);
+    if (dxMatch && dxMatch[1]) requirements.recommended.directx.push(dxMatch[1].trim());
+
+    // Storage
+    const storageMatch = recText.match(
+      /(?:storage|hard drive|disk space)[:\s]+(.*?)(?=\n|sound|$)/i
+    );
+    if (storageMatch && storageMatch[1])
+      requirements.recommended.storage.push(storageMatch[1].trim());
+
+    // Sound
+    const soundMatch = recText.match(/(?:sound|audio)[:\s]+(.*?)(?=\n|$)/i);
+    if (soundMatch && soundMatch[1])
+      requirements.recommended.sound.push(soundMatch[1].trim());
+  }
+
+  return requirements;
+};
+
+/**
+ * Extract game features from description
+ * @param {string} description - Game description
+ * @returns {Array} Array of game features
+ */
+const extractGameFeatures = description => {
+  if (!description) return [];
+
+  const features = [];
+  const cleanDescription = stripHtmlTags(description);
+
+  // Look for common feature indicators
+  const featureMatches = cleanDescription.match(/features?:?\s*(.*?)(?=\n\n|$)/is);
+  if (featureMatches && featureMatches[1]) {
+    // Split by bullet points or newlines
+    const featureText = featureMatches[1];
+    const featureItems = featureText
+      .split(/[•\-\*\n]+/)
+      .filter(item => item.trim().length > 0);
+
+    featureItems.forEach(item => {
+      const cleanItem = item.trim();
+      if (cleanItem && cleanItem.length > 3) {
+        features.push(cleanItem);
+      }
+    });
+  }
+
+  return features;
+};
+
+/**
  * Format GiantBomb data to match IGDB format for compatibility
  * @param {Object} giantBombData - Raw GiantBomb data
  * @returns {Object} Formatted data in IGDB-compatible format
@@ -326,13 +567,49 @@ const formatGiantBombToIgdbFormat = giantBombData => {
     });
   }
 
+  // Get a clean description - prioritize the deck (summary) field
+  let cleanDescription = "";
+  if (giantBombData.deck) {
+    // The deck field might still have HTML, so strip it
+    cleanDescription = stripHtmlTags(giantBombData.deck);
+  } else if (giantBombData.description) {
+    // For description, we might just need to strip HTML without further processing
+    cleanDescription = stripHtmlTags(giantBombData.description);
+  }
+
+  // Store the full description separately for detailed views if needed
+  // This is only needed if we want to display the full description elsewhere
+  const fullCleanDescription = giantBombData.description
+    ? cleanDescriptionText(giantBombData.description)
+    : "";
+
+  // Parse system requirements
+  const systemRequirements = parseSystemRequirements(giantBombData.description || "");
+
+  // Extract game features
+  const features = extractGameFeatures(giantBombData.description || "");
+
+  // Extract release date in a cleaner format
+  let releaseDate = giantBombData.original_release_date || "";
+  if (releaseDate) {
+    try {
+      const dateObj = new Date(releaseDate);
+      releaseDate = dateObj.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    } catch (e) {
+      console.error("Error formatting release date:", e);
+    }
+  }
+
   // Format the data to match IGDB structure
   return {
     id: giantBombData.id,
     name: giantBombData.name,
-    summary: giantBombData.deck || "",
-    description: giantBombData.description || "",
-    storyline: giantBombData.description || "",
+    summary: cleanDescription,
+    description: cleanDescription,
+    storyline: null, // GiantBomb doesn't provide a separate storyline field
+
+    // Store the full description separately
+    full_description: fullCleanDescription,
 
     // IGDB specific fields with GiantBomb data
     cover: giantBombData.image
@@ -355,12 +632,65 @@ const formatGiantBombToIgdbFormat = giantBombData => {
 
     // Additional GiantBomb specific fields
     aliases: giantBombData.aliases || "",
-    release_date: giantBombData.original_release_date,
+    release_date: releaseDate,
     site_detail_url: giantBombData.site_detail_url,
+
+    // Structured system requirements
+    system_requirements: systemRequirements,
+
+    // Game features
+    features: features,
 
     // Source information
     source: "giantbomb",
   };
+};
+
+/**
+ * Remove duplicated phrases or sentences from text
+ * @param {string} text - Text that may contain duplications
+ * @returns {string} Text with duplications removed
+ */
+const removeDuplicatedPhrases = text => {
+  if (!text) return "";
+
+  // Split into sentences or phrases
+  const sentences = text.split(/[.!?]\s+/);
+  const uniqueSentences = [];
+  const seen = new Set();
+
+  for (const sentence of sentences) {
+    const trimmed = sentence.trim();
+    if (trimmed && !seen.has(trimmed.toLowerCase())) {
+      seen.add(trimmed.toLowerCase());
+      uniqueSentences.push(trimmed);
+    }
+  }
+
+  // If we have multiple sentences, join with proper punctuation
+  if (uniqueSentences.length > 1) {
+    return uniqueSentences.join(". ") + ".";
+  }
+
+  // Check for duplicated phrases within a single sentence
+  if (uniqueSentences.length === 1) {
+    const sentence = uniqueSentences[0];
+    const phrases = sentence.split(/,\s+/);
+    const uniquePhrases = [];
+    const seenPhrases = new Set();
+
+    for (const phrase of phrases) {
+      const trimmed = phrase.trim();
+      if (trimmed && !seenPhrases.has(trimmed.toLowerCase())) {
+        seenPhrases.add(trimmed.toLowerCase());
+        uniquePhrases.push(trimmed);
+      }
+    }
+
+    return uniquePhrases.join(", ");
+  }
+
+  return text;
 };
 
 /**
