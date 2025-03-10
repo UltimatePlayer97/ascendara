@@ -257,10 +257,16 @@ class DownloadManager:
                 time.sleep(2 ** retries)
 
 def download_file(link, game, online, dlc, isVr, version, size, download_dir, withNotification=None):
-    download_path = os.path.join(download_dir, game)
+    # First ensure the base download directory exists
+    os.makedirs(download_dir, exist_ok=True)
+    
+    # Sanitize the game name for folder creation
+    sanitized_game = sanitize_folder_name(game)
+    
+    download_path = os.path.join(download_dir, sanitized_game)
     os.makedirs(download_path, exist_ok=True)
     
-    game_info_path = os.path.join(download_path, f"{game}.ascendara.json")
+    game_info_path = os.path.join(download_path, f"{sanitized_game}.ascendara.json")
 
     game_info = {
         "game": game,
@@ -269,7 +275,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
         "isVr": isVr,
         "version": version if version else "",
         "size": size,
-        "executable": os.path.join(download_path, f"{game}.exe"),
+        "executable": os.path.join(download_path, f"{sanitized_game}.exe"),
         "isRunning": False,
         "downloadingData": {
             "downloading": False,
@@ -280,7 +286,6 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
             "timeUntilComplete": "0s"
         }
     }
-
     if withNotification:
         _launch_notification(withNotification, "Download Started", f"Starting download for {game}")
 
@@ -325,7 +330,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                 if possible_ext in ['rar', 'zip']:
                     archive_ext = possible_ext
 
-            archive_file_path = os.path.join(download_path, f"{game}.{archive_ext}")
+            archive_file_path = os.path.join(download_path, f"{sanitized_game}.{archive_ext}")
             
             # Initialize download manager
             manager = DownloadManager(link, total_size)

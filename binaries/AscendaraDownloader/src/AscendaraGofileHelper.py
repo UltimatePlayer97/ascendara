@@ -19,6 +19,7 @@ import json
 import sys
 import time
 import shutil
+import string
 from tempfile import NamedTemporaryFile, gettempdir
 import requests
 import atexit
@@ -125,6 +126,11 @@ def safe_write_json(filepath, data):
         if temp_file_path and os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
+def sanitize_folder_name(name):
+    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    sanitized_name = ''.join(c for c in name if c in valid_chars)
+    return sanitized_name
+
 def handleerror(game_info, game_info_path, e):
     game_info['online'] = ""
     game_info['dlc'] = ""
@@ -155,12 +161,9 @@ class GofileDownloader:
         self.isVr = isVr
         self.version = version
         self.size = size
-        # Remove k9bsbM from path if present
-        if "k9bsbM" in download_dir:
-            download_dir = download_dir.replace(os.path.join("k9bsbM", game), "").replace("k9bsbM", "")
-        self.download_dir = os.path.join(download_dir, game)
+        self.download_dir = os.path.join(download_dir, sanitize_folder_name(game))
         os.makedirs(self.download_dir, exist_ok=True)
-        self.game_info_path = os.path.join(self.download_dir, f"{game}.ascendara.json")
+        self.game_info_path = os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.ascendara.json")
         self.game_info = {
             "game": game,
             "online": online,
@@ -168,7 +171,7 @@ class GofileDownloader:
             "isVr": isVr,
             "version": version if version else "",
             "size": size,
-            "executable": os.path.join(self.download_dir, f"{game}.exe"),
+            "executable": os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.exe"),
             "isRunning": False,
             "downloadingData": {
                 "downloading": False,
