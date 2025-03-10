@@ -21,7 +21,7 @@
     "outdated": "Устаревший",
     "platform": {
       "warning": {
-        "description": "В настоящее время вы используете Ascendara на платформе, не являющейся Windows. В то время как кроссплатформный разрабатывается, некоторые функции могут работать не так, как ожидалось.",
+        "description": "В настоящее время вы используете Ascendara на платформе, не являющейся Windows. В то время как кроссплатформные в разработке, некоторые функции могут работать не так, как ожидалось.",
         "development": "Ascendara все еще находится в активной разработке, и рекомендуется использовать Windows для лучшего опыта. Я ценю ваше терпение и отзывы, поскольку я продолжаю улучшать кроссплатформенную поддержку.",
         "fromSantiago": "Сантьяго, сольный разработчик Аскендары",
         "title": "Уведомление о совместимости платформы",
@@ -163,7 +163,7 @@
     "gameNeedsVR": "VR может потребоваться для этой игры.",
     "igdbLoading": "Загрузка информации об игре ...",
     "igdbRating": "Эта игра оценена {{rating}} яблоки. Рейтинги Apple отличаются от звездных рейтингов на Ascendara и являются скорее общим рейтингом игры.",
-    "infoMaybeInaccurate": "Если информация неточна, сообщите об этом",
+    "infoMaybeInaccurate": "Информация об игре может быть неточной.",
     "linkCopied": "Ссылка скопирована в буфер обмена",
     "newUserGuide": {
       "close": "Закрывать",
@@ -174,7 +174,36 @@
       "nextStep": "Следующий шаг →",
       "noThanks": "Нет, спасибо",
       "startGuide": "Начало гида",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "Обработчик загрузки Ascendara автоматически остановит загрузку в вашем браузере и запустит его для вас в Ascendara. Если у вас его нет, закройте руководство и нажмите кнопку «Не иметь расширения? Получите его для Chrome или Firefox», чтобы загрузить ее.",
+          "title": "Обработчик загрузки Ascendara"
+        },
+        {
+          "description": "После установки расширения нажмите значок расширения, чтобы включить обработчик.",
+          "title": "Шаг 1: Включить обработчик"
+        },
+        {
+          "description": "Расширение может оставаться в том, что оно отправит только известных поставщиков в Асендару.",
+          "title": "Обработчик загрузки"
+        },
+        {
+          "description": "Заполните CAPTCHA и запустите загрузку.",
+          "title": "Шаг 2: Начните загрузку"
+        },
+        {
+          "description": "Как только загрузка попытается начать, вы увидите всплывающее окно с просьбой открыть Ascendara. Переключите кнопку «Всегда позволить кнопку, позволяющую расширению всегда отправлять известных поставщиков» в Аскендара.",
+          "title": "Шаг 3: Использование расширения"
+        },
+        {
+          "description": "Нажмите кнопку, чтобы открыть Ascendara.",
+          "title": "Шаг 4: Загрузка"
+        },
+        {
+          "description": "Ваша загрузка автоматически начнется в Аскендаре. Если вы не приведены на страницу загрузки, перейдите к ней.",
+          "title": "Вот и все!"
+        }
+      ],
       "title": "Загрузка с Ascendara"
     },
     "noGameInfoAvailable": "Настройка Ascendara xtra в предпочтениях, чтобы увидеть больше информации об этой игре",
@@ -240,10 +269,10 @@
       "legacyGameVerification": "Проверка файлов доступна только для загрузки игр после Ascendara версии 8.1.2",
       "openFolder": "Открыть папку",
       "retryDownload": "Повторите скачать",
-      "stopDownload": "Остановите скачать"
+      "stopDownload": "Остановите загрузку"
     },
     "activeDownloads": "Загрузка игр",
-    "alreadyReported": "Уже сообщается",
+    "alreadyReported": "Уже сообщалось",
     "contentTypeError": "Полученная ошибка типа контента от загрузчика. Ссылка на скачивание, скорее всего, истек",
     "currentTotalSpeed": "Общая скорость тока",
     "downloadError": "Загрузить ошибку",
@@ -374,7 +403,7 @@
       "restoreWarningGameClosed": "Убедитесь, что игра не работает, прежде чем продолжить.",
       "restoreWarningOverwrite": "Это будет перезаписать любые текущие файлы сохранения с помощью версии резервной копии.",
       "restoreWarningTitle": "Подожди...",
-      "restoringBackup": "Восстановление резервного копирования",
+      "restoringBackup": "Восстановление резервной копии",
       "restoringDescription": "Восстановление сохранения данных для {{game}} ...",
       "tryAgain": "Попробуйте еще раз",
       "waitingBackup": "Пожалуйста, подождите, пока ваши данные сохранения будут резервированы ...",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara в основном использует SteamRip в качестве надежного источника для игр",
     "general": "Общий",
     "giantBombApiKey": "Giantbomb Api Key",
-    "giantBombDescription": "Giantbomb предоставляет информацию об игре из игрового вики, управляемого сообществом, с подробными описаниями. Требует ключа API.",
+    "giantBombDescription": "Giantbomb предоставляет информацию об игре из игрового вики, управляемого сообществом, с краткими описаниями. Требует ключа API.",
     "giantBombLearnHowtoGet": "Узнайте, как получить ключ API",
     "highThreadWarning": "Высокое количество потоков может вызвать проблемы загрузки. Подумайте об использовании 4-8 потоков для лучшей надежности.",
     "igdbApiKeyDescription": "IGDB предоставляет более подробную информацию об игре с базой данных, поддерживаемой разработчиками, и официальными записями игры. Требуется, чтобы у вас была учетная запись Twitch и получить идентификатор клиента и секрет.",

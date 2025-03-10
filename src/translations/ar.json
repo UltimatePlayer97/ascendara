@@ -43,7 +43,7 @@
       "donate": "تطوير الدعم",
       "feedback": "إعطاء ردود الفعل",
       "message": "أعلم أنني قلت لا إعلانات ولكن هل هذا إعلان حقًا؟ لقد بدأت في استخدام Ascendara وأود أن تقيمها أو تعطيني بعض الملاحظات. لن ترى هذه الرسالة مرة أخرى.",
-      "note": "لقد قضيت الكثير من الوقت في إنشاء Ascendara كمشروع شغف. كل ميزة ، يتم تصميم كل سطر من الكود بعناية. دعمك يعني كل شيء بالنسبة لي ويساعدني على الاستمرار في جعل Ascendara أفضل.",
+      "note": "لقد قضيت الكثير من الوقت في إنشاء Ascendara كمشروع شغف. كل ميزة ، يتم تصميم كل سطر من الكود بعناية. دعمك يعني كل شيء بالنسبة لي ويساعدني على مواصلة جعل Ascendara أفضل.",
       "title": "اسمحوا لي أن أعرف كيف تحب ذلك"
     },
     "toasts": {
@@ -163,7 +163,7 @@
     "gameNeedsVR": "قد يكون VR مطلوبًا لهذه اللعبة.",
     "igdbLoading": "تحميل معلومات اللعبة ...",
     "igdbRating": "تم تصنيف هذه اللعبة {{rating}} التفاح. تختلف تصنيفات Apple عن تصنيفات النجوم على Ascendara ، وأكثر من تصنيف عام للعبة.",
-    "infoMaybeInaccurate": "إذا كانت المعلومات غير دقيقة ، فيرجى الإبلاغ عنها",
+    "infoMaybeInaccurate": "قد تكون معلومات اللعبة غير دقيقة.",
     "linkCopied": "رابط نسخ إلى الحافظة",
     "newUserGuide": {
       "close": "يغلق",
@@ -174,7 +174,33 @@
       "nextStep": "الخطوة التالية →",
       "noThanks": "ًلا شكرا",
       "startGuide": "دليل البدء",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'} ، {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'} ، {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'} ، {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'} ، {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'} ، {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'} ، {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "سيقوم معالج تنزيل Ascendara بإيقاف التنزيل تلقائيًا في متصفحك وابدأه في Ascendara. إذا لم يكن لديك ذلك ، أغلق الدليل وانقر فوق \"لا تمدد؟ احصل عليه من أجل Chrome أو Firefox\" لتنزيله.",
+          "title": "معالج تنزيل Ascendara"
+        },
+        {
+          "description": "بعد تثبيت الامتداد ، انقر فوق أيقونة الامتداد لتمكين المعالج.",
+          "title": "الخطوة 1: تمكين المعالج"
+        },
+        {
+          "description": "يمكن أن يبقى التمديد لأنه لن يرسل سوى مقدمي الخدمات المعروفين إلى Ascendara.",
+          "title": "معالج التنزيل"
+        },
+        {
+          "description": "أكمل Captcha ، وابدأ التنزيل.",
+          "title": "الخطوة 2: ابدأ التنزيل"
+        },
+        {
+          "description": "بمجرد أن يحاول التنزيل البدء ، سترى نافذة منبثقة تطلب فتح Ascendara. تبديل زر السماح دائمًا بالسماح للتمديد بإرسال مقدمي الخدمات المعروفين دائمًا إلى Ascendara.",
+          "title": "الخطوة 3: استخدام الامتداد"
+        },
+        { "description": "انقر فوق الزر لفتح Ascendara.", "title": "الخطوة 4: التنزيل" },
+        {
+          "description": "سيبدأ التنزيل تلقائيًا في Ascendara. إذا لم تقم بإحضار صفحة التنزيل ، فانتقل إليها.",
+          "title": "هذا كل شيء!"
+        }
+      ],
       "title": "تنزيل مع Ascendara"
     },
     "noGameInfoAvailable": "الإعداد Ascendara Xtra في التفضيلات لمعرفة مزيد من المعلومات حول هذه اللعبة",
@@ -605,7 +631,7 @@
     "gameSourcesDescription": "يستخدم Ascendara في المقام الأول SteamRip كمصدر موثوق به للألعاب",
     "general": "عام",
     "giantBombApiKey": "GiantBomb API مفتاح",
-    "giantBombDescription": "يوفر GiantBomb معلومات اللعبة من ويكي ألعاب تعتمد على المجتمع مع أوصاف متعمقة. يتطلب مفتاح API.",
+    "giantBombDescription": "يوفر GiantBomb معلومات اللعبة من ويكي ألعاب يحركها المجتمع مع أوصاف موجزة. يتطلب مفتاح API.",
     "giantBombLearnHowtoGet": "تعلم كيفية الحصول على مفتاح API",
     "highThreadWarning": "قد تسبب تعداد الخيط العالي في مشاكل التنزيل. النظر في استخدام 4-8 مؤشرات الترابط لتحسين الموثوقية.",
     "igdbApiKeyDescription": "يوفر IGDB معلومات أكثر تفصيلاً مع قاعدة بيانات مدعومة بالمطور وإدخالات اللعبة الرسمية. يتطلب منك الحصول على حساب نشل والحصول على معرف العميل وسرية.",
@@ -827,7 +853,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "هذا هو المكان الذي سيتم فيه تخزين جميع الألعاب التي تم تنزيلها",
     "welcomeTo": "مرحبا بكم في",
     "welcomeToAscendaraDescription": "الآن لن تقلق بشأن استخراج الملفات أو تثبيتها أو نقلها. قبل أن نبدأ ، يرجى القراءة والموافقة على شروط الخدمة وسياسة الخصوصية.",
-    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله لك في Ascendara",
+    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله في Ascendara",
     "youCanChangeThisLater": "يمكنك دائمًا تحديث لغتك لاحقًا في الإعدادات.",
     "youCanChangeThisSettingLater": "يمكنك تغيير هذا لاحقًا في الإعدادات.",
     "youWillReceiveAdminPrompts": "ستتلقى مطالبات المسؤول من مثبتات Microsoft الرسمية لتثبيت المكونات المطلوبة. قد يحتاج جهاز الكمبيوتر الخاص بك إلى إعادة التشغيل بعد التثبيت.",

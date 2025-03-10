@@ -163,7 +163,7 @@
     "gameNeedsVR": "Se puede requerir una realidad virtual para este juego.",
     "igdbLoading": "Cargando información del juego ...",
     "igdbRating": "Este juego está clasificado {{rating}} manzanas. Las clasificaciones de Apple son diferentes a las clasificaciones de estrellas en Ascendara, y son más una calificación general del juego.",
-    "infoMaybeInaccurate": "Si la información es inexacta, informe.",
+    "infoMaybeInaccurate": "La información del juego puede ser inexacta.",
     "linkCopied": "Enlace copiado al portapapeles",
     "newUserGuide": {
       "close": "Cerca",
@@ -174,7 +174,36 @@
       "nextStep": "Siguiente paso →",
       "noThanks": "No, gracias",
       "startGuide": "Guía de inicio",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "El controlador de descarga de Ascendara detendrá automáticamente la descarga en su navegador y lo iniciará en Ascendara. Si no lo tiene, cierre la guía y haga clic en el botón \"No tienes la extensión? Obtén por Chrome o Firefox\" para descargarla.",
+          "title": "El controlador de descarga de Ascendara"
+        },
+        {
+          "description": "Después de instalar la extensión, haga clic en el icono de extensión para habilitar el controlador.",
+          "title": "Paso 1: Habilite el controlador"
+        },
+        {
+          "description": "La extensión puede permanecer, ya que solo enviará a los proveedores conocidos a Ascendara.",
+          "title": "El controlador de descarga"
+        },
+        {
+          "description": "Complete el captcha y comience la descarga.",
+          "title": "Paso 2: Comience la descarga"
+        },
+        {
+          "description": "Una vez que la descarga intente comenzar, verá una ventana emergente pidiendo abrir Ascendara. Alterne el botón Siempre permita que la extensión siempre envíe a los proveedores conocidos a Ascendara.",
+          "title": "Paso 3: Uso de la extensión"
+        },
+        {
+          "description": "Haga clic en el botón para abrir Ascendara.",
+          "title": "Paso 4: descarga"
+        },
+        {
+          "description": "Su descarga comenzará automáticamente en Ascendara. Si no te traen a la página de descarga, navegue a ella.",
+          "title": "¡Eso es todo!"
+        }
+      ],
       "title": "Descargando con ascendara"
     },
     "noGameInfoAvailable": "Configurar Ascendara XTRA en preferencias para ver más información sobre este juego",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara utiliza principalmente SteamRip como su fuente de confianza para los juegos",
     "general": "General",
     "giantBombApiKey": "Llave de la API de BiLingbomb",
-    "giantBombDescription": "GiantBomb proporciona información del juego de una wiki de juegos impulsada por la comunidad con descripciones en profundidad. Requiere una clave API.",
+    "giantBombDescription": "GiantBomb proporciona información del juego de un wiki de juegos impulsado por la comunidad con descripciones breves. Requiere una clave API.",
     "giantBombLearnHowtoGet": "Aprenda a obtener la clave API",
     "highThreadWarning": "Los recuentos de hilos altos pueden causar problemas de descarga. Considere usar 4-8 hilos para una mejor confiabilidad.",
     "igdbApiKeyDescription": "IGDB proporciona información de juego más detallada con la base de datos respaldada por desarrolladores y las entradas oficiales del juego. Requiere que tenga una cuenta de Twitch y obtenga una identificación de cliente y un secreto.",
@@ -703,7 +732,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se cargará nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {
@@ -823,7 +852,7 @@
     "stayUpToDate": "Mantenga a Ascendara al día",
     "takeTour": "Hacer el recorrido",
     "termsOfService": "Términos de servicio",
-    "theExtensionBlocksKnownProviders": "La extensión escucha descargas de proveedores conocidos y los detiene antes de comenzar en su navegador, luego enviándolas a Ascendara para descargar",
+    "theExtensionBlocksKnownProviders": "La extensión escucha las descargas de proveedores conocidos y los detiene antes de que comiencen en su navegador, luego enviándolo a Ascendara para descargar",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Aquí es donde se almacenarán todos sus juegos descargados",
     "welcomeTo": "Bienvenido",
     "welcomeToAscendaraDescription": "Ahora no tendrá que preocuparse por extraer, instalar o mover archivos. Antes de comenzar, lea y acepte términos de servicio y política de privacidad.",

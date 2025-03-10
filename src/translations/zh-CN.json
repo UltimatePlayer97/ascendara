@@ -163,7 +163,7 @@
     "gameNeedsVR": "该游戏可能需要VR。",
     "igdbLoading": "加载游戏信息...",
     "igdbRating": "该游戏被评为{{rating}}苹果。 Apple评分与Ascendara的Star评分不同，并且更像是游戏的一般评级。",
-    "infoMaybeInaccurate": "如果信息不准确，请报告",
+    "infoMaybeInaccurate": "游戏信息可能不准确。",
     "linkCopied": "链接复制到剪贴板",
     "newUserGuide": {
       "close": "关闭",
@@ -174,7 +174,30 @@
       "nextStep": "下一步→",
       "noThanks": "不，谢谢",
       "startGuide": "开始指南",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}，{'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}，{'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}，{'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}，{'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}，{'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}，{'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "Ascendara下载处理程序将自动停止在您的浏览器中下载，并在Ascendara中为您启动它。如果没有它，请关闭指南，然后单击“没有扩展名？为Chrome或Firefox获取它”按钮下载它。",
+          "title": "Ascendara下载处理程序"
+        },
+        {
+          "description": "安装扩展程序后，单击扩展图标以启用处理程序。",
+          "title": "步骤1：启用处理程序"
+        },
+        {
+          "description": "该扩展名可以保持继续下去，因为它只会将已知的提供商发送到Ascendara。",
+          "title": "下载处理程序"
+        },
+        { "description": "完成验证码，然后开始下载。", "title": "步骤2：开始下载" },
+        {
+          "description": "下载尝试开始后，您将看到一个弹出窗口要求打开Ascendara。切换始终允许按钮，以允许扩展程序始终将已知的提供商发送到Ascendara。",
+          "title": "步骤3：使用扩展"
+        },
+        { "description": "单击按钮打开Ascendara。", "title": "步骤4：下载" },
+        {
+          "description": "您的下载将自动从Ascendara开始。如果您没有被带到下载页面，请导航到它。",
+          "title": "就是这样！"
+        }
+      ],
       "title": "与Ascendara下载"
     },
     "noGameInfoAvailable": "设置Ascendara Xtra以偏好的方式查看有关此游戏的更多信息",
@@ -605,7 +628,7 @@
     "gameSourcesDescription": "Ascendara主要将STENRIP用作其可信赖的游戏来源",
     "general": "一般的",
     "giantBombApiKey": "巨型炸弹API键",
-    "giantBombDescription": "GiantBomb提供了来自社区驱动的游戏Wiki的游戏信息，并具有深入的描述。需要一个API键。",
+    "giantBombDescription": "GiantBomb提供了由社区驱动的游戏Wiki的游戏信息，并简要说明。需要一个API键。",
     "giantBombLearnHowtoGet": "了解如何获取API密钥",
     "highThreadWarning": "高线程计数可能会导致下载问题。考虑使用4-8个线程以提高可靠性。",
     "igdbApiKeyDescription": "IGDB通过开发人员支持的数据库和官方游戏条目提供了更详细的游戏信息。要求您拥有一个Twitch帐户并获得客户ID和秘密。",
@@ -823,7 +846,7 @@
     "stayUpToDate": "保持Ascendara最新",
     "takeTour": "参加游览",
     "termsOfService": "服务条款",
-    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara进行下载",
+    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara下载",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "这是您所有下载的游戏都将存储的地方",
     "welcomeTo": "欢迎来",
     "welcomeToAscendaraDescription": "现在，您不必担心提取，安装或移动文件。在开始之前，请阅读并同意服务条款和隐私政策。",

@@ -163,7 +163,7 @@
     "gameNeedsVR": "এই গেমটির জন্য ভিআর প্রয়োজন হতে পারে।",
     "igdbLoading": "গেমের তথ্য লোড হচ্ছে ...",
     "igdbRating": "এই গেমটি {{rating}} আপেল রেট করা হয়। অ্যাপল রেটিংগুলি অ্যাসেনডারার স্টার রেটিংয়ের চেয়ে আলাদা এবং গেমটির সাধারণ রেটিং বেশি।",
-    "infoMaybeInaccurate": "যদি তথ্য ভুল হয় তবে দয়া করে এটি রিপোর্ট করুন",
+    "infoMaybeInaccurate": "গেমের তথ্য ভুল হতে পারে।",
     "linkCopied": "লিঙ্ক ক্লিপবোর্ডে অনুলিপি করা",
     "newUserGuide": {
       "close": "বন্ধ",
@@ -174,7 +174,36 @@
       "nextStep": "পরবর্তী পদক্ষেপ →",
       "noThanks": "না ধন্যবাদ",
       "startGuide": "গাইড শুরু করুন",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "অ্যাসেনডারা ডাউনলোড হ্যান্ডলারটি স্বয়ংক্রিয়ভাবে আপনার ব্রাউজারে ডাউনলোডটি বন্ধ করে দেবে এবং এটি আপনার জন্য অ্যাসেন্ডারায় শুরু করবে। আপনার যদি এটি না থাকে তবে গাইডটি বন্ধ করুন এবং \"এক্সটেনশন নেই? এটি ডাউনলোড করতে ক্রোম বা ফায়ারফক্সের জন্য এটি পান\" ক্লিক করুন।",
+          "title": "অ্যাসেনডারা ডাউনলোড হ্যান্ডলার"
+        },
+        {
+          "description": "এক্সটেনশন ইনস্টল করার পরে, হ্যান্ডলার সক্ষম করতে এক্সটেনশন আইকনটি ক্লিক করুন।",
+          "title": "পদক্ষেপ 1: হ্যান্ডলার সক্ষম করুন"
+        },
+        {
+          "description": "এক্সটেনশনটি চালু থাকতে পারে কারণ এটি কেবল পরিচিত সরবরাহকারীদের অ্যাসেন্দারায় প্রেরণ করবে।",
+          "title": "ডাউনলোড হ্যান্ডলার"
+        },
+        {
+          "description": "ক্যাপচা সম্পূর্ণ করুন, এবং ডাউনলোড শুরু করুন।",
+          "title": "পদক্ষেপ 2: ডাউনলোড শুরু করুন"
+        },
+        {
+          "description": "ডাউনলোড শুরু হওয়ার চেষ্টা করার পরে, আপনি একটি পপআপ দেখতে পাবেন অ্যাসেনডারা খুলতে জিজ্ঞাসা করছেন। সর্বদা মঞ্জুরি বোতামটি টগল করুন এক্সটেনশনের অনুমতি দেওয়ার জন্য সর্বদা পরিচিত সরবরাহকারীদের আরোহণে প্রেরণ করুন।",
+          "title": "পদক্ষেপ 3: এক্সটেনশন ব্যবহার করে"
+        },
+        {
+          "description": "অ্যাসেন্ডার খুলতে বোতামটি ক্লিক করুন।",
+          "title": "পদক্ষেপ 4: ডাউনলোড করা"
+        },
+        {
+          "description": "আপনার ডাউনলোডটি স্বয়ংক্রিয়ভাবে অ্যাসেন্ডারাতে শুরু হবে। আপনি যদি ডাউনলোড পৃষ্ঠায় না আনা হয় তবে এটিতে নেভিগেট করুন।",
+          "title": "এটাই!"
+        }
+      ],
       "title": "অ্যাসেন্ডার সাথে ডাউনলোড করা"
     },
     "noGameInfoAvailable": "এই গেমটি সম্পর্কে আরও তথ্য দেখতে পছন্দগুলিতে অ্যাসেন্ডার এক্সট্রা সেটআপ করুন",
@@ -375,7 +404,7 @@
       "restoreWarningOverwrite": "এটি ব্যাকআপ সংস্করণ সহ যে কোনও বর্তমান সংরক্ষণ ফাইলগুলি ওভাররাইট করবে।",
       "restoreWarningTitle": "থাকুন ...",
       "restoringBackup": "ব্যাকআপ পুনরুদ্ধার",
-      "restoringDescription": "{{game}} এর জন্য ডেটা সংরক্ষণ করুন ...",
+      "restoringDescription": "{{game}} এর জন্য ডেটা সংরক্ষণ করুন পুনরুদ্ধার করা ...",
       "tryAgain": "আবার চেষ্টা করুন",
       "waitingBackup": "আপনার সংরক্ষণের ডেটা ব্যাক আপ করার সময় দয়া করে অপেক্ষা করুন ...",
       "waitingRestore": "আপনার সংরক্ষণের ডেটা পুনরুদ্ধার করার সময় দয়া করে অপেক্ষা করুন ..."
@@ -591,7 +620,7 @@
       "compressionBzip2": "Bzip2 (আরও ভাল সংক্ষেপণ, ধীর)",
       "compressionDeflate": "ডিফ্লেট (ভারসাম্যযুক্ত, প্রস্তাবিত)",
       "compressionLevel": "সংক্ষেপণ স্তর",
-      "compressionNone": "কিছুই নয় (দ্রুততম, বৃহত্তম ফাইল)",
+      "compressionNone": "কিছুই নয় (দ্রুত, বৃহত্তম ফাইল)",
       "compressionZstd": "জেডএসটিডি (সেরা সংক্ষেপণ, ধীরতম)",
       "description": "লুডুসাভি গেমটি সেভ ব্যাকআপগুলি সক্ষম এবং কনফিগার করতে একটি ডিরেক্টরি নির্বাচন করুন। আপনার লাইব্রেরিতে কোন গেমগুলি ব্যাকআপ করতে হবে তা চয়ন করুন।",
       "formatSimple": "সরল (ডিরেক্টরি কাঠামো)",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "অ্যাসেন্দারা প্রাথমিকভাবে গেমগুলির জন্য তার বিশ্বস্ত উত্স হিসাবে স্টিমরিপ ব্যবহার করে",
     "general": "সাধারণ",
     "giantBombApiKey": "জায়ান্টবম্ব এপিআই কী",
-    "giantBombDescription": "জায়ান্টবম্ব একটি সম্প্রদায়-চালিত গেমিং উইকি থেকে গভীরতার বিবরণ সহ গেমের তথ্য সরবরাহ করে। একটি এপিআই কী প্রয়োজন।",
+    "giantBombDescription": "জায়ান্টবম্ব একটি সম্প্রদায়-চালিত গেমিং উইকি থেকে সংক্ষিপ্ত বিবরণ সহ গেমের তথ্য সরবরাহ করে। একটি এপিআই কী প্রয়োজন।",
     "giantBombLearnHowtoGet": "কীভাবে এপিআই কী পাবেন তা শিখুন",
     "highThreadWarning": "উচ্চ থ্রেড গণনা ডাউনলোড সমস্যা হতে পারে। আরও ভাল নির্ভরযোগ্যতার জন্য 4-8 থ্রেড ব্যবহার করার বিষয়টি বিবেচনা করুন।",
     "igdbApiKeyDescription": "আইজিডিবি বিকাশকারী-সমর্থিত ডাটাবেস এবং অফিসিয়াল গেম এন্ট্রিগুলির সাথে আরও বিশদ গেমের তথ্য সরবরাহ করে। আপনার একটি টুইচ অ্যাকাউন্ট থাকা এবং একটি ক্লায়েন্ট আইডি এবং গোপনীয়তা পেতে হবে।",
@@ -633,7 +662,7 @@
     "reinstallDependencies": "নির্ভরতা পুনরায় ইনস্টল করুন",
     "reinstallDependenciesDesc": "যদি কোনও গেমটি সঠিকভাবে চলছে না, আপনি চালানোর জন্য প্রয়োজনীয় সমস্ত গুরুত্বপূর্ণ গ্রন্থাগারগুলি পুনরায় ইনস্টল করার চেষ্টা করতে পারেন",
     "reinstallError": "নির্ভরতা পুনরায় ইনস্টল করার ত্রুটি",
-    "reinstallSuccess": "নির্ভরতা সফলভাবে পুনরায় ইনস্টল করা",
+    "reinstallSuccess": "নির্ভরতা সফলভাবে পুনরায় ইনস্টল হয়েছে",
     "reload": "এখন পুনরায় লোড করুন",
     "reloadRequired": "পুনরায় লোড প্রয়োজন",
     "selectDirectory": "ডিরেক্টরি নির্বাচন করুন",
@@ -668,7 +697,7 @@
     "twitchSecret": "টুইচ ক্লায়েন্ট সিক্রেট",
     "userSettings": {
       "browseDirectory": "ব্রাউজ করুন",
-      "description": "এই পৃষ্ঠায় প্রদর্শিত আপনার প্রদর্শনের নাম আপডেট করুন। আপনি গোল্ডবার্গ ক্র্যাকসের জন্য এই নামটিও ব্যবহার করতে পারেন।",
+      "description": "এই পৃষ্ঠায় প্রদর্শিত আপনার প্রদর্শনের নাম আপডেট করুন। আপনি গোল্ডবার্গ ফাটলগুলির জন্য এই নামটিও ব্যবহার করতে পারেন।",
       "directoryError": "নির্বাচিত ডিরেক্টরিতে লিখতে পারে না",
       "directoryPermissionError": "নির্বাচিত ডিরেক্টরিগুলির জন্য কোনও লেখার অনুমতি নেই",
       "generalUsername": "প্রদর্শন নাম",
@@ -744,9 +773,9 @@
     "bugFixesDesc": "যে কোনও সমস্যার জন্য স্বয়ংক্রিয়ভাবে ফিক্সগুলি গ্রহণ করুন",
     "bugFixesTitle": "বাগ ফিক্স",
     "cancel": "বাতিল",
-    "cannotWriteWarning": "দেখে মনে হচ্ছে অ্যাসেন্দারা নির্বাচিত ডিরেক্টরিতে ফাইল লিখতে পারে না। একটি পৃথক ডিরেক্টরি নির্বাচন করুন।",
+    "cannotWriteWarning": "দেখে মনে হচ্ছে অ্যাসেন্দারা নির্বাচিত ডিরেক্টরিতে ফাইল লিখতে পারে না। দয়া করে একটি ভিন্ন ডিরেক্টরি নির্বাচন করুন।",
     "chooseDownloadLocation": "ডাউনলোড অবস্থান চয়ন করুন",
-    "chooseHowToHelp": "আপনি কীভাবে সবার জন্য অ্যাসেন্ডারাকে আরও ভাল করতে সহায়তা করতে চান তা চয়ন করুন।",
+    "chooseHowToHelp": "আপনি কীভাবে সবার জন্য অ্যাসেন্ডারাকে আরও উন্নত করতে সহায়তা করতে চান তা চয়ন করুন।",
     "chooseHowYouWantToReceiveUpdates": "আপনি কীভাবে অ্যাসেন্ডারার জন্য আপডেটগুলি পেতে চান তা চয়ন করুন।",
     "chooseWhenToUpdateAscendaraYourself": "কখন নিজেই অ্যাসেন্দারা আপডেট করবেন তা চয়ন করুন। আপডেটগুলি উপলব্ধ থাকলে আপনাকে অবহিত করা হবে তবে সেগুলি স্বয়ংক্রিয়ভাবে ইনস্টল হবে না।",
     "chooseYourTheme": "আপনার থিম চয়ন করুন",
@@ -823,7 +852,7 @@
     "stayUpToDate": "আপ টু ডেট রাখুন",
     "takeTour": "ট্যুর নিন",
     "termsOfService": "পরিষেবার শর্তাদি",
-    "theExtensionBlocksKnownProviders": "এক্সটেনশনটি পরিচিত সরবরাহকারীদের কাছ থেকে ডাউনলোডের জন্য শুনে এবং আপনার ব্রাউজারে শুরু করার আগে এগুলি বন্ধ করে দেয়, তারপরে এটি ডাউনলোডের জন্য অ্যাসেন্ডারায় প্রেরণ করে",
+    "theExtensionBlocksKnownProviders": "এক্সটেনশনটি পরিচিত সরবরাহকারীদের কাছ থেকে ডাউনলোডের জন্য শোনায় এবং আপনার ব্রাউজারে শুরু করার আগে এগুলি বন্ধ করে দেয়, তারপরে এটি ডাউনলোডের জন্য অ্যাসেন্ডারায় প্রেরণ করে",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "এখানেই আপনার সমস্ত ডাউনলোড করা গেমগুলি সংরক্ষণ করা হবে",
     "welcomeTo": "স্বাগতম",
     "welcomeToAscendaraDescription": "এখন আপনাকে ফাইলগুলি উত্তোলন, ইনস্টল করা বা সরানোর বিষয়ে চিন্তা করতে হবে না। আমরা শুরু করার আগে, দয়া করে পরিষেবা এবং গোপনীয়তা নীতির শর্তাদি পড়ুন এবং সম্মত হন।",

@@ -163,7 +163,7 @@
     "gameNeedsVR": "VR peut être nécessaire pour ce jeu.",
     "igdbLoading": "Chargement des informations sur le jeu ...",
     "igdbRating": "Ce jeu est classé {{rating}} pommes. Les notes Apple sont différentes des notes Star sur Ascendara, et sont plus une note générale du jeu.",
-    "infoMaybeInaccurate": "Si les informations sont inexactes, veuillez les signaler",
+    "infoMaybeInaccurate": "Les informations sur le jeu peuvent être inexactes.",
     "linkCopied": "Lien copié dans le presse-papiers",
     "newUserGuide": {
       "close": "Fermer",
@@ -174,7 +174,36 @@
       "nextStep": "Étape suivante →",
       "noThanks": "Non merci",
       "startGuide": "Guide de démarrage",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "Le gestionnaire de téléchargement Ascendara arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous à Ascendara. Si vous ne l'avez pas, fermez le guide et cliquez sur le bouton \"Ne pas avoir l'extension? Obtenez-le pour Chrome ou Firefox\" pour le télécharger.",
+          "title": "Le gestionnaire de téléchargement Ascencera"
+        },
+        {
+          "description": "Après avoir installé l'extension, cliquez sur l'icône d'extension pour activer le gestionnaire.",
+          "title": "Étape 1: Activer le gestionnaire"
+        },
+        {
+          "description": "L'extension peut rester en marche car elle n'enverra que des fournisseurs connus à Ascendara.",
+          "title": "Le gestionnaire de téléchargement"
+        },
+        {
+          "description": "Complétez le captcha et commencez le téléchargement.",
+          "title": "Étape 2: Démarrez le téléchargement"
+        },
+        {
+          "description": "Une fois que le téléchargement essaie de commencer, vous verrez une fenêtre contextuelle demander à ouvrir Ascendara. Basculez le bouton toujours autoriser à permettre à l'extension d'envoyer toujours les fournisseurs connus à Ascendara.",
+          "title": "Étape 3: Utilisation de l'extension"
+        },
+        {
+          "description": "Cliquez sur le bouton pour ouvrir Ascendara.",
+          "title": "Étape 4: téléchargement"
+        },
+        {
+          "description": "Votre téléchargement commencera automatiquement dans Ascendara. Si vous n'êtes pas amené à la page de téléchargement, passez-y.",
+          "title": "C'est ça!"
+        }
+      ],
       "title": "Téléchargement avec Ascendara"
     },
     "noGameInfoAvailable": "Configurez Ascendara Xtra dans les préférences pour voir plus d'informations sur ce jeu",
@@ -244,7 +273,7 @@
     },
     "activeDownloads": "Jeux à télécharger",
     "alreadyReported": "Déjà signalé",
-    "contentTypeError": "Erreur de type de contenu reçu par le téléchargeur. Télécharger le lien très probablement expiré",
+    "contentTypeError": "Erreur de type de contenu reçu de Downloader. Télécharger le lien très probablement expiré",
     "currentTotalSpeed": "Vitesse totale actuelle",
     "downloadError": "Erreur de téléchargement",
     "errorHelp": "Le problème de téléchargement doit déjà être signalé. Si le problème persiste, veuillez rejoindre le serveur Discord Spored pour le support.",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara utilise principalement Steamrip comme source de confiance pour les jeux",
     "general": "Général",
     "giantBombApiKey": "Clé API GiantBomb",
-    "giantBombDescription": "GiantBomb fournit des informations de jeu d'un wiki de jeu axé sur la communauté des descriptions approfondies. Nécessite une clé API.",
+    "giantBombDescription": "GiantBomb fournit des informations de jeu d'un wiki de jeu axé sur la communauté avec de brèves descriptions. Nécessite une clé API.",
     "giantBombLearnHowtoGet": "Apprenez à obtenir une clé API",
     "highThreadWarning": "Un nombre élevé de threads peut entraîner des problèmes de téléchargement. Envisagez d'utiliser 4-8 threads pour une meilleure fiabilité.",
     "igdbApiKeyDescription": "IGDB fournit des informations de jeu plus détaillées avec la base de données soutenue par les développeurs et les entrées de jeu officielles. Vous oblige à avoir un compte Twitch et à obtenir un identifiant client et un secret.",
@@ -827,7 +856,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Maintenant, vous n'aurez plus à vous soucier de l'extraction, de l'installation ou du déplacement de fichiers. Avant de commencer, veuillez lire et accepter les conditions d'utilisation et la politique de confidentialité.",
-    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascendara",
+    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascencera",
     "youCanChangeThisLater": "Vous pouvez toujours mettre à jour votre langue plus tard dans les paramètres.",
     "youCanChangeThisSettingLater": "Vous pouvez le modifier plus tard dans les paramètres.",
     "youWillReceiveAdminPrompts": "Vous recevrez des invites d'administrateur des installateurs officiels de Microsoft pour installer les composants requis. Votre ordinateur peut redémarrer après l'installation.",
@@ -841,7 +870,7 @@
       "title": "Échec du téléchargement"
     },
     "downloadLink": "Envoyer un lien vers Steamcmd",
-    "downloadProgress": "Télécharger les progrès",
+    "downloadProgress": "Télécharger Progress",
     "downloading": "Téléchargement...",
     "goToWorkshop": "Visitez l'atelier Steam",
     "install": "Installer maintenant",

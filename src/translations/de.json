@@ -13,7 +13,7 @@
       "title": "Oh nein ..."
     },
     "downloading-update": "Update herunterladen ...",
-    "experiment": "Versuchsbau",
+    "experiment": "Experimenteller Build",
     "loading": {
       "ascendaraWillRestart": "Ascendara wird automatisch neu starten",
       "installingUpdate": "Update installieren"
@@ -163,7 +163,7 @@
     "gameNeedsVR": "Für dieses Spiel kann VR erforderlich sein.",
     "igdbLoading": "Ladespielinformationen ...",
     "igdbRating": "Dieses Spiel ist {{rating}} -Apfel bewertet. Die Apple -Bewertungen unterscheiden sich von den Sternenbewertungen auf Ascendara und sind eher eine allgemeine Bewertung des Spiels.",
-    "infoMaybeInaccurate": "Wenn Informationen ungenau sind, melden Sie sie bitte",
+    "infoMaybeInaccurate": "Spielinformationen können ungenau sein.",
     "linkCopied": "Link in die Zwischenablage kopiert",
     "newUserGuide": {
       "close": "Schließen",
@@ -174,7 +174,36 @@
       "nextStep": "Nächster Schritt →",
       "noThanks": "Nein danke",
       "startGuide": "Leitfaden",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "Der Ascendara -Download -Handler stoppt den Download in Ihrem Browser automatisch und startet ihn für Sie in Ascendara. Wenn Sie es nicht haben, schließen Sie die Anleitung und klicken Sie auf die Schaltfläche \"Sie haben die Erweiterung nicht für Chrome oder Firefox\", um sie herunterzuladen.",
+          "title": "Der Ascendara -Download -Handler"
+        },
+        {
+          "description": "Klicken Sie nach der Installation der Erweiterung auf das Erweiterungssymbol, um den Handler zu aktivieren.",
+          "title": "Schritt 1: Aktivieren Sie den Handler"
+        },
+        {
+          "description": "Die Erweiterung kann eingeschaltet bleiben, da sie nur bekannte Anbieter nach Ascendara senden wird.",
+          "title": "Der Download -Handler"
+        },
+        {
+          "description": "Vervollständigen Sie den Captcha und starten Sie den Download.",
+          "title": "Schritt 2: Starten Sie den Download"
+        },
+        {
+          "description": "Sobald der Download versucht zu beginnen, werden Sie ein Popup sehen, das um Ascendara geöffnet wird. Schalten Sie die Schaltfläche \"Immer zulassen\", damit die Erweiterung immer bekannte Anbieter nach Ascendara senden kann.",
+          "title": "Schritt 3: Verwenden der Erweiterung"
+        },
+        {
+          "description": "Klicken Sie auf die Schaltfläche, um Ascendara zu öffnen.",
+          "title": "Schritt 4: Herunterladen"
+        },
+        {
+          "description": "Ihr Download beginnt automatisch in Ascendara. Wenn Sie nicht zur Download -Seite gebracht werden, navigieren Sie dazu.",
+          "title": "Das war's!"
+        }
+      ],
       "title": "Herunterladen mit Ascendara"
     },
     "noGameInfoAvailable": "Setup Ascendara Xtra in den Vorlieben einrichten, um weitere Informationen zu diesem Spiel zu finden",
@@ -577,7 +606,7 @@
       "translatingDialog": "Schließen Sie Ascendara nicht",
       "translatingDialogDesc": "Ascendara übersetzt die ausgewählte Sprache. Dies kann ein paar Minuten dauern, Sie können dies verlassen, aber nicht um Ascendara schließen."
     },
-    "fitgirlRepacksDescription": "Access Fitgirls über 5500 Spiele auf Ascendara. Die Spiele werden über die Hydralibrary bezogen und werden mit Bildern mit Spieldatendiensten übereinstimmen. Für diese Spiele werden keine Kategorien oder Gewichte unterstützt, sie werden völlig zufällig erscheinen.",
+    "fitgirlRepacksDescription": "Access Fitgirls über 5500 Spiele auf Ascendara. Die Spiele werden über die Hydralibrary bezogen und werden mit Bildern mit Spieldatendiensten übereinstimmen. Es gibt keine Kategorien oder Gewichte, die für diese Spiele unterstützt werden, sie werden völlig zufällig erscheinen.",
     "gameBackup": {
       "backupFormat": "Sicherungsformat",
       "backupLocation": "Sicherungsort",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara verwendet hauptsächlich Steamrip als vertrauenswürdige Quelle für Spiele",
     "general": "Allgemein",
     "giantBombApiKey": "Giantbomb API -Schlüssel",
-    "giantBombDescription": "Giantbomb bietet Spielinformationen von einem Community-gesteuerten Gaming-Wiki mit detaillierten Beschreibungen. Benötigt einen API -Schlüssel.",
+    "giantBombDescription": "Giantbomb bietet Spielinformationen von einem Community-gesteuerten Gaming-Wiki mit kurzen Beschreibungen. Benötigt einen API -Schlüssel.",
     "giantBombLearnHowtoGet": "Erfahren Sie, wie Sie den API -Schlüssel erhalten",
     "highThreadWarning": "Hohe Thread -Zählungen können zu Download -Problemen führen. Erwägen Sie, 4-8 Threads für eine bessere Zuverlässigkeit zu verwenden.",
     "igdbApiKeyDescription": "IGDB bietet detailliertere Spielinformationen mit Entwickler-gestützter Datenbank und offiziellen Spieleinträgen. Erfordert, dass Sie ein Twitch -Konto haben und eine Client -ID und ein Geheimnis erhalten.",
@@ -752,7 +781,7 @@
     "chooseYourTheme": "Wählen Sie Ihr Thema",
     "clickTheExtensionIcon": "Klicken Sie auf das Erweiterungssymbol und aktivieren Sie den Handler, wenn Sie es installieren",
     "continue": "Weitermachen",
-    "continueWithoutSharing": "Weiter ohne Teile",
+    "continueWithoutSharing": "Fahren Sie weiter, ohne zu teilen",
     "darkThemes": "Dunkle Themen",
     "dependenciesDesc": "Wenn Sie auf einem neuen PC spielen oder kürzlich Windows installiert haben, kann Ascendara Ihnen dabei helfen, diese wesentlichen Komponenten zu installieren, um die beste Erfahrung zu gewährleisten",
     "downloadGamesFaster": "Laden Sie die Spiele schneller herunter",

@@ -163,7 +163,7 @@
     "gameNeedsVR": "Per questo gioco potrebbe essere richiesto VR.",
     "igdbLoading": "Caricamento delle informazioni sul gioco ...",
     "igdbRating": "Questo gioco è valutato {{rating}} mele. Le valutazioni di Apple sono diverse dalle valutazioni delle stelle su Ascendara e sono più una valutazione generale del gioco.",
-    "infoMaybeInaccurate": "Se le informazioni sono inaccurate, segnalarle",
+    "infoMaybeInaccurate": "Le informazioni sul gioco potrebbero essere inaccurate.",
     "linkCopied": "Link copiato negli appunti",
     "newUserGuide": {
       "close": "Vicino",
@@ -174,7 +174,36 @@
       "nextStep": "Passaggio successivo →",
       "noThanks": "No grazie",
       "startGuide": "Guida di partenza",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "Il gestore del download di Ascendara fermerà automaticamente il download nel browser e lo inizierà per te in Ascendara. Se non ce l'hai, chiudi la guida e fai clic sul pulsante \"Non hai l'estensione? Prendila per Chrome o Firefox\" per scaricarlo.",
+          "title": "Il gestore del download di Ascendara"
+        },
+        {
+          "description": "Dopo aver installato l'estensione, fare clic sull'icona di estensione per abilitare il gestore.",
+          "title": "Passaggio 1: abilita il gestore"
+        },
+        {
+          "description": "L'estensione può rimanere accesa in quanto invierà solo fornitori noti ad Ascendara.",
+          "title": "Il gestore del download"
+        },
+        {
+          "description": "Completa il captcha e inizia il download.",
+          "title": "Passaggio 2: avvia il download"
+        },
+        {
+          "description": "Una volta che il download cerca di iniziare, vedrai un popup che chiede di aprire Ascendara. Attiva il pulsante Consenti sempre di consentire all'estensione di inviare sempre i fornitori noti ad Ascendara.",
+          "title": "Passaggio 3: usando l'estensione"
+        },
+        {
+          "description": "Fai clic sul pulsante per aprire Ascendara.",
+          "title": "Passaggio 4: download"
+        },
+        {
+          "description": "Il tuo download inizierà automaticamente in Ascendara. Se non sei portato alla pagina di download, vai su di essa.",
+          "title": "Questo è tutto!"
+        }
+      ],
       "title": "Download con Ascendara"
     },
     "noGameInfoAvailable": "Imposta Ascendara Xtra nelle preferenze per vedere ulteriori informazioni su questo gioco",
@@ -338,7 +367,7 @@
     "alreadyRunning": "{{game}} è già in esecuzione",
     "availableSpace": "Spazio disponibile",
     "backups": {
-      "autoBackupDesc": "Backup automatico di backup Salva dati quando il gioco si chiude",
+      "autoBackupDesc": "Backup automatico di salvataggio dei dati quando il gioco si chiude",
       "autoBackupDisabled": "Auto-backup disabilitato",
       "autoBackupDisabledDesc": "Auto-backup disabilitato per {{game}}",
       "autoBackupEnabled": "Auto-backup abilitato",
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara usa principalmente Steamrip come fonte di fiducia per i giochi",
     "general": "Generale",
     "giantBombApiKey": "Chiave API Giantbomb",
-    "giantBombDescription": "Giantbomb fornisce informazioni sul gioco da un wiki di gioco guidato dalla comunità con descrizioni approfondite. Richiede una chiave API.",
+    "giantBombDescription": "Giantbomb fornisce informazioni sul gioco da un wiki di gioco guidato dalla comunità con brevi descrizioni. Richiede una chiave API.",
     "giantBombLearnHowtoGet": "Impara come ottenere la chiave API",
     "highThreadWarning": "I conteggi di thread elevati possono causare problemi di download. Prendi in considerazione l'utilizzo di 4-8 thread per una migliore affidabilità.",
     "igdbApiKeyDescription": "IGDB fornisce informazioni di gioco più dettagliate con il database sostenuto dagli sviluppatori e le voci ufficiali di gioco. Richiede di avere un account Twitch e di ottenere un ID client e segreto.",
@@ -827,7 +856,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Ora non dovrai preoccuparti di estrarre, installare o spostare i file. Prima di iniziare, si prega di leggere e accettare i termini di servizio e l'informativa sulla privacy.",
-    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverrà in Ascendara",
+    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverterà in Ascendara",
     "youCanChangeThisLater": "Puoi sempre aggiornare la tua lingua in seguito nelle impostazioni.",
     "youCanChangeThisSettingLater": "Puoi modificarlo in seguito nelle impostazioni.",
     "youWillReceiveAdminPrompts": "Riceverai istruzioni di amministratore da installatori ufficiali di Microsoft per installare i componenti richiesti. Potrebbe essere necessario riavviare il computer dopo l'installazione.",

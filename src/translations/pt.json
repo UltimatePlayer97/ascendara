@@ -163,7 +163,7 @@
     "gameNeedsVR": "A VR pode ser necessária para este jogo.",
     "igdbLoading": "Carregando informações do jogo ...",
     "igdbRating": "Este jogo é classificado como maçãs {{rating}}. As classificações da Apple são diferentes das classificações de estrelas em Ascendara e são mais uma classificação geral do jogo.",
-    "infoMaybeInaccurate": "Se as informações forem imprecisas, denuncie -as",
+    "infoMaybeInaccurate": "As informações do jogo podem ser imprecisas.",
     "linkCopied": "Link copiado para a área de transferência",
     "newUserGuide": {
       "close": "Fechar",
@@ -174,7 +174,36 @@
       "nextStep": "Próximo passo →",
       "noThanks": "Não, obrigado",
       "startGuide": "Guia de início",
-      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
+      "steps": [
+        {
+          "description": "O manipulador de download de Ascendara interromperá automaticamente o download no seu navegador e o iniciará para você em Ascendara. Se você não tiver, feche o guia e clique no botão \"Não tenha a extensão? Obtenha -o para o botão Chrome ou Firefox\" para baixá -lo.",
+          "title": "O manipulador de download de ascendara"
+        },
+        {
+          "description": "Após a instalação da extensão, clique no ícone de extensão para ativar o manipulador.",
+          "title": "Etapa 1: Ative o manipulador"
+        },
+        {
+          "description": "A extensão pode permanecer, pois enviará apenas fornecedores conhecidos para Ascendara.",
+          "title": "O manipulador de download"
+        },
+        {
+          "description": "Complete o Captcha e inicie o download.",
+          "title": "Etapa 2: Inicie o download"
+        },
+        {
+          "description": "Depois que o download tentar começar, você verá um pop -up pedindo para abrir ascendara. Alterne o botão sempre permitir que a extensão sempre envie provedores conhecidos para Ascendara.",
+          "title": "Etapa 3: Usando a extensão"
+        },
+        {
+          "description": "Clique no botão para abrir ascendara.",
+          "title": "Etapa 4: Download"
+        },
+        {
+          "description": "Seu download começará automaticamente em Ascendara. Se você não é levado para a página de download, navegue até ela.",
+          "title": "É isso!"
+        }
+      ],
       "title": "Download com Ascendara"
     },
     "noGameInfoAvailable": "Configurar ascendara xtra em preferências para ver mais informações sobre este jogo",
@@ -264,7 +293,7 @@
     "retryDownloadDescription": "Atualmente, a tentativa automaticamente de downloads não está implementada. Para tentar novamente o download, cancelar e excluir o download falhado aqui, procure o jogo novamente e baixe novamente.",
     "speedHistory": "Baixar velocidades",
     "statistics": "Estatística",
-    "updating": "Atualizando o jogo ...",
+    "updating": "Jogo de atualização ...",
     "verificationFailed": "Os arquivos falharam em verificar",
     "verificationFailed1": "{{numFailed}} o arquivo falhou ao verificar",
     "verificationFailed2": "{{numFailed}} arquivos falharam em verificar",
@@ -478,7 +507,7 @@
     "levelProgress": "Ganhe experiência e subir de nível jogando jogos em Ascendara!",
     "memberSince": "Você começou a usar ascendara em {{date}}",
     "mostPlayed": "Mais jogou jogo",
-    "nextLevel": "Próximo: Nível {{level}}",
+    "nextLevel": "Próximo: nível {{level}}",
     "notreallol": "Esse nível é baseado no seu tempo de reprodução e lançamentos. É completamente local e não é enviado para nenhum servidor.",
     "perGameAvg": "De Playtime por jogo",
     "playTimeDistribution": "Distribuição do tempo de reprodução nos seus 5 melhores jogos jogados",
@@ -556,7 +585,7 @@
     "downloadThreads": "Baixar desempenho",
     "downloadThreadsPresets": {
       "extreme": "Extremo (16 threads) - use com cautela",
-      "high": "High (8 threads) - Melhor desempenho",
+      "high": "High (8 threads) - melhor desempenho",
       "low": "Baixo (2 fios) - uso mínimo da CPU",
       "normal": "Normal (4 threads) - Recomendado para a maioria dos usuários",
       "veryHigh": "Muito alto (12 threads) - para conexões rápidas"
@@ -605,7 +634,7 @@
     "gameSourcesDescription": "Ascendara usa principalmente SteamRip como sua fonte de confiança para jogos",
     "general": "Em geral",
     "giantBombApiKey": "Chave da API GiantBomb",
-    "giantBombDescription": "A GiantBomb fornece informações de jogo de um wiki de jogos orientado pela comunidade com descrições aprofundadas. Requer uma chave de API.",
+    "giantBombDescription": "O GiantBomb fornece informações de jogo de um wiki de jogos orientado pela comunidade com breves descrições. Requer uma chave de API.",
     "giantBombLearnHowtoGet": "Aprenda a obter a chave da API",
     "highThreadWarning": "A contagem alta de threads pode causar problemas de download. Considere usar 4-8 threads para melhor confiabilidade.",
     "igdbApiKeyDescription": "O IGDB fornece informações mais detalhadas do jogo com banco de dados apoiado pelo desenvolvedor e entradas oficiais de jogos. Requer que você tenha uma conta Twitch e obtenha um ID de cliente e segredo.",
@@ -680,7 +709,7 @@
       "useForGoldberg": "Use este nome para rachaduras de Goldberg",
       "usernameError": "Falhou em salvar o nome de usuário"
     },
-    "warningDescription": "Ascendara é projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
+    "warningDescription": "Ascendara foi projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
     "warningSupportDevelopers": "Os desenvolvedores de jogos investem tempo, recursos e criatividade significativos na criação das experiências que todos gostamos. Sua compra suporta diretamente a capacidade deles de continuar fazendo ótimos jogos e sustenta a indústria de jogos.",
     "warningSupportDevelopersCallToAction": "Apoie os desenvolvedores comprando jogos que você gosta.",
     "warningTitle": "Olá, por favor, leia isso!"
@@ -715,7 +744,7 @@
       "title": "Pesquise e download"
     },
     "serverStatus": {
-      "content": "Este ponto verde indica que todos os sistemas estão operacionais. Clique nele a qualquer momento para verificar o status do servidor detalhado.",
+      "content": "Este ponto verde indica que todos os sistemas estão operacionais. Clique nele a qualquer momento para verificar o status detalhado do servidor.",
       "title": "Status do servidor"
     },
     "settings": {
