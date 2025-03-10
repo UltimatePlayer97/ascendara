@@ -34,7 +34,7 @@ const UsernameDialog = () => {
   const loadSettings = async () => {
     try {
       // Check if running on Windows
-      const isOnWindows = window.electron.isOnWindows();
+      const isOnWindows = await window.electron.isOnWindows();
       setIsWindows(isOnWindows);
 
       // Load profile name from localStorage
