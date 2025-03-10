@@ -3292,11 +3292,25 @@ ipcMain.handle("remove-game", async (event, game) => {
     }
     const downloadDirectory = settings.downloadDirectory;
     const gamesFilePath = path.join(downloadDirectory, "games.json");
+    const gamesDirectory = path.join(downloadDirectory, "games");
+
+    // Remove the game from games.json
     const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
     const gameIndex = gamesData.games.findIndex(g => g.game === game);
     if (gameIndex !== -1) {
       gamesData.games.splice(gameIndex, 1);
       fs.writeFileSync(gamesFilePath, JSON.stringify(gamesData, null, 2));
+
+      // Remove the associated image file if it exists
+      const possibleExtensions = [".jpg", ".jpeg", ".png"];
+      for (const ext of possibleExtensions) {
+        const imagePath = path.join(gamesDirectory, `${game}.ascendara${ext}`);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+          console.log(`Removed image file: ${imagePath}`);
+          break;
+        }
+      }
     }
   } catch (error) {
     console.error("Error reading the settings file:", error);
