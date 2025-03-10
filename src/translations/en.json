@@ -163,7 +163,7 @@
     "gameNeedsVR": "VR may be required for this game.",
     "igdbLoading": "Loading game information...",
     "igdbRating": "This game is rated {{rating}} apples. Apple ratings are different than Star ratings on Ascendara, and are more of a general rating of the game.",
-    "infoMaybeInaccurate": "If info is inaccurate, please report it",
+    "infoMaybeInaccurate": "Game information may be inaccurate.",
     "linkCopied": "Link copied to clipboard",
     "newUserGuide": {
       "close": "Close",
