@@ -61,65 +61,84 @@ const Profile = () => {
     let totalPlaytime = 0;
 
     allGames.forEach(game => {
-      // Base XP for having the game
-      let gameXP = 200; // Increased base XP for each game
+      // Base XP for having the game - reduced to make progression more balanced
+      let gameXP = 50; // Base XP for each game
 
-      // XP from playtime (significantly increased)
+      // XP from playtime - more reasonable scaling
       const playtimeHours = (game.playTime || 0) / 3600;
-      gameXP += Math.floor(playtimeHours * 50); // 50 XP per hour of playtime
+      gameXP += Math.floor(playtimeHours * 25); // 25 XP per hour of playtime
 
-      // XP from launches
-      gameXP += Math.min((game.launchCount || 0) * 15, 150);
+      // XP from launches - smaller contribution
+      gameXP += Math.min((game.launchCount || 0) * 5, 50);
 
       // Bonus XP for completed games
       if (game.completed) {
-        gameXP += 100; // Bonus XP for completing a game
+        gameXP += 75; // Bonus XP for completing a game
       }
 
       totalXP += gameXP;
       totalPlaytime += game.playTime || 0;
     });
 
-    // Add milestone bonuses based on total playtime
+    // Add milestone bonuses based on total playtime - reduced to prevent excessive XP
     const totalPlaytimeHours = totalPlaytime / 3600;
 
     // Milestone bonuses for reaching certain playtime thresholds
-    if (totalPlaytimeHours >= 50) totalXP += 500;
-    if (totalPlaytimeHours >= 100) totalXP += 1000;
-    if (totalPlaytimeHours >= 200) totalXP += 2000;
-    if (totalPlaytimeHours >= 500) totalXP += 5000;
+    if (totalPlaytimeHours >= 50) totalXP += 200;
+    if (totalPlaytimeHours >= 100) totalXP += 300;
+    if (totalPlaytimeHours >= 200) totalXP += 500;
+    if (totalPlaytimeHours >= 500) totalXP += 1000;
 
-    // Calculate level with improved algorithm
-    let level = 1;
-    let xpForNextLevel = 100; // Initial XP requirement
-    let totalXpSpent = 0;
-    let remainingXP = totalXP;
+    // New level calculation with a much more reasonable curve
+    // Using a common RPG-style formula where each level requires a bit more XP than the last
+    // but the curve is much gentler
 
-    // Calculate level based on total XP
-    while (remainingXP >= xpForNextLevel) {
-      remainingXP -= xpForNextLevel;
-      totalXpSpent += xpForNextLevel;
-      level++;
+    // Base XP needed for level 2
+    const baseXP = 100;
 
-      // Much gentler scaling formula - linear with a small multiplier
-      // This will make high levels much more attainable
-      // Level 100 will require approximately 30,000 XP total instead of billions
-      xpForNextLevel = Math.floor(100 + level * 2);
+    // Calculate level directly from total XP using a formula
+    // This formula creates a curve where early levels are easy to get
+    // and higher levels require progressively more XP, but not exponentially more
+
+    // Ensure we never go below level 1, even with 0 XP
+    let level = Math.max(1, Math.floor(1 + Math.sqrt(totalXP / baseXP)));
+
+    // Cap at level 999
+    level = Math.min(level, 999);
+
+    // Calculate XP needed for current and next level
+    // For level 1, xpForCurrentLevel should be 0
+    const xpForCurrentLevel = level <= 1 ? 0 : baseXP * Math.pow(level, 2);
+    const xpForNextLevel = baseXP * Math.pow(level + 1, 2);
+    const xpNeededForNextLevel = xpForNextLevel - xpForCurrentLevel;
+
+    // Calculate current XP progress toward next level
+    // Ensure this is never negative
+    const currentLevelProgress = Math.max(0, totalXP - xpForCurrentLevel);
+
+    // Handle max level case
+    if (level >= 999) {
+      // At max level, show full progress
+      return {
+        totalPlaytime,
+        gamesPlayed: allGames.filter(game => game.playTime > 0).length,
+        totalGames: allGames.length,
+        level: 999,
+        xp: totalXP,
+        currentXP: 100,
+        nextLevelXp: 100, // Set equal values to show full progress bar
+        allGames,
+      };
     }
-
-    // Cap the display values at reasonable numbers
-    const displayTotalXP = Math.min(totalXP, 999999);
-    const displayCurrentXP = Math.min(remainingXP, 99999);
-    const displayNextLevelXP = Math.min(xpForNextLevel, 99999);
 
     return {
       totalPlaytime,
       gamesPlayed: allGames.filter(game => game.playTime > 0).length,
       totalGames: allGames.length,
       level,
-      xp: displayTotalXP,
-      currentXP: displayCurrentXP,
-      nextLevelXp: displayNextLevelXP,
+      xp: totalXP,
+      currentXP: currentLevelProgress,
+      nextLevelXp: xpNeededForNextLevel,
       allGames,
     };
   };

@@ -50,17 +50,34 @@ const LevelingCard = ({ level, currentXP, nextLevelXp, totalXP }) => {
   }, [level, currentXP, nextLevelXp, totalXP]);
 
   // Calculate progress percentage with safeguards
-  const progressPercentage =
-    localNextLevelXp > 0 ? Math.min((localCurrentXP / localNextLevelXp) * 100, 100) : 0;
+  const progressPercentage = (() => {
+    // Handle special cases
+    if (localLevel >= 999) return 100; // Max level always shows 100%
+    if (localNextLevelXp <= 0) return 0; // Prevent division by zero
 
-  // Format large numbers for display
+    // Normal case: calculate percentage with a cap at 100%
+    return Math.min((localCurrentXP / localNextLevelXp) * 100, 100);
+  })();
+
+  // Format large numbers for display with improved readability
   const formatNumber = num => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`;
-    } else if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`;
+    // Ensure we're working with a valid number
+    if (num === undefined || num === null || isNaN(num)) {
+      return "0";
     }
-    return num.toLocaleString();
+
+    // Convert to integer to avoid decimal places and scientific notation
+    const safeNum = Math.round(Number(num));
+
+    // Format based on magnitude
+    if (safeNum >= 1000000) {
+      return `${(safeNum / 1000000).toFixed(1)}M`.replace(".0", "");
+    } else if (safeNum >= 1000) {
+      return `${(safeNum / 1000).toFixed(1)}K`.replace(".0", "");
+    }
+
+    // For smaller numbers, use simple formatting without decimals
+    return safeNum.toLocaleString();
   };
 
   // Check for level up animation
