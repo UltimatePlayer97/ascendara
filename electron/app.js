@@ -45,6 +45,7 @@ const unzipper = require("unzipper");
 const fs = require("fs-extra");
 const os = require("os");
 const ip = require("ip");
+const crypto = require("crypto");
 const { spawn, execSync } = require("child_process");
 require("dotenv").config();
 
@@ -488,10 +489,48 @@ async function fetchWorkshopItemDetails(itemId) {
   }
 }
 
-// Settings Manager
+// Encryption helpers
+function generateEncryptionKey() {
+  const machineId = machineIdSync(true);
+  return crypto.createHash("sha256").update(machineId).digest("hex").substring(0, 32);
+}
+
+function encrypt(text) {
+  if (!text) return "";
+  try {
+    const key = generateEncryptionKey();
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
+    let encrypted = cipher.update(text, "utf8", "hex");
+    encrypted += cipher.final("hex");
+    return `${iv.toString("hex")}:${encrypted}`;
+  } catch (error) {
+    console.error("Encryption error:", error);
+    return text; // Return original text on error
+  }
+}
+
+function decrypt(encryptedText) {
+  if (!encryptedText || !encryptedText.includes(":")) return encryptedText;
+  try {
+    const key = generateEncryptionKey();
+    const parts = encryptedText.split(":");
+    const iv = Buffer.from(parts[0], "hex");
+    const encrypted = parts[1];
+    const decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(key), iv);
+    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+  } catch (error) {
+    console.error("Decryption error:", error);
+    return encryptedText; // Return encrypted text on error
+  }
+}
+
 class SettingsManager {
   constructor() {
     this.filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+    this.sensitiveKeys = ["twitchSecret", "twitchClientId", "giantBombKey"];
     this.defaultSettings = {
       downloadDirectory: "",
       showOldDownloadLinks: false,
@@ -526,6 +565,24 @@ class SettingsManager {
       },
     };
     this.settings = this.loadSettings();
+    this.migrateToEncryption();
+  }
+  // Migrate existing plaintext keys to encrypted format
+  migrateToEncryption() {
+    let needsSave = false;
+
+    for (const key of this.sensitiveKeys) {
+      if (this.settings[key] && !this.settings[key].includes(":")) {
+        // Key exists and is not encrypted yet
+        this.settings[key] = encrypt(this.settings[key]);
+        needsSave = true;
+      }
+    }
+
+    if (needsSave) {
+      this.saveSettings(this.settings);
+      console.log("Migrated sensitive settings to encrypted format");
+    }
   }
 
   loadSettings() {
@@ -560,6 +617,14 @@ class SettingsManager {
         ...existingSettings,
         ...settings,
       };
+
+      // Ensure sensitive keys are encrypted before saving
+      for (const key of this.sensitiveKeys) {
+        if (mergedSettings[key] && !mergedSettings[key].includes(":")) {
+          mergedSettings[key] = encrypt(mergedSettings[key]);
+        }
+      }
+
       fs.writeFileSync(this.filePath, JSON.stringify(mergedSettings, null, 2));
       this.settings = mergedSettings;
       return true;
@@ -573,9 +638,13 @@ class SettingsManager {
     try {
       // Load current settings to ensure we have the latest
       const currentSettings = this.loadSettings();
+
+      // Encrypt value if it's a sensitive key
+      const processedValue = this.sensitiveKeys.includes(key) ? encrypt(value) : value;
+
       const updatedSettings = {
         ...currentSettings,
-        [key]: value,
+        [key]: processedValue,
       };
 
       // Clean up any flat ludusavi properties if we're updating the ludusavi object
@@ -595,11 +664,27 @@ class SettingsManager {
   }
 
   getSetting(key) {
-    return this.settings[key];
+    const value = this.settings[key];
+
+    // Decrypt value if it's a sensitive key
+    if (this.sensitiveKeys.includes(key) && value && value.includes(":")) {
+      return decrypt(value);
+    }
+
+    return value;
   }
 
   getSettings() {
-    return this.settings;
+    // Create a copy of settings with decrypted sensitive values
+    const decryptedSettings = { ...this.settings };
+
+    for (const key of this.sensitiveKeys) {
+      if (decryptedSettings[key] && decryptedSettings[key].includes(":")) {
+        decryptedSettings[key] = decrypt(decryptedSettings[key]);
+      }
+    }
+
+    return decryptedSettings;
   }
 
   // Clean up any flat ludusavi properties (e.g., ludusavi.backupLocation)
