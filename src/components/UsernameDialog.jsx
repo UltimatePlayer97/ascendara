@@ -89,7 +89,7 @@ const UsernameDialog = () => {
         }
       }
 
-      // Dispatch event to update profile
+      // Dispatch event to notify other components
       window.dispatchEvent(new CustomEvent("username-updated"));
 
       toast.success(t("settings.userSettings.saveSuccess"));

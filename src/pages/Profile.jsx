@@ -237,8 +237,8 @@ const Profile = () => {
   };
 
   const getDisplayUsername = () => {
-    const userPrefs = JSON.parse(localStorage.getItem("userProfile") || "{}");
-    return userPrefs.profileName || "Guest";
+    // Use the generalUsername state which is properly synced during loadProfile
+    return generalUsername || "Guest";
   };
 
   useEffect(() => {
@@ -252,7 +252,7 @@ const Profile = () => {
     // Listen for storage events (when localStorage changes in other tabs)
     window.addEventListener("storage", handleProfileUpdate);
 
-    // Listen for custom username-updated event
+    // Listen for username update event
     window.addEventListener("username-updated", handleProfileUpdate);
 
     return () => {

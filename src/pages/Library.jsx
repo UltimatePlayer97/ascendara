@@ -133,14 +133,7 @@ const Library = () => {
     checkWindows();
   }, []);
 
-  useEffect(() => {
-    const handleUsernameUpdate = () => {
-      fetchUsername();
-    };
-
-    window.addEventListener("usernameUpdated", handleUsernameUpdate);
-    return () => window.removeEventListener("usernameUpdated", handleUsernameUpdate);
-  }, []);
+  // Username event listeners removed - Library only needs to display username
 
   useEffect(() => {
     // Add keyframes to document
@@ -169,12 +162,20 @@ const Library = () => {
 
   const fetchUsername = async () => {
     try {
-      const username = await window.electron.getLocalCrackUsername();
-      console.log("Fetched username: ", username);
-      setUsername(username);
-      return username;
+      // Get username from localStorage with fallback to API
+      const userPrefs = JSON.parse(localStorage.getItem("userProfile") || "{}");
+      if (userPrefs.profileName) {
+        setUsername(userPrefs.profileName);
+        return userPrefs.profileName;
+      }
+
+      // Fallback to Electron API if not in localStorage
+      const crackedUsername = await window.electron.getLocalCrackUsername();
+      setUsername(crackedUsername || "Guest");
+      return crackedUsername;
     } catch (error) {
       console.error("Error fetching username:", error);
+      setUsername("Guest");
       return null;
     }
   };
