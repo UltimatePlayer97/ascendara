@@ -634,7 +634,7 @@
     "gameSourcesDescription": "Ascendara primarily uses SteamRIP as its trusted source for games",
     "general": "General",
     "giantBombApiKey": "GiantBomb API Key",
-    "giantBombDescription": "GiantBomb provides game information from a community-driven gaming wiki with in-depth descriptions. Requires an API key.",
+    "giantBombDescription": "GiantBomb provides game information from a community-driven gaming wiki with brief descriptions. Requires an API key.",
     "giantBombLearnHowtoGet": "Learn how to get API key",
     "highThreadWarning": "High thread counts may cause download issues. Consider using 4-8 threads for better reliability.",
     "igdbApiKeyDescription": "IGDB provides more detailed game information with developer-backed database and official game entries. Requires you to have a Twitch account and get a client ID and secret.",
