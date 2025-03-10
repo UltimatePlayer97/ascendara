@@ -46,6 +46,7 @@ const fs = require("fs-extra");
 const os = require("os");
 const ip = require("ip");
 const crypto = require("crypto");
+const { machineIdSync } = require("node-machine-id");
 const { spawn, execSync } = require("child_process");
 require("dotenv").config();
 
