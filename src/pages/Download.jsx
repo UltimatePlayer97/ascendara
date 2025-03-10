@@ -135,19 +135,27 @@ export default function DownloadPage() {
       }
 
       setIgdbLoading(true);
+      setIgdbError(null);
 
-      const data = await igdbService.getGameDetails(gameName, apiConfig);
+      try {
+        const data = await igdbService.getGameDetails(gameName, apiConfig);
 
-      if (data) {
-        setIgdbData(data);
-      } else {
-        console.log("No game data found for:", gameData.game);
+        if (data) {
+          setIgdbData(data);
+        } else {
+          console.log("No game data found for:", gameData.game);
+          setIgdbError("No game data found");
+        }
+      } catch (error) {
+        console.error("Error fetching game data:", error);
+        setIgdbError(error.message || "Error fetching game data");
+      } finally {
+        setIgdbLoading(false);
       }
-
-      setIgdbLoading(false);
     } catch (error) {
-      console.error("Error fetching game data:", error);
+      console.error("Error in fetchGameInfo:", error);
       setIgdbLoading(false);
+      setIgdbError(error.message || "An unexpected error occurred");
     }
   };
 
@@ -217,6 +225,7 @@ export default function DownloadPage() {
   const [lastProcessedUrl, setLastProcessedUrl] = useState(null);
   const [isProcessingUrl, setIsProcessingUrl] = useState(false);
   const [igdbData, setIgdbData] = useState(null);
+  const [igdbError, setIgdbError] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
@@ -1926,9 +1935,18 @@ export default function DownloadPage() {
             </>
           ) : (
             <div className="p-6">
-              <p className="text-center text-muted-foreground">
-                {t("download.noGameInfoAvailable")}
-              </p>
+              {igdbError ? (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-destructive text-center font-medium">
+                    {t("download.gameInfoError", "Error fetching game information")}
+                  </p>
+                  <p className="text-center text-sm text-muted-foreground">{igdbError}</p>
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">
+                  {t("download.noGameInfoAvailable")}
+                </p>
+              )}
             </div>
           )}
         </div>
