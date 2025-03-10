@@ -656,6 +656,8 @@ function sanitizeText(text) {
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201C\u201D]/g, '"')
     .replace(/\//g, "-")
+    .replace(/:/g, "-")
+    .replace(/[<>:"\/\\|?*]/g, "")
     .trim();
 }
 
@@ -1633,6 +1635,7 @@ ipcMain.handle(
         console.error("Download directory not set");
         return;
       }
+      originalGame = game;
       game = sanitizeText(game);
       // Create game directory
       const gameDirectory = path.join(settings.downloadDirectory, game);
