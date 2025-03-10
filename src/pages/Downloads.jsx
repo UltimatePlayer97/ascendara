@@ -358,14 +358,25 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const styleSheet = document.styleSheets[0];
-    const keyframes = `
-      @keyframes shimmer {
-        0% { transform: translateX(-100%) }
-        100% { transform: translateX(100%) }
-      }
-    `;
-    styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+    // Check if the animations already exist to avoid duplicates
+    if (!document.getElementById("download-animations")) {
+      const styleEl = document.createElement("style");
+      styleEl.id = "download-animations";
+      styleEl.textContent = `
+        @keyframes pulse {
+          0% { opacity: 0.3; }
+          50% { opacity: 0.5; }
+          100% { opacity: 0.3; }
+        }
+        
+        @keyframes progress-loading {
+          0% { width: 0%; left: 0; }
+          50% { width: 40%; left: 30%; }
+          100% { width: 0%; left: 100%; }
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
   }, []);
 
   const handleVerifyGame = async () => {
@@ -740,16 +751,21 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               </div>
             )}
             {(isExtracting || isUpdating) && (
-              <div className="mt-2 space-y-3 duration-200 animate-in fade-in slide-in-from-top-1">
-                <div className="relative overflow-hidden rounded-full">
-                  <Progress value={undefined} className="h-2 bg-muted/30" />
+              <div className="mt-2 space-y-2">
+                <div className="relative overflow-hidden rounded-full bg-muted">
+                  <Progress value={undefined} />
                   <div
-                    className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+                    className="absolute top-0 h-full rounded-full bg-primary"
                     style={{
-                      animation: "shimmer 2s infinite ease-in-out",
-                      backgroundSize: "200% 100%",
-                      WebkitAnimation: "shimmer 2s infinite ease-in-out",
-                      WebkitBackgroundSize: "200% 100%",
+                      animation: "progress-loading 2.5s ease-in-out infinite",
+                      opacity: 0.5,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 via-primary/30 to-primary/10"
+                    style={{
+                      animation: "pulse 3s ease-in-out infinite",
+                      opacity: 0.4,
                     }}
                   />
                 </div>
