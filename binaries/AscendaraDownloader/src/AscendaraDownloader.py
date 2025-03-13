@@ -26,7 +26,7 @@ import time
 import threading
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 import requests
 import patoolib
 from requests.adapters import HTTPAdapter
@@ -169,17 +169,19 @@ class SSLContextAdapter(HTTPAdapter):
         return super().init_poolmanager(*args, **kwargs)
 
 class DownloadChunk:
-    def __init__(self, start, end, url):
+    def __init__(self, start, end, url, chunk_id, temp_dir):
         self.start = start
         self.end = end
         self.url = url
-        self.data = b""
+        self.chunk_id = chunk_id
+        self.temp_file_path = os.path.join(temp_dir, f"chunk_{chunk_id}.tmp")
         self.downloaded = 0
 
 class DownloadManager:
-    def __init__(self, url, total_size, num_threads=None):
+    def __init__(self, url, total_size, num_threads=None, max_chunk_size=100*1024*1024):  
         self.url = url
         self.total_size = total_size
+        self.max_chunk_size = max_chunk_size
         
         # Read thread count from settings
         try:
@@ -198,12 +200,16 @@ class DownloadManager:
         self.lock = threading.Lock()
         self.max_retries = 3  # Maximum number of retries per chunk
         
-    def split_chunks(self):
-        chunk_size = self.total_size // self.num_threads
-        for i in range(self.num_threads):
-            start = i * chunk_size
-            end = start + chunk_size - 1 if i < self.num_threads - 1 else self.total_size - 1
-            self.chunks.append(DownloadChunk(start, end, self.url))
+    def split_chunks(self, temp_dir):
+        # Calculate optimal chunk size based on total size and thread count
+        # but don't exceed max_chunk_size to prevent excessive memory usage
+        optimal_chunk_size = min(self.total_size // self.num_threads, self.max_chunk_size)
+        num_chunks = (self.total_size + optimal_chunk_size - 1) // optimal_chunk_size
+        
+        for i in range(int(num_chunks)):
+            start = i * optimal_chunk_size
+            end = min(start + optimal_chunk_size - 1, self.total_size - 1)
+            self.chunks.append(DownloadChunk(start, end, self.url, i, temp_dir))
             
     def download_chunk(self, chunk, session, callback=None):
         headers = {
@@ -224,21 +230,20 @@ class DownloadManager:
                 if content_length and content_length != expected_size:
                     raise ValueError(f"Received content length {content_length} does not match expected size {expected_size}")
                 
-                chunk.data = bytearray()  # Use bytearray for more efficient appending
-                
-                for data in response.iter_content(chunk_size=1024*1024):
-                    if not data:
-                        break
-                    chunk.data.extend(data)
-                    chunk.downloaded += len(data)
-                    with self.lock:
-                        self.downloaded_size += len(data)
-                        if callback:
-                            callback(len(data))
+                with open(chunk.temp_file_path, "wb") as f:
+                    for data in response.iter_content(chunk_size=1024*1024):
+                        if not data:
+                            break
+                        f.write(data)
+                        chunk.downloaded += len(data)
+                        with self.lock:
+                            self.downloaded_size += len(data)
+                            if callback:
+                                callback(len(data))
                 
                 # Verify the downloaded size matches expected size
-                if len(chunk.data) != expected_size:
-                    raise ValueError(f"Downloaded size {len(chunk.data)} does not match expected size {expected_size}")
+                if os.path.getsize(chunk.temp_file_path) != expected_size:
+                    raise ValueError(f"Downloaded size {os.path.getsize(chunk.temp_file_path)} does not match expected size {expected_size}")
                 
                 return  # Success, exit the retry loop
                 
@@ -248,7 +253,7 @@ class DownloadManager:
                     raise Exception(f"Failed to download chunk after {self.max_retries} retries: {str(e)}")
                 
                 # Reset chunk data and downloaded count before retry
-                chunk.data = bytearray()
+                chunk.downloaded = 0
                 with self.lock:
                     self.downloaded_size -= chunk.downloaded
                 chunk.downloaded = 0
@@ -332,71 +337,86 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
 
             archive_file_path = os.path.join(download_path, f"{sanitized_game}.{archive_ext}")
             
-            # Initialize download manager
-            manager = DownloadManager(link, total_size)
-            
+            # Initialize download manager and start time
             game_info["downloadingData"]["downloading"] = True
             start_time = time.time()
             safe_write_json(game_info_path, game_info)
-
-            def update_progress(bytes_downloaded):
-                nonlocal start_time
-                if total_size > 0:
-                    progress = manager.downloaded_size / total_size
-                    game_info["downloadingData"]["progressCompleted"] = f"{progress * 100:.2f}"
-                else:
-                    # If we don't know total size, show downloaded amount instead
-                    game_info["downloadingData"]["progressCompleted"] = f"{manager.downloaded_size / (1024*1024):.1f}MB"
-
-                elapsed_time = time.time() - start_time
-                download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
-
-                if download_speed < 1024:
-                    game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed:.2f} B/s"
-                elif download_speed < 1024 * 1024:
-                    game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / 1024:.2f} KB/s"
-                else:
-                    game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / (1024 * 1024):.2f} MB/s"
-
-                remaining_size = total_size - manager.downloaded_size if total_size > 0 else 0
-                if download_speed > 0 and remaining_size > 0:
-                    time_until_complete = remaining_size / download_speed
-                    minutes, seconds = divmod(time_until_complete, 60)
-                    hours, minutes = divmod(minutes, 60)
-                    if hours > 0:
-                        game_info["downloadingData"]["timeUntilComplete"] = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
-                    else:
-                        game_info["downloadingData"]["timeUntilComplete"] = f"{int(minutes)}m {int(seconds)}s"
-                else:
-                    game_info["downloadingData"]["timeUntilComplete"] = "Calculating..."
-
-                safe_write_json(game_info_path, game_info)
-
+            
             if total_size > 0:
-                # Download chunks in parallel if we know the size
-                manager.split_chunks()
-                with ThreadPoolExecutor(max_workers=manager.num_threads) as executor:
-                    futures = []
-                    for chunk in manager.chunks:
-                        future = executor.submit(manager.download_chunk, chunk, session, update_progress)
-                        futures.append(future)
-                    
-                    # Wait for all downloads to complete
-                    for future in futures:
-                        future.result()
+                # Use the optimized chunk-based download approach for known file sizes
+                with TemporaryDirectory() as temp_dir:
+                    manager = DownloadManager(link, total_size)
+                    manager.split_chunks(temp_dir)
 
-                # Write the complete file
-                with open(archive_file_path, "wb") as f:
-                    for chunk in manager.chunks:
-                        f.write(chunk.data)
+                    def update_progress(bytes_downloaded):
+                        nonlocal start_time
+                        progress = manager.downloaded_size / total_size
+                        game_info["downloadingData"]["progressCompleted"] = f"{progress * 100:.2f}"
+
+                        elapsed_time = time.time() - start_time
+                        download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
+
+                        if download_speed < 1024:
+                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed:.2f} B/s"
+                        elif download_speed < 1024 * 1024:
+                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / 1024:.2f} KB/s"
+                        else:
+                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / (1024 * 1024):.2f} MB/s"
+
+                        remaining_size = total_size - manager.downloaded_size
+                        if download_speed > 0 and remaining_size > 0:
+                            time_until_complete = remaining_size / download_speed
+                            minutes, seconds = divmod(time_until_complete, 60)
+                            hours, minutes = divmod(minutes, 60)
+                            if hours > 0:
+                                game_info["downloadingData"]["timeUntilComplete"] = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                            else:
+                                game_info["downloadingData"]["timeUntilComplete"] = f"{int(minutes)}m {int(seconds)}s"
+                        else:
+                            game_info["downloadingData"]["timeUntilComplete"] = "Calculating..."
+
+                        safe_write_json(game_info_path, game_info)
+
+                    with ThreadPoolExecutor(max_workers=manager.num_threads) as executor:
+                        futures = []
+                        for chunk in manager.chunks:
+                            future = executor.submit(manager.download_chunk, chunk, session, update_progress)
+                            futures.append(future)
+                        
+                        # Wait for all downloads to complete
+                        for future in futures:
+                            future.result()
+
+                    # Write the complete file
+                    with open(archive_file_path, "wb") as f:
+                        for chunk in manager.chunks:
+                            with open(chunk.temp_file_path, "rb") as chunk_file:
+                                shutil.copyfileobj(chunk_file, f, 1024 * 1024)  # Use 1MB buffer
             else:
-                # If we don't know the size, download sequentially in chunks
+                # For unknown size, use streaming approach with direct write to file
+                downloaded_size = 0
                 with open(archive_file_path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):  # 1MB chunks
                         if chunk:
                             f.write(chunk)
-                            manager.downloaded_size += len(chunk)
-                            update_progress(len(chunk))
+                            downloaded_size += len(chunk)
+                            
+                            # Update progress
+                            game_info["downloadingData"]["progressCompleted"] = f"{downloaded_size / (1024*1024):.1f}MB"
+                            
+                            elapsed_time = time.time() - start_time
+                            download_speed = downloaded_size / elapsed_time if elapsed_time > 0 else 0
+                            
+                            if download_speed < 1024:
+                                game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed:.2f} B/s"
+                            elif download_speed < 1024 * 1024:
+                                game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / 1024:.2f} KB/s"
+                            else:
+                                game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / (1024 * 1024):.2f} MB/s"
+                            
+                            game_info["downloadingData"]["timeUntilComplete"] = "Unknown (size not available)"
+                            safe_write_json(game_info_path, game_info)
+                
             return archive_file_path, archive_ext
 
         except Exception as e:
@@ -422,25 +442,31 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                 from unrar import rarfile
                 if archive_ext == "rar":
                     with rarfile.RarFile(archive_file_path, 'r') as fs:
-                        # Get file list before extraction
+                        # Get file list before extraction but don't load content into memory
                         for rar_info in fs.infolist():
                             if not rar_info.filename.endswith('.url'):  # Skip .url files
                                 extracted_path = os.path.join(download_path, rar_info.filename)
                                 key = f"{os.path.relpath(extracted_path, download_path)}"
                                 watching_data[key] = {"size": rar_info.file_size}
-                        # Extract all files
-                        fs.extractall(download_path)
+                        
+                        # Extract files one by one to avoid loading all into memory
+                        for rar_info in fs.infolist():
+                            if not rar_info.filename.endswith('.url'):  # Skip .url files
+                                fs.extract(rar_info, download_path)
                 elif archive_ext == "zip":
                     import zipfile
                     with zipfile.ZipFile(archive_file_path, 'r') as zip_ref:
-                        # Get file list before extraction
+                        # Get file list before extraction but don't load content into memory
                         for zip_info in zip_ref.infolist():
                             if not zip_info.filename.endswith('.url'):  # Skip .url files
                                 extracted_path = os.path.join(download_path, zip_info.filename)
                                 key = f"{os.path.relpath(extracted_path, download_path)}"
                                 watching_data[key] = {"size": zip_info.file_size}
-                        # Extract all files
-                        zip_ref.extractall(download_path)
+                        
+                        # Extract files one by one to avoid loading all into memory
+                        for zip_info in zip_ref.infolist():
+                            if not zip_info.filename.endswith('.url'):  # Skip .url files
+                                zip_ref.extract(zip_info, download_path)
             elif sys.platform == "darwin":
                 # For non-Windows, use patoolib and get file info after extraction
                 before_files = set()
@@ -449,7 +475,8 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                         if not fname.endswith('.url'):  # Skip .url files
                             before_files.add(os.path.join(dirpath, fname))
                 
-                patoolib.extract_archive(archive_file_path, download_path)
+                # Use patoolib with outdir parameter to control extraction location
+                patoolib.extract_archive(archive_file_path, outdir=download_path)
                 
                 # Find new files by comparing directory contents
                 for dirpath, _, filenames in os.walk(download_path):
@@ -495,35 +522,40 @@ def _verify_extracted_files(watching_path, download_path, game_info, game_info_p
                 common_redist_path = os.path.join(root, "_CommonRedist")
                 print(f"Found _CommonRedist directory at {common_redist_path}, deleting...")
                 try:
-                    import shutil
                     shutil.rmtree(common_redist_path)
                     print(f"Successfully deleted {common_redist_path}")
                 except Exception as e:
                     print(f"Error deleting _CommonRedist directory: {str(e)}")
 
         # Filter out _CommonRedist entries from watching_data
-        filtered_watching_data = {}
-        for file_path, file_info in watching_data.items():
-            if "_CommonRedist" not in file_path:
-                filtered_watching_data[file_path] = file_info
+        filtered_watching_data = {
+            file_path: file_info 
+            for file_path, file_info in watching_data.items() 
+            if "_CommonRedist" not in file_path
+        }
         
+        # Process verification in batches to avoid excessive memory usage
         verify_errors = []
-        for file_path, file_info in filtered_watching_data.items():
-            full_path = os.path.join(download_path, file_path)
-            # Skip verification for directories
-            if os.path.isdir(full_path):
-                continue
+        batch_size = 100  # Process 100 files at a time
+        file_paths = list(filtered_watching_data.keys())
+        
+        for i in range(0, len(file_paths), batch_size):
+            batch = file_paths[i:i+batch_size]
+            for file_path in batch:
+                file_info = filtered_watching_data[file_path]
+                full_path = os.path.join(download_path, file_path)
                 
-            if not os.path.exists(full_path):
-                verify_errors.append({
-                    "file": file_path,
-                    "error": "File not found",
-                    "expected_size": file_info["size"]
-                })
-                continue
-
-            # Skip size verification entirely
-            continue
+                # Skip verification for directories
+                if os.path.isdir(full_path):
+                    continue
+                    
+                if not os.path.exists(full_path):
+                    verify_errors.append({
+                        "file": file_path,
+                        "error": "File not found",
+                        "expected_size": file_info["size"]
+                    })
+                    continue
 
         if verify_errors:
             print(f"Found {len(verify_errors)} verification errors")
