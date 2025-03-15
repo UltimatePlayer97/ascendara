@@ -499,7 +499,7 @@ class GofileDownloader:
                             if file.endswith('.zip'):
                                 with zipfile.ZipFile(archive_path, 'r') as zip_ref:
                                     for zip_info in zip_ref.infolist():
-                                        if not zip_info.filename.endswith('.url'):  # Skip .url files
+                                        if not zip_info.filename.endswith('.url') and '_CommonRedist' not in zip_info.filename:  # Skip .url files and _CommonRedist
                                             extracted_path = os.path.join(extract_dir, zip_info.filename)
                                             zip_ref.extract(zip_info, extract_dir)
                                             # Add to watching data
@@ -510,7 +510,7 @@ class GofileDownloader:
                                 with rarfile.RarFile(archive_path, 'r') as rar_ref:
                                     # Get file list before extraction
                                     for rar_info in rar_ref.infolist():
-                                        if not rar_info.filename.endswith('.url'):  # Skip .url files
+                                        if not rar_info.filename.endswith('.url') and '_CommonRedist' not in rar_info.filename:  # Skip .url files and _CommonRedist
                                             extracted_path = os.path.join(extract_dir, rar_info.filename)
                                             key = f"{os.path.relpath(extracted_path, self.download_dir)}"
                                             watching_data[key] = {"size": rar_info.file_size}
@@ -529,7 +529,7 @@ class GofileDownloader:
                             # Find new files by comparing directory contents
                             for dirpath, _, filenames in os.walk(extract_dir):
                                 for fname in filenames:
-                                    if not fname.endswith('.url'):  # Skip .url files
+                                    if not fname.endswith('.url') and '_CommonRedist' not in os.path.join(dirpath, fname):  # Skip .url files and _CommonRedist
                                         full_path = os.path.join(dirpath, fname)
                                         if full_path not in before_files:
                                             key = f"{os.path.relpath(full_path, self.download_dir)}"

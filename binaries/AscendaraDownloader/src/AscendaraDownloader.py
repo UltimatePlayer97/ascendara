@@ -444,7 +444,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                     with rarfile.RarFile(archive_file_path, 'r') as fs:
                         # Get file list before extraction but don't load content into memory
                         for rar_info in fs.infolist():
-                            if not rar_info.filename.endswith('.url'):  # Skip .url files
+                            if not rar_info.filename.endswith('.url') and '_CommonRedist' not in rar_info.filename:  # Skip .url files and _CommonRedist
                                 extracted_path = os.path.join(download_path, rar_info.filename)
                                 key = f"{os.path.relpath(extracted_path, download_path)}"
                                 watching_data[key] = {"size": rar_info.file_size}
@@ -458,7 +458,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                     with zipfile.ZipFile(archive_file_path, 'r') as zip_ref:
                         # Get file list before extraction but don't load content into memory
                         for zip_info in zip_ref.infolist():
-                            if not zip_info.filename.endswith('.url'):  # Skip .url files
+                            if not zip_info.filename.endswith('.url') and '_CommonRedist' not in zip_info.filename:  # Skip .url files and _CommonRedist
                                 extracted_path = os.path.join(download_path, zip_info.filename)
                                 key = f"{os.path.relpath(extracted_path, download_path)}"
                                 watching_data[key] = {"size": zip_info.file_size}
@@ -481,7 +481,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                 # Find new files by comparing directory contents
                 for dirpath, _, filenames in os.walk(download_path):
                     for fname in filenames:
-                        if not fname.endswith('.url'):  # Skip .url files
+                        if not fname.endswith('.url') and '_CommonRedist' not in os.path.join(dirpath, fname):  # Skip .url files and _CommonRedist
                             full_path = os.path.join(dirpath, fname)
                             if full_path not in before_files:
                                 key = f"{os.path.relpath(full_path, download_path)}"
