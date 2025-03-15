@@ -599,7 +599,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {t("downloads.verificationFailedDescription")}&nbsp;
+              {t("downloads.verificationFailedDesc")}&nbsp;
               <a
                 className="inline-flex cursor-pointer items-center text-xs text-primary hover:underline"
                 onClick={() => {
