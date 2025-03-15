@@ -236,10 +236,13 @@ const Library = () => {
       const installedGames = await window.electron.getGames();
       const customGames = await window.electron.getCustomGames();
 
-      // Filter out games that are being verified
+      // Filter out games that are being verified or downloading
       const filteredInstalledGames = installedGames.filter(
         game =>
           !game.downloadingData?.verifying &&
+          !game.downloadingData?.downloading &&
+          !game.downloadingData?.extracting &&
+          !game.downloadingData?.updating &&
           (!game.downloadingData?.verifyError ||
             game.downloadingData.verifyError.length === 0)
       );
