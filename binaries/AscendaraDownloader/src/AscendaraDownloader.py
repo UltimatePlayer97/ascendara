@@ -350,8 +350,8 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
 
                     def update_progress(bytes_downloaded):
                         nonlocal start_time
-                        progress = manager.downloaded_size / total_size
-                        game_info["downloadingData"]["progressCompleted"] = f"{progress * 100:.2f}"
+                        progress = min(100.0, (manager.downloaded_size / total_size) * 100)  # Cap at 100%
+                        game_info["downloadingData"]["progressCompleted"] = f"{progress:.2f}"
 
                         elapsed_time = time.time() - start_time
                         download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
@@ -372,6 +372,8 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                                 game_info["downloadingData"]["timeUntilComplete"] = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
                             else:
                                 game_info["downloadingData"]["timeUntilComplete"] = f"{int(minutes)}m {int(seconds)}s"
+                        elif remaining_size <= 0:  # Download is complete
+                            game_info["downloadingData"]["timeUntilComplete"] = "0s"
                         else:
                             game_info["downloadingData"]["timeUntilComplete"] = "Calculating..."
 
@@ -402,7 +404,8 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                             downloaded_size += len(chunk)
                             
                             # Update progress
-                            game_info["downloadingData"]["progressCompleted"] = f"{downloaded_size / (1024*1024):.1f}MB"
+                            progress = min(100.0, (downloaded_size / (1024*1024)))  # Cap at 100%
+                            game_info["downloadingData"]["progressCompleted"] = f"{progress:.1f}MB"
                             
                             elapsed_time = time.time() - start_time
                             download_speed = downloaded_size / elapsed_time if elapsed_time > 0 else 0
@@ -414,8 +417,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
                             else:
                                 game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / (1024 * 1024):.2f} MB/s"
                             
-                            game_info["downloadingData"]["timeUntilComplete"] = "Unknown (size not available)"
-                            safe_write_json(game_info_path, game_info)
+                            game_info["downloadingData"]["timeUntilComplete"] = "Size not available"
                 
             return archive_file_path, archive_ext
 
