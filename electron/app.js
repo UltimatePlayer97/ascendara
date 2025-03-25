@@ -256,7 +256,7 @@ ipcMain.handle("install-tool", async (event, tool) => {
       installedTools,
     };
 
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData), "utf8");
+    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
 
     return { success: true, message: `${tool} installed successfully` };
   } catch (error) {
@@ -1531,19 +1531,18 @@ ipcMain.handle("verify-game", async (event, game) => {
     return { success: false, error: error.message };
   }
 });
-
 ipcMain.handle("stop-download", async (event, game) => {
   try {
+    const sanitizedGame = sanitizeText(game);
     if (isWindows) {
-      // Windows: Use taskkill to terminate processes
-      const processNames = [
-        "AscendaraDownloader.exe",
-        "AscendaraGofileHelper.exe",
-        "AscendaraTorrentHandler.exe",
-      ];
-      for (const processName of processNames) {
-        const killProcess = spawn("taskkill", ["/f", "/im", processName]);
+      // Get the download process for this specific game
+      const downloadProcess = downloadProcesses.get(sanitizedGame);
+      if (downloadProcess) {
+        // Kill the specific process
+        const pid = downloadProcess.pid;
+        const killProcess = spawn("taskkill", ["/f", "/pid", pid.toString()]);
         await new Promise(resolve => killProcess.on("close", resolve));
+        downloadProcesses.delete(sanitizedGame);
       }
     } else {
       // Unix-like systems: Find and kill Python processes for this game
@@ -1554,8 +1553,8 @@ ipcMain.handle("stop-download", async (event, game) => {
       ];
 
       for (const script of pythonScripts) {
-        // Use pgrep to find Python processes running our scripts
-        const findProcess = spawn("pgrep", ["-f", script]);
+        // Use pgrep to find Python processes running our scripts with this game name
+        const findProcess = spawn("pgrep", ["-f", `${script}.*${sanitizedGame}`]);
         const pids = await new Promise(resolve => {
           let output = "";
           findProcess.stdout.on("data", data => (output += data));
@@ -1564,7 +1563,7 @@ ipcMain.handle("stop-download", async (event, game) => {
           );
         });
 
-        // Kill each found process
+        // Kill only the processes for this game
         for (const pid of pids) {
           if (pid) {
             const killProcess = spawn("kill", ["-9", pid]);
@@ -1572,9 +1571,10 @@ ipcMain.handle("stop-download", async (event, game) => {
           }
         }
       }
+      downloadProcesses.delete(sanitizedGame);
     }
 
-    // Wait for processes to fully terminate and release file handles
+    // Wait for process to fully terminate and release file handles
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Try to delete directory multiple times in case file handles are still being released
