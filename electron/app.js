@@ -4099,13 +4099,11 @@ ipcMain.handle("get-launch-count", () => {
 
 ipcMain.handle("get-local-crack-directory", () => {
   const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-  const steamEmuPathGoldberg = path.join(
-    os.homedir(),
-    "AppData",
-    "Roaming",
-    "Goldberg SteamEmu Saves",
-    "settings"
-  );
+  const possiblePaths = [
+    path.join(os.homedir(), "AppData", "Roaming", "Goldberg SteamEmu Saves"),
+    path.join(os.homedir(), "AppData", "Local", "Goldberg SteamEmu Saves"),
+    path.join(app.getPath("userData"), "Goldberg SteamEmu Saves"),
+  ];
 
   let settings;
   try {
@@ -4116,9 +4114,32 @@ ipcMain.handle("get-local-crack-directory", () => {
     settings = {};
   }
 
-  if (!settings.crackDirectory) {
-    settings.crackDirectory = steamEmuPathGoldberg;
+  // Check if directory exists in any of the possible locations
+  let foundPath = null;
+  for (const checkPath of possiblePaths) {
+    try {
+      if (fs.existsSync(checkPath)) {
+        foundPath = checkPath;
+        break;
+      }
+    } catch (error) {
+      console.error(`Error checking path ${checkPath}:`, error);
+    }
   }
+
+  // If not found anywhere, create in Roaming
+  if (!foundPath) {
+    foundPath = possiblePaths[0]; // Use Roaming path
+    try {
+      fs.mkdirSync(path.join(foundPath, "settings"), { recursive: true });
+    } catch (error) {
+      console.error("Error creating Goldberg directory:", error);
+      return null;
+    }
+  }
+
+  // Update settings with found or created path
+  settings.crackDirectory = path.join(foundPath, "settings");
 
   try {
     fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
