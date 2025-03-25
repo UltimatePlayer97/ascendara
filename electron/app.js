@@ -1583,7 +1583,7 @@ ipcMain.handle("stop-download", async (event, game) => {
 
     while (attempts < maxAttempts) {
       try {
-        await deleteGameDirectory(game);
+        await deleteGameDirectory(sanitizedGame);
         return true;
       } catch (deleteError) {
         attempts++;
@@ -3004,8 +3004,9 @@ ipcMain.handle(
       let gameDirectory;
 
       if (!isCustom) {
-        gameDirectory = path.join(settings.downloadDirectory, game);
-        const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+        const sanitizedGame = sanitizeText(game);
+        gameDirectory = path.join(settings.downloadDirectory, sanitizedGame);
+        const gameInfoPath = path.join(gameDirectory, `${sanitizedGame}.ascendara.json`);
 
         if (!fs.existsSync(gameInfoPath)) {
           throw new Error(`Game info file not found: ${gameInfoPath}`);
