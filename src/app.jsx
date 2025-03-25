@@ -16,6 +16,7 @@ import checkQbittorrentStatus from "@/services/qbittorrentCheckService";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import AdminWarningScreen from "@/components/AdminWarningScreen";
 import {
   Navigate,
   Route,
@@ -55,6 +56,7 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showWelcome, setShowWelcome] = useState(null);
   const [isNewInstall, setIsNewInstall] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -147,6 +149,16 @@ const AppRoutes = () => {
       hasChecked.current = true;
 
       console.log("Starting app initialization...");
+
+      // Check if running in admin mode
+      const hasAdmin = await window.electron.hasAdmin();
+      setIsAdmin(hasAdmin);
+      if (hasAdmin) {
+        console.log("Running in admin mode - blocking app usage");
+        await ensureMinLoadingTime();
+        setIsLoading(false);
+        return;
+      }
 
       try {
         // Set up game protocol URL listener
@@ -421,6 +433,10 @@ const AppRoutes = () => {
       window.electron.removeUpdateReadyListener(updateReadyHandler);
     };
   }, [showWelcome]);
+
+  if (isAdmin) {
+    return <AdminWarningScreen />;
+  }
 
   if (isInstalling) {
     return <UpdateOverlay />;

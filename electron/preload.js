@@ -179,6 +179,7 @@ contextBridge.exposeInMainWorld("electron", {
   isV7: () => ipcRenderer.invoke("is-v7"),
   timestampTime: () => ipcRenderer.invoke("timestamp-time"),
   hasLaunched: () => ipcRenderer.invoke("has-launched"),
+  hasAdmin: () => ipcRenderer.invoke("has-admin"),
 
   // Callback handling
   onWelcomeComplete: callback => {

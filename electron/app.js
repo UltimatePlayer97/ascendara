@@ -58,6 +58,7 @@ let updateDownloadInProgress = false;
 let experiment = false;
 let installedTools = [];
 let isBrokenVersion = false;
+let hasAdmin = false;
 let isWindows = os.platform().startsWith("win");
 let rpc;
 let config;
@@ -101,6 +102,7 @@ app.whenReady().then(() => {
   if (isDev) {
     printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
   }
+  checkAdmin();
   createWindow();
   axios
     .get("https://api.ascendara.app/app/brokenversions")
@@ -296,6 +298,11 @@ ipcMain.handle("timestamp-time", async () => {
     console.error("Error reading timestamp file:", error);
     return "Error retrieving timestamp";
   }
+});
+
+// Check if app is running in admin mode
+ipcMain.handle("has-admin", async () => {
+  return hasAdmin;
 });
 
 // Install steamcmd.exe from Ascendara CDN and store it in the ascendaraSteamcmd directory
@@ -3398,6 +3405,25 @@ function shouldLogError(errorKey) {
     return true;
   }
   return false;
+}
+
+function checkAdmin() {
+  const isWindows = os.platform().startsWith("win");
+  if (isWindows) {
+    // For Windows, check admin using elevated privileges check
+    try {
+      const execSync = require("child_process").execSync;
+      execSync("net session", { stdio: "ignore" });
+      global.hasAdmin = true;
+    } catch (e) {
+      global.hasAdmin = false;
+    }
+  } else {
+    // For non-Windows (Unix-like systems), check using process.getuid()
+    global.hasAdmin = process.getuid && process.getuid() === 0;
+  }
+
+  return global.hasAdmin;
 }
 
 function createWindow() {

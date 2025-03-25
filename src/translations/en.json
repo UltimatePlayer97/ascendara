@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Please restart Ascendara without administrator privileges. Running in administrator mode causes path finding issues and other problems.",
+        "title": "Cannot run in administrator mode"
+      }
+    },
     "brokenVersion": {
       "description": "This version of Ascendara contains known critical issues with its functionality, like downloads, updating, and other core functions.",
       "development": "While using this version you may encounter issues or crashes. Please update Ascendara to the latest version from the website.",
