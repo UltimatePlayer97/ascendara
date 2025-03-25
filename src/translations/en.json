@@ -508,6 +508,7 @@
     "memberSince": "You started using Ascendara on {{date}}",
     "mostPlayed": "Most Played Game",
     "nextLevel": "Next: Level {{level}}",
+    "noGames": "No Games",
     "notreallol": "This level is based on your playtime and launches. It's completely local and not uploaded to any servers.",
     "perGameAvg": "Of playtime per game",
     "playTimeDistribution": "Distribution of playtime across your top 5 played games",
