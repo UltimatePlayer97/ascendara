@@ -561,8 +561,10 @@
     "visit-status-page": "Visit Status Page"
   },
   "settings": {
+    "addLocation": "Add Download Directory",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra allows you to setup a game information provider, letting you read additional information about all games.",
+    "additionalLocations": "Additional Locations",
     "advanced": "ADVANCED",
     "allDependenciesInstalled": "All dependencies installed",
     "ascendaraAnalytics": "Usage Analytics",
@@ -587,7 +589,7 @@
     "customThreadCount": "Custom Thread Count",
     "customThreadCountDesc": "Higher values may improve download speed but require more CPU power and memory. Maximum: 32 threads",
     "darkThemes": "Dark Themes",
-    "downloadLocation": "Download Location",
+    "defaultDownloadLocation": "Default Download Location",
     "downloadLocationWarning": "Ascendara cannot write files to the chosen directory. Change was not saved.",
     "downloadThreads": "Download Performance",
     "downloadThreadsPresets": {
@@ -655,6 +657,7 @@
     "manageDependencies": "Manage Dependencies",
     "matureContent": "Mature Content",
     "matureContentDescription": "Allow games with mature themes to appear in search results",
+    "noAdditionalLocations": "No additional locations yet...",
     "noDependenciesInstalled": "No dependencies installed",
     "noLudusaviTool": "Download Ludusavi for backups",
     "noLudusaviToolDesc": "You need to have Ludusavi downloaded in order to use the backup/restore feature on Ascendara. Click Continue to download the tool automatically.",
