@@ -11,6 +11,7 @@ const SettingsContext = createContext();
 export function SettingsProvider({ children }) {
   const [settings, setSettingsState] = useState({
     downloadDirectory: "",
+    additionalDownloadDirectorys: [],
     showOldDownloadLinks: false,
     seeInappropriateContent: false,
     viewWorkshopPage: false,

@@ -537,6 +537,7 @@ class SettingsManager {
     this.sensitiveKeys = ["twitchSecret", "twitchClientId", "giantBombKey"];
     this.defaultSettings = {
       downloadDirectory: "",
+      additionalDownloadDirectorys: [],
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
       viewWorkshopPage: false,

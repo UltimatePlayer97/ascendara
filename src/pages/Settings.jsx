@@ -937,6 +937,78 @@ function Settings() {
                     </div>
                   </div>
 
+                  <div className="mt-4">
+                    <Label className={isDownloaderRunning ? "opacity-50" : ""}>
+                      Additional Download Paths
+                    </Label>
+                    <Card className="mt-2 p-4">
+                      <div className="space-y-3">
+                        {settings.additionalDownloadDirectorys?.map((path, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Input
+                              value={path}
+                              readOnly
+                              disabled={isDownloaderRunning}
+                              className="flex-1"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              disabled={isDownloaderRunning}
+                              onClick={() => {
+                                const newPaths = [
+                                  ...settings.additionalDownloadDirectorys,
+                                ];
+                                newPaths.splice(index, 1);
+                                handleSettingChange(
+                                  "additionalDownloadDirectorys",
+                                  newPaths
+                                );
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                              </svg>
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          disabled={isDownloaderRunning}
+                          className="w-full"
+                          variant="outline"
+                          onClick={async () => {
+                            const path = await window.electron.ipcRenderer.invoke(
+                              "open-directory-dialog"
+                            );
+                            if (path) {
+                              const newPaths = [
+                                ...(settings.additionalDownloadDirectorys || []),
+                                path,
+                              ];
+                              handleSettingChange(
+                                "additionalDownloadDirectorys",
+                                newPaths
+                              );
+                            }
+                          }}
+                        >
+                          Add Download Path
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+
                   <div className="mb-6">
                     <Label
                       htmlFor="downloadThreads"
