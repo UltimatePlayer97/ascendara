@@ -178,8 +178,12 @@ const UsernameDialog = () => {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="useForGoldberg"
-              checked={useForGoldberg}
-              onCheckedChange={setUseForGoldberg}
+              checked={isWindows && useForGoldberg}
+              onCheckedChange={checked => {
+                if (isWindows) {
+                  setUseForGoldberg(checked);
+                }
+              }}
               disabled={!isWindows}
             />
             <Label
