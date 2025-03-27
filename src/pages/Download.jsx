@@ -9,6 +9,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -1500,15 +1501,20 @@ export default function DownloadPage() {
               {/* Right Column - Instructions */}
               <div className="space-y-3">
                 {selectedProvider && selectedProvider !== "gofile" && (
-                  <>
-                    <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-4">
-                      <div className="flex">
-                        <div className="ml-3">
-                          <p className="inline-flex items-center gap-2 text-lg font-bold text-red-700">
-                            <TriangleAlert strokeWidth={2.3} className="text-red-400" />
+                  <Card className="relative overflow-hidden border-border bg-card/50">
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-50`}
+                    />
+                    <CardContent className="relative space-y-4 p-4">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                          <TriangleAlert className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">
                             {t("download.protectYourself.warningTitle")}
-                          </p>
-                          <p className="mt-2 text-sm text-red-700">
+                          </h3>
+                          <p className="mt-1.5 text-sm text-muted-foreground">
                             {t("download.protectYourself.warning")}
                           </p>
                           <a
@@ -1517,18 +1523,15 @@ export default function DownloadPage() {
                                 "https://ascendara.app/protect-yourself"
                               )
                             }
-                            className="mt-2 flex cursor-pointer items-center gap-1 text-sm text-red-700 hover:text-red-900 hover:underline"
+                            className="mt-3 inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary/80 transition-colors hover:text-primary"
                           >
-                            {t("download.protectYourself.learnHow")}{" "}
-                            <ExternalLink size={16} />
+                            {t("download.protectYourself.learnHow")}
+                            <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         </div>
                       </div>
-                    </div>
-                    <h2 className="text-xl font-semibold">
-                      {t("download.downloadInstructions")}
-                    </h2>
-                  </>
+                    </CardContent>
+                  </Card>
                 )}
                 {selectedProvider ? (
                   <div>
