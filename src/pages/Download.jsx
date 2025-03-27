@@ -9,6 +9,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -45,8 +46,7 @@ import {
   Zap,
   AlertTriangle,
   Star,
-  ArrowDown,
-  Download,
+  FolderIcon,
   Apple,
   Gamepad2,
   Gift,
@@ -218,6 +218,7 @@ export default function DownloadPage() {
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [timemachineSetting, setTimemachineSetting] = useState(false);
+  const [showSelectPath, setShowSelectPath] = useState(false);
   const [showTimemachineSelection, setShowTimemachineSelection] = useState(false);
   const [showNewUserGuide, setShowNewUserGuide] = useState(false);
   const [guideStep, setGuideStep] = useState(0);
@@ -236,8 +237,19 @@ export default function DownloadPage() {
   const mainContentRef = useRef(null);
   const scrollThreshold = 30; // Even lower threshold for quicker response
 
+  async function whereToDownload(directUrl = null) {
+    // Check if additional directories are set in settings
+    if (settings.additionalDirectories && settings.additionalDirectories.length > 0) {
+      // Show path selection dialog
+      setShowSelectPath(true);
+    } else {
+      // No additional directories, proceed with direct download
+      await handleDownload(directUrl, 0);
+    }
+  }
+
   // Simple download handler function
-  async function handleDownload(directUrl = null) {
+  async function handleDownload(directUrl = null, dir = null) {
     const sanitizedGameName = sanitizeText(gameData.game);
     if (showNoDownloadPath) {
       return;
@@ -269,7 +281,8 @@ export default function DownloadPage() {
             false,
             gameData.version || "",
             gameData.imgID,
-            gameData.size || ""
+            gameData.size || "",
+            dir
           );
 
           // Keep isStarting true until download actually begins
@@ -341,7 +354,8 @@ export default function DownloadPage() {
         isVrGame || false,
         gameData.version || "",
         gameData.imgID,
-        gameData.size || ""
+        gameData.size || "",
+        dir
       );
       // Keep isStarting true until download actually begins
       const removeDownloadListener = window.electron.onDownloadProgress(downloadInfo => {
@@ -415,7 +429,7 @@ export default function DownloadPage() {
         }
 
         console.log("Handling protocol URL:", cleanUrl);
-        handleDownload(cleanUrl);
+        whereToDownload(cleanUrl);
       } catch (error) {
         console.error("Error handling protocol URL:", error);
         toast.error(t("download.toast.invalidProtocolUrl"));
@@ -1222,7 +1236,7 @@ export default function DownloadPage() {
 
                 <div className="w-full max-w-md">
                   <Button
-                    onClick={() => handleDownload()}
+                    onClick={() => whereToDownload()}
                     disabled={isStartingDownload || !gameData || !torrentRunning}
                     className="h-12 w-full text-lg text-secondary"
                   >
@@ -1272,7 +1286,7 @@ export default function DownloadPage() {
 
                 <div className="w-full max-w-md">
                   <Button
-                    onClick={() => handleDownload()}
+                    onClick={() => whereToDownload()}
                     disabled={isStartingDownload || !gameData}
                     className="h-12 w-full text-lg text-secondary"
                   >
@@ -1473,7 +1487,7 @@ export default function DownloadPage() {
 
                     {!useAscendara && (
                       <Button
-                        onClick={() => handleDownload()}
+                        onClick={() => whereToDownload()}
                         disabled={
                           isStartingDownload ||
                           !selectedProvider ||
@@ -1500,15 +1514,20 @@ export default function DownloadPage() {
               {/* Right Column - Instructions */}
               <div className="space-y-3">
                 {selectedProvider && selectedProvider !== "gofile" && (
-                  <>
-                    <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-4">
-                      <div className="flex">
-                        <div className="ml-3">
-                          <p className="inline-flex items-center gap-2 text-lg font-bold text-red-700">
-                            <TriangleAlert strokeWidth={2.3} className="text-red-400" />
+                  <Card className="relative overflow-hidden border-border bg-card/50">
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-50`}
+                    />
+                    <CardContent className="relative space-y-4 p-4">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                          <TriangleAlert className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">
                             {t("download.protectYourself.warningTitle")}
-                          </p>
-                          <p className="mt-2 text-sm text-red-700">
+                          </h3>
+                          <p className="mt-1.5 text-sm text-muted-foreground">
                             {t("download.protectYourself.warning")}
                           </p>
                           <a
@@ -1517,18 +1536,15 @@ export default function DownloadPage() {
                                 "https://ascendara.app/protect-yourself"
                               )
                             }
-                            className="mt-2 flex cursor-pointer items-center gap-1 text-sm text-red-700 hover:text-red-900 hover:underline"
+                            className="mt-3 inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary/80 transition-colors hover:text-primary"
                           >
-                            {t("download.protectYourself.learnHow")}{" "}
-                            <ExternalLink size={16} />
+                            {t("download.protectYourself.learnHow")}
+                            <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         </div>
                       </div>
-                    </div>
-                    <h2 className="text-xl font-semibold">
-                      {t("download.downloadInstructions")}
-                    </h2>
-                  </>
+                    </CardContent>
+                  </Card>
                 )}
                 {selectedProvider ? (
                   <div>
@@ -1545,7 +1561,7 @@ export default function DownloadPage() {
 
                         <div className="w-full max-w-sm">
                           <Button
-                            onClick={() => handleDownload()}
+                            onClick={() => whereToDownload()}
                             disabled={isStartingDownload || !gameData}
                             className="h-12 w-full text-lg text-secondary"
                           >
@@ -1756,13 +1772,13 @@ export default function DownloadPage() {
                             )}
 
                             {igdbData.release_date && (
-                              <div className="rounded-full bg-primary/20 px-3 py-1.5 text-sm font-medium text-primary">
+                              <div className="rounded-full bg-primary/20 px-3 py-1 text-sm font-medium text-primary">
                                 {t("download.firstReleasedOn")}: {igdbData.release_date}
                               </div>
                             )}
 
                             {gameData.category && gameData.category.length > 0 && (
-                              <div className="hidden rounded-full bg-card/80 px-3 py-1.5 text-sm font-medium text-foreground md:block">
+                              <div className="hidden rounded-full bg-card/80 px-3 py-1 text-sm font-medium text-foreground md:block">
                                 {gameData.category.slice(0, 2).join(", ")}
                                 {gameData.category.length > 2 && "..."}
                               </div>
@@ -1960,6 +1976,60 @@ export default function DownloadPage() {
           onOpenChange={setShowTimemachineSelection}
         />
       )}
+
+      {/* Select Download Path Dialog */}
+      <AlertDialog open={showSelectPath} onOpenChange={setShowSelectPath}>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-foreground">
+              {t("download.selectPath.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("download.selectPath.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex flex-col gap-4 py-4 text-foreground">
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => {
+                handleDownload(null, 0);
+                setShowSelectPath(false);
+              }}
+            >
+              <FolderIcon className="mr-2 h-4 w-4" />
+              <div className="flex flex-1 items-center gap-2">
+                <span className="truncate">
+                  {settings.downloadDirectory ||
+                    t("download.selectPath.defaultDirectory")}
+                </span>
+                <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                  {t("download.selectPath.default")}
+                </span>
+              </div>
+            </Button>
+            {settings.additionalDirectories?.map((dir, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => {
+                  handleDownload(null, index + 1); // +1 because 0 is default directory
+                  setShowSelectPath(false);
+                }}
+              >
+                <FolderIcon className="mr-2 h-4 w-4" />
+                {dir}
+              </Button>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-foreground">
+              {t("common.cancel")}
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* New User Guide Alert Dialog */}
       <AlertDialog open={showNewUserGuide} onOpenChange={handleCloseGuide}>

@@ -6,12 +6,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Plus,
   FolderOpen,
   ExternalLink,
@@ -51,51 +45,6 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import igdbService from "@/services/gameInfoService";
 
-const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
-  <AlertDialog open={open} onOpenChange={onClose}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle className="text-2xl font-bold text-foreground">
-          {t("library.launchError")}
-        </AlertDialogTitle>
-        <AlertDialogDescription className="space-y-4 text-muted-foreground">
-          {t("library.launchErrorMessage", { game: errorGame })}&nbsp;
-          <span
-            onClick={() => {
-              window.electron.openURL(
-                "https://ascendara.app/docs/troubleshooting/common-issues#executable-not-found-launch-error"
-              );
-            }}
-            className="cursor-pointer hover:underline"
-          >
-            {t("common.learnMore")} <ExternalLink className="mb-1 inline-block h-3 w-3" />
-          </span>
-          <br />
-          <br />
-          {errorMessage}
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter className="flex gap-2">
-        <Button variant="outline" className="text-primary" onClick={onClose}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          className="bg-primary text-secondary"
-          onClick={async () => {
-            const exePath = await window.electron.openFileDialog();
-            if (exePath) {
-              await window.electron.modifyGameExecutable(errorGame, exePath);
-            }
-            onClose();
-          }}
-        >
-          {t("library.changeExecutable")}
-        </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-);
-
 const Library = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -117,7 +66,6 @@ const Library = () => {
   });
   const [totalGamesSize, setTotalGamesSize] = useState(0);
   const [isCalculatingSize, setIsCalculatingSize] = useState(false);
-  const errorTimeoutRef = useRef(null);
   const { t } = useLanguage();
   const navigate = useNavigate();
 

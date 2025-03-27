@@ -124,7 +124,17 @@ contextBridge.exposeInMainWorld("electron", {
   stopDownload: game => ipcRenderer.invoke("stop-download", game),
   retryDownload: (link, game, online, dlc, version) =>
     ipcRenderer.invoke("retry-download", link, game, online, dlc, version),
-  downloadFile: (link, game, online, dlc, isVr, version, imgID, size) =>
+  downloadFile: (
+    link,
+    game,
+    online,
+    dlc,
+    isVr,
+    version,
+    imgID,
+    size,
+    additionalDirIndex
+  ) =>
     ipcRenderer.invoke(
       "download-file",
       link,
@@ -134,7 +144,8 @@ contextBridge.exposeInMainWorld("electron", {
       isVr,
       version,
       imgID,
-      size
+      size,
+      additionalDirIndex
     ),
   checkRetryExtract: game => ipcRenderer.invoke("check-retry-extract", game),
   retryExtract: (game, online, dlc, version) =>
@@ -167,6 +178,9 @@ contextBridge.exposeInMainWorld("electron", {
   openURL: url => ipcRenderer.invoke("open-url", url),
   getAPIKey: () => ipcRenderer.invoke("get-api-key"),
   openReqPath: game => ipcRenderer.invoke("required-libraries", game),
+  uploadProfileImage: imageBase64 =>
+    ipcRenderer.invoke("upload-profile-image", imageBase64),
+  getProfileImage: () => ipcRenderer.invoke("get-profile-image"),
   modifyGameExecutable: (game, executable) =>
     ipcRenderer.invoke("modify-game-executable", game, executable),
   getAssetPath: filename => ipcRenderer.invoke("get-asset-path", filename),
@@ -179,6 +193,7 @@ contextBridge.exposeInMainWorld("electron", {
   isV7: () => ipcRenderer.invoke("is-v7"),
   timestampTime: () => ipcRenderer.invoke("timestamp-time"),
   hasLaunched: () => ipcRenderer.invoke("has-launched"),
+  hasAdmin: () => ipcRenderer.invoke("has-admin"),
 
   // Callback handling
   onWelcomeComplete: callback => {

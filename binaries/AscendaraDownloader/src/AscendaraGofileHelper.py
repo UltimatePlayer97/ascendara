@@ -405,7 +405,29 @@ class GofileDownloader:
                                 bytes_since_last_update = 0
 
                     # Download completed successfully
-                    os.replace(tmp_file, filepath)
+                    try:
+                        # First try to remove the destination file if it exists
+                        if os.path.exists(filepath):
+                            try:
+                                os.remove(filepath)
+                            except (PermissionError, OSError):
+                                # If we can't remove it, try to make it writable first
+                                os.chmod(filepath, 0o666)
+                                os.remove(filepath)
+                        
+                        # Now try to move the temp file
+                        try:
+                            os.replace(tmp_file, filepath)
+                        except (PermissionError, OSError):
+                            # If replace fails, try a copy+delete approach
+                            import shutil
+                            shutil.copy2(tmp_file, filepath)
+                            os.remove(tmp_file)
+                    except Exception as e:
+                        if os.path.exists(tmp_file):
+                            os.remove(tmp_file)
+                        raise Exception(f"Failed to move file to destination: {str(e)}")
+                        
                     # Update final progress
                     self._current_file_progress[file_key] = total_size
                     self._total_downloaded = sum(self._current_file_progress.values())

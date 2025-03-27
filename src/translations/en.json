@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Please restart Ascendara without administrator privileges. Running in administrator mode causes path finding issues and other problems.",
+        "title": "Cannot run in administrator mode"
+      }
+    },
     "brokenVersion": {
       "description": "This version of Ascendara contains known critical issues with its functionality, like downloads, updating, and other core functions.",
       "development": "While using this version you may encounter issues or crashes. Please update Ascendara to the latest version from the website.",
@@ -234,6 +240,11 @@
     },
     "screenshots": "Screenshots",
     "scrollToViewMore": "Scroll to view more game details",
+    "selectPath": {
+      "default": "Default Path",
+      "description": "You have additional directories set in your preferences, choose from one below to download this game.",
+      "title": "Where do you want to download this game?"
+    },
     "sendingTorrent": "Sending Torrent...",
     "shareGame": "Share Ascendara Game Link",
     "size": "Size",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "Across all your downloaded games",
     "avgSession": "Average Session",
+    "customImage": "Custom Profile Image",
     "downloadHistory": "Download History",
     "games": "Games You Play",
     "gamesPlayed": "Games Played",
@@ -510,11 +522,15 @@
     "nextLevel": "Next: Level {{level}}",
     "noGames": "No Games",
     "notreallol": "This level is based on your playtime and launches. It's completely local and not uploaded to any servers.",
+    "orUploadImage": "Upload an image to change",
     "perGameAvg": "Of playtime per game",
     "playTimeDistribution": "Distribution of playtime across your top 5 played games",
+    "switchToEmoji": "Click an emoji to switch",
     "topGames": "Your Top Games",
     "totalPlaytime": "Total Playtime",
     "totalXP": "Total XP: {{xp}}",
+    "uploadImage": "Upload Image",
+    "usingEmoji": "Using Emoji",
     "yourLevel": "Your Level"
   },
   "search": {
@@ -555,8 +571,10 @@
     "visit-status-page": "Visit Status Page"
   },
   "settings": {
+    "addLocation": "Add Download Directory",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra allows you to setup a game information provider, letting you read additional information about all games.",
+    "additionalLocations": "Additional Locations",
     "advanced": "ADVANCED",
     "allDependenciesInstalled": "All dependencies installed",
     "ascendaraAnalytics": "Usage Analytics",
@@ -581,7 +599,7 @@
     "customThreadCount": "Custom Thread Count",
     "customThreadCountDesc": "Higher values may improve download speed but require more CPU power and memory. Maximum: 32 threads",
     "darkThemes": "Dark Themes",
-    "downloadLocation": "Download Location",
+    "defaultDownloadLocation": "Default Download Location",
     "downloadLocationWarning": "Ascendara cannot write files to the chosen directory. Change was not saved.",
     "downloadThreads": "Download Performance",
     "downloadThreadsPresets": {
@@ -649,6 +667,7 @@
     "manageDependencies": "Manage Dependencies",
     "matureContent": "Mature Content",
     "matureContentDescription": "Allow games with mature themes to appear in search results",
+    "noAdditionalLocations": "No additional locations yet...",
     "noDependenciesInstalled": "No dependencies installed",
     "noLudusaviTool": "Download Ludusavi for backups",
     "noLudusaviToolDesc": "You need to have Ludusavi downloaded in order to use the backup/restore feature on Ascendara. Click Continue to download the tool automatically.",
