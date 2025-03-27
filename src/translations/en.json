@@ -240,6 +240,11 @@
     },
     "screenshots": "Screenshots",
     "scrollToViewMore": "Scroll to view more game details",
+    "selectPath": {
+      "default": "Default Path",
+      "description": "You have additional directories set in your preferences, choose from one below to download this game.",
+      "title": "Where do you want to download this game?"
+    },
     "sendingTorrent": "Sending Torrent...",
     "shareGame": "Share Ascendara Game Link",
     "size": "Size",
