@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Reinicie Ascendara sin privilegios de administrador. Ejecutar en modo administrador causa problemas de búsqueda de ruta y otros problemas.",
+        "title": "No se puede ejecutar en modo administrador"
+      }
+    },
     "brokenVersion": {
       "description": "Esta versión de Ascendara contiene problemas críticos conocidos con su funcionalidad, como descargas, actualización y otras funciones básicas.",
       "development": "Mientras usa esta versión, puede encontrar problemas o bloqueos. Actualice Ascendara a la última versión del sitio web.",
@@ -234,6 +240,11 @@
     },
     "screenshots": "Capturas de pantalla",
     "scrollToViewMore": "Desplácese para ver más detalles del juego",
+    "selectPath": {
+      "default": "Ruta predeterminada",
+      "description": "Tiene directorios adicionales establecidos en sus preferencias, elija uno a continuación para descargar este juego.",
+      "title": "¿Dónde quieres descargar este juego?"
+    },
     "sendingTorrent": "Enviando torrent ...",
     "shareGame": "Compartir el enlace del juego Ascendara",
     "size": "Tamaño",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "En todos tus juegos descargados",
     "avgSession": "Sesión promedio",
+    "customImage": "Imagen de perfil personalizado",
     "downloadHistory": "Descargar Historial",
     "games": "Juegos que juegas",
     "gamesPlayed": "Juegos jugados",
@@ -508,12 +520,17 @@
     "memberSince": "Empezaste a usar Ascendara en {{date}}",
     "mostPlayed": "El juego más jugado",
     "nextLevel": "Siguiente: Nivel {{level}}",
+    "noGames": "No hay juegos",
     "notreallol": "Este nivel se basa en su tiempo de juego y lanzamiento. Es completamente local y no se carga en ningún servidor.",
+    "orUploadImage": "Subir una imagen para cambiar",
     "perGameAvg": "De tiempo de juego por juego",
     "playTimeDistribution": "Distribución de tiempo de juego en tus 5 mejores juegos jugados",
+    "switchToEmoji": "Haga clic en un emoji para cambiar",
     "topGames": "Tus mejores juegos",
     "totalPlaytime": "Total de juego",
     "totalXP": "Total XP: {{xp}}",
+    "uploadImage": "Cargar imagen",
+    "usingEmoji": "Usando emoji",
     "yourLevel": "Tu nivel"
   },
   "search": {
@@ -554,8 +571,10 @@
     "visit-status-page": "Visitar la página de estado"
   },
   "settings": {
+    "addLocation": "Agregar directorio de descarga",
     "additionalGameInfo": "Ascendara xtra",
     "additionalGameInfoDescription": "Ascendara XTRA te permite configurar un proveedor de información del juego, permitiéndote leer información adicional sobre todos los juegos.",
+    "additionalLocations": "Ubicaciones adicionales",
     "advanced": "AVANZADO",
     "allDependenciesInstalled": "Todas las dependencias instaladas",
     "ascendaraAnalytics": "Análisis de uso",
@@ -580,7 +599,7 @@
     "customThreadCount": "Recuento de hilos personalizados",
     "customThreadCountDesc": "Los valores más altos pueden mejorar la velocidad de descarga, pero requieren más potencia y memoria de CPU. Máximo: 32 hilos",
     "darkThemes": "Temas oscuros",
-    "downloadLocation": "Ubicación de descarga",
+    "defaultDownloadLocation": "Ubicación de descarga predeterminada",
     "downloadLocationWarning": "Ascendara no puede escribir archivos en el directorio elegido. El cambio no fue guardado.",
     "downloadThreads": "Descargar rendimiento",
     "downloadThreadsPresets": {
@@ -648,6 +667,7 @@
     "manageDependencies": "Gestionar dependencias",
     "matureContent": "Contenido maduro",
     "matureContentDescription": "Permitir juegos con temas maduros aparecen en los resultados de búsqueda",
+    "noAdditionalLocations": "Todavía no hay ubicaciones adicionales ...",
     "noDependenciesInstalled": "No hay dependencias instaladas",
     "noLudusaviTool": "Descargar Ludusavi para copias de seguridad",
     "noLudusaviToolDesc": "Debe descargar Ludusavi para usar la función de copia de seguridad/restauración en Ascendara. Haga clic en Continuar para descargar la herramienta automáticamente.",
@@ -732,7 +752,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se cargará nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {
@@ -852,7 +872,7 @@
     "stayUpToDate": "Mantenga a Ascendara al día",
     "takeTour": "Hacer el recorrido",
     "termsOfService": "Términos de servicio",
-    "theExtensionBlocksKnownProviders": "La extensión escucha las descargas de proveedores conocidos y los detiene antes de que comiencen en su navegador, luego enviándolo a Ascendara para descargar",
+    "theExtensionBlocksKnownProviders": "La extensión escucha descargas de proveedores conocidos y los detiene antes de comenzar en su navegador, luego enviándolas a Ascendara para descargar",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Aquí es donde se almacenarán todos sus juegos descargados",
     "welcomeTo": "Bienvenido",
     "welcomeToAscendaraDescription": "Ahora no tendrá que preocuparse por extraer, instalar o mover archivos. Antes de comenzar, lea y acepte términos de servicio y política de privacidad.",

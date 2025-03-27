@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "请在没有管理员特权的情况下重新启动Ascendara。在管理员模式下运行会导致路径查找问题和其他问题。",
+        "title": "无法在管理员模式下运行"
+      }
+    },
     "brokenVersion": {
       "description": "此版本的Ascendara包含其功能的已知关键问题，例如下载，更新和其他核心功能。",
       "development": "在使用此版本时，您可能会遇到问题或崩溃。请将Ascendara更新到网站的最新版本。",
@@ -228,6 +234,11 @@
     },
     "screenshots": "屏幕截图",
     "scrollToViewMore": "滚动查看更多游戏详细信息",
+    "selectPath": {
+      "default": "默认路径",
+      "description": "您在首选项中设置了其他目录，请从下面的一个目录中选择下载此游戏。",
+      "title": "您想在哪里下载此游戏？"
+    },
     "sendingTorrent": "发送洪流...",
     "shareGame": "分享Ascendara游戏链接",
     "size": "尺寸",
@@ -495,6 +506,7 @@
   "profile": {
     "acrossGames": "在所有下载的游戏中",
     "avgSession": "平均会议",
+    "customImage": "自定义个人资料图像",
     "downloadHistory": "下载历史记录",
     "games": "您玩的游戏",
     "gamesPlayed": "玩游戏",
@@ -502,12 +514,17 @@
     "memberSince": "您开始在{{date}}上使用ascendara",
     "mostPlayed": "大多数玩游戏",
     "nextLevel": "下一步：level {{level}}",
+    "noGames": "没有游戏",
     "notreallol": "此级别基于您的游戏时间和启动。它是完全本地的，并且没有上传到任何服务器。",
+    "orUploadImage": "上传图像以更改",
     "perGameAvg": "每场比赛的游戏时间",
     "playTimeDistribution": "在您的前五名游戏中分发游戏时间",
+    "switchToEmoji": "单击表情符号切换",
     "topGames": "您的顶级游戏",
     "totalPlaytime": "总播放时间",
     "totalXP": "总XP：{{xp}}",
+    "uploadImage": "上传图像",
+    "usingEmoji": "使用表情符号",
     "yourLevel": "您的水平"
   },
   "search": {
@@ -548,8 +565,10 @@
     "visit-status-page": "访问状态页面"
   },
   "settings": {
+    "addLocation": "添加下载目录",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara XTRA允许您设置游戏信息提供商，让您阅读有关所有游戏的其他信息。",
+    "additionalLocations": "其他位置",
     "advanced": "先进的",
     "allDependenciesInstalled": "安装了所有依赖项",
     "ascendaraAnalytics": "用法分析",
@@ -574,7 +593,7 @@
     "customThreadCount": "自定义线程计数",
     "customThreadCountDesc": "更高的值可以提高下载速度，但需要更多的CPU功率和内存。最大：32个线程",
     "darkThemes": "黑暗主题",
-    "downloadLocation": "下载位置",
+    "defaultDownloadLocation": "默认下载位置",
     "downloadLocationWarning": "Ascendara无法将文件写入所选目录。变化没有保存。",
     "downloadThreads": "下载性能",
     "downloadThreadsPresets": {
@@ -642,6 +661,7 @@
     "manageDependencies": "管理依赖项",
     "matureContent": "成熟的内容",
     "matureContentDescription": "允许具有成熟主题的游戏出现在搜索结果中",
+    "noAdditionalLocations": "还没有其他位置...",
     "noDependenciesInstalled": "没有安装依赖项",
     "noLudusaviTool": "下载ludusavi用于备份",
     "noLudusaviToolDesc": "您需要下载Ludusavi，以便使用Ascendara上的备份/还原功能。单击继续自动下载工具。",
@@ -846,7 +866,7 @@
     "stayUpToDate": "保持Ascendara最新",
     "takeTour": "参加游览",
     "termsOfService": "服务条款",
-    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara下载",
+    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara进行下载",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "这是您所有下载的游戏都将存储的地方",
     "welcomeTo": "欢迎来",
     "welcomeToAscendaraDescription": "现在，您不必担心提取，安装或移动文件。在开始之前，请阅读并同意服务条款和隐私政策。",

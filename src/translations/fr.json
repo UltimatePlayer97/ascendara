@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Veuillez redémarrer Ascendara sans privilèges d'administrateur. L'exécution en mode administrateur provoque des problèmes de recherche de chemin et d'autres problèmes.",
+        "title": "Impossible de fonctionner en mode administrateur"
+      }
+    },
     "brokenVersion": {
       "description": "Cette version d'Ascendara contient des problèmes critiques connus avec ses fonctionnalités, comme les téléchargements, la mise à jour et d'autres fonctions de base.",
       "development": "En utilisant cette version, vous pouvez rencontrer des problèmes ou des plantages. Veuillez mettre à jour Ascendara vers la dernière version du site Web.",
@@ -43,7 +49,7 @@
       "donate": "Soutenir le développement",
       "feedback": "Donner des commentaires",
       "message": "Je sais que je n'ai dit pas d'annonces mais est-ce vraiment une annonce? Vous commencez à utiliser Ascendara et j'aimerais que vous le notiez ou me donnez des commentaires. Vous ne reverrez plus jamais ce message.",
-      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore mieux.",
+      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore meilleur.",
       "title": "Faites-moi savoir comment vous l'aimez"
     },
     "toasts": {
@@ -234,6 +240,11 @@
     },
     "screenshots": "Captures d'écran",
     "scrollToViewMore": "Faites défiler pour afficher plus de détails de jeu",
+    "selectPath": {
+      "default": "Chemin par défaut",
+      "description": "Vous avez des répertoires supplémentaires dans vos préférences, choisissez parmi une ci-dessous pour télécharger ce jeu.",
+      "title": "Où voulez-vous télécharger ce jeu?"
+    },
     "sendingTorrent": "Envoi de torrent ...",
     "shareGame": "Partagez le lien de jeu Ascendara",
     "size": "Taille",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "Sur tous vos jeux téléchargés",
     "avgSession": "Session moyenne",
+    "customImage": "Image de profil personnalisé",
     "downloadHistory": "Télécharger l'histoire",
     "games": "Jeux auxquels vous jouez",
     "gamesPlayed": "Jeux joués",
@@ -508,12 +520,17 @@
     "memberSince": "Vous avez commencé à utiliser Ascencerara sur {{date}}",
     "mostPlayed": "Jeu le plus joué",
     "nextLevel": "Suivant: Niveau {{level}}",
+    "noGames": "Pas de jeux",
     "notreallol": "Ce niveau est basé sur votre temps de jeu et vos lancements. Il est complètement local et non téléchargé sur des serveurs.",
+    "orUploadImage": "Télécharger une image pour changer",
     "perGameAvg": "Du temps de jeu par match",
     "playTimeDistribution": "Distribution de temps de jeu dans vos 5 meilleurs jeux joués",
+    "switchToEmoji": "Cliquez sur un emoji pour changer",
     "topGames": "Vos meilleurs jeux",
     "totalPlaytime": "Temps de jeu total",
     "totalXP": "Total xp: {{xp}}",
+    "uploadImage": "Télécharger l'image",
+    "usingEmoji": "Utilisation d'emoji",
     "yourLevel": "Votre niveau"
   },
   "search": {
@@ -554,8 +571,10 @@
     "visit-status-page": "Visiter la page de statut"
   },
   "settings": {
+    "addLocation": "Ajouter le répertoire de téléchargement",
     "additionalGameInfo": "Ascendara xtra",
     "additionalGameInfoDescription": "Ascendara Xtra vous permet de configurer un fournisseur d'informations de jeu, vous permettant de lire des informations supplémentaires sur tous les jeux.",
+    "additionalLocations": "Emplacements supplémentaires",
     "advanced": "AVANCÉ",
     "allDependenciesInstalled": "Toutes les dépendances installées",
     "ascendaraAnalytics": "Analyse d'utilisation",
@@ -580,7 +599,7 @@
     "customThreadCount": "Nombre de fils personnalisé",
     "customThreadCountDesc": "Des valeurs plus élevées peuvent améliorer la vitesse de téléchargement mais nécessitent plus de puissance et de mémoire CPU. Maximum: 32 fils",
     "darkThemes": "Thèmes sombres",
-    "downloadLocation": "Télécharger l'emplacement",
+    "defaultDownloadLocation": "Emplacement de téléchargement par défaut",
     "downloadLocationWarning": "Ascendara ne peut pas écrire de fichiers dans le répertoire choisi. Le changement n'a pas été sauvé.",
     "downloadThreads": "Performance de téléchargement",
     "downloadThreadsPresets": {
@@ -648,6 +667,7 @@
     "manageDependencies": "Gérer les dépendances",
     "matureContent": "Contenu mature",
     "matureContentDescription": "Permettre aux jeux avec des thèmes matures d'apparaître dans les résultats de la recherche",
+    "noAdditionalLocations": "Pas encore d'emplacements supplémentaires ...",
     "noDependenciesInstalled": "Aucune dépendance installée",
     "noLudusaviTool": "Télécharger Ludusavi pour les sauvegardes",
     "noLudusaviToolDesc": "Vous devez faire télécharger Ludusavi afin d'utiliser la fonction de sauvegarde / restauration sur Ascendara. Cliquez automatiquement à télécharger l'outil.",
@@ -870,7 +890,7 @@
       "title": "Échec du téléchargement"
     },
     "downloadLink": "Envoyer un lien vers Steamcmd",
-    "downloadProgress": "Télécharger Progress",
+    "downloadProgress": "Télécharger les progrès",
     "downloading": "Téléchargement...",
     "goToWorkshop": "Visitez l'atelier Steam",
     "install": "Installer maintenant",

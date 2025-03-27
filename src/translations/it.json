@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Si prega di riavviare Ascendara senza privilegi di amministratore. L'esecuzione in modalità amministratore provoca problemi di ricerca del percorso e altri problemi.",
+        "title": "Non è possibile eseguire in modalità amministratore"
+      }
+    },
     "brokenVersion": {
       "description": "Questa versione di Ascendara contiene problemi critici noti con la sua funzionalità, come i download, l'aggiornamento e altre funzioni di base.",
       "development": "Durante l'utilizzo di questa versione, è possibile che si verifichino problemi o crash. Aggiorna Ascendara all'ultima versione dal sito Web.",
@@ -234,6 +240,11 @@
     },
     "screenshots": "Screenshot",
     "scrollToViewMore": "Scorri per visualizzare più dettagli del gioco",
+    "selectPath": {
+      "default": "Percorso predefinito",
+      "description": "Hai ulteriori directory impostate nelle tue preferenze, scegli da una qui sotto per scaricare questo gioco.",
+      "title": "Dove vuoi scaricare questo gioco?"
+    },
     "sendingTorrent": "Invio torrent ...",
     "shareGame": "Condividi Ascendara Game Link",
     "size": "Misurare",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "In tutti i tuoi giochi scaricati",
     "avgSession": "Sessione media",
+    "customImage": "Immagine del profilo personalizzato",
     "downloadHistory": "Scarica la cronologia",
     "games": "Giochi a cui giochi",
     "gamesPlayed": "Giochi giocati",
@@ -508,12 +520,17 @@
     "memberSince": "Hai iniziato a usare Ascendara su {{date}}",
     "mostPlayed": "Il gioco più giocato",
     "nextLevel": "Next: Livello {{level}}",
+    "noGames": "Nessun gioco",
     "notreallol": "Questo livello si basa sul tuo tempo di gioco e il lancio. È completamente locale e non caricato su nessun server.",
+    "orUploadImage": "Carica un'immagine per cambiare",
     "perGameAvg": "Di gioco per gioco",
     "playTimeDistribution": "Distribuzione del tempo di gioco tra i migliori 5 giochi giocati",
+    "switchToEmoji": "Fare clic su un'emoji per cambiare",
     "topGames": "I tuoi migliori giochi",
     "totalPlaytime": "Playtime totale",
     "totalXP": "Totale XP: {{xp}}",
+    "uploadImage": "Carica immagine",
+    "usingEmoji": "Usando emoji",
     "yourLevel": "Il tuo livello"
   },
   "search": {
@@ -554,8 +571,10 @@
     "visit-status-page": "Visita la pagina di stato"
   },
   "settings": {
+    "addLocation": "Aggiungi la directory di download",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra consente di impostare un fornitore di informazioni di gioco, permettendo di leggere ulteriori informazioni su tutti i giochi.",
+    "additionalLocations": "Posizioni aggiuntive",
     "advanced": "Avanzato",
     "allDependenciesInstalled": "Tutte le dipendenze installate",
     "ascendaraAnalytics": "Analisi di utilizzo",
@@ -580,7 +599,7 @@
     "customThreadCount": "Conteggio dei thread personalizzato",
     "customThreadCountDesc": "Valori più alti possono migliorare la velocità di download ma richiedere più potenza e memoria della CPU. Massimo: 32 thread",
     "darkThemes": "Temi oscuri",
-    "downloadLocation": "Download Posizione",
+    "defaultDownloadLocation": "Posizione di download predefinita",
     "downloadLocationWarning": "Ascendara non può scrivere file nella directory scelta. Il cambiamento non è stato salvato.",
     "downloadThreads": "Scarica le prestazioni",
     "downloadThreadsPresets": {
@@ -648,6 +667,7 @@
     "manageDependencies": "Gestire le dipendenze",
     "matureContent": "Contenuto maturo",
     "matureContentDescription": "Consenti ai giochi con temi maturi di apparire nei risultati di ricerca",
+    "noAdditionalLocations": "Nessuna posizione aggiuntiva ancora ...",
     "noDependenciesInstalled": "Nessuna dipendenza installata",
     "noLudusaviTool": "Scarica Ludusavi per backup",
     "noLudusaviToolDesc": "È necessario scaricare Ludusavi per utilizzare la funzione Backup/Restore su Ascendara. Fai clic su Continua per scaricare automaticamente lo strumento.",
@@ -852,11 +872,11 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Ora non dovrai preoccuparti di estrarre, installare o spostare i file. Prima di iniziare, si prega di leggere e accettare i termini di servizio e l'informativa sulla privacy.",
-    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverterà in Ascendara",
+    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverrà in Ascendara",
     "youCanChangeThisLater": "Puoi sempre aggiornare la tua lingua in seguito nelle impostazioni.",
     "youCanChangeThisSettingLater": "Puoi modificarlo in seguito nelle impostazioni.",
     "youWillReceiveAdminPrompts": "Riceverai istruzioni di amministratore da installatori ufficiali di Microsoft per installare i componenti richiesti. Potrebbe essere necessario riavviare il computer dopo l'installazione.",

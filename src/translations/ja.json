@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "管理者の特権なしでアセンダラを再起動してください。管理者モードで実行すると、パスは問題やその他の問題を発見します。",
+        "title": "管理者モードで実行できません"
+      }
+    },
     "brokenVersion": {
       "description": "Ascendaraのこのバージョンには、ダウンロード、更新、その他のコア関数など、機能性に関する既知の重要な問題が含まれています。",
       "development": "このバージョンを使用している間、問題やクラッシュに遭遇する可能性があります。 AscendaraをWebサイトの最新バージョンに更新してください。",
@@ -229,27 +235,32 @@
       "imageBad": "画像は不適切です",
       "imageError": "画像はロード/正しいものではありません",
       "linksNotWorking": "リンクが機能していません",
-      "notAGame": "これはゲームではありません",
+      "notAGame": "--",
       "placeholder": "理由を選択します"
     },
     "screenshots": "スクリーンショット",
-    "scrollToViewMore": "スクロールして、より多くのゲームの詳細を表示します",
+    "scrollToViewMore": "--",
+    "selectPath": {
+      "default": "--",
+      "description": "追加のディレクトリが設定されている追加のディレクトリがあります。以下の1つから選択して、このゲームをダウンロードしてください。",
+      "title": "--"
+    },
     "sendingTorrent": "急流を送る...",
-    "shareGame": "Ascendaraゲームリンクを共有します",
+    "shareGame": "--",
     "size": "サイズ",
     "submitReport": "レポートを提出します",
     "submitting": "提出...",
     "switchProvider": "スイッチプロバイダー",
     "timemachine": {
       "cancel": "キャンセル",
-      "description": "{game}の以前のバージョンを選択します",
+      "description": "--",
       "loadError": "バージョンの履歴をロードできませんでした",
       "loading": "以前のバージョンの読み込み...",
       "noVersions": "以前のバージョンは見つかりませんでした",
       "title": "Ascendara Timemachine",
       "unknownDate": "不明な日付",
       "unknownVersion": "不明なバージョン",
-      "versionChanged": "バージョンが変更されました",
+      "versionChanged": "--",
       "versionChangedDesc": "{date}からバージョン{version}に切り替えた"
     },
     "toast": {
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "ダウンロードされたすべてのゲームにわたって",
     "avgSession": "平均セッション",
+    "customImage": "カスタムプロファイル画像",
     "downloadHistory": "履歴をダウンロードしてください",
     "games": "あなたがプレイするゲーム",
     "gamesPlayed": "ゲームが再生されました",
@@ -508,12 +520,17 @@
     "memberSince": "{{date}}でascendaraを使用し始めました",
     "mostPlayed": "ほとんどのプレイゲーム",
     "nextLevel": "次：レベル{{level}}",
+    "noGames": "ゲームはありません",
     "notreallol": "このレベルは、プレイタイムと起動に基づいています。完全にローカルで、サーバーにアップロードされていません。",
+    "orUploadImage": "変更するには画像をアップロードします",
     "perGameAvg": "ゲームごとのプレイタイム",
     "playTimeDistribution": "トップ5のプレイゲームにわたるプレイタイムの分布",
+    "switchToEmoji": "絵文字をクリックして切り替えます",
     "topGames": "あなたのトップゲーム",
     "totalPlaytime": "合計プレイタイム",
     "totalXP": "合計XP：{{xp}}",
+    "uploadImage": "画像をアップロードします",
+    "usingEmoji": "絵文字の使用",
     "yourLevel": "あなたのレベル"
   },
   "search": {
@@ -524,7 +541,7 @@
     "filters": "フィルター",
     "gamesIndexed": "ゲームインデックス",
     "indexedInformation": "インデックス付き情報",
-    "indexedInformationDescription": "Ascendaraは、カスタム開発されたデータベースを使用して、毎月更新されるゲームリンクと情報を保存します。 Ascendaraサーバーにゲームファイルは保存されていません。",
+    "indexedInformationDescription": "Ascendaraは、カスタム開発されたデータベースを使用して、毎月更新されるゲームリンクと情報を保存します。 Ascendaraサーバーにゲームファイルが保存されることはありません。",
     "lastUpdated": "最後に更新されました",
     "leastPopular": "最も人気が少ない",
     "mostPopular": "最も人気があります",
@@ -544,7 +561,7 @@
     "description": "現在のステータスとサーバーの健康情報を表示します",
     "healthy": "すべてのサーバーが動作します",
     "healthy-description": "すべてのサーバーは、予想どおりに実行され、応答しています。",
-    "lfs-description": "大型ファイルサーバーは、更新ファイルなどの大きなファイルを処理します。",
+    "lfs-description": "--",
     "need-more-details": "詳細が必要ですか？",
     "no-internet": "あなたは現在オフラインです。",
     "storage-description": "ストレージサービスは、小さな背景資産を処理します。",
@@ -554,11 +571,13 @@
     "visit-status-page": "ステータスページにアクセスしてください"
   },
   "settings": {
+    "addLocation": "ダウンロードディレクトリを追加します",
     "additionalGameInfo": "Ascendara Xtra",
-    "additionalGameInfoDescription": "Ascendara Xtraを使用すると、ゲーム情報プロバイダーをセットアップでき、すべてのゲームに関する追加情報を読むことができます。",
+    "additionalGameInfoDescription": "--",
+    "additionalLocations": "追加の場所",
     "advanced": "高度な",
     "allDependenciesInstalled": "すべての依存関係がインストールされています",
-    "ascendaraAnalytics": "使用分析",
+    "ascendaraAnalytics": "--",
     "ascendaraAnalyticsDescription": "使用データを送信して、アセンダラを改善するのに役立ちます。このデータは匿名であり、あなたを識別するために使用することはできません。",
     "ascendaraTimechine": "Ascendara Timemachine",
     "ascendaraToggleAnalytics": "オプトインして、アセンダラを改善します",
@@ -580,7 +599,7 @@
     "customThreadCount": "カスタムスレッドカウント",
     "customThreadCountDesc": "値が高いとダウンロード速度が向上する可能性がありますが、より多くのCPUパワーとメモリが必要です。最大：32スレッド",
     "darkThemes": "暗いテーマ",
-    "downloadLocation": "場所をダウンロードします",
+    "defaultDownloadLocation": "デフォルトのダウンロード場所",
     "downloadLocationWarning": "Ascendaraは、選択したディレクトリにファイルを書き込むことができません。変更は保存されませんでした。",
     "downloadThreads": "パフォーマンスをダウンロードします",
     "downloadThreadsPresets": {
@@ -588,7 +607,7 @@
       "high": "high（8スレッド） - パフォーマンスの向上",
       "low": "低（2スレッド） - 最小限のCPU使用",
       "normal": "通常（4スレッド） - ほとんどのユーザーに推奨されます",
-      "veryHigh": "非常に高い（12スレッド） - 速い接続用"
+      "veryHigh": "非常に高い（12スレッド） - 高速接続用"
     },
     "downloaderRunningWarning": "ダウンロードが進行中にこれらの設定を変更することはできません",
     "enableAscendaraTimechine": "Ascendaraのタイムマシンを有効にします",
@@ -648,6 +667,7 @@
     "manageDependencies": "依存関係を管理します",
     "matureContent": "成熟したコンテンツ",
     "matureContentDescription": "成熟したテーマのゲームが検索結果に表示されることを許可します",
+    "noAdditionalLocations": "まだ追加の場所はありません...",
     "noDependenciesInstalled": "依存関係はインストールされていません",
     "noLudusaviTool": "バックアップ用のLudusaviをダウンロードしてください",
     "noLudusaviToolDesc": "Ascendaraでバックアップ/復元機能を使用するには、Ludusaviをダウンロードする必要があります。 [続行]をクリックしてツールを自動的にダウンロードします。",
@@ -832,7 +852,7 @@
     "requiredForModernGames": "現代のゲームに必要です",
     "restart": "再起動",
     "runtimeComponents": "ランタイムコンポーネント",
-    "sayHelloTo": "挨拶してください",
+    "sayHelloTo": "こんにちはと言ってください",
     "securityPatchesDesc": "重要なセキュリティの更新で保護されたままです",
     "securityPatchesTitle": "セキュリティパッチ",
     "seeEntireList": "105言語のリスト全体を参照してください",

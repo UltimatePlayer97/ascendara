@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Bitte starten Sie Ascendara ohne Administratorrechte neu. Das Ausführen im Administratormodus führt zu Problemen mit Pfaden und anderen Problemen.",
+        "title": "Im Administratormodus kann nicht ausgeführt werden"
+      }
+    },
     "brokenVersion": {
       "description": "Diese Version von Ascendara enthält bekannte kritische Probleme mit ihrer Funktionalität wie Downloads, Aktualisierungen und anderen Kernfunktionen.",
       "development": "Während der Verwendung dieser Version können Sie Probleme oder Abstürze stoßen. Bitte aktualisieren Sie Ascendara auf die neueste Version von der Website.",
@@ -13,7 +19,7 @@
       "title": "Oh nein ..."
     },
     "downloading-update": "Update herunterladen ...",
-    "experiment": "Experimenteller Build",
+    "experiment": "Versuchsbau",
     "loading": {
       "ascendaraWillRestart": "Ascendara wird automatisch neu starten",
       "installingUpdate": "Update installieren"
@@ -234,6 +240,11 @@
     },
     "screenshots": "Screenshots",
     "scrollToViewMore": "Scrollen Sie, um weitere Spieldetails anzuzeigen",
+    "selectPath": {
+      "default": "Standardpfad",
+      "description": "Sie haben zusätzliche Verzeichnisse in Ihren Einstellungen. Wählen Sie aus einem unten, um dieses Spiel herunterzuladen.",
+      "title": "Wo möchten Sie dieses Spiel herunterladen?"
+    },
     "sendingTorrent": "Torrent senden ...",
     "shareGame": "Teilen Sie Ascendara Game Link",
     "size": "Größe",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "Über alle Ihre heruntergeladenen Spiele",
     "avgSession": "Durchschnittliche Sitzung",
+    "customImage": "Benutzerdefinierte Profilbild",
     "downloadHistory": "Download History",
     "games": "Spiele, die du spielst",
     "gamesPlayed": "Spiele gespielt",
@@ -508,12 +520,17 @@
     "memberSince": "Sie verwenden Ascendara auf {{date}}",
     "mostPlayed": "Am meisten spielte Spiel",
     "nextLevel": "Weiter: Ebene {{level}}",
+    "noGames": "Keine Spiele",
     "notreallol": "Dieses Level basiert auf Ihren Spielzeit und den Starts. Es ist völlig lokal und wird nicht auf Server hochgeladen.",
+    "orUploadImage": "Laden Sie ein Bild hoch, um sich zu ändern",
     "perGameAvg": "Der Spielzeit pro Spiel",
     "playTimeDistribution": "Verbreitung der Spielzeit in Ihren Top 5 gespielte Spiele",
+    "switchToEmoji": "Klicken Sie auf ein Emoji, um sie zu wechseln",
     "topGames": "Ihre Top -Spiele",
     "totalPlaytime": "Total Playtime",
     "totalXP": "Gesamt XP: {{xp}}",
+    "uploadImage": "Bild hochladen",
+    "usingEmoji": "Mit Emoji",
     "yourLevel": "Ihr Level"
   },
   "search": {
@@ -554,8 +571,10 @@
     "visit-status-page": "Besuchen Sie die Statusseite"
   },
   "settings": {
+    "addLocation": "Download -Verzeichnis hinzufügen",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Mit Ascendara Xtra können Sie einen Spielinformationsanbieter einrichten und zusätzliche Informationen zu allen Spielen lesen.",
+    "additionalLocations": "Zusätzliche Standorte",
     "advanced": "FORTSCHRITTLICH",
     "allDependenciesInstalled": "Alle Abhängigkeiten installiert",
     "ascendaraAnalytics": "Nutzungsanalyse",
@@ -580,7 +599,7 @@
     "customThreadCount": "Benutzerdefinierte Threadzahl",
     "customThreadCountDesc": "Höhere Werte können die Download -Geschwindigkeit verbessern, erfordern jedoch mehr CPU -Strom und Speicher. Maximum: 32 Threads",
     "darkThemes": "Dunkle Themen",
-    "downloadLocation": "Laden Sie den Standort herunter",
+    "defaultDownloadLocation": "Standard -Download -Speicherort",
     "downloadLocationWarning": "Ascendara kann keine Dateien in das ausgewählte Verzeichnis schreiben. Veränderung wurde nicht gerettet.",
     "downloadThreads": "Aufführung herunterladen",
     "downloadThreadsPresets": {
@@ -606,7 +625,7 @@
       "translatingDialog": "Schließen Sie Ascendara nicht",
       "translatingDialogDesc": "Ascendara übersetzt die ausgewählte Sprache. Dies kann ein paar Minuten dauern, Sie können dies verlassen, aber nicht um Ascendara schließen."
     },
-    "fitgirlRepacksDescription": "Access Fitgirls über 5500 Spiele auf Ascendara. Die Spiele werden über die Hydralibrary bezogen und werden mit Bildern mit Spieldatendiensten übereinstimmen. Es gibt keine Kategorien oder Gewichte, die für diese Spiele unterstützt werden, sie werden völlig zufällig erscheinen.",
+    "fitgirlRepacksDescription": "Access Fitgirls über 5500 Spiele auf Ascendara. Die Spiele werden über die Hydralibrary bezogen und werden mit Bildern mit Spieldatendiensten übereinstimmen. Für diese Spiele werden keine Kategorien oder Gewichte unterstützt, sie werden völlig zufällig erscheinen.",
     "gameBackup": {
       "backupFormat": "Sicherungsformat",
       "backupLocation": "Sicherungsort",
@@ -648,6 +667,7 @@
     "manageDependencies": "Abhängigkeiten verwalten",
     "matureContent": "Reife Inhalt",
     "matureContentDescription": "Lassen Sie Spiele mit ausgereiften Themen in den Suchergebnissen erscheinen",
+    "noAdditionalLocations": "Noch keine zusätzlichen Standorte ...",
     "noDependenciesInstalled": "Keine Abhängigkeiten installiert",
     "noLudusaviTool": "Laden Sie Ludusavi für Backups herunter",
     "noLudusaviToolDesc": "Sie müssen Ludusavi herunterladen lassen, um die Backup-/Wiederherstellungsfunktion auf Ascendara zu verwenden. Klicken Sie weiter, um das Tool automatisch herunterzuladen.",
@@ -781,7 +801,7 @@
     "chooseYourTheme": "Wählen Sie Ihr Thema",
     "clickTheExtensionIcon": "Klicken Sie auf das Erweiterungssymbol und aktivieren Sie den Handler, wenn Sie es installieren",
     "continue": "Weitermachen",
-    "continueWithoutSharing": "Fahren Sie weiter, ohne zu teilen",
+    "continueWithoutSharing": "Weiter ohne Teile",
     "darkThemes": "Dunkle Themen",
     "dependenciesDesc": "Wenn Sie auf einem neuen PC spielen oder kürzlich Windows installiert haben, kann Ascendara Ihnen dabei helfen, diese wesentlichen Komponenten zu installieren, um die beste Erfahrung zu gewährleisten",
     "downloadGamesFaster": "Laden Sie die Spiele schneller herunter",

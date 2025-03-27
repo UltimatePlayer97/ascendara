@@ -1,5 +1,11 @@
 {
   "app": {
+    "admin": {
+      "warning": {
+        "message": "Reinicie as Ascendara sem privilégios de administrador. A execução no modo de administrador causa problemas de localização de caminhos e outros problemas.",
+        "title": "Não é possível executar no modo de administrador"
+      }
+    },
     "brokenVersion": {
       "description": "Esta versão do Ascendara contém problemas críticos conhecidos com sua funcionalidade, como downloads, atualização e outras funções principais.",
       "development": "Ao usar esta versão, você pode encontrar problemas ou falhas. Atualize ascendara para a versão mais recente do site.",
@@ -234,6 +240,11 @@
     },
     "screenshots": "Capturas de tela",
     "scrollToViewMore": "Role para ver mais detalhes do jogo",
+    "selectPath": {
+      "default": "Caminho padrão",
+      "description": "Você tem diretórios adicionais definidos em suas preferências, escolha um abaixo para baixar este jogo.",
+      "title": "Onde você deseja baixar este jogo?"
+    },
     "sendingTorrent": "Enviando torrent ...",
     "shareGame": "Compartilhe o link do jogo ascendara",
     "size": "Tamanho",
@@ -293,7 +304,7 @@
     "retryDownloadDescription": "Atualmente, a tentativa automaticamente de downloads não está implementada. Para tentar novamente o download, cancelar e excluir o download falhado aqui, procure o jogo novamente e baixe novamente.",
     "speedHistory": "Baixar velocidades",
     "statistics": "Estatística",
-    "updating": "Jogo de atualização ...",
+    "updating": "Atualizando o jogo ...",
     "verificationFailed": "Os arquivos falharam em verificar",
     "verificationFailed1": "{{numFailed}} o arquivo falhou ao verificar",
     "verificationFailed2": "{{numFailed}} arquivos falharam em verificar",
@@ -501,6 +512,7 @@
   "profile": {
     "acrossGames": "Em todos os seus jogos baixados",
     "avgSession": "Sessão média",
+    "customImage": "Imagem de perfil personalizada",
     "downloadHistory": "Baixar histórico",
     "games": "Jogos que você joga",
     "gamesPlayed": "Jogos jogados",
@@ -508,12 +520,17 @@
     "memberSince": "Você começou a usar ascendara em {{date}}",
     "mostPlayed": "Mais jogou jogo",
     "nextLevel": "Próximo: nível {{level}}",
+    "noGames": "Sem jogos",
     "notreallol": "Esse nível é baseado no seu tempo de reprodução e lançamentos. É completamente local e não é enviado para nenhum servidor.",
+    "orUploadImage": "Carregue uma imagem para mudar",
     "perGameAvg": "De Playtime por jogo",
     "playTimeDistribution": "Distribuição do tempo de reprodução nos seus 5 melhores jogos jogados",
+    "switchToEmoji": "Clique em um emoji para alternar",
     "topGames": "Seus melhores jogos",
     "totalPlaytime": "Total de jogo",
     "totalXP": "Total XP: {{xp}}",
+    "uploadImage": "Carregar imagem",
+    "usingEmoji": "Usando emoji",
     "yourLevel": "Seu nível"
   },
   "search": {
@@ -554,8 +571,10 @@
     "visit-status-page": "Visite a página de status"
   },
   "settings": {
+    "addLocation": "Adicionar diretório de download",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra permite configurar um provedor de informações de jogo, permitindo ler informações adicionais sobre todos os jogos.",
+    "additionalLocations": "Locais adicionais",
     "advanced": "Avançado",
     "allDependenciesInstalled": "Todas as dependências instaladas",
     "ascendaraAnalytics": "Análise de uso",
@@ -580,12 +599,12 @@
     "customThreadCount": "Contagem de threads personalizados",
     "customThreadCountDesc": "Valores mais altos podem melhorar a velocidade de download, mas exigem mais energia e memória da CPU. Máximo: 32 threads",
     "darkThemes": "Temas escuros",
-    "downloadLocation": "Baixar localização",
+    "defaultDownloadLocation": "Localização de download padrão",
     "downloadLocationWarning": "Ascendara não pode gravar arquivos no diretório escolhido. A mudança não foi salva.",
     "downloadThreads": "Baixar desempenho",
     "downloadThreadsPresets": {
       "extreme": "Extremo (16 threads) - use com cautela",
-      "high": "High (8 threads) - melhor desempenho",
+      "high": "High (8 threads) - Melhor desempenho",
       "low": "Baixo (2 fios) - uso mínimo da CPU",
       "normal": "Normal (4 threads) - Recomendado para a maioria dos usuários",
       "veryHigh": "Muito alto (12 threads) - para conexões rápidas"
@@ -648,6 +667,7 @@
     "manageDependencies": "Gerenciar dependências",
     "matureContent": "Conteúdo maduro",
     "matureContentDescription": "Permitir jogos com temas maduros aparecem nos resultados da pesquisa",
+    "noAdditionalLocations": "Ainda não há locais adicionais ...",
     "noDependenciesInstalled": "Nenhuma dependência instalada",
     "noLudusaviTool": "Baixe Ludusavi para backups",
     "noLudusaviToolDesc": "Você precisa ter Ludusavi baixado para usar o recurso de backup/restauração em Ascendara. Clique em Continuar para baixar a ferramenta automaticamente.",
