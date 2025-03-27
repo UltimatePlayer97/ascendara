@@ -29,6 +29,9 @@ import {
   Hand,
   RefreshCw,
   CircleAlert,
+  Plus,
+  FolderOpen,
+  X,
   ExternalLink,
   History,
   ChartNoAxesCombined,
@@ -905,185 +908,192 @@ function Settings() {
                         </p>
                       </div>
                     )}
-                    <Label
-                      htmlFor="downloadPath"
-                      className={isDownloaderRunning ? "opacity-50" : ""}
-                    >
-                      {t("settings.downloadLocation")}
-                    </Label>
-                    {!canCreateFiles && (
-                      <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                        <ShieldAlert size={18} />
-                        <p className="text-sm font-medium">
-                          {t("settings.downloadLocationWarning")}
-                        </p>
-                      </div>
-                    )}
-                    <div className="mt-2 flex gap-2">
-                      <Input
-                        id="downloadPath"
-                        disabled={isDownloaderRunning}
-                        value={downloadPath}
-                        readOnly
-                        className="flex-1"
-                      />
-                      <Button
-                        disabled={isDownloaderRunning}
-                        className="text-secondary"
-                        onClick={handleDirectorySelect}
-                      >
-                        {t("settings.selectDirectory")}
-                      </Button>
-                    </div>
-                  </div>
 
-                  <div className="mt-4">
-                    <Label className={isDownloaderRunning ? "opacity-50" : ""}>
-                      Additional Download Paths
-                    </Label>
-                    <Card className="mt-2 p-4">
-                      <div className="space-y-3">
-                        {settings.additionalDownloadDirectorys?.map((path, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Input
-                              value={path}
-                              readOnly
-                              disabled={isDownloaderRunning}
-                              className="flex-1"
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              disabled={isDownloaderRunning}
-                              onClick={() => {
+                    <div className="mb-6">
+                      <Label
+                        htmlFor="downloadThreads"
+                        className={isDownloaderRunning ? "opacity-50" : ""}
+                      >
+                        {t("settings.downloadThreads")}
+                      </Label>
+                      <Select
+                        disabled={isDownloaderRunning}
+                        value={
+                          settings.threadCount === 0
+                            ? "custom"
+                            : (settings.threadCount || 4).toString()
+                        }
+                        onValueChange={value => {
+                          const threadCount = value === "custom" ? 0 : parseInt(value);
+                          handleSettingChange("threadCount", threadCount);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2">
+                            {t("settings.downloadThreadsPresets.low")}
+                          </SelectItem>
+                          <SelectItem value="4">
+                            {t("settings.downloadThreadsPresets.normal")}
+                          </SelectItem>
+                          <SelectItem value="8">
+                            {t("settings.downloadThreadsPresets.high")}
+                          </SelectItem>
+                          <SelectItem value="12">
+                            {t("settings.downloadThreadsPresets.veryHigh")}
+                          </SelectItem>
+                          <SelectItem value="16">
+                            {t("settings.downloadThreadsPresets.extreme")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {/* Custom thread count input */}
+                      {settings.threadCount === 0 && (
+                        <div className="mt-4">
+                          <Label>{t("settings.customThreadCount")}</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="32"
+                            value={4}
+                            onChange={e => {
+                              const value = Math.max(
+                                1,
+                                Math.min(32, parseInt(e.target.value) || 1)
+                              );
+                              handleSettingChange("threadCount", value);
+                            }}
+                            className="mt-1"
+                          />
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {t("settings.customThreadCountDesc")}
+                          </p>
+                        </div>
+                      )}
+                      {settings.threadCount > 8 && (
+                        <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                          <CircleAlert size={14} />
+                          <p className="text-sm">
+                            {t(
+                              "settings.highThreadWarning",
+                              "High thread counts may cause download issues. Use with caution."
+                            )}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Default Download Path Section */}
+                      <div>
+                        <Label
+                          htmlFor="defaultDownloadPath"
+                          className={isDownloaderRunning ? "opacity-50" : ""}
+                        >
+                          {t("settings.defaultDownloadLocation")}
+                        </Label>
+                        {!canCreateFiles && (
+                          <div className="mt-1 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                            <ShieldAlert size={16} />
+                            <p className="text-sm font-medium">
+                              {t("settings.downloadLocationWarning")}
+                            </p>
+                          </div>
+                        )}
+                        <div className="mt-2 flex gap-2">
+                          <Input
+                            id="defaultDownloadPath"
+                            disabled={isDownloaderRunning}
+                            value={downloadPath}
+                            readOnly
+                            className="flex-1"
+                          />
+                          <Button
+                            disabled={isDownloaderRunning}
+                            className="shrink-0 text-secondary"
+                            onClick={handleDirectorySelect}
+                          >
+                            {t("settings.selectDirectory")}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Additional Download Paths Section */}
+                      <div className="border-t pt-6">
+                        <div className="mb-2 flex items-center justify-between">
+                          <Label className={isDownloaderRunning ? "opacity-50" : ""}>
+                            {t("settings.additionalLocations")}
+                          </Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={isDownloaderRunning}
+                            onClick={async () => {
+                              const path = await window.electron.ipcRenderer.invoke(
+                                "open-directory-dialog"
+                              );
+                              if (path) {
                                 const newPaths = [
-                                  ...settings.additionalDownloadDirectorys,
+                                  ...(settings.additionalDownloadDirectorys || []),
+                                  path,
                                 ];
-                                newPaths.splice(index, 1);
                                 handleSettingChange(
                                   "additionalDownloadDirectorys",
                                   newPaths
                                 );
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                              }
+                            }}
+                            className="h-8"
+                          >
+                            <Plus size={16} className="mr-1" />
+                            {t("settings.addLocation")}
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          {settings.additionalDownloadDirectorys?.length === 0 ? (
+                            <p className="text-sm italic text-muted-foreground">
+                              {t("settings.noAdditionalLocations")}
+                            </p>
+                          ) : (
+                            settings.additionalDownloadDirectorys?.map((path, index) => (
+                              <div
+                                key={index}
+                                className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
                               >
-                                <path d="M18 6 6 18" />
-                                <path d="m6 6 12 12" />
-                              </svg>
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          disabled={isDownloaderRunning}
-                          className="w-full"
-                          variant="outline"
-                          onClick={async () => {
-                            const path = await window.electron.ipcRenderer.invoke(
-                              "open-directory-dialog"
-                            );
-                            if (path) {
-                              const newPaths = [
-                                ...(settings.additionalDownloadDirectorys || []),
-                                path,
-                              ];
-                              handleSettingChange(
-                                "additionalDownloadDirectorys",
-                                newPaths
-                              );
-                            }
-                          }}
-                        >
-                          Add Download Path
-                        </Button>
-                      </div>
-                    </Card>
-                  </div>
-
-                  <div className="mb-6">
-                    <Label
-                      htmlFor="downloadThreads"
-                      className={isDownloaderRunning ? "opacity-50" : ""}
-                    >
-                      {t("settings.downloadThreads")}
-                    </Label>
-                    <Select
-                      disabled={isDownloaderRunning}
-                      value={
-                        settings.threadCount === 0
-                          ? "custom"
-                          : (settings.threadCount || 4).toString()
-                      }
-                      onValueChange={value => {
-                        const threadCount = value === "custom" ? 0 : parseInt(value);
-                        handleSettingChange("threadCount", threadCount);
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2">
-                          {t("settings.downloadThreadsPresets.low")}
-                        </SelectItem>
-                        <SelectItem value="4">
-                          {t("settings.downloadThreadsPresets.normal")}
-                        </SelectItem>
-                        <SelectItem value="8">
-                          {t("settings.downloadThreadsPresets.high")}
-                        </SelectItem>
-                        <SelectItem value="12">
-                          {t("settings.downloadThreadsPresets.veryHigh")}
-                        </SelectItem>
-                        <SelectItem value="16">
-                          {t("settings.downloadThreadsPresets.extreme")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    {/* Custom thread count input */}
-                    {settings.threadCount === 0 && (
-                      <div className="mt-4">
-                        <Label>{t("settings.customThreadCount")}</Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="32"
-                          value={4}
-                          onChange={e => {
-                            const value = Math.max(
-                              1,
-                              Math.min(32, parseInt(e.target.value) || 1)
-                            );
-                            handleSettingChange("threadCount", value);
-                          }}
-                          className="mt-1"
-                        />
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {t("settings.customThreadCountDesc")}
-                        </p>
-                      </div>
-                    )}
-                    {settings.threadCount > 8 && (
-                      <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                        <CircleAlert size={14} />
-                        <p className="text-sm">
-                          {t(
-                            "settings.highThreadWarning",
-                            "High thread counts may cause download issues. Use with caution."
+                                <FolderOpen
+                                  size={16}
+                                  className="shrink-0 text-muted-foreground"
+                                />
+                                <span className="flex-1 truncate text-sm" title={path}>
+                                  {path}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  disabled={isDownloaderRunning}
+                                  onClick={() => {
+                                    const newPaths = [
+                                      ...settings.additionalDownloadDirectorys,
+                                    ];
+                                    newPaths.splice(index, 1);
+                                    handleSettingChange(
+                                      "additionalDownloadDirectorys",
+                                      newPaths
+                                    );
+                                  }}
+                                  className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                                >
+                                  <X size={16} />
+                                </Button>
+                              </div>
+                            ))
                           )}
-                        </p>
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
