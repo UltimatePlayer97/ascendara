@@ -252,7 +252,6 @@ ipcMain.handle("install-tool", async (event, tool) => {
       console.error("Error reading timestamp file:", error);
     }
 
-    // Merge new data with existing data
     const timestampData = {
       ...existingData,
       installedTools,
@@ -537,7 +536,7 @@ class SettingsManager {
     this.sensitiveKeys = ["twitchSecret", "twitchClientId", "giantBombKey"];
     this.defaultSettings = {
       downloadDirectory: "",
-      additionalDownloadDirectorys: [],
+      additionalDirectories: [],
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
       viewWorkshopPage: false,
@@ -1645,44 +1644,46 @@ const deleteGameDirectory = async game => {
 ipcMain.handle("get-game-image", async (event, game) => {
   const settings = settingsManager.getSettings();
   try {
-    if (!settings.downloadDirectory) {
-      console.error("Download directory not set");
+    if (!settings.downloadDirectory || !settings.additionalDirectories) {
+      console.error("Download directories not properly configured");
       return null;
     }
 
-    const downloadDirectory = settings.downloadDirectory;
-    const gamesDirectory = path.join(downloadDirectory, "games");
-
-    // Ensure the games directory exists
-    if (!fs.existsSync(gamesDirectory)) {
-      fs.mkdirSync(gamesDirectory, { recursive: true });
-    }
-
-    // Check for game image with different possible extensions
+    const allDirectories = [
+      settings.downloadDirectory,
+      ...settings.additionalDirectories,
+    ];
     const possibleExtensions = [".jpg", ".jpeg", ".png"];
 
-    for (const ext of possibleExtensions) {
-      const imagePath = path.join(gamesDirectory, `${game}.ascendara${ext}`);
-      if (fs.existsSync(imagePath)) {
-        const imageBuffer = fs.readFileSync(imagePath);
-        return imageBuffer.toString("base64");
+    // Search in all configured directories
+    for (const directory of allDirectories) {
+      // Check in the games subdirectory first
+      const gamesDirectory = path.join(directory, "games");
+      if (fs.existsSync(gamesDirectory)) {
+        // Check for game image with different possible extensions
+        for (const ext of possibleExtensions) {
+          const imagePath = path.join(gamesDirectory, `${game}.ascendara${ext}`);
+          if (fs.existsSync(imagePath)) {
+            const imageBuffer = fs.readFileSync(imagePath);
+            return imageBuffer.toString("base64");
+          }
+        }
       }
-    }
 
-    // Fallback to check the old location (individual game directory) for backward compatibility
-    const gameDirectory = path.join(downloadDirectory, game);
-    if (fs.existsSync(gameDirectory)) {
-      const imageFiles = fs.readdirSync(gameDirectory);
-
-      for (const file of imageFiles) {
-        if (
-          file === "header.ascendara.jpg" ||
-          file === "header.ascendara.png" ||
-          file === "header.jpeg"
-        ) {
-          const imagePath = path.join(gameDirectory, file);
-          const imageBuffer = fs.readFileSync(imagePath);
-          return imageBuffer.toString("base64");
+      // Fallback to check the old location (individual game directory)
+      const gameDirectory = path.join(directory, game);
+      if (fs.existsSync(gameDirectory)) {
+        const imageFiles = fs.readdirSync(gameDirectory);
+        for (const file of imageFiles) {
+          if (
+            file === "header.ascendara.jpg" ||
+            file === "header.ascendara.png" ||
+            file === "header.jpeg"
+          ) {
+            const imagePath = path.join(gameDirectory, file);
+            const imageBuffer = fs.readFileSync(imagePath);
+            return imageBuffer.toString("base64");
+          }
         }
       }
     }
@@ -1708,19 +1709,38 @@ ipcMain.handle("can-create-files", async (event, directory) => {
 // Download the file
 ipcMain.handle(
   "download-file",
-  async (event, link, game, online, dlc, isVr, version, imgID, size) => {
+  async (
+    event,
+    link,
+    game,
+    online,
+    dlc,
+    isVr,
+    version,
+    imgID,
+    size,
+    additionalDirIndex
+  ) => {
     console.log(
-      `Downloading file: ${link}, game: ${game}, online: ${online}, dlc: ${dlc}, isVr: ${isVr}, version: ${version}, size: ${size}`
+      `Downloading file: ${link}, game: ${game}, online: ${online}, dlc: ${dlc}, isVr: ${isVr}, version: ${version}, size: ${size}, additionalDirIndex: ${additionalDirIndex}`
     );
 
-    try {
-      // Get download directory from settings
-      const data = await fs.promises.readFile(
-        path.join(app.getPath("userData"), "ascendarasettings.json"),
-        "utf8"
-      );
-      const settings = JSON.parse(data);
+    const settings = settingsManager.getSettings();
+    let targetDirectory;
+    if (additionalDirIndex === 0) {
+      // Use default download directory from settings
+      targetDirectory = settings.downloadDirectory;
+    } else {
+      // Get additional directories array from settings and use the specified index
+      const additionalDirectories = settings.additionalDirectories || [];
+      targetDirectory = additionalDirectories[additionalDirIndex - 1];
 
+      if (!targetDirectory) {
+        throw new Error(`Invalid additional directory index: ${additionalDirIndex}`);
+      }
+    }
+
+    try {
       if (!settings.downloadDirectory) {
         console.error("Download directory not set");
         return;
@@ -1728,7 +1748,7 @@ ipcMain.handle(
       originalGame = game;
       game = sanitizeText(game);
       // Create game directory
-      const gameDirectory = path.join(settings.downloadDirectory, game);
+      const gameDirectory = path.join(targetDirectory, game);
       await fs.promises.mkdir(gameDirectory, { recursive: true });
 
       // Download game header image
@@ -1783,7 +1803,7 @@ ipcMain.handle(
               isVr,
               version,
               size,
-              settings.downloadDirectory,
+              targetDirectory,
             ].concat(
               settings.notifications ? [`--withNotification`, settings.theme] : []
             );
@@ -2603,32 +2623,53 @@ ipcMain.handle("get-games", async () => {
       console.error("Download directory not set");
       return;
     }
-    const downloadDirectory = settings.downloadDirectory;
-    // Get all subdirectories in the download directory
-    const subdirectories = await fs.promises.readdir(downloadDirectory, {
-      withFileTypes: true,
-    });
-    const gameDirectories = subdirectories
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
 
-    // Read {game}.ascendara.json from each subdirectory
-    const games = await Promise.all(
-      gameDirectories.map(async dir => {
-        const gameInfoPath = path.join(downloadDirectory, dir, `${dir}.ascendara.json`);
-        try {
-          const gameInfoData = await fs.promises.readFile(gameInfoPath, "utf8");
-          return JSON.parse(gameInfoData);
-        } catch (error) {
-          const errorKey = `${dir}_${error.code}`;
-          if (shouldLogError(errorKey)) {
-            console.error(`Error reading game info file for ${dir}:`, error);
-          }
-          return null;
-        }
-      })
-    );
-    return games.filter(game => game !== null);
+    // Combine main download directory with additional directories
+    const allDownloadDirectories = [
+      settings.downloadDirectory,
+      ...(settings.additionalDirectories || []),
+    ].filter(Boolean); // Remove any null/undefined entries
+
+    // Process all download directories
+    const allGamesPromises = allDownloadDirectories.map(async downloadDir => {
+      try {
+        // Get all subdirectories in the download directory
+        const subdirectories = await fs.promises.readdir(downloadDir, {
+          withFileTypes: true,
+        });
+        const gameDirectories = subdirectories
+          .filter(dirent => dirent.isDirectory())
+          .map(dirent => dirent.name);
+
+        // Read {game}.ascendara.json from each subdirectory
+        const dirGames = await Promise.all(
+          gameDirectories.map(async dir => {
+            const gameInfoPath = path.join(downloadDir, dir, `${dir}.ascendara.json`);
+            try {
+              const gameInfoData = await fs.promises.readFile(gameInfoPath, "utf8");
+              return JSON.parse(gameInfoData);
+            } catch (error) {
+              const errorKey = `${dir}_${error.code}`;
+              if (shouldLogError(errorKey)) {
+                console.error(`Error reading game info file for ${dir}:`, error);
+              }
+              return null;
+            }
+          })
+        );
+        return dirGames;
+      } catch (error) {
+        console.error(`Error reading directory ${downloadDir}:`, error);
+        return [];
+      }
+    });
+
+    // Flatten all results and filter out nulls
+    const allGames = (await Promise.all(allGamesPromises))
+      .flat()
+      .filter(game => game !== null);
+
+    return allGames;
   } catch (error) {
     console.error("Error reading the settings file:", error);
     return [];
@@ -2900,87 +2941,96 @@ ipcMain.handle("open-game-directory", (event, game, isCustom) => {
     const executablePath = process.execPath;
     const executableDir = path.dirname(executablePath);
     shell.openPath(executableDir);
+    return;
   }
+
   if (game === "workshop") {
     const steamCMDDir = path.join(os.homedir(), "ascendaraSteamcmd");
     const workshopContentPath = path.join(steamCMDDir, "steamapps/workshop/content");
     shell.openPath(workshopContentPath);
+    return;
   }
+
   if (game === "backupDir") {
-    const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-    try {
-      const data = fs.readFileSync(filePath, "utf8");
-      const settings = JSON.parse(data);
-      if (!settings.ludusavi.backupLocation) {
-        console.error("Backup directory not set");
+    const settings = settingsManager.getSettings();
+    if (!settings.ludusavi?.backupLocation) {
+      console.error("Backup directory not set");
+      return;
+    }
+    shell.openPath(settings.ludusavi.backupLocation);
+    return;
+  }
+
+  const settings = settingsManager.getSettings();
+  if (!settings.downloadDirectory || !settings.additionalDirectories) {
+    console.error("Download directories not properly configured");
+    return;
+  }
+
+  const allDirectories = [settings.downloadDirectory, ...settings.additionalDirectories];
+
+  if (!isCustom) {
+    // Search for game directory in all configured directories
+    for (const directory of allDirectories) {
+      const gameDirectory = path.join(directory, game);
+      if (fs.existsSync(gameDirectory)) {
+        shell.openPath(gameDirectory);
         return;
       }
-      shell.openPath(settings.ludusavi.backupLocation);
-    } catch (error) {
-      console.error("Error reading the settings file:", error);
     }
+    console.error(`Game directory not found for ${game}`);
   } else {
-    if (!isCustom) {
-      const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-      try {
-        const data = fs.readFileSync(filePath, "utf8");
-        const settings = JSON.parse(data);
-        if (!settings.downloadDirectory) {
-          console.error("Download directory not set");
-          return;
-        }
-        const downloadDirectory = settings.downloadDirectory;
-        const gameDirectory = path.join(downloadDirectory, game);
-        shell.openPath(gameDirectory);
-      } catch (error) {
-        console.error("Error reading the settings file:", error);
+    try {
+      // For custom games, check games.json in main download directory
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+
+      if (gameInfo) {
+        const executablePath = gameInfo.executable;
+        const executableDir = path.dirname(executablePath);
+        shell.openPath(executableDir);
+      } else {
+        console.error(`Game not found in games.json: ${game}`);
       }
-    } else {
-      const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-      try {
-        const data = fs.readFileSync(filePath, "utf8");
-        const settings = JSON.parse(data);
-        if (!settings.downloadDirectory) {
-          console.error("Download directory not set");
-          return;
-        }
-        const downloadDirectory = settings.downloadDirectory;
-        const gamesFilePath = path.join(downloadDirectory, "games.json");
-        const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
-        const gameInfo = gamesData.games.find(g => g.game === game);
-        if (gameInfo) {
-          const executablePath = gameInfo.executable;
-          const executableDir = path.dirname(executablePath);
-          shell.openPath(executableDir);
-        } else {
-          console.error(`Game not found in games.json: ${game}`);
-        }
-      } catch (error) {
-        console.error("Error reading the settings file:", error);
-      }
+    } catch (error) {
+      console.error("Error reading games.json:", error);
     }
   }
 });
 
-// Modify the game executable
 ipcMain.handle("modify-game-executable", (event, game, executable) => {
-  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  const settings = settingsManager.getSettings();
   try {
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
-    if (!settings.downloadDirectory) {
-      console.error("Download directory not set");
-      return;
+    if (!settings.downloadDirectory || !settings.additionalDirectories) {
+      console.error("Download directories not properly configured");
+      return false;
     }
-    const downloadDirectory = settings.downloadDirectory;
-    const gameDirectory = path.join(downloadDirectory, game);
-    const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
-    const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
-    const gameInfo = JSON.parse(gameInfoData);
-    gameInfo.executable = executable;
-    fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+
+    const allDirectories = [
+      settings.downloadDirectory,
+      ...settings.additionalDirectories,
+    ];
+
+    // Search for the game in all configured directories
+    for (const directory of allDirectories) {
+      const gameDirectory = path.join(directory, game);
+      const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+
+      if (fs.existsSync(gameInfoPath)) {
+        const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+        const gameInfo = JSON.parse(gameInfoData);
+        gameInfo.executable = executable;
+        fs.writeFileSync(gameInfoPath, JSON.stringify(gameInfo, null, 2));
+        return true;
+      }
+    }
+
+    console.error(`Game ${game} not found in any configured directory`);
+    return false;
   } catch (error) {
-    console.error("Error reading the settings file:", error);
+    console.error("Error modifying game executable:", error);
+    return false;
   }
 });
 
@@ -3000,24 +3050,39 @@ ipcMain.handle(
   "play-game",
   async (event, game, isCustom = false, backupOnClose = false) => {
     try {
-      const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-      const data = fs.readFileSync(filePath, "utf8");
-      const settings = JSON.parse(data);
-
-      if (!settings.downloadDirectory) {
-        throw new Error("Download directory not set");
+      const settings = settingsManager.getSettings();
+      if (!settings.downloadDirectory || !settings.additionalDirectories) {
+        throw new Error("Download directories not properly configured");
       }
 
       let executable;
       let gameDirectory;
+      const allDirectories = [
+        settings.downloadDirectory,
+        ...settings.additionalDirectories,
+      ];
 
       if (!isCustom) {
         const sanitizedGame = sanitizeText(game);
-        gameDirectory = path.join(settings.downloadDirectory, sanitizedGame);
-        const gameInfoPath = path.join(gameDirectory, `${sanitizedGame}.ascendara.json`);
 
-        if (!fs.existsSync(gameInfoPath)) {
-          throw new Error(`Game info file not found: ${gameInfoPath}`);
+        // Search for game in all configured directories
+        let gameInfoPath;
+        for (const directory of allDirectories) {
+          const testGameDir = path.join(directory, sanitizedGame);
+          const testGameInfoPath = path.join(
+            testGameDir,
+            `${sanitizedGame}.ascendara.json`
+          );
+
+          if (fs.existsSync(testGameInfoPath)) {
+            gameDirectory = testGameDir;
+            gameInfoPath = testGameInfoPath;
+            break;
+          }
+        }
+
+        if (!gameInfoPath) {
+          throw new Error(`Game info file not found for ${game}`);
         }
 
         const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
@@ -3028,11 +3093,9 @@ ipcMain.handle(
         }
 
         // Check if the executable path is already absolute
-        if (path.isAbsolute(gameInfo.executable)) {
-          executable = gameInfo.executable;
-        } else {
-          executable = path.join(gameDirectory, gameInfo.executable);
-        }
+        executable = path.isAbsolute(gameInfo.executable)
+          ? gameInfo.executable
+          : path.join(gameDirectory, gameInfo.executable);
       } else {
         const gamesPath = path.join(settings.downloadDirectory, "games.json");
         if (!fs.existsSync(gamesPath)) {
@@ -3050,12 +3113,11 @@ ipcMain.handle(
         gameDirectory = path.dirname(executable);
       }
 
-      // Validate paths
+      // Rest of the function remains the same
       if (!fs.existsSync(executable)) {
         throw new Error(`Game executable not found: ${executable}`);
       }
 
-      // Check if game is already running
       if (runGameProcesses.has(game)) {
         throw new Error("Game is already running");
       }
@@ -3264,7 +3326,6 @@ ipcMain.handle("required-libraries", async (event, game) => {
 
 // Delete the game
 ipcMain.handle("delete-game", async (event, game) => {
-  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
   try {
     if (game === "local") {
       const timestampFilePath = path.join(
@@ -3275,17 +3336,30 @@ ipcMain.handle("delete-game", async (event, game) => {
       return;
     }
 
-    const data = fs.readFileSync(filePath, "utf8");
-    const settings = JSON.parse(data);
-    if (!settings.downloadDirectory) {
-      console.error("Download directory not set");
+    const settings = settingsManager.getSettings();
+    if (!settings.downloadDirectory || !settings.additionalDirectories) {
+      console.error("Download directories not properly configured");
       return;
     }
-    const downloadDirectory = settings.downloadDirectory;
-    const gameDirectory = path.join(downloadDirectory, game);
-    fs.rmSync(gameDirectory, { recursive: true, force: true });
+
+    const allDirectories = [
+      settings.downloadDirectory,
+      ...settings.additionalDirectories,
+    ];
+
+    // Search for game directory in all configured directories
+    for (const directory of allDirectories) {
+      const gameDirectory = path.join(directory, game);
+      if (fs.existsSync(gameDirectory)) {
+        fs.rmSync(gameDirectory, { recursive: true, force: true });
+        console.log(`Deleted game from directory: ${gameDirectory}`);
+        return;
+      }
+    }
+
+    console.error(`Game directory not found for ${game}`);
   } catch (error) {
-    console.error("Error reading the settings file:", error);
+    console.error("Error deleting game:", error);
   }
 });
 
@@ -3634,32 +3708,63 @@ ipcMain.handle("clear-cache", async () => {
   }
 });
 
-let driveSpaceCache = {
-  freeSpace: 0,
-  totalSpace: 0,
-  lastCalculated: 0,
-};
+// Cache object to store drive space info
+const driveSpaceCache = new Map();
+
+// Debounce time in ms (10 seconds)
+const DEBOUNCE_TIME = 10000;
+
+// Watch for significant changes using a debounced function
+let debouncedUpdate = null;
 
 ipcMain.handle("get-drive-space", async (event, directory) => {
   try {
-    // Check if we have a recent cache (less than 5 minutes old)
+    const cache = driveSpaceCache.get(directory);
     const now = Date.now();
-    if (driveSpaceCache.lastCalculated > now - 5 * 60 * 1000) {
+
+    // If we have valid cache, return it immediately
+    if (cache && cache.lastCalculated > now - 5 * 60 * 1000) {
       return {
-        freeSpace: driveSpaceCache.freeSpace,
-        totalSpace: driveSpaceCache.totalSpace,
+        freeSpace: cache.freeSpace,
+        totalSpace: cache.totalSpace,
       };
     }
 
-    const { available, total } = await disk.check(directory);
-    console.log(`Drive space for ${directory}: ${available}/${total} bytes`);
+    // Debounce the actual disk check to prevent multiple rapid checks
+    if (!debouncedUpdate) {
+      debouncedUpdate = setTimeout(async () => {
+        try {
+          const { available, total } = await disk.check(directory);
 
-    // Update cache
-    driveSpaceCache = {
+          driveSpaceCache.set(directory, {
+            freeSpace: available,
+            totalSpace: total,
+            lastCalculated: Date.now(),
+          });
+
+          debouncedUpdate = null;
+        } catch (error) {
+          console.error("Error in debounced drive space update:", error);
+        }
+      }, DEBOUNCE_TIME);
+    }
+
+    // If we have any cached data (even if expired), return it while updating
+    if (cache) {
+      return {
+        freeSpace: cache.freeSpace,
+        totalSpace: cache.totalSpace,
+      };
+    }
+
+    // If no cache exists at all, we need to wait for the first check
+    const { available, total } = await disk.check(directory);
+
+    driveSpaceCache.set(directory, {
       freeSpace: available,
       totalSpace: total,
       lastCalculated: now,
-    };
+    });
 
     return { freeSpace: available, totalSpace: total };
   } catch (error) {
@@ -3668,21 +3773,79 @@ ipcMain.handle("get-drive-space", async (event, directory) => {
   }
 });
 
-// Function to pre-fetch drive space
-async function fetchDriveSpace(directory) {
+// Cache for installed games size
+const gamesSizeCache = {
+  totalSize: 0,
+  lastCalculated: 0,
+};
+
+// Calculate size of directory recursively
+async function getDirectorySize(directoryPath) {
+  let totalSize = 0;
   try {
-    const { available, total } = await disk.check(directory);
-    driveSpaceCache = {
-      freeSpace: available,
-      totalSpace: total,
-      lastCalculated: Date.now(),
-    };
-    return { freeSpace: available, totalSpace: total };
+    const files = await fs.readdir(directoryPath);
+
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file);
+      const stats = await fs.stat(filePath);
+
+      if (stats.isDirectory()) {
+        totalSize += await getDirectorySize(filePath);
+      } else {
+        totalSize += stats.size;
+      }
+    }
+
+    return totalSize;
   } catch (error) {
-    console.error("Error pre-fetching drive space:", error);
-    return { freeSpace: 0, totalSpace: 0 };
+    console.error(`Error calculating size for ${directoryPath}:`, error);
+    return 0;
   }
 }
+
+ipcMain.handle("get-installed-games-size", async () => {
+  const settings = settingsManager.getSettings();
+  try {
+    const now = Date.now();
+
+    // Return cached size if less than 5 minutes old
+    if (gamesSizeCache.lastCalculated > now - 5 * 60 * 1000) {
+      return {
+        success: true,
+        calculating: false,
+        totalSize: gamesSizeCache.totalSize,
+      };
+    }
+
+    const downloadDir = settings.downloadDirectory;
+    if (!downloadDir) {
+      return {
+        success: false,
+        calculating: false,
+        totalSize: 0,
+      };
+    }
+
+    const totalSize = await getDirectorySize(downloadDir);
+
+    // Update cache
+    gamesSizeCache.totalSize = totalSize;
+    gamesSizeCache.lastCalculated = now;
+
+    return {
+      success: true,
+      calculating: false,
+      totalSize: totalSize,
+    };
+  } catch (error) {
+    console.error("Error getting installed games size:", error);
+    return {
+      success: false,
+      calculating: false,
+      totalSize: 0,
+    };
+  }
+});
 
 ipcMain.handle("get-platform", () => process.platform);
 
@@ -4523,107 +4686,6 @@ ipcMain.handle("qbittorrent:version", async () => {
       success: false,
       error: error.response?.data || error.message,
     };
-  }
-});
-
-// Cache for directory sizes
-let dirSizeCache = {
-  size: 0,
-  lastCalculated: 0,
-  calculating: false,
-};
-
-// Calculate directory size with improved performance
-async function calculateDirSize(dirPath) {
-  let totalSize = 0;
-
-  // Use a stack-based approach instead of recursion to prevent stack overflow
-  const pendingDirs = [dirPath];
-
-  while (pendingDirs.length > 0) {
-    const currentDir = pendingDirs.pop();
-
-    try {
-      const entries = await fs.promises.readdir(currentDir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(currentDir, entry.name);
-
-        try {
-          if (entry.isDirectory()) {
-            pendingDirs.push(fullPath);
-          } else if (entry.isFile()) {
-            const stats = await fs.promises.stat(fullPath);
-            totalSize += stats.size;
-          }
-        } catch (err) {
-          // Skip files with permission issues
-          console.warn(`Error accessing ${fullPath}: ${err.message}`);
-        }
-      }
-
-      // Yield to event loop to prevent blocking
-      await new Promise(resolve => setImmediate(resolve));
-    } catch (err) {
-      console.warn(`Error reading directory ${currentDir}: ${err.message}`);
-    }
-  }
-
-  return totalSize;
-}
-
-// Get total size of installed games from actual directory sizes
-ipcMain.handle("get-installed-games-size", async event => {
-  try {
-    const settings = settingsManager.getSettings();
-    const downloadDirectory = settings.downloadDirectory;
-
-    if (!downloadDirectory || !fs.existsSync(downloadDirectory)) {
-      return { success: false, error: "Download directory not found" };
-    }
-
-    // If we're already calculating, return a special status
-    if (dirSizeCache.calculating) {
-      return { success: true, calculating: true };
-    }
-
-    // Use cache if it's recent (last 5 minutes)
-    const cacheAge = Date.now() - dirSizeCache.lastCalculated;
-    if (dirSizeCache.lastCalculated > 0 && cacheAge < 5 * 60 * 1000) {
-      return { success: true, totalSize: dirSizeCache.size, calculating: false };
-    }
-
-    // Start calculation in background
-    dirSizeCache.calculating = true;
-    event.sender.send("directory-size-status", { calculating: true });
-
-    // Use setImmediate to not block the main thread
-    setImmediate(async () => {
-      try {
-        const totalSize = await calculateDirSize(downloadDirectory);
-
-        // Update cache
-        dirSizeCache = {
-          size: totalSize,
-          lastCalculated: Date.now(),
-          calculating: false,
-        };
-
-        event.sender.send("directory-size-status", { calculating: false });
-        console.log(`Actual download directory size: ${totalSize} bytes`);
-      } catch (error) {
-        dirSizeCache.calculating = false;
-        event.sender.send("directory-size-status", { calculating: false });
-        console.error("Error calculating directory size:", error);
-      }
-    });
-
-    return { success: true, calculating: true };
-  } catch (error) {
-    dirSizeCache.calculating = false;
-    event.sender.send("directory-size-status", { calculating: false });
-    console.error("Error getting installed games size:", error);
-    return { success: false, error: error.message };
   }
 });
 

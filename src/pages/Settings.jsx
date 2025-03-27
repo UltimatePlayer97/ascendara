@@ -1037,13 +1037,10 @@ function Settings() {
                               );
                               if (path) {
                                 const newPaths = [
-                                  ...(settings.additionalDownloadDirectorys || []),
+                                  ...(settings.additionalDirectories || []),
                                   path,
                                 ];
-                                handleSettingChange(
-                                  "additionalDownloadDirectorys",
-                                  newPaths
-                                );
+                                handleSettingChange("additionalDirectories", newPaths);
                               }
                             }}
                             className="h-8"
@@ -1053,12 +1050,12 @@ function Settings() {
                           </Button>
                         </div>
                         <div className="space-y-2">
-                          {settings.additionalDownloadDirectorys?.length === 0 ? (
+                          {settings.additionalDirectories?.length === 0 ? (
                             <p className="text-sm italic text-muted-foreground">
                               {t("settings.noAdditionalLocations")}
                             </p>
                           ) : (
-                            settings.additionalDownloadDirectorys?.map((path, index) => (
+                            settings.additionalDirectories?.map((path, index) => (
                               <div
                                 key={index}
                                 className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
@@ -1075,12 +1072,10 @@ function Settings() {
                                   size="icon"
                                   disabled={isDownloaderRunning}
                                   onClick={() => {
-                                    const newPaths = [
-                                      ...settings.additionalDownloadDirectorys,
-                                    ];
+                                    const newPaths = [...settings.additionalDirectories];
                                     newPaths.splice(index, 1);
                                     handleSettingChange(
-                                      "additionalDownloadDirectorys",
+                                      "additionalDirectories",
                                       newPaths
                                     );
                                   }}

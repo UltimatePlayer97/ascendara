@@ -46,8 +46,7 @@ import {
   Zap,
   AlertTriangle,
   Star,
-  ArrowDown,
-  Download,
+  FolderIcon,
   Apple,
   Gamepad2,
   Gift,
@@ -219,6 +218,7 @@ export default function DownloadPage() {
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [timemachineSetting, setTimemachineSetting] = useState(false);
+  const [showSelectPath, setShowSelectPath] = useState(false);
   const [showTimemachineSelection, setShowTimemachineSelection] = useState(false);
   const [showNewUserGuide, setShowNewUserGuide] = useState(false);
   const [guideStep, setGuideStep] = useState(0);
@@ -237,8 +237,19 @@ export default function DownloadPage() {
   const mainContentRef = useRef(null);
   const scrollThreshold = 30; // Even lower threshold for quicker response
 
+  async function whereToDownload(directUrl = null) {
+    // Check if additional directories are set in settings
+    if (settings.additionalDirectories && settings.additionalDirectories.length > 0) {
+      // Show path selection dialog
+      setShowSelectPath(true);
+    } else {
+      // No additional directories, proceed with direct download
+      await handleDownload(directUrl, 0);
+    }
+  }
+
   // Simple download handler function
-  async function handleDownload(directUrl = null) {
+  async function handleDownload(directUrl = null, dir = null) {
     const sanitizedGameName = sanitizeText(gameData.game);
     if (showNoDownloadPath) {
       return;
@@ -270,7 +281,8 @@ export default function DownloadPage() {
             false,
             gameData.version || "",
             gameData.imgID,
-            gameData.size || ""
+            gameData.size || "",
+            dir
           );
 
           // Keep isStarting true until download actually begins
@@ -342,7 +354,8 @@ export default function DownloadPage() {
         isVrGame || false,
         gameData.version || "",
         gameData.imgID,
-        gameData.size || ""
+        gameData.size || "",
+        dir
       );
       // Keep isStarting true until download actually begins
       const removeDownloadListener = window.electron.onDownloadProgress(downloadInfo => {
@@ -416,7 +429,7 @@ export default function DownloadPage() {
         }
 
         console.log("Handling protocol URL:", cleanUrl);
-        handleDownload(cleanUrl);
+        whereToDownload(cleanUrl);
       } catch (error) {
         console.error("Error handling protocol URL:", error);
         toast.error(t("download.toast.invalidProtocolUrl"));
@@ -1223,7 +1236,7 @@ export default function DownloadPage() {
 
                 <div className="w-full max-w-md">
                   <Button
-                    onClick={() => handleDownload()}
+                    onClick={() => whereToDownload()}
                     disabled={isStartingDownload || !gameData || !torrentRunning}
                     className="h-12 w-full text-lg text-secondary"
                   >
@@ -1273,7 +1286,7 @@ export default function DownloadPage() {
 
                 <div className="w-full max-w-md">
                   <Button
-                    onClick={() => handleDownload()}
+                    onClick={() => whereToDownload()}
                     disabled={isStartingDownload || !gameData}
                     className="h-12 w-full text-lg text-secondary"
                   >
@@ -1474,7 +1487,7 @@ export default function DownloadPage() {
 
                     {!useAscendara && (
                       <Button
-                        onClick={() => handleDownload()}
+                        onClick={() => whereToDownload()}
                         disabled={
                           isStartingDownload ||
                           !selectedProvider ||
@@ -1548,7 +1561,7 @@ export default function DownloadPage() {
 
                         <div className="w-full max-w-sm">
                           <Button
-                            onClick={() => handleDownload()}
+                            onClick={() => whereToDownload()}
                             disabled={isStartingDownload || !gameData}
                             className="h-12 w-full text-lg text-secondary"
                           >
@@ -1759,13 +1772,13 @@ export default function DownloadPage() {
                             )}
 
                             {igdbData.release_date && (
-                              <div className="rounded-full bg-primary/20 px-3 py-1.5 text-sm font-medium text-primary">
+                              <div className="rounded-full bg-primary/20 px-3 py-1 text-sm font-medium text-primary">
                                 {t("download.firstReleasedOn")}: {igdbData.release_date}
                               </div>
                             )}
 
                             {gameData.category && gameData.category.length > 0 && (
-                              <div className="hidden rounded-full bg-card/80 px-3 py-1.5 text-sm font-medium text-foreground md:block">
+                              <div className="hidden rounded-full bg-card/80 px-3 py-1 text-sm font-medium text-foreground md:block">
                                 {gameData.category.slice(0, 2).join(", ")}
                                 {gameData.category.length > 2 && "..."}
                               </div>
@@ -1963,6 +1976,60 @@ export default function DownloadPage() {
           onOpenChange={setShowTimemachineSelection}
         />
       )}
+
+      {/* Select Download Path Dialog */}
+      <AlertDialog open={showSelectPath} onOpenChange={setShowSelectPath}>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-foreground">
+              {t("download.selectPath.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("download.selectPath.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex flex-col gap-4 py-4 text-foreground">
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => {
+                handleDownload(null, 0);
+                setShowSelectPath(false);
+              }}
+            >
+              <FolderIcon className="mr-2 h-4 w-4" />
+              <div className="flex flex-1 items-center gap-2">
+                <span className="truncate">
+                  {settings.downloadDirectory ||
+                    t("download.selectPath.defaultDirectory")}
+                </span>
+                <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                  {t("download.selectPath.default")}
+                </span>
+              </div>
+            </Button>
+            {settings.additionalDirectories?.map((dir, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => {
+                  handleDownload(null, index + 1); // +1 because 0 is default directory
+                  setShowSelectPath(false);
+                }}
+              >
+                <FolderIcon className="mr-2 h-4 w-4" />
+                {dir}
+              </Button>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-foreground">
+              {t("common.cancel")}
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* New User Guide Alert Dialog */}
       <AlertDialog open={showNewUserGuide} onOpenChange={handleCloseGuide}>

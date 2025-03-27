@@ -124,7 +124,17 @@ contextBridge.exposeInMainWorld("electron", {
   stopDownload: game => ipcRenderer.invoke("stop-download", game),
   retryDownload: (link, game, online, dlc, version) =>
     ipcRenderer.invoke("retry-download", link, game, online, dlc, version),
-  downloadFile: (link, game, online, dlc, isVr, version, imgID, size) =>
+  downloadFile: (
+    link,
+    game,
+    online,
+    dlc,
+    isVr,
+    version,
+    imgID,
+    size,
+    additionalDirIndex
+  ) =>
     ipcRenderer.invoke(
       "download-file",
       link,
@@ -134,7 +144,8 @@ contextBridge.exposeInMainWorld("electron", {
       isVr,
       version,
       imgID,
-      size
+      size,
+      additionalDirIndex
     ),
   checkRetryExtract: game => ipcRenderer.invoke("check-retry-extract", game),
   retryExtract: (game, online, dlc, version) =>
