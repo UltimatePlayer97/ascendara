@@ -3522,20 +3522,28 @@ function shouldLogError(errorKey) {
 function checkAdmin() {
   const isWindows = os.platform().startsWith("win");
   if (isWindows) {
-    // For Windows, check admin using elevated privileges check
     try {
+      // Use a simpler and more reliable PowerShell command
       const execSync = require("child_process").execSync;
-      execSync("net session", { stdio: "ignore" });
-      global.hasAdmin = true;
+      const output = execSync(
+        'powershell.exe -NoProfile -Command "&{([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)}"',
+        {
+          stdio: ["pipe", "pipe", "pipe"],
+          encoding: "utf-8",
+        }
+      )
+        .trim()
+        .toLowerCase();
+      hasAdmin = output === "true";
     } catch (e) {
-      global.hasAdmin = false;
+      console.error("Admin check error:", e);
+      hasAdmin = false;
     }
   } else {
     // For non-Windows (Unix-like systems), check using process.getuid()
-    global.hasAdmin = process.getuid && process.getuid() === 0;
+    hasAdmin = process.getuid && process.getuid() === 0;
   }
-
-  return global.hasAdmin;
+  return hasAdmin;
 }
 
 function createWindow() {
