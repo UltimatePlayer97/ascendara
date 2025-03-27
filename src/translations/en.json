@@ -512,6 +512,7 @@
   "profile": {
     "acrossGames": "Across all your downloaded games",
     "avgSession": "Average Session",
+    "customImage": "Custom Profile Image",
     "downloadHistory": "Download History",
     "games": "Games You Play",
     "gamesPlayed": "Games Played",
@@ -521,11 +522,15 @@
     "nextLevel": "Next: Level {{level}}",
     "noGames": "No Games",
     "notreallol": "This level is based on your playtime and launches. It's completely local and not uploaded to any servers.",
+    "orUploadImage": "Upload an image to change",
     "perGameAvg": "Of playtime per game",
     "playTimeDistribution": "Distribution of playtime across your top 5 played games",
+    "switchToEmoji": "Click an emoji to switch",
     "topGames": "Your Top Games",
     "totalPlaytime": "Total Playtime",
     "totalXP": "Total XP: {{xp}}",
+    "uploadImage": "Upload Image",
+    "usingEmoji": "Using Emoji",
     "yourLevel": "Your Level"
   },
   "search": {

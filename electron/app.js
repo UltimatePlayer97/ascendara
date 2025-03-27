@@ -2923,6 +2923,43 @@ ipcMain.handle("open-file-dialog", async (event, exePath = null) => {
   return result.canceled ? null : result.filePaths[0];
 });
 
+ipcMain.handle("upload-profile-image", async (event, imageBase64) => {
+  try {
+    const userDataPath = app.getPath("userData");
+    const imagesDir = path.join(userDataPath, "profile_images");
+
+    // Create directory if it doesn't exist
+    await fs.ensureDir(imagesDir);
+
+    // Save image
+    const imagePath = path.join(imagesDir, "profile.png");
+    const imageBuffer = Buffer.from(imageBase64.split(",")[1], "base64");
+    await fs.writeFile(imagePath, imageBuffer);
+
+    return { success: true, path: imagePath };
+  } catch (error) {
+    console.error("Error saving profile image:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Get profile image
+ipcMain.handle("get-profile-image", async () => {
+  try {
+    const userDataPath = app.getPath("userData");
+    const imagePath = path.join(userDataPath, "profile_images", "profile.png");
+
+    if (await fs.pathExists(imagePath)) {
+      const imageBuffer = await fs.readFile(imagePath);
+      return imageBuffer.toString("base64");
+    }
+    return null;
+  } catch (error) {
+    console.error("Error reading profile image:", error);
+    return null;
+  }
+});
+
 // Get the download directory
 ipcMain.handle("get-download-directory", () => {
   const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");

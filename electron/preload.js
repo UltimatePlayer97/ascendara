@@ -178,6 +178,9 @@ contextBridge.exposeInMainWorld("electron", {
   openURL: url => ipcRenderer.invoke("open-url", url),
   getAPIKey: () => ipcRenderer.invoke("get-api-key"),
   openReqPath: game => ipcRenderer.invoke("required-libraries", game),
+  uploadProfileImage: imageBase64 =>
+    ipcRenderer.invoke("upload-profile-image", imageBase64),
+  getProfileImage: () => ipcRenderer.invoke("get-profile-image"),
   modifyGameExecutable: (game, executable) =>
     ipcRenderer.invoke("modify-game-executable", game, executable),
   getAssetPath: filename => ipcRenderer.invoke("get-asset-path", filename),

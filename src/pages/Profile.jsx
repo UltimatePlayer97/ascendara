@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import UsernameDialog from "@/components/UsernameDialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Trophy, Clock, Smile, Timer, Archive, FileDown } from "lucide-react";
+import {
+  Trophy,
+  Clock,
+  Smile,
+  Timer,
+  Archive,
+  FileDown,
+  Trash2,
+  HelpCircle,
+  Upload,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
@@ -15,9 +26,9 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import LevelingCard from "@/components/LevelingCard";
+import { cn } from "@/lib/utils";
 
 const Profile = () => {
-  const { theme } = useTheme();
   const { t } = useLanguage();
   const [joinDate, setJoinDate] = useState("");
   const [username, setUsername] = useState("");
@@ -26,6 +37,7 @@ const Profile = () => {
   const [selectedEmoji, setSelectedEmoji] = useState(() => {
     return localStorage.getItem("selectedEmoji") || "😊";
   });
+  const [profileImage, setProfileImage] = useState(null);
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -159,7 +171,6 @@ const Profile = () => {
         "🎪",
         "🎨",
         "🎭",
-        "🎪",
         "🎢",
         "🔥",
         "💎",
@@ -262,6 +273,7 @@ const Profile = () => {
 
   useEffect(() => {
     loadProfile();
+    loadProfileImage();
 
     // Add event listener to reload profile when username is updated
     const handleProfileUpdate = () => {
@@ -399,46 +411,193 @@ const Profile = () => {
     }
   }, [games]);
 
+  const handleImageUpload = async e => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const reader = new FileReader();
+        reader.onload = async event => {
+          const base64 = event.target.result;
+          const result = await window.electron.uploadProfileImage(base64);
+          if (result.success) {
+            setProfileImage(base64);
+            localStorage.setItem("profileImage", base64);
+            localStorage.setItem("useEmoji", "false");
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
+  const switchToEmoji = emoji => {
+    setSelectedEmoji(emoji);
+    setProfileImage(null);
+    localStorage.removeItem("profileImage");
+    localStorage.setItem("useEmoji", "true");
+  };
+
+  const removeProfileImage = () => {
+    setProfileImage(null);
+    localStorage.removeItem("profileImage");
+    localStorage.setItem("useEmoji", "true");
+  };
+
+  const loadProfileImage = async () => {
+    try {
+      const useEmoji = localStorage.getItem("useEmoji") !== "false";
+      if (useEmoji) {
+        setProfileImage(null);
+        return;
+      }
+
+      const savedImage = localStorage.getItem("profileImage");
+      if (savedImage) {
+        setProfileImage(savedImage);
+      } else {
+        const image = await window.electron.getProfileImage();
+        if (image) {
+          const base64 = `data:image/png;base64,${image}`;
+          setProfileImage(base64);
+          localStorage.setItem("profileImage", base64);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading profile image:", error);
+    }
+  };
+
   const renderProfileSection = () => {
+    const isUsingEmoji = !profileImage;
+
     return (
       <div className="relative">
         <div className="flex items-center gap-4 p-4">
           <Popover>
             <PopoverTrigger asChild>
-              <div className="relative flex h-24 w-24 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-card text-4xl shadow-lg transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:opacity-90 hover:shadow-xl">
-                {selectedEmoji}
+              <div
+                className="relative flex h-24 w-24 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-card text-4xl shadow-lg transition-all duration-200 hover:scale-105 hover:border-primary/50 hover:opacity-90 hover:shadow-xl"
+                style={
+                  profileImage
+                    ? {
+                        backgroundImage: `url(${profileImage})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : {}
+                }
+              >
+                {!profileImage && selectedEmoji}
                 <div className="absolute bottom-0 right-0 rounded-full bg-primary p-1.5 shadow-md">
                   <Smile className="h-4 w-4 text-secondary" />
                 </div>
               </div>
             </PopoverTrigger>
-            <PopoverContent className="w-[340px] p-3" align="start" sideOffset={5}>
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-4">
-                  {emojiCategories.map(category => (
-                    <div key={category.id} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">
-                          {category.title}
-                        </h4>
-                        <Separator className="flex-1" />
-                      </div>
-                      <div className="grid grid-cols-5 gap-2">
-                        {category.emojis.map((emoji, index) => (
-                          <Button
-                            key={`${category.id}-${emoji}-${index}`}
-                            variant={selectedEmoji === emoji ? "secondary" : "ghost"}
-                            className="h-10 text-xl transition-all duration-200 hover:scale-110 hover:bg-accent"
-                            onClick={() => handleEmojiSelect(emoji)}
-                          >
-                            {emoji}
-                          </Button>
-                        ))}
-                      </div>
+            <PopoverContent className="w-[340px] p-4" align="start" sideOffset={5}>
+              <div className="space-y-5">
+                {/* Current Display */}
+                <div className="flex items-center justify-between rounded-lg bg-muted/40 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-background ring-1 ring-border">
+                      {profileImage ? (
+                        <img
+                          src={profileImage}
+                          alt="Profile"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl">{selectedEmoji}</span>
+                      )}
                     </div>
-                  ))}
+                    <div>
+                      <p className="text-sm font-medium">
+                        {profileImage
+                          ? t("profile.customImage")
+                          : t("profile.usingEmoji")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {profileImage
+                          ? t("profile.switchToEmoji")
+                          : t("profile.orUploadImage")}
+                      </p>
+                    </div>
+                  </div>
+                  {profileImage && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:bg-destructive/10"
+                      onClick={removeProfileImage}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-              </ScrollArea>
+
+                <Separator />
+
+                {/* Upload Image */}
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="profile-image-upload"
+                  />
+                  <Button
+                    variant="outline"
+                    className="flex h-9 w-full items-center justify-center gap-2 hover:bg-accent/50"
+                    onClick={() =>
+                      document.getElementById("profile-image-upload").click()
+                    }
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span className="font-medium">{t("profile.uploadImage")}</span>
+                  </Button>
+                </div>
+
+                <Separator />
+
+                {/* Emoji Selection */}
+                <div className="space-y-3">
+                  <ScrollArea className="h-[280px] pr-4">
+                    <div className="space-y-4">
+                      {emojiCategories.map(category => (
+                        <div key={category.id} className="space-y-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">
+                            {category.title}
+                          </h4>
+                          <div className="grid grid-cols-6 gap-2">
+                            {category.emojis.map((emoji, index) => (
+                              <Button
+                                key={`${category.id}-${emoji}-${index}`}
+                                variant={
+                                  selectedEmoji === emoji && !profileImage
+                                    ? "secondary"
+                                    : "ghost"
+                                }
+                                className={cn(
+                                  "h-10 text-xl transition-all duration-200",
+                                  "hover:scale-105 hover:bg-accent/80",
+                                  selectedEmoji === emoji &&
+                                    !profileImage &&
+                                    "ring-1 ring-primary"
+                                )}
+                                onClick={() => switchToEmoji(emoji)}
+                              >
+                                {emoji}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
           <div className="flex-1">
