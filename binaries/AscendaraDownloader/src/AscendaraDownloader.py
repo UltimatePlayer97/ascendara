@@ -132,34 +132,37 @@ def safe_write_json(filepath, data):
     temp_dir = os.path.dirname(filepath)
     temp_file_path = None
     try:
-        with NamedTemporaryFile('w', delete=False, dir=temp_dir) as temp_file:
+        # Create a unique temporary filename in the same directory
+        temp_file_path = filepath + '.tmp'
+        # Write the data directly to the temporary file
+        with open(temp_file_path, 'w') as temp_file:
             json.dump(data, temp_file, indent=4)
-            temp_file_path = temp_file.name
+        
         retry_attempts = 3
         for attempt in range(retry_attempts):
             try:
-                os.replace(temp_file_path, filepath)
+                # Try to rename the temporary file to the target file
+                if os.path.exists(filepath):
+                    # If target exists, try to remove it first
+                    try:
+                        os.remove(filepath)
+                    except PermissionError:
+                        time.sleep(1)
+                        continue
+                os.rename(temp_file_path, filepath)
                 break
-            except PermissionError as e:
+            except PermissionError:
                 if attempt < retry_attempts - 1:
                     time.sleep(1)
                 else:
-                    raise e
+                    raise
     finally:
+        # Clean up the temporary file if it still exists
         if temp_file_path and os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
-
-def handleerror(game_info, game_info_path, e):
-    game_info['online'] = ""
-    game_info['dlc'] = ""
-    game_info['isRunning'] = False
-    game_info['version'] = ""
-    game_info['executable'] = ""
-    game_info['downloadingData'] = {
-        "error": True,
-        "message": str(e)
-    }
-    safe_write_json(game_info_path, game_info)
+            try:
+                os.remove(temp_file_path)
+            except:
+                pass  # Ignore cleanup errors
 
 class SSLContextAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
@@ -591,6 +594,18 @@ def _verify_extracted_files(watching_path, download_path, game_info, game_info_p
 
     # Set verifying to false when done
     game_info["downloadingData"]["verifying"] = False
+    safe_write_json(game_info_path, game_info)
+
+def handleerror(game_info, game_info_path, e):
+    game_info['online'] = ""
+    game_info['dlc'] = ""
+    game_info['isRunning'] = False
+    game_info['version'] = ""
+    game_info['executable'] = ""
+    game_info['downloadingData'] = {
+        "error": True,
+        "message": str(e)
+    }
     safe_write_json(game_info_path, game_info)
 
 def parse_boolean(value):
