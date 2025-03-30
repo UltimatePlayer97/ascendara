@@ -28,6 +28,7 @@ import {
   FileSearch,
   ThumbsUp,
   HandHelping,
+  X,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -337,10 +338,10 @@ export default function GameScreen() {
   // Log hasRated state changes
   useEffect(() => {
     console.log("gamedata:", game);
-    if (game && !game.hasRated && game.launchCount > 1) {
+    if (game && !game.hasRated && game.launchCount > 1 && hasRated) {
       setHasRated(false);
     }
-  }, [game, hasRated]);
+  }, [game]);
 
   // Toggle favorite status
   const toggleFavorite = async () => {
@@ -898,15 +899,29 @@ export default function GameScreen() {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      className="bg-primary-foreground/10 hover:bg-primary-foreground/20 transform text-secondary transition-all duration-300 ease-in-out hover:scale-105"
-                      onClick={() => setShowRateDialog(true)}
-                    >
-                      <ThumbsUp className="mr-2 h-5 w-5" />
-                      {t("gameScreen.rateNow")}
-                    </Button>
+                    <div className="grid">
+                      <Button
+                        variant="secondary"
+                        className="bg-primary-foreground/10 hover:bg-primary-foreground/20 transform text-secondary transition-all duration-300 ease-in-out hover:scale-105"
+                        onClick={() => setShowRateDialog(true)}
+                      >
+                        <ThumbsUp className="mr-2 h-5 w-5" />
+                        {t("gameScreen.rateNow")}
+                      </Button>
+                      <Button
+                        variant="none"
+                        className="bg-primary-foreground/10 transform text-xs text-secondary transition-all duration-300 ease-in-out hover:scale-105"
+                        onClick={() => {
+                          window.electron.gameRated(
+                            game.game || game.name,
+                            game.isCustom
+                          );
+                          setHasRated(true);
+                        }}
+                      >
+                        {t("gameScreen.dismiss")}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               )}
