@@ -82,6 +82,46 @@ const analyticsAPI = process.env.ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
 const imageKey = process.env.IMAGE_KEY || config.IMAGE_KEY;
 const clientId = process.env.DISCKEY || config.DISCKEY;
 
+// Get the app data path for the log file
+const logPath = path.join(app.getPath("appData"), "Ascendara by tagoWorks", "debug.log");
+// Ensure log directory exists
+if (!fs.existsSync(path.dirname(logPath))) {
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+}
+
+const logStream = fs.createWriteStream(logPath, { flags: "a" });
+const originalConsole = { ...console };
+
+const formatMessage = args => {
+  const timestamp = new Date().toISOString();
+  return `[${timestamp}] ${args
+    .map(arg => (typeof arg === "object" ? JSON.stringify(arg) : arg))
+    .join(" ")}\n`;
+};
+
+console.log = (...args) => {
+  const message = formatMessage(args);
+  logStream.write(message);
+  originalConsole.log(...args);
+};
+
+console.error = (...args) => {
+  const message = formatMessage(args);
+  logStream.write(`ERROR: ${message}`);
+  originalConsole.error(...args);
+};
+
+console.warn = (...args) => {
+  const message = formatMessage(args);
+  logStream.write(`WARN: ${message}`);
+  originalConsole.warn(...args);
+};
+
+// Ensure logs are written before app exits
+app.on("before-quit", () => {
+  logStream.end();
+});
+
 // Initialize Discord RPC
 rpc = new Client({ transport: "ipc" });
 
