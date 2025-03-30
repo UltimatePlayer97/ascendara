@@ -343,6 +343,7 @@
     "backupSaves": "Guardar de copia de seguridad",
     "configureIgdb": "Configurar Ascendara Xtra en Preferencias",
     "details": "Detalles",
+    "dismiss": "Despedir",
     "gameInfo": "Información del juego",
     "gameNotFound": "Juego no encontrado",
     "helpOthers": "Tómese un momento para calificar y revisar este juego de 5 estrellas. Sus comentarios ayuda a otros a comprender la calidad y la confiabilidad del juego.",
@@ -752,7 +753,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es por diversión! Nunca se subirá nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {
