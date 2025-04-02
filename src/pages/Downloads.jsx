@@ -220,7 +220,7 @@ const Downloads = () => {
         </div>
       ) : (
         /* Main Content Grid */
-        <div className="mt-24 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="mt-24 grid grid-cols-1 gap-6 sm:mt-8 lg:grid-cols-3">
           {/* Downloads Section - Takes up 2 columns on large screens */}
           <div className="space-y-4 lg:col-span-2">
             <h1 className="text-3xl font-bold text-primary">
