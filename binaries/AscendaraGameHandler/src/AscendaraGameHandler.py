@@ -22,6 +22,7 @@ import json
 import logging
 import atexit
 import subprocess
+import platform
 from pypresence import Presence
 import argparse
 import psutil
@@ -316,11 +317,20 @@ def execute(game_path, is_custom_game, is_shortcut=False, use_ludusavi=False):
         logging.error(f"Error updating settings.json: {e}")
 
     try:
-        # Regular game execution (no wrapping)
+        # Determine if we need to use Wine
+        is_windows_exe = exe_path.lower().endswith('.exe')
+        is_mac = platform.system().lower() == 'darwin'
+        use_wine = is_windows_exe and is_mac
+        
         if os.path.dirname(exe_path):
             os.chdir(os.path.dirname(exe_path))
         
-        process = subprocess.Popen(exe_path)
+        if use_wine:
+            logging.info(f"Using Wine to launch Windows executable: {exe_path}")
+            process = subprocess.Popen(['wine', exe_path])
+        else:
+            # Regular game execution (no wrapping)
+            process = subprocess.Popen(exe_path)
         start_time = time.time()
         last_update = start_time
         last_play_time = 0
