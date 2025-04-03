@@ -290,8 +290,9 @@ To build the source code into an executable, read the [Developer Docs](https://a
 ### Current Goals
 
 - [ ] Endpoint for known games that have weird installation paths, issues, etc.
-- [ ] Break up code into files for better organization
-- [ ] Add semi-support for Linux, and macOS
+- [ ] Break up code into files for better Organizations
+- [ ] Add semi-support for Linux, and macOS with Wine and Winetricks
+- [ ] Update games when a new scrape is out
 
 ### Future Goals
 
@@ -299,6 +300,7 @@ To build the source code into an executable, read the [Developer Docs](https://a
 
 - [ ] Ascendara approved additional sources
 - [ ] Debrid support for downloads
+- [ ] Revamp game info scraping logic/API
 - [ ] Retry Download & Extract functionality
 - [ ] Improved download management (pausing, resuming)
 
