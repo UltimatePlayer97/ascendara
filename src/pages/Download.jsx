@@ -76,8 +76,7 @@ const isValidURL = (url, provider) => {
         /^(https?:\/\/)([^\/?#]+)(?::(\d+))?(\/[^?#]*\/[^?#]*\/)([^?#]+)\.(?:zip|rar|7z)$/i;
       break;
     case "datanodes":
-      pattern =
-        /^https:\/\/node\d+\.datanodes\.to(?::\d+)?\/d\/[a-z0-9]+\/.*\.(?:zip|rar|7z)$/i;
+      pattern = /^https:\/\/cdn1\.dlproxy\.site\/download\/[a-zA-Z0-9]+$/i;
       break;
     case "qiwi":
       pattern = /^https:\/\/(spyderrock\.com\/[a-zA-Z0-9]+-[\w\s.-]+\.rar)$/i;
@@ -503,6 +502,14 @@ export default function DownloadPage() {
     if (savedPreference !== null) {
       setUseAscendara(JSON.parse(savedPreference));
     }
+  }, []);
+
+  useEffect(() => {
+    const checkDevMode = async () => {
+      const isDevMode = await window.electron.isDev();
+      setIsDev(isDevMode);
+    };
+    checkDevMode();
   }, []);
 
   useEffect(() => {
