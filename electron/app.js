@@ -1812,41 +1812,92 @@ ipcMain.handle(
         imageBuffer
       );
 
-      // Launch the appropriate Python script based on the link type and source
-      const executablePath = isDev
-        ? path.join(
-            settings.gameSource === "fitgirl"
-              ? "./binaries/AscendaraTorrentHandler/dist/AscendaraTorrentHandler.exe"
-              : link.includes("gofile.io")
-                ? "./binaries/AscendaraDownloader/dist/AscendaraGofileHelper.exe"
-                : "./binaries/AscendaraDownloader/dist/AscendaraDownloader.exe"
-          )
-        : path.join(
-            appDirectory,
-            settings.gameSource === "fitgirl"
-              ? "/resources/AscendaraTorrentHandler.exe"
-              : link.includes("gofile.io")
-                ? "/resources/AscendaraGofileHelper.exe"
-                : "/resources/AscendaraDownloader.exe"
-          );
+      const isWindows = process.platform === "win32";
+      let executablePath;
+      let spawnCommand;
 
-      const spawnCommand =
-        settings.gameSource === "fitgirl"
-          ? [link, game, online, dlc, version, size, settings.downloadDirectory].concat(
-              settings.notifications ? [`--withNotification`, settings.theme] : []
+      if (isWindows) {
+        // Windows: Use .exe files
+        executablePath = isDev
+          ? path.join(
+              settings.gameSource === "fitgirl"
+                ? "./binaries/AscendaraTorrentHandler/dist/AscendaraTorrentHandler.exe"
+                : link.includes("gofile.io")
+                  ? "./binaries/AscendaraDownloader/dist/AscendaraGofileHelper.exe"
+                  : "./binaries/AscendaraDownloader/dist/AscendaraDownloader.exe"
             )
-          : [
-              link.includes("gofile.io") ? "https://" + link : link,
-              game,
-              online,
-              dlc,
-              isVr,
-              version,
-              size,
-              targetDirectory,
-            ].concat(
-              settings.notifications ? [`--withNotification`, settings.theme] : []
+          : path.join(
+              appDirectory,
+              settings.gameSource === "fitgirl"
+                ? "/resources/AscendaraTorrentHandler.exe"
+                : link.includes("gofile.io")
+                  ? "/resources/AscendaraGofileHelper.exe"
+                  : "/resources/AscendaraDownloader.exe"
             );
+
+        spawnCommand =
+          settings.gameSource === "fitgirl"
+            ? [link, game, online, dlc, version, size, settings.downloadDirectory]
+            : [
+                link.includes("gofile.io") ? "https://" + link : link,
+                game,
+                online,
+                dlc,
+                isVr,
+                version,
+                size,
+                targetDirectory,
+              ];
+      } else {
+        // Non-Windows: Use Python scripts
+        executablePath = "python3";
+        const scriptPath = isDev
+          ? path.join(
+              settings.gameSource === "fitgirl"
+                ? "./binaries/AscendaraTorrentHandler/src/AscendaraTorrentHandler.py"
+                : link.includes("gofile.io")
+                  ? "./binaries/AscendaraDownloader/src/AscendaraGofileHelper.py"
+                  : "./binaries/AscendaraDownloader/src/AscendaraDownloader.py"
+            )
+          : path.join(
+              appDirectory,
+              "..",
+              settings.gameSource === "fitgirl"
+                ? "/resources/AscendaraTorrentHandler.py"
+                : link.includes("gofile.io")
+                  ? "/resources/AscendaraGofileHelper.py"
+                  : "/resources/AscendaraDownloader.py"
+            );
+
+        spawnCommand =
+          settings.gameSource === "fitgirl"
+            ? [
+                scriptPath,
+                link,
+                game,
+                online,
+                dlc,
+                version,
+                size,
+                settings.downloadDirectory,
+              ]
+            : [
+                scriptPath,
+                link.includes("gofile.io") ? "https://" + link : link,
+                game,
+                online,
+                dlc,
+                isVr,
+                version,
+                size,
+                targetDirectory,
+              ];
+      }
+
+      // Add notification flags if enabled
+      if (settings.notifications) {
+        spawnCommand = spawnCommand.concat(["--withNotification", settings.theme]);
+      }
 
       try {
         const data = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
@@ -2318,6 +2369,278 @@ ipcMain.handle("install-dependencies", async event => {
     return { success: false, message: error.message };
   } finally {
     isInstalling = false;
+  }
+});
+
+ipcMain.handle("install-wine", async () => {
+  console.log("Starting Wine and Winetricks installation process...");
+
+  if (process.platform === "win32") {
+    console.log("Windows detected, skipping Wine/Winetricks installation");
+    return {
+      success: false,
+      message: "Windows installation not supported in this handler",
+    };
+  }
+
+  try {
+    console.log("Importing required modules...");
+    const { exec } = require("child_process");
+    const { BrowserWindow } = require("electron");
+
+    const installWindow = new BrowserWindow({
+      width: 500,
+      height: 300,
+      frame: false,
+      transparent: true,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    });
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+              background: rgba(30, 30, 30, 0.95);
+              color: white;
+              border-radius: 12px;
+              padding: 24px;
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              gap: 16px;
+            }
+            .spinner {
+              width: 40px;
+              height: 40px;
+              border: 3px solid rgba(255, 255, 255, 0.1);
+              border-top: 3px solid #3498db;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+            h2 {
+              font-size: 24px;
+              font-weight: 500;
+              margin: 0;
+            }
+            .status {
+              font-size: 14px;
+              text-align: center;
+              max-width: 360px;
+              color: rgba(255, 255, 255, 0.8);
+              line-height: 1.4;
+            }
+            .progress-container {
+              width: 100%;
+              max-width: 360px;
+            }
+            .progress-bar {
+              width: 100%;
+              height: 6px;
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 3px;
+              overflow: hidden;
+            }
+            .progress {
+              width: 0%;
+              height: 100%;
+              background: #3498db;
+              border-radius: 3px;
+              transition: width 0.3s ease;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="spinner"></div>
+          <h2>Installing Wine & Winetricks</h2>
+          <div class="status">Checking system requirements...</div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress"></div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    installWindow.loadURL(
+      `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
+    );
+
+    const updateStatus = message => {
+      installWindow.webContents.executeJavaScript(`
+        document.querySelector('.status').textContent = ${JSON.stringify(message)};
+      `);
+    };
+
+    const updateProgress = percent => {
+      installWindow.webContents.executeJavaScript(`
+        document.querySelector('.progress').style.width = '${percent}%';
+      `);
+    };
+
+    if (process.platform === "darwin") {
+      console.log("macOS detected, checking for Homebrew...");
+      try {
+        await new Promise((resolve, reject) => {
+          console.log("Executing 'which brew' command...");
+          exec("which brew", async error => {
+            if (error) {
+              console.log("Homebrew not found, starting installation...");
+              updateStatus("Installing Homebrew...");
+              updateProgress(10);
+
+              // Install Homebrew
+              const brewInstallCommand =
+                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
+              console.log("Executing Homebrew installation command...");
+              const brewProcess = exec(
+                brewInstallCommand,
+                (brewError, stdout, stderr) => {
+                  if (brewError) {
+                    console.error("Homebrew installation error:", brewError);
+                    updateStatus(`Error installing Homebrew: ${brewError.message}`);
+                    setTimeout(() => {
+                      installWindow.close();
+                      reject(brewError);
+                    }, 3000);
+                  } else {
+                    console.log("Homebrew installation completed successfully");
+                    resolve();
+                  }
+                }
+              );
+
+              brewProcess.stdout.on("data", data => {
+                console.log("Homebrew installation output:", data);
+                updateStatus(data.toString().trim());
+                updateProgress(30);
+              });
+
+              brewProcess.stderr.on("data", data => {
+                console.log("Homebrew installation stderr:", data);
+                updateStatus(data.toString().trim());
+              });
+            } else {
+              console.log("Homebrew is already installed");
+              resolve();
+            }
+          });
+        });
+      } catch (error) {
+        console.error("Failed to install Homebrew:", error);
+        throw new Error(`Failed to install Homebrew: ${error.message}`);
+      }
+    }
+
+    // Proceed with Wine installation
+    console.log("Starting Wine installation...");
+
+    if (process.platform === "darwin") {
+      // First, fetch the cask details
+      console.log("Fetching Wine cask details...");
+      await new Promise((resolve, reject) => {
+        const fetchProcess = exec(
+          "brew fetch --cask wine-stable",
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error("Error fetching Wine cask:", error);
+              reject(error);
+            } else {
+              console.log("Wine cask fetched successfully");
+              resolve();
+            }
+          }
+        );
+
+        fetchProcess.stdout.on("data", data => {
+          console.log("Fetch output:", data);
+          updateStatus("Downloading Wine installer...");
+        });
+
+        fetchProcess.stderr.on("data", data => {
+          console.log("Fetch stderr:", data);
+          updateStatus(data.toString().trim());
+        });
+      });
+    }
+
+    // Modified command to include winetricks
+    const command =
+      process.platform === "darwin"
+        ? "brew install --cask --no-quarantine wine-stable && brew install winetricks"
+        : "sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y wine64 wine32 winetricks";
+    console.log("Wine and Winetricks installation command:", command);
+
+    await new Promise((resolve, reject) => {
+      let progress = process.platform === "darwin" ? 40 : 0;
+      const childProcess = exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error("Wine/Winetricks installation error:", error);
+          updateStatus(`Error: ${error.message}`);
+          setTimeout(() => {
+            console.log("Closing installation window due to error");
+            installWindow.close();
+            reject(error);
+          }, 3000);
+        } else {
+          console.log("Wine and Winetricks installation completed successfully");
+          updateStatus("Wine and Winetricks installed successfully!");
+          updateProgress(100);
+          setTimeout(() => {
+            console.log("Closing installation window after successful installation");
+            installWindow.close();
+            resolve();
+          }, 2000);
+        }
+      });
+
+      childProcess.stdout.on("data", data => {
+        console.log("Installation output:", data);
+        // Increment progress based on installation steps
+        if (data.includes("Downloading")) {
+          console.log("Downloading phase detected, updating progress");
+          progress = Math.max(progress, 50);
+        } else if (data.includes("Installing")) {
+          console.log("Installation phase detected, updating progress");
+          progress = Math.max(progress, 70);
+        } else if (data.includes("Finishing")) {
+          console.log("Finishing phase detected, updating progress");
+          progress = Math.max(progress, 90);
+        }
+        progress = Math.min(progress + 5, 90);
+        console.log("Current progress:", progress);
+        updateProgress(progress);
+        updateStatus(data.toString().trim());
+      });
+
+      childProcess.stderr.on("data", data => {
+        console.log("Installation stderr:", data);
+        updateStatus(data.toString().trim());
+      });
+    });
+
+    console.log("Wine and Winetricks installation completed successfully");
+    return { success: true, message: "Wine and Winetricks installed successfully" };
+  } catch (error) {
+    console.error("An error occurred during Wine/Winetricks installation:", error);
+    return { success: false, message: error.message };
   }
 });
 
@@ -3206,7 +3529,8 @@ ipcMain.handle(
       } else {
         // For non-Windows, we need to use python3 to execute the script
         handlerPath = "python3";
-        executable = `${path.join(appDirectory, "/resources/AscendaraGameHandler.py")} ${executable}`;
+        executable = `${path.join(appDirectory, "..", "/resources/AscendaraGameHandler.py")} ${executable}`;
+        console.log("Executing game with handler:", handlerPath, executable);
       }
 
       if (!fs.existsSync(handlerPath)) {

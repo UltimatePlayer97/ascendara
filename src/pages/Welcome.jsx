@@ -21,6 +21,10 @@ import {
   ExternalLink,
   ArrowRight,
   ArrowDown,
+  PlusCircle,
+  SquareArrowRight,
+  FolderDown,
+  FolderDownIcon,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -1197,6 +1201,10 @@ const Welcome = ({ welcomeData, onComplete }) => {
                       {t("welcome.makeSureYouHaveEnoughDiskSpaceInTheSelectedLocation")}
                     </p>
                   </div>
+                  <div className="flex items-start space-x-3">
+                    <PlusCircle className="mt-1 h-5 w-5 text-primary" />
+                    <p>{t("welcome.youCanAddMoreLater")}</p>
+                  </div>
                 </div>
               </motion.div>
 
@@ -1671,38 +1679,95 @@ const Welcome = ({ welcomeData, onComplete }) => {
                 animate="visible"
                 exit="exit"
               >
-                <motion.div
-                  className="mb-8 flex items-center justify-center"
-                  variants={itemVariants}
-                >
-                  <h2 className="text-4xl font-bold text-primary">
-                    {t("welcome.pythonIsRequired")}
-                  </h2>
-                </motion.div>
-                <motion.div className="mb-12 max-w-3xl space-y-6" variants={itemVariants}>
-                  <p className="text-xl text-foreground/80">
-                    {t("welcome.pythonMustBeInstalled")}
-                  </p>
-                  <div className="flex justify-center space-x-4">
-                    <Button
-                      onClick={() => window.electron.installPython()}
-                      size="lg"
-                      className="px-8 py-6 text-secondary"
+                {!dependenciesInstalled ? (
+                  <>
+                    <motion.div
+                      className="mb-8 flex items-center justify-center"
+                      variants={itemVariants}
                     >
-                      <ArrowDown className="mr-2 h-5 w-5" />
-                      {t("welcome.installPython")}
-                    </Button>
+                      <h2 className="text-4xl font-bold text-primary">
+                        {t("welcome.pythonIsRequired")}
+                      </h2>
+                    </motion.div>
+                    <motion.div
+                      className="mb-12 max-w-3xl space-y-6"
+                      variants={itemVariants}
+                    >
+                      <p className="text-xl text-foreground/80">
+                        {t("welcome.pythonMustBeInstalled")}
+                      </p>
+                      <div className="flex justify-center space-x-4">
+                        <Button
+                          onClick={async () => {
+                            const result = await window.electron.installPython();
+                            if (result.success) {
+                              setDependenciesInstalled(true);
+                            }
+                          }}
+                          size="lg"
+                          className="px-8 py-6 text-secondary"
+                        >
+                          <FolderDownIcon className="mr-2 h-5 w-5" />
+                          {t("welcome.installPython")}
+                        </Button>
 
-                    <Button
-                      onClick={() => handleExit(true)}
-                      size="lg"
-                      className="px-8 py-6 text-secondary"
+                        <Button
+                          onClick={async () => {
+                            setDependenciesInstalled(true);
+                          }}
+                          size="lg"
+                          className="px-8 py-6 text-secondary"
+                        >
+                          <SquareArrowRight className="mr-2 h-5 w-5" />
+                          {t("welcome.havePython")}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </>
+                ) : (
+                  <>
+                    <motion.div
+                      className="mb-8 flex items-center justify-center"
+                      variants={itemVariants}
                     >
-                      <Rocket className="mr-2 h-5 w-5" />
-                      {t("welcome.havePython")}
-                    </Button>
-                  </div>
-                </motion.div>
+                      <h2 className="text-4xl font-bold text-primary">
+                        {t("welcome.wineIsRequired")}
+                      </h2>
+                    </motion.div>
+                    <motion.div
+                      className="mb-12 max-w-3xl space-y-6"
+                      variants={itemVariants}
+                    >
+                      <p className="text-xl text-foreground/80">
+                        {t("welcome.wineMustBeInstalled")}
+                      </p>
+                      <div className="flex justify-center space-x-4">
+                        <Button
+                          onClick={async () => {
+                            const result = await window.electron.installWine();
+                            if (result.success) {
+                              handleExit(true);
+                            }
+                          }}
+                          size="lg"
+                          className="px-8 py-6 text-secondary"
+                        >
+                          <FolderDownIcon className="mr-2 h-5 w-5" />
+                          {t("welcome.installWine")}
+                        </Button>
+
+                        <Button
+                          onClick={async () => handleExit(true)}
+                          size="lg"
+                          className="px-8 py-6 text-secondary"
+                        >
+                          <Rocket className="mr-2 h-5 w-5" />
+                          {t("welcome.haveWine")}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
               </motion.div>
             ))}
 
