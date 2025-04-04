@@ -54,6 +54,7 @@ import {
 const Downloads = () => {
   const [downloadingGames, setDownloadingGames] = useState([]);
   const [retryModalOpen, setRetryModalOpen] = useState(false);
+  const [stopChoiceModal, setStopChoiceModal] = useState(false);
   const [retryLink, setRetryLink] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
   const [totalSpeed, setTotalSpeed] = useState("0.00 MB/s");
@@ -169,16 +170,26 @@ const Downloads = () => {
     };
   }, [downloadingGames.length]);
 
-  const handleStopDownload = async game => {
+  const [stopModalOpen, setStopModalOpen] = useState(false);
+  const [gameToStop, setGameToStop] = useState(null);
+
+  const handleStopDownload = game => {
+    setGameToStop(game);
+    setStopModalOpen(true);
+  };
+
+  const executeStopDownload = async (game, deleteContents = false) => {
     setStoppingDownloads(prev => new Set([...prev, game.id]));
     try {
-      await window.electron.stopDownload(game.game);
+      await window.electron.stopDownload(game.game, deleteContents);
     } finally {
       setStoppingDownloads(prev => {
         const newSet = new Set(prev);
         newSet.delete(game.id);
         return newSet;
       });
+      setStopModalOpen(false);
+      setGameToStop(null);
     }
   };
 
@@ -330,6 +341,36 @@ const Downloads = () => {
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+      <AlertDialog open={stopModalOpen} onOpenChange={setStopModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {t("downloads.actions.stopDownloadTitle")}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription className="text-muted-foreground">
+            {t("downloads.actions.stopDownloadDescription")}
+          </AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-primary">
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => gameToStop && executeStopDownload(gameToStop, false)}
+              className="bg-primary hover:bg-primary/90"
+            >
+              {t("downloads.actions.stopDownload")}
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => gameToStop && executeStopDownload(gameToStop, true)}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {t("downloads.actions.stopAndDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={retryModalOpen} onOpenChange={setRetryModalOpen}>
         <AlertDialogContent>
@@ -558,7 +599,10 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
+              <DropdownMenuItem
+                onClick={() => handleStopDownload(game)}
+                className="gap-2"
+              >
                 <StopCircle className="h-4 w-4" />
                 {t("downloads.actions.stopDownload")}
               </DropdownMenuItem>
