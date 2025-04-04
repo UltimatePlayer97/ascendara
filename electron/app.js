@@ -3450,6 +3450,16 @@ ipcMain.handle("modify-game-executable", (event, game, executable) => {
       }
     }
 
+    ipcMain.handle("start-steam", () => {
+      const steamExe = path.join("C:\\Program Files (x86)\\Steam\\Steam.exe");
+      console.log("Starting Steam:", steamExe);
+      if (fs.existsSync(steamExe)) {
+        spawn(steamExe, [], { detached: true, stdio: "ignore" });
+        return true;
+      }
+      return false;
+    });
+
     console.error(`Game ${game} not found in any configured directory`);
     return false;
   } catch (error) {

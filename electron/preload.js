@@ -91,6 +91,7 @@ contextBridge.exposeInMainWorld("electron", {
   playGame: (game, isCustom, backupOnClose) =>
     ipcRenderer.invoke("play-game", game, isCustom, backupOnClose),
   isGameRunning: game => ipcRenderer.invoke("is-game-running", game),
+  startSteam: () => ipcRenderer.invoke("start-steam"),
 
   // File and Directory Management
   openGameDirectory: (game, isCustom) =>

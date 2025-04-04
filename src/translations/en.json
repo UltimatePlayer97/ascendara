@@ -280,7 +280,10 @@
       "legacyGameVerification": "File verification is only available for games downloaded after Ascendara version 8.1.2",
       "openFolder": "Open Folder",
       "retryDownload": "Retry Download",
-      "stopDownload": "Stop Download"
+      "stopAndDelete": "Stop & Delete Contents",
+      "stopDownload": "Stop Download",
+      "stopDownloadDescription": "Are you sure you want to stop this download? You can choose to keep or delete the downloaded contents.",
+      "stopDownloadTitle": "Stop Download?"
     },
     "activeDownloads": "Downloading Games",
     "alreadyReported": "Already Reported",
@@ -359,6 +362,8 @@
     "rateNow": "Rate",
     "rateThisGame": "Leave a Rating?",
     "screenshots": "Screenshots",
+    "startSteam": "Start Steam",
+    "startingSteam": "Starting Steam...",
     "storyline": "Storyline",
     "summary": "Summary",
     "viewAll": "View All"
@@ -374,7 +379,7 @@
   "library": {
     "addGame": "Add Game",
     "addGameDescription1": "Add your own game to your library.",
-    "addGameDescription2": "Add a game to your  Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
+    "addGameDescription2": "Add a game to your Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
     "addToFavorites": "Add to Favorites",
     "alreadyRunning": "{{game}} is already running",
     "availableSpace": "Available Space",

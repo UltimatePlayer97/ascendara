@@ -140,25 +140,55 @@ const UninstallConfirmationDialog = ({
   </AlertDialog>
 );
 
-const SteamNotRunningDialog = ({ open, onClose, t }) => (
-  <AlertDialog open={open} onOpenChange={onClose}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle className="text-2xl font-bold text-foreground">
-          {t("library.steamNotRunning")}
-        </AlertDialogTitle>
-        <AlertDialogDescription className="space-y-4 text-muted-foreground">
-          {t("library.steamNotRunningMessage")}
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter className="flex gap-2">
-        <Button variant="outline" className="text-primary" onClick={onClose}>
-          {t("common.ok")}
-        </Button>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-);
+const SteamNotRunningDialog = ({ open, onClose, t }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStartSteam = async () => {
+    setIsLoading(true);
+    await window.electron.startSteam();
+
+    // Wait for 2 seconds then close
+    setTimeout(() => {
+      setIsLoading(false);
+      onClose();
+    }, 2000);
+  };
+
+  return (
+    <AlertDialog open={open} onOpenChange={onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-2xl font-bold text-foreground">
+            {t("library.steamNotRunning")}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="space-y-4 text-muted-foreground">
+            {t("library.steamNotRunningMessage")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex gap-2">
+          <Button
+            className="text-secondary"
+            onClick={handleStartSteam}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                {t("gameScreen.startingSteam")}
+              </>
+            ) : (
+              t("gameScreen.startSteam")
+            )}
+          </Button>
+
+          <Button variant="outline" className="text-primary" onClick={onClose}>
+            {t("common.ok")}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 export default function GameScreen() {
   const showError = (game, error) => {
