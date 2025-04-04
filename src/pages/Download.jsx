@@ -73,7 +73,7 @@ const isValidURL = (url, provider) => {
   switch (provider.toLowerCase()) {
     case "megadb":
       pattern =
-        /^(https?:\/\/)([^\/?#]+)(?::(\d+))?(\/[^?#]*\/[^?#]*\/)([^?#]+)\.(?:zip|rar|7z)$/i;
+        /^(https?:\/\/)[^\/?#]+(?::(\d+))?(\/[^?#]+)+\/[^\/?#]+\.(?:zip|rar|7z)$/i;
       break;
     case "datanodes":
       pattern = /^https:\/\/cdn1\.dlproxy\.site\/download\/[a-zA-Z0-9]+$/i;
@@ -247,7 +247,6 @@ export default function DownloadPage() {
     }
   }
 
-  // Simple download handler function
   async function handleDownload(directUrl = null, dir = null) {
     const sanitizedGameName = sanitizeText(gameData.game);
     if (showNoDownloadPath) {
@@ -428,7 +427,18 @@ export default function DownloadPage() {
         }
 
         console.log("Handling protocol URL:", cleanUrl);
-        whereToDownload(cleanUrl);
+        // Detect provider from URL
+        for (const provider of VERIFIED_PROVIDERS) {
+          if (isValidURL(cleanUrl, provider)) {
+            setSelectedProvider(provider);
+            setInputLink(cleanUrl);
+            setIsValidLink(true);
+            whereToDownload(cleanUrl);
+            return;
+          }
+        }
+        // If no valid provider found
+        toast.error(t("download.toast.invalidLink"));
       } catch (error) {
         console.error("Error handling protocol URL:", error);
         toast.error(t("download.toast.invalidProtocolUrl"));
@@ -2021,7 +2031,7 @@ export default function DownloadPage() {
                 variant="outline"
                 className="w-full justify-start"
                 onClick={() => {
-                  handleDownload(null, index + 1); // +1 because 0 is default directory
+                  handleDownload(null, index + 1);
                   setShowSelectPath(false);
                 }}
               >
