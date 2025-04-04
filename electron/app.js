@@ -771,6 +771,9 @@ ipcMain.handle("reload", () => {
 });
 
 // Sanitize text to handle special characters
+// This function handles a wide range of special characters that need to be
+// normalized for proper display or storage. It's more comprehensive than
+// sanitizeGameName and is used for general text sanitization.
 function sanitizeText(text) {
   if (!text) return "";
 
@@ -1746,7 +1749,19 @@ ipcMain.handle("can-create-files", async (event, directory) => {
   }
 });
 
-// Download the file
+// Sanitize game names specifically for filesystem compatibility
+// This function is more restrictive than sanitizeText and is specifically
+// designed for game names that will be used as filenames or directory names,
+// ensuring they only contain characters that are safe across all filesystems.
+function sanitizeGameName(name) {
+  const validChars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.() ";
+  return name
+    .split("")
+    .filter(char => validChars.includes(char))
+    .join("");
+}
+
 ipcMain.handle(
   "download-file",
   async (
@@ -1787,8 +1802,9 @@ ipcMain.handle(
       }
       originalGame = game;
       game = sanitizeText(game);
-      // Create game directory
-      const gameDirectory = path.join(targetDirectory, game);
+      // Create game directory using sanitized name
+      const sanitizedGame = sanitizeGameName(game);
+      const gameDirectory = path.join(targetDirectory, sanitizedGame);
       await fs.promises.mkdir(gameDirectory, { recursive: true });
 
       // Download game header image
@@ -1808,7 +1824,7 @@ ipcMain.handle(
       const mimeType = response.headers["content-type"];
       const extension = getExtensionFromMimeType(mimeType);
       await fs.promises.writeFile(
-        path.join(gameDirectory, `header.ascendara${extension}`),
+        path.join(gameDirectory, `header.ascendara${extension}`), // No need to sanitize extension as it comes from MIME type
         imageBuffer
       );
 
@@ -1837,10 +1853,18 @@ ipcMain.handle(
 
         spawnCommand =
           settings.gameSource === "fitgirl"
-            ? [link, game, online, dlc, version, size, settings.downloadDirectory]
+            ? [
+                link,
+                sanitizedGame,
+                online,
+                dlc,
+                version,
+                size,
+                settings.downloadDirectory,
+              ]
             : [
                 link.includes("gofile.io") ? "https://" + link : link,
-                game,
+                sanitizedGame,
                 online,
                 dlc,
                 isVr,
@@ -1909,7 +1933,7 @@ ipcMain.handle(
         timestampData.downloadedHistory = [];
       }
       timestampData.downloadedHistory.push({
-        game,
+        game: sanitizedGame, // Use sanitized name for consistency
         timestamp: new Date().toISOString(),
       });
       await fs.promises.writeFile(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
@@ -1922,14 +1946,14 @@ ipcMain.handle(
 
       downloadProcess.on("error", err => {
         console.error(`Failed to start download process: ${err}`);
-        event.sender.send("download-error", { game, error: err.message });
+        event.sender.send("download-error", { game: sanitizedGame, error: err.message });
       });
 
-      downloadProcesses.set(game, downloadProcess);
+      downloadProcesses.set(sanitizedGame, downloadProcess);
       downloadProcess.unref();
     } catch (error) {
       console.error("Error in download-file handler:", error);
-      event.sender.send("download-error", { game, error: error.message });
+      event.sender.send("download-error", { game: sanitizedGame, error: error.message });
     }
   }
 );
