@@ -122,7 +122,6 @@
     "dataProvidedBy": "Datos del juego proporcionados por",
     "developers": "Desarrolladores",
     "dmcaNotice": "Aviso de DMCA: Ascendara usa enlaces y archivos subcontratados y no aloja nada en sus propios servidores.",
-    "downloadInstructions": "Instrucciones de descarga",
     "downloadOptions": {
       "ascendaraHandler": "Handler de descarga de Ascendara",
       "downloadLink": "Enlace de descarga:",
@@ -280,7 +279,10 @@
       "legacyGameVerification": "La verificación de archivos solo está disponible para juegos descargados después de Ascendara versión 8.1.2",
       "openFolder": "Carpeta abierta",
       "retryDownload": "Descarga de reintento",
-      "stopDownload": "Stop Download"
+      "stopAndDelete": "Stop & Eliminar contenido",
+      "stopDownload": "Stop Download",
+      "stopDownloadDescription": "¿Estás seguro de que quieres detener esta descarga? Puede elegir mantener o eliminar los contenidos descargados.",
+      "stopDownloadTitle": "¿Dejar de descargar {{gameName}}?"
     },
     "activeDownloads": "Descargando juegos",
     "alreadyReported": "Ya informado",
@@ -304,6 +306,8 @@
     "retryDownloadDescription": "Reterminar automáticamente las descargas no se implementan actualmente. Para volver a intentar la descarga, cancelar y eliminar la descarga fallida aquí, luego busque el juego nuevamente y descargue nuevamente.",
     "speedHistory": "Vuelas de descarga",
     "statistics": "Estadística",
+    "stopped": "Descargar detenido",
+    "stoppedDescription": "La descarga ha sido detenida. Para comenzar la descarga nuevamente, deberá buscarla y descargarla desde la página de búsqueda.",
     "updating": "Actualización del juego ...",
     "verificationFailed": "Los archivos no lograron verificar",
     "verificationFailed1": "El archivo {{numFailed}} no pudo verificar",
@@ -359,6 +363,8 @@
     "rateNow": "Tasa",
     "rateThisGame": "Dejar una calificación?",
     "screenshots": "Capturas de pantalla",
+    "startSteam": "Empiece a Steam",
+    "startingSteam": "Empezando a Steam ...",
     "storyline": "Historia",
     "summary": "Resumen",
     "viewAll": "Ver todo"
@@ -753,7 +759,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es por diversión! Nunca se subirá nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {
@@ -819,7 +825,8 @@
     "getTheAscendaraDownloadHandlerExtension": "Obtenga la extensión del controlador de descarga Ascendara para Chrome o Firefox.",
     "getTheExtension": "Obtener la extensión",
     "graphicsAndMultimedia": "Gráficos y multimedia",
-    "havePython": "Tengo python, haré una gira",
+    "havePython": "Tengo python",
+    "haveWine": "Tengo vino, llévame a la gira",
     "helpIdentifyAndFix": "Ayudar a identificar y solucionar problemas más rápido",
     "helpIdentifyAndFixDesc": "Todos los errores se enviarán automáticamente a Analytics con un indicador urgente, colocándolos en la parte superior de la lista",
     "helpImprove": "Ayuda a mejorar el ascendara",
@@ -832,6 +839,7 @@
     "influenceFutureFeaturesDesc": "Ayuda a Ascendara a comprender sus necesidades e influir en las actualizaciones futuras",
     "installDependencies": "Instalar dependencias",
     "installPython": "Instalar python",
+    "installWine": "Instalar vino",
     "installationFailed": "Falló la instalación",
     "installingDependencies": "Instalación de dependencias ...",
     "lightThemes": "Temas de luz",
@@ -878,6 +886,9 @@
     "welcomeTo": "Bienvenido",
     "welcomeToAscendaraDescription": "Ahora no tendrá que preocuparse por extraer, instalar o mover archivos. Antes de comenzar, lea y acepte términos de servicio y política de privacidad.",
     "whenYouClickADownloadLink": "Cuando comience una descarga de un proveedor conocido, la extensión detendrá automáticamente la descarga en su navegador y lo iniciará por usted en Ascendara",
+    "wineIsRequired": "Se requiere vino",
+    "wineMustBeInstalled": "Se debe instalar el vino para ejecutar juegos de Windows en su sistema",
+    "youCanAddMoreLater": "Puede agregar más directorios en preferencias más tarde",
     "youCanChangeThisLater": "Siempre puede actualizar su idioma más adelante en la configuración.",
     "youCanChangeThisSettingLater": "Puede cambiar esto más adelante en la configuración.",
     "youWillReceiveAdminPrompts": "Recibirá las indicaciones de administrador de los instaladores oficiales de Microsoft para instalar los componentes requeridos. Es posible que su computadora deba reiniciar después de la instalación.",

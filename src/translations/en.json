@@ -122,7 +122,6 @@
     "dataProvidedBy": "Game data provided by",
     "developers": "Developers",
     "dmcaNotice": "DMCA Notice: Ascendara uses outsourced links and files and does not host anything on its own servers.",
-    "downloadInstructions": "Download Instructions",
     "downloadOptions": {
       "ascendaraHandler": "Ascendara Download Handler",
       "downloadLink": "Download Link:",
@@ -283,7 +282,7 @@
       "stopAndDelete": "Stop & Delete Contents",
       "stopDownload": "Stop Download",
       "stopDownloadDescription": "Are you sure you want to stop this download? You can choose to keep or delete the downloaded contents.",
-      "stopDownloadTitle": "Stop Download?"
+      "stopDownloadTitle": "Stop Downloading {{gameName}}?"
     },
     "activeDownloads": "Downloading Games",
     "alreadyReported": "Already Reported",
@@ -307,6 +306,8 @@
     "retryDownloadDescription": "Automatically retrying downloads is currently not implemented. To retry the download, cancel and delete the failed download here then search for the game again and download it again.",
     "speedHistory": "Download Speeds",
     "statistics": "Statistics",
+    "stopped": "Download Stopped",
+    "stoppedDescription": "The download has been stopped. To start the download again, you will need to search for it and download it from the search page.",
     "updating": "Updating game...",
     "verificationFailed": "Files failed to verify",
     "verificationFailed1": "{{numFailed}} file failed to verify",
