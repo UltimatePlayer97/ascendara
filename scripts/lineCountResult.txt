@@ -1,18 +1,19 @@
 Code Line Count Summary:
 --------------------------------------------------
+ jsx files:    64 files,  18766 lines
+ css files:     7 files,   1018 lines
+  py files:     7 files,   3292 lines
+  js files:    17 files,   2698 lines
 html files:     1 files,     50 lines
- jsx files:    53 files,  13305 lines
- css files:     6 files,    416 lines
-  py files:     8 files,   3289 lines
-  js files:    16 files,   5116 lines
 
 Lines by Directory:
 --------------------------------------------------
-      src:  15364 lines
-installer:    441 lines
-    build:   3523 lines
- binaries:   2848 lines
+      src:  22532 lines
+installer:      0 lines
+    build:      0 lines
+ binaries:   3292 lines
 
 Total Summary:
 --------------------------------------------------
-Total:    84 files,  22176 lines
+Total:    96 files,  25824 lines
+santiagobilleci@Santiagos-MacBook-
