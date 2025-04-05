@@ -490,15 +490,18 @@ export default function GameScreen() {
   // Handle delete game
   const handleDeleteGame = async () => {
     try {
+      setIsUninstalling(true);
       if (game.isCustom) {
         await window.electron.removeCustomGame(game.game || game.name);
       } else {
         await window.electron.deleteGame(game.game || game.name);
       }
+      setIsUninstalling(false);
+      setIsDeleteDialogOpen(false);
       navigate("/library");
-      return;
     } catch (error) {
       console.error("Error deleting game:", error);
+      setIsUninstalling(false);
       setIsUninstalling(false);
     }
   };
