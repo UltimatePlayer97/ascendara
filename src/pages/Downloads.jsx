@@ -52,6 +52,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const Downloads = () => {
+  useEffect(() => {
+    window.electron.switchRPC("downloading");
+    return () => {
+      window.electron.switchRPC("default");
+    };
+  }, []);
   const [downloadingGames, setDownloadingGames] = useState([]);
   const [retryModalOpen, setRetryModalOpen] = useState(false);
   const [stopChoiceModal, setStopChoiceModal] = useState(false);

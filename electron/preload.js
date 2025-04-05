@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld("electron", {
   hasLaunched: () => ipcRenderer.invoke("has-launched"),
   imageSecret: () => ipcRenderer.invoke("get-image-key"),
   getDownloadHistory: () => ipcRenderer.invoke("get-download-history"),
+  switchRPC: state => ipcRenderer.invoke("switch-rpc", state),
 
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),

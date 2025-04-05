@@ -122,20 +122,30 @@ app.on("before-quit", () => {
   logStream.end();
 });
 
-// Initialize Discord RPC
-rpc = new Client({ transport: "ipc" });
+function destroyDiscordRPC() {
+  if (rpc) {
+    rpc.clearActivity();
+    rpc.destroy();
+    console.log("Discord RPC has been destroyed");
+  }
+}
 
-rpc.on("ready", () => {
-  rpc.setActivity({
-    state: "Browsing Menus...",
-    largeImageKey: "ascendara",
-    largeImageText: "Ascendara",
+// Initialize Discord RPC
+function initializeDiscordRPC() {
+  rpc = new Client({ transport: "ipc" });
+
+  rpc.on("ready", () => {
+    rpc.setActivity({
+      state: "Searching for games...",
+      largeImageKey: "ascendara",
+      largeImageText: "Ascendara",
+    });
+
+    console.log("Discord RPC is ready");
   });
 
-  console.log("Discord RPC is ready");
-});
-
-rpc.login({ clientId }).catch(console.error);
+  rpc.login({ clientId }).catch(console.error);
+}
 
 // Handle app ready event
 app.whenReady().then(() => {
@@ -144,6 +154,7 @@ app.whenReady().then(() => {
   }
   checkAdmin();
   createWindow();
+  initializeDiscordRPC();
   axios
     .get("https://api.ascendara.app/app/brokenversions")
     .then(response => {
@@ -3702,7 +3713,7 @@ ipcMain.handle(
 
         // Update Discord RPC
         rpc.setActivity({
-          state: "Browsing Menus...",
+          state: "Searching for games...",
           largeImageKey: "ascendara",
           largeImageText: "Ascendara",
         });
@@ -3727,7 +3738,7 @@ ipcMain.handle("stop-game", (event, game) => {
     runGame.kill();
 
     rpc.setActivity({
-      state: "Browsing Menus...",
+      state: "Searching for games...",
       largeImageKey: "ascendara",
       largeImageText: "Ascendara",
     });
@@ -4029,6 +4040,7 @@ function showWindow() {
     if (!mainWindow.isVisible()) {
       console.log("Showing window from showWindow function");
       mainWindow.show();
+      initializeDiscordRPC();
       mainWindowHidden = false;
     }
 
@@ -4048,6 +4060,7 @@ function showWindow() {
   } else {
     console.log("Creating new window from showWindow function");
     createWindow();
+    initializeDiscordRPC();
   }
 }
 
@@ -4058,6 +4071,7 @@ ipcMain.handle("close-window", async () => {
     const settings = await getSettings();
     if (!settings.endOnClose) {
       mainWindowHidden = true;
+      destroyDiscordRPC();
       win.hide();
       console.log("Window hidden instead of closed");
     } else {
@@ -4088,6 +4102,22 @@ ipcMain.handle("welcome-complete", event => {
   BrowserWindow.getAllWindows().forEach(window => {
     window.webContents.send("welcome-complete");
   });
+});
+
+ipcMain.handle("switch-rpc", (event, state) => {
+  if (state === "default") {
+    rpc.setActivity({
+      state: "Searching for games...",
+      largeImageKey: "ascendara",
+      largeImageText: "Ascendara",
+    });
+  } else if (state === "downloading") {
+    rpc.setActivity({
+      state: "Watching download progress...",
+      largeImageKey: "ascendara",
+      largeImageText: "Ascendara",
+    });
+  }
 });
 
 ipcMain.handle("check-v7-welcome", async () => {
