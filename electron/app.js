@@ -4091,6 +4091,7 @@ function createWindow() {
 
   mainWindow.on("show", () => {
     mainWindowHidden = false;
+    initializeDiscordRPC();
     console.log("Window shown event fired");
   });
 
