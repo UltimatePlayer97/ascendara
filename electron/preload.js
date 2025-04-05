@@ -124,7 +124,8 @@ contextBridge.exposeInMainWorld("electron", {
   installPython: () => ipcRenderer.invoke("install-python"),
   installWine: () => ipcRenderer.invoke("install-wine"),
   downloadItem: url => ipcRenderer.invoke("download-item", url),
-  stopDownload: game => ipcRenderer.invoke("stop-download", game),
+  stopDownload: (game, deleteContents) =>
+    ipcRenderer.invoke("stop-download", game, deleteContents),
   retryDownload: (link, game, online, dlc, version) =>
     ipcRenderer.invoke("retry-download", link, game, online, dlc, version),
   downloadFile: (

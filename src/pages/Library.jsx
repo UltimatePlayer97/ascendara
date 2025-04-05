@@ -191,6 +191,7 @@ const Library = () => {
           !game.downloadingData?.downloading &&
           !game.downloadingData?.extracting &&
           !game.downloadingData?.updating &&
+          !game.downloadingData?.stopped &&
           (!game.downloadingData?.verifyError ||
             game.downloadingData.verifyError.length === 0)
       );

@@ -60,12 +60,13 @@ const Downloads = () => {
   }, []);
   const [downloadingGames, setDownloadingGames] = useState([]);
   const [retryModalOpen, setRetryModalOpen] = useState(false);
-  const [stopChoiceModal, setStopChoiceModal] = useState(false);
   const [retryLink, setRetryLink] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
   const [totalSpeed, setTotalSpeed] = useState("0.00 MB/s");
   const [activeDownloads, setActiveDownloads] = useState(0);
   const [stoppingDownloads, setStoppingDownloads] = useState(new Set());
+  const [stopModalOpen, setStopModalOpen] = useState(false);
+  const [gameToStop, setGameToStop] = useState(null);
   const [showFirstTimeAlert, setShowFirstTimeAlert] = useState(false);
   const MAX_HISTORY_POINTS = 20;
   const [speedHistory, setSpeedHistory] = useState(() => {
@@ -111,6 +112,7 @@ const Downloads = () => {
               downloadingData.extracting ||
               downloadingData.updating ||
               downloadingData.verifying ||
+              downloadingData.stopped ||
               (downloadingData.verifyError && downloadingData.verifyError.length > 0) ||
               downloadingData.error)
           );
@@ -176,18 +178,29 @@ const Downloads = () => {
     };
   }, [downloadingGames.length]);
 
-  const [stopModalOpen, setStopModalOpen] = useState(false);
-  const [gameToStop, setGameToStop] = useState(null);
-
   const handleStopDownload = game => {
     setGameToStop(game);
     setStopModalOpen(true);
   };
 
   const executeStopDownload = async (game, deleteContents = false) => {
+    console.log("Executing stop download for:", game, "deleteContents:", deleteContents);
     setStoppingDownloads(prev => new Set([...prev, game.id]));
     try {
-      await window.electron.stopDownload(game.game, deleteContents);
+      const result = await window.electron.stopDownload(game.game, deleteContents);
+      console.log("Stop download result:", result);
+      if (!result) {
+        throw new Error("Failed to stop download");
+      }
+    } catch (error) {
+      console.error("Error stopping download:", error);
+      toast({
+        title: t("downloads.errors.stopFailed"),
+        description: deleteContents
+          ? t("downloads.errors.stopAndDeleteFailed")
+          : t("downloads.errors.stopOnlyFailed"),
+        variant: "destructive",
+      });
     } finally {
       setStoppingDownloads(prev => {
         const newSet = new Set(prev);
@@ -352,7 +365,7 @@ const Downloads = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-bold text-foreground">
-              {t("downloads.actions.stopDownloadTitle")}
+              {t("downloads.actions.stopDownloadTitle", { gameName: gameToStop?.game })}
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription className="text-muted-foreground">
@@ -370,9 +383,10 @@ const Downloads = () => {
             </AlertDialogAction>
             <AlertDialogAction
               onClick={() => gameToStop && executeStopDownload(gameToStop, true)}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-primary hover:bg-primary/90"
             >
-              {t("downloads.actions.stopAndDelete")}
+              <Trash2 className="h-4 w-4" />
+              <span className="ml-2">{t("downloads.actions.stopAndDelete")}</span>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -444,14 +458,19 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
     }
   };
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleRemoveDownload = async game => {
+    setIsDeleting(true);
     await window.electron.deleteGameDirectory(game.game);
+    setIsDeleting(false);
   };
 
   const { downloadingData } = game;
   const isDownloading = downloadingData?.downloading;
   const isExtracting = downloadingData?.extracting;
   const isWaiting = downloadingData?.waiting;
+  const isStopped = downloadingData?.stopped;
   const isUpdating = downloadingData?.updating;
   const hasError = downloadingData?.error;
 
@@ -582,7 +601,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               variant="ghost"
               className="h-8 w-8 p-0 transition-colors duration-200 hover:bg-muted/80"
             >
-              {isStopping ? (
+              {isStopping || isDeleting ? (
                 <Loader className="h-4 w-4 animate-spin" />
               ) : (
                 <MoreVertical className="h-4 w-4" />
@@ -590,7 +609,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            {hasError ? (
+            {hasError || isStopped ? (
               <>
                 <DropdownMenuItem onClick={() => onRetry(game)} className="gap-2">
                   <RefreshCcw className="h-4 w-4" />
@@ -605,20 +624,15 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem
-                onClick={() => handleStopDownload(game)}
-                className="gap-2"
-              >
+              <DropdownMenuItem onClick={() => onStop(game)} className="gap-2">
                 <StopCircle className="h-4 w-4" />
                 {t("downloads.actions.stopDownload")}
               </DropdownMenuItem>
             )}
-            {!isDownloading && (
-              <DropdownMenuItem onClick={() => onOpenFolder(game)} className="gap-2">
-                <FolderOpen className="h-4 w-4" />
-                {t("downloads.actions.openFolder")}
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={() => onOpenFolder(game)} className="gap-2">
+              <FolderOpen className="h-4 w-4" />
+              {t("downloads.actions.openFolder")}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
@@ -677,6 +691,29 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
               >
                 {isVerifying ? t("downloads.verifying") : t("downloads.verifyAgain")}
               </Button>
+            </div>
+          </div>
+        ) : isStopped ? (
+          <div className="mt-2 space-y-2">
+            <div className="flex flex-col items-center justify-center rounded-lg bg-muted/40 py-2">
+              <span className="flex items-center gap-2 text-lg font-semibold">
+                <StopCircle className="h-4 w-4" />
+                {t("downloads.stopped")}
+              </span>
+              <span className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                {t("downloads.stoppedDescription")}&nbsp;
+                <a
+                  onClick={() =>
+                    window.electron.openURL(
+                      "https://ascendara.app/docs/troubleshooting/common-issues#download-resumability"
+                    )
+                  }
+                  className="cursor-pointer text-primary hover:underline"
+                >
+                  {t("common.learnMore")}{" "}
+                  <ExternalLink className="mb-1 inline-block h-3 w-3" />
+                </a>
+              </span>
             </div>
           </div>
         ) : hasError ? (
