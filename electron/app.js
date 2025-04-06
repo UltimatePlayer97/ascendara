@@ -101,19 +101,25 @@ const formatMessage = args => {
 
 console.log = (...args) => {
   const message = formatMessage(args);
-  logStream.write(message);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(message);
+  }
   originalConsole.log(...args);
 };
 
 console.error = (...args) => {
   const message = formatMessage(args);
-  logStream.write(`ERROR: ${message}`);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(`ERROR: ${message}`);
+  }
   originalConsole.error(...args);
 };
 
 console.warn = (...args) => {
   const message = formatMessage(args);
-  logStream.write(`WARN: ${message}`);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(`WARN: ${message}`);
+  }
   originalConsole.warn(...args);
 };
 
