@@ -44,6 +44,8 @@ import {
   ChevronDown,
   Package,
   AlertTriangle,
+  HammerIcon,
+  Eye,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
@@ -1971,6 +1973,39 @@ function Settings() {
               </div>
             </Card>
 
+            {/* Early Preview Card */}
+            <Card className="p-6">
+              <div className="mb-2 flex items-center gap-2">
+                <Eye className="mb-2 h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold text-primary">
+                  {t("settings.earlyReleasePreview")}
+                </h2>
+              </div>
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.earlyReleasePreviewDesc")}
+                  </p>
+                  <div className="flex items-center justify-between space-x-4">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">
+                        {t("settings.enableEarlyReleasePreview")}
+                      </Label>
+                    </div>
+                    <Switch
+                      checked={settings.earlyReleasePreview}
+                      onCheckedChange={() =>
+                        handleSettingChange(
+                          "earlyReleasePreview",
+                          !settings.earlyReleasePreview
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Developer Settings Card - Only shown in development mode */}
             {isDev && (
               <Card className="p-6">
@@ -2068,6 +2103,29 @@ function Settings() {
           </div>
         </div>
       </div>
+
+      {/* Torrent Warning Dialog */}
+      <AlertDialog open={showEarlyReleasePrompt} onOpenChange={setShowEarlyReleasePrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {t("settings.torrentWarningDialog.title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 text-muted-foreground"></AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-primary">
+              {t("settings.torrentWarningDialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleEnableTorrent}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              {t("settings.torrentWarningDialog.continue")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Torrent Warning Dialog */}
       <AlertDialog open={showTorrentWarning} onOpenChange={setShowTorrentWarning}>

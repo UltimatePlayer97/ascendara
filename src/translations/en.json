@@ -617,7 +617,10 @@
       "veryHigh": "Very High (12 threads) - For fast connections"
     },
     "downloaderRunningWarning": "You cannot change these settings while a download is in progress",
+    "earlyReleasePreview": "Early Release Preview",
+    "earlyReleasePreviewDesc": "Install versions of Ascendara with new features before they're officially released. Help improve Ascendara by testing and reporting issues.",
     "enableAscendaraTimechine": "Enable the Ascendara Timemachine",
+    "enableEarlyReleasePreview": "Get early preview updates",
     "enterGiantBombApiKey": "Paste your GiantBomb API Key",
     "enterIgdbApiKey": "Paste your secret Twitch key",
     "enterTwitchClientId": "Paste your Twitch client ID",
