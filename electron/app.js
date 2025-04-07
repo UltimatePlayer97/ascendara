@@ -141,8 +141,10 @@ function initializeDiscordRPC() {
   rpc = new Client({ transport: "ipc" });
 
   rpc.on("ready", () => {
+    // Start with library state
     rpc.setActivity({
-      state: "Searching for games...",
+      state: "In Library",
+      details: "Browsing Games",
       largeImageKey: "ascendara",
       largeImageText: "Ascendara",
     });
@@ -152,6 +154,29 @@ function initializeDiscordRPC() {
 
   rpc.login({ clientId }).catch(console.error);
 }
+
+const updateDiscordRPCToLibrary = () => {
+  if (!rpc || !rpc.isConnected) return;
+
+  // First disconnect any existing activity
+  rpc
+    .clearActivity()
+    .then(() => {
+      // Wait a bit longer to ensure clean state
+      setTimeout(() => {
+        // Then set new activity
+        rpc.setActivity({
+          state: "In Library",
+          details: "Browsing Games",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        });
+      }, 500);
+    })
+    .catch(error => {
+      console.error("Error updating Discord RPC:", error);
+    });
+};
 
 // Handle app ready event
 app.whenReady().then(() => {
@@ -3775,46 +3800,20 @@ ipcMain.handle(
           },
         ],
       });
-
+      // In the game close handler
       runGame.on("exit", code => {
         console.log(`Game ${game} exited with code ${code}`);
 
-        // Update game status to not running in JSON files
-        try {
-          // Update settings.json
-          const settings = JSON.parse(fs.readFileSync(filePath, "utf8"));
-          if (settings.runningGames) {
-            delete settings.runningGames[game];
-            fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
-          }
-
-          // Update games.json
-          const gamesPath = path.join(settings.downloadDirectory, "games.json");
-          if (fs.existsSync(gamesPath)) {
-            const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
-            if (games[game]) {
-              games[game].running = false;
-              fs.writeFileSync(gamesPath, JSON.stringify(games, null, 2));
-            }
-          }
-        } catch (error) {
-          console.error("Error updating game running status:", error);
-        }
-
+        // Update game status and show window first
         runGameProcesses.delete(game);
         showWindow();
 
-        // Update Discord RPC
-        rpc.setActivity({
-          state: "Searching for games...",
-          largeImageKey: "ascendara",
-          largeImageText: "Ascendara",
-        });
+        // Then update Discord RPC with longer delay
+        setTimeout(updateDiscordRPCToLibrary, 1000);
 
         // Notify renderer that game has closed
         event.sender.send("game-closed", { game });
       });
-
       return true;
     } catch (error) {
       console.error("Error launching game:", error);
@@ -3829,12 +3828,8 @@ ipcMain.handle("stop-game", (event, game) => {
   const runGame = runGameProcesses.get(game);
   if (runGame) {
     runGame.kill();
-
-    rpc.setActivity({
-      state: "Searching for games...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+    // Use the same RPC update function with delay
+    setTimeout(updateDiscordRPCToLibrary, 1000);
   }
 });
 
@@ -4201,7 +4196,8 @@ ipcMain.handle("welcome-complete", event => {
 ipcMain.handle("switch-rpc", (event, state) => {
   if (state === "default") {
     rpc.setActivity({
-      state: "Searching for games...",
+      state: "In Library",
+      details: "Browsing Games",
       largeImageKey: "ascendara",
       largeImageText: "Ascendara",
     });
