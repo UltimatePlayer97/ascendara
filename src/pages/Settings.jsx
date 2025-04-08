@@ -5,6 +5,16 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Battery,
+  BatteryMedium,
+  BatteryLow,
+  BatteryFull,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -917,41 +927,156 @@ function Settings() {
                         htmlFor="downloadThreads"
                         className={isDownloaderRunning ? "opacity-50" : ""}
                       >
-                        {t("settings.downloadThreads")}
+                        <span className="text-sm">{t("settings.downloadThreads")}</span>
+                        <p className="text-sm text-muted-foreground">
+                          {t("settings.downloadThreadsDescription")}
+                        </p>
+                        {settings.threadCount > 8 && (
+                          <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                            <CircleAlert size={14} />
+                            <p className="text-sm">
+                              {t(
+                                "settings.highThreadWarning",
+                                "High thread counts may cause download issues. Use with caution."
+                              )}
+                            </p>
+                          </div>
+                        )}
                       </Label>
-                      <Select
-                        disabled={isDownloaderRunning}
-                        value={
-                          settings.threadCount === 0
-                            ? "custom"
-                            : (settings.threadCount || 4).toString()
-                        }
-                        onValueChange={value => {
-                          const threadCount = value === "custom" ? 0 : parseInt(value);
-                          handleSettingChange("threadCount", threadCount);
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="2">
-                            {t("settings.downloadThreadsPresets.low")}
-                          </SelectItem>
-                          <SelectItem value="4">
-                            {t("settings.downloadThreadsPresets.normal")}
-                          </SelectItem>
-                          <SelectItem value="8">
-                            {t("settings.downloadThreadsPresets.high")}
-                          </SelectItem>
-                          <SelectItem value="12">
-                            {t("settings.downloadThreadsPresets.veryHigh")}
-                          </SelectItem>
-                          <SelectItem value="16">
-                            {t("settings.downloadThreadsPresets.extreme")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex w-full justify-center">
+                        <motion.div
+                          className="mt-8 flex items-center space-x-4"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={isDownloaderRunning || settings.threadCount <= 2}
+                            onClick={() => {
+                              const newValue = Math.max(
+                                2,
+                                settings.threadCount - (settings.threadCount > 8 ? 4 : 2)
+                              );
+                              handleSettingChange("threadCount", newValue);
+                            }}
+                            className="transition-transform hover:scale-105"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+
+                          <motion.div
+                            className="relative flex min-w-[200px] flex-col items-center rounded-md border px-6 py-3"
+                            layout
+                          >
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={settings.threadCount || 4}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-center gap-2"
+                              >
+                                <span className="text-xl font-semibold">
+                                  {settings.threadCount || 4}
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                  {t("settings.threads")}
+                                </span>
+                              </motion.div>
+                            </AnimatePresence>
+
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={settings.threadCount || 4}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                transition={{ duration: 0.2, delay: 0.1 }}
+                                className="mt-2"
+                              >
+                                <div
+                                  className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                                  style={{
+                                    background:
+                                      settings.threadCount <= 2
+                                        ? "rgba(148, 163, 184, 0.1)"
+                                        : settings.threadCount <= 4
+                                          ? "rgba(34, 197, 94, 0.1)"
+                                          : settings.threadCount <= 8
+                                            ? "rgba(59, 130, 246, 0.1)"
+                                            : settings.threadCount <= 12
+                                              ? "rgba(249, 115, 22, 0.1)"
+                                              : "rgba(239, 68, 68, 0.1)",
+                                    color:
+                                      settings.threadCount <= 2
+                                        ? "rgb(148, 163, 184)"
+                                        : settings.threadCount <= 4
+                                          ? "rgb(34, 197, 94)"
+                                          : settings.threadCount <= 8
+                                            ? "rgb(59, 130, 246)"
+                                            : settings.threadCount <= 12
+                                              ? "rgb(249, 115, 22)"
+                                              : "rgb(239, 68, 68)",
+                                  }}
+                                >
+                                  {settings.threadCount <= 2 && (
+                                    <>
+                                      <BatteryLow className="h-3.5 w-3.5" />
+                                      {t("settings.downloadThreadsPresets.low")}
+                                    </>
+                                  )}
+                                  {settings.threadCount > 2 &&
+                                    settings.threadCount <= 4 && (
+                                      <>
+                                        <Battery className="h-3.5 w-3.5" />
+                                        {t("settings.downloadThreadsPresets.normal")}
+                                      </>
+                                    )}
+                                  {settings.threadCount > 4 &&
+                                    settings.threadCount <= 8 && (
+                                      <>
+                                        <BatteryMedium className="h-3.5 w-3.5" />
+                                        {t("settings.downloadThreadsPresets.high")}
+                                      </>
+                                    )}
+                                  {settings.threadCount > 8 &&
+                                    settings.threadCount <= 12 && (
+                                      <>
+                                        <BatteryFull className="h-3.5 w-3.5" />
+                                        {t("settings.downloadThreadsPresets.veryHigh")}
+                                      </>
+                                    )}
+                                  {settings.threadCount > 12 && (
+                                    <>
+                                      <Zap className="h-3.5 w-3.5" />
+                                      {t("settings.downloadThreadsPresets.extreme")}
+                                    </>
+                                  )}
+                                </div>
+                              </motion.div>
+                            </AnimatePresence>
+                          </motion.div>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={isDownloaderRunning || settings.threadCount >= 16}
+                            onClick={() => {
+                              const newValue = Math.min(
+                                16,
+                                settings.threadCount + (settings.threadCount >= 8 ? 4 : 2)
+                              );
+                              handleSettingChange("threadCount", newValue);
+                            }}
+                            className="transition-transform hover:scale-105"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </motion.div>
+                      </div>
 
                       {/* Custom thread count input */}
                       {settings.threadCount === 0 && (
@@ -976,126 +1101,117 @@ function Settings() {
                           </p>
                         </div>
                       )}
-                      {settings.threadCount > 8 && (
-                        <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                          <CircleAlert size={14} />
-                          <p className="text-sm">
-                            {t(
-                              "settings.highThreadWarning",
-                              "High thread counts may cause download issues. Use with caution."
-                            )}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-6">
-                      {/* Default Download Path Section */}
-                      <div>
-                        <Label
-                          htmlFor="defaultDownloadPath"
-                          className={isDownloaderRunning ? "opacity-50" : ""}
-                        >
-                          {t("settings.defaultDownloadLocation")}
-                        </Label>
-                        {!canCreateFiles && (
-                          <div className="mt-1 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                            <ShieldAlert size={16} />
-                            <p className="text-sm font-medium">
-                              {t("settings.downloadLocationWarning")}
-                            </p>
-                          </div>
-                        )}
-                        <div className="mt-2 flex gap-2">
-                          <Input
-                            id="defaultDownloadPath"
-                            disabled={isDownloaderRunning}
-                            value={downloadPath}
-                            readOnly
-                            className="flex-1"
-                          />
-                          <Button
-                            disabled={isDownloaderRunning}
-                            className="shrink-0 text-secondary"
-                            onClick={handleDirectorySelect}
-                          >
-                            {t("settings.selectDirectory")}
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Additional Download Paths Section */}
-                      <div className="border-t pt-6">
-                        <div className="mb-2 flex items-center justify-between">
-                          <Label className={isDownloaderRunning ? "opacity-50" : ""}>
-                            {t("settings.additionalLocations")}
-                          </Label>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={isDownloaderRunning}
-                            onClick={async () => {
-                              const path = await window.electron.ipcRenderer.invoke(
-                                "open-directory-dialog"
-                              );
-                              if (path) {
-                                const newPaths = [
-                                  ...(settings.additionalDirectories || []),
-                                  path,
-                                ];
-                                handleSettingChange("additionalDirectories", newPaths);
-                              }
-                            }}
-                            className="h-8"
-                          >
-                            <Plus size={16} className="mr-1" />
-                            {t("settings.addLocation")}
-                          </Button>
-                        </div>
-                        <div className="space-y-2">
-                          {settings.additionalDirectories?.length === 0 ? (
-                            <p className="text-sm italic text-muted-foreground">
-                              {t("settings.noAdditionalLocations")}
-                            </p>
-                          ) : (
-                            settings.additionalDirectories?.map((path, index) => (
-                              <div
-                                key={index}
-                                className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
-                              >
-                                <FolderOpen
-                                  size={16}
-                                  className="shrink-0 text-muted-foreground"
-                                />
-                                <span className="flex-1 truncate text-sm" title={path}>
-                                  {path}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  disabled={isDownloaderRunning}
-                                  onClick={() => {
-                                    const newPaths = [...settings.additionalDirectories];
-                                    newPaths.splice(index, 1);
-                                    handleSettingChange(
-                                      "additionalDirectories",
-                                      newPaths
-                                    );
-                                  }}
-                                  className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                                >
-                                  <X size={16} />
-                                </Button>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </Card>
+
+            <Card>
+              <div className="p-6">
+                <h3 className="mb-2 text-xl font-semibold text-primary">
+                  {t("settings.downloadPaths")}
+                </h3>
+                <div className="mb-4">
+                  <Label
+                    htmlFor="defaultDownloadPath"
+                    className={isDownloaderRunning ? "opacity-50" : ""}
+                  >
+                    {t("settings.defaultDownloadLocation")}
+                  </Label>
+                  {!canCreateFiles && (
+                    <div className="mt-1 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                      <ShieldAlert size={16} />
+                      <p className="text-sm font-medium">
+                        {t("settings.downloadLocationWarning")}
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      id="defaultDownloadPath"
+                      disabled={isDownloaderRunning}
+                      value={downloadPath}
+                      readOnly
+                      className="flex-1"
+                    />
+                    <Button
+                      disabled={isDownloaderRunning}
+                      className="shrink-0 text-secondary"
+                      onClick={handleDirectorySelect}
+                    >
+                      {t("settings.selectDirectory")}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Additional Download Paths Section */}
+                <div className="border-t pt-6">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Label className={isDownloaderRunning ? "opacity-50" : ""}>
+                      {t("settings.additionalLocations")}
+                    </Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={isDownloaderRunning}
+                      onClick={async () => {
+                        const path = await window.electron.ipcRenderer.invoke(
+                          "open-directory-dialog"
+                        );
+                        if (path) {
+                          const newPaths = [
+                            ...(settings.additionalDirectories || []),
+                            path,
+                          ];
+                          handleSettingChange("additionalDirectories", newPaths);
+                        }
+                      }}
+                      className="h-8"
+                    >
+                      <Plus size={16} className="mr-1" />
+                      {t("settings.addLocation")}
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {settings.additionalDirectories?.length === 0 ? (
+                      <p className="text-sm italic text-muted-foreground">
+                        {t("settings.noAdditionalLocations")}
+                      </p>
+                    ) : (
+                      settings.additionalDirectories?.map((path, index) => (
+                        <div
+                          key={index}
+                          className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
+                        >
+                          <FolderOpen
+                            size={16}
+                            className="shrink-0 text-muted-foreground"
+                          />
+                          <span className="flex-1 truncate text-sm" title={path}>
+                            {path}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={isDownloaderRunning}
+                            onClick={() => {
+                              const newPaths = [...settings.additionalDirectories];
+                              newPaths.splice(index, 1);
+                              handleSettingChange("additionalDirectories", newPaths);
+                            }}
+                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <X size={16} />
+                          </Button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             <Card>
               <div className="p-6">
                 <div className="flex items-center justify-between">

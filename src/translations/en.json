@@ -649,7 +649,9 @@
     "darkThemes": "Dark Themes",
     "defaultDownloadLocation": "Default Download Location",
     "downloadLocationWarning": "Ascendara cannot write files to the chosen directory. Change was not saved.",
-    "downloadThreads": "Download Performance",
+    "downloadPaths": "Download Paths",
+    "downloadThreads": "Download Threads",
+    "downloadThreadsDescription": "Download threads determine how many simultaneous connections are used when downloading",
     "downloadThreadsPresets": {
       "extreme": "Extreme (16 threads) - Use with caution",
       "high": "High (8 threads) - Better performance",
@@ -751,6 +753,7 @@
     "steamripDescription": "SteamRIP is the primary source for Ascendara, providing a secure and reliable collection of games with regular updates.",
     "switchSource": "Switch to this source",
     "theme": "Appearance",
+    "threads": "Threads",
     "timeMachineDisabledFitgirl": "Ascendara Timemachine is not available when using FitGirl Repacks as the game source.",
     "title": "Ascendara Preferences",
     "torrentDescription": "Enable Ascendara's torrent functionality. This feature requires qBittorrent to be installed and is recommended for experienced users only.",
