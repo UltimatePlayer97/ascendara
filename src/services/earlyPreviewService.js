@@ -22,7 +22,7 @@ const getToken = async () => {
 const fetchEarlyChanges = async () => {
   try {
     const token = await getToken();
-    const response = await fetch("https://api.ascendara.app/earlychanges", {
+    const response = await fetch("https://api.ascendara.app/app/earlychanges/read", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -33,11 +33,14 @@ const fetchEarlyChanges = async () => {
     } else if (response.status === 401) {
       // If token expired, try once with a new token
       const newToken = await getToken();
-      const retryResponse = await fetch("https://api.ascendara.app/earlychanges", {
-        headers: {
-          Authorization: `Bearer ${newToken}`,
-        },
-      });
+      const retryResponse = await fetch(
+        "https://api.ascendara.app/app/earlychanges/read",
+        {
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+          },
+        }
+      );
 
       if (retryResponse.ok) {
         return await retryResponse.json();
@@ -55,7 +58,7 @@ const voteForFeature = async (featureId, voteType) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       const token = await getToken();
-      const response = await fetch("https://api.ascendara.app/earlychanges/vote", {
+      const response = await fetch("https://api.ascendara.app/app/earlychanges/vote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,17 +75,20 @@ const voteForFeature = async (featureId, voteType) => {
       } else if (response.status === 401) {
         // If token expired, try once with a new token
         const newToken = await getToken();
-        const retryResponse = await fetch("https://api.ascendara.app/earlychanges/vote", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${newToken}`,
-          },
-          body: JSON.stringify({
-            featureId,
-            voteType,
-          }),
-        });
+        const retryResponse = await fetch(
+          "https://api.ascendara.app/app/earlychanges/vote",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${newToken}`,
+            },
+            body: JSON.stringify({
+              featureId,
+              voteType,
+            }),
+          }
+        );
 
         if (retryResponse.ok) {
           resolve(await retryResponse.json());

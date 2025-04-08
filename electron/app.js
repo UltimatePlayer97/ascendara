@@ -3556,6 +3556,12 @@ ipcMain.handle("open-game-directory", (event, game, isCustom) => {
     return;
   }
 
+  if (game === "debuglog") {
+    const appDataPath = path.join(process.env.APPDATA, "Ascendara by tagoWorks");
+    shell.openPath(appDataPath);
+    return;
+  }
+
   if (game === "workshop") {
     const steamCMDDir = path.join(os.homedir(), "ascendaraSteamcmd");
     const workshopContentPath = path.join(steamCMDDir, "steamapps/workshop/content");

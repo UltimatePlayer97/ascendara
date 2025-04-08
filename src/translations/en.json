@@ -323,22 +323,43 @@
   },
   "earlyPreview": {
     "actions": "Quick Actions",
-    "debugInfo": "Access debug logs to help us diagnose and fix any technical issues you encounter.",
+    "debugInfo": "Access debug logs to help diagnose and fix any technical issues you encounter.",
     "debugLogError": "Failed to open debug logs folder",
-    "description": "Get early access to experimental features and help shape the future of Ascendara.",
-    "discordInfo": "Join our Discord community to request new features and discuss ideas with other users.",
+    "description": "View and vote the different experimental features in the early builds of Ascendare before they are released. Your feedback and vote matters and will help shape Ascendara.",
+    "discordInfo": "Join the Discord community to request new features and discuss ideas with other users.",
     "experimentalFeatures": "Experimental Features",
     "fetchError": "Failed to load experimental features",
-    "helpUsImprove": "Help Us Improve",
+    "helpUsImprove": "Improve Ascendara",
+    "joinDiscord": "Join Discord",
     "noFeatures": "No experimental features available at the moment.",
     "openDebugFolder": "View Debug Logs",
-    "reportInfo": "Found a bug? Report it directly to us and we'll investigate the issue.",
+    "reportInfo": "Found a bug? Report it directly to the server and the issue will be investigated.",
     "reportIssue": "Report Issue",
     "requestFeature": "Request Feature",
-    "title": "Early Preview",
+    "status": {
+      "active": {
+        "description": "This feature is currently active in the early build and ready for testing",
+        "title": "Active"
+      },
+      "deprecated": {
+        "description": "This feature is still present but will be removed in a future update",
+        "title": "Deprecated"
+      },
+      "implemented": {
+        "description": "This feature has been successfully implemented and is now in the released version",
+        "title": "Implemented"
+      },
+      "trashed": {
+        "description": "This feature has been discarded and will not be implemented",
+        "title": "Trashed"
+      }
+    },
+    "title": "The Early Preview Dashboard",
     "voteError": "Failed to submit your vote",
     "voteSuccess": "Thanks for your feedback!",
-    "warning": "These features are in early development and may be unstable. Your feedback helps us improve them."
+    "votingClosed": "Voting is closed",
+    "votingInProgress": "Processing vote...",
+    "warning": "These features are in early development and may be unstable. You are using at your own risk."
   },
 
   "game": {
@@ -637,6 +658,7 @@
       "veryHigh": "Very High (12 threads) - For fast connections"
     },
     "downloaderRunningWarning": "You cannot change these settings while a download is in progress",
+    "earlyPreviewDash": "Visit Dashboard",
     "earlyReleasePreview": "Early Release Preview",
     "earlyReleasePreviewDesc": "Install versions of Ascendara with new features before they're officially released. Help improve Ascendara by testing and reporting issues.",
     "enableAscendaraTimechine": "Enable the Ascendara Timemachine",
