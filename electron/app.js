@@ -58,6 +58,7 @@ let updateDownloadInProgress = false;
 let experiment = false;
 let installedTools = [];
 let isBrokenVersion = false;
+let rpcIsConnected = false;
 let hasAdmin = false;
 let isWindows = os.platform().startsWith("win");
 let rpc;
@@ -126,6 +127,7 @@ console.warn = (...args) => {
 // Ensure logs are written before app exits
 app.on("before-quit", () => {
   logStream.end();
+  destroyDiscordRPC();
 });
 
 function destroyDiscordRPC() {
@@ -177,6 +179,7 @@ function initializeDiscordRPC() {
       });
 
     console.log("Discord RPC is ready");
+    rpcIsConnected = true;
   });
 
   rpc.on("error", error => {
@@ -197,6 +200,7 @@ function initializeDiscordRPC() {
   rpc.login({ clientId }).catch(error => {
     console.error("Discord RPC login error:", error);
     rpcConnectionAttempts++;
+    rpcIsConnected = false;
 
     if (rpcConnectionAttempts < MAX_RPC_ATTEMPTS) {
       console.log(
@@ -211,7 +215,7 @@ function initializeDiscordRPC() {
 }
 
 const updateDiscordRPCToLibrary = () => {
-  if (!rpc || !rpc.isConnected) return;
+  if (!rpc || !rpcIsConnected) return;
 
   // First disconnect any existing activity
   rpc
@@ -4148,7 +4152,6 @@ function createWindow() {
 
   mainWindow.on("show", () => {
     mainWindowHidden = false;
-    initializeDiscordRPC();
     console.log("Window shown event fired");
   });
 
@@ -4249,7 +4252,7 @@ ipcMain.handle("welcome-complete", event => {
 });
 
 ipcMain.handle("switch-rpc", (event, state) => {
-  if (!rpc?.connected) {
+  if (!rpcIsConnected) {
     console.log("Discord RPC not connected, skipping activity update");
     return;
   }
