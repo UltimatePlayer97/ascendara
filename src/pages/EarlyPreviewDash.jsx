@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   FolderOpen,
   Loader,
+  Eye,
 } from "lucide-react";
 import earlyPreviewService from "@/services/earlyPreviewService";
 import ReportIssue from "@/components/ReportIssue";
@@ -147,13 +148,13 @@ const EarlyPreviewDash = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background">
+    <div className="mt-8 min-h-screen bg-gradient-to-br from-background via-background/95 to-background">
       <div className="container mx-auto max-w-[1400px] p-4 md:p-6">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="flex items-center gap-3 text-3xl font-bold">
-              <FlaskConical className="h-8 w-8 text-primary" />
+              <Eye className="h-8 w-8 text-primary" />
               {t("earlyPreview.title")}
             </h1>
             <p className="mt-2 text-muted-foreground">{t("earlyPreview.description")}</p>
