@@ -78,10 +78,11 @@ try {
 } catch (e) {
   config = {};
 }
-const APIKEY = process.env.AUTHORIZATION || config.AUTHORIZATION;
-const analyticsAPI = process.env.ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
-const imageKey = process.env.IMAGE_KEY || config.IMAGE_KEY;
-const clientId = process.env.DISCKEY || config.DISCKEY;
+
+const APIKEY = process.env.REACT_APP_AUTHORIZATION || config.AUTHORIZATION;
+const analyticsAPI = process.env.REACT_APP_ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
+const imageKey = process.env.REACT_APP_IMAGE_KEY || config.IMAGE_KEY;
+const clientId = process.env.REACT_APP_DISCKEY || config.DISCKEY;
 
 // Get the app data path for the log file
 const logPath = path.join(app.getPath("appData"), "Ascendara by tagoWorks", "debug.log");
