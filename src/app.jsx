@@ -36,6 +36,7 @@ import GameScreen from "./pages/GameScreen";
 import Profile from "./pages/Profile";
 import Library from "./pages/Library";
 import Search from "./pages/Search";
+import EarlyPreviewDash from "./pages/EarlyPreviewDash";
 import Settings from "./pages/Settings";
 import Welcome from "./pages/Welcome";
 import i18n from "./i18n";
@@ -612,6 +613,16 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="download">
                     <DownloadPage />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
+              path="earlypreviewdash"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="earlypreviewdash">
+                    <EarlyPreviewDash />
                   </PageTransition>
                 </AnimatePresence>
               }

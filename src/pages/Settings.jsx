@@ -46,6 +46,7 @@ import {
   AlertTriangle,
   HammerIcon,
   Eye,
+  LayoutDashboard,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
@@ -1986,21 +1987,31 @@ function Settings() {
                   <p className="text-sm text-muted-foreground">
                     {t("settings.earlyReleasePreviewDesc")}
                   </p>
-                  <div className="flex items-center justify-between space-x-4">
-                    <div className="space-y-1">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium">
                         {t("settings.enableEarlyReleasePreview")}
                       </Label>
+                      <Switch
+                        checked={settings.earlyReleasePreview}
+                        onCheckedChange={() =>
+                          handleSettingChange(
+                            "earlyReleasePreview",
+                            !settings.earlyReleasePreview
+                          )
+                        }
+                      />
                     </div>
-                    <Switch
-                      checked={settings.earlyReleasePreview}
-                      onCheckedChange={() =>
-                        handleSettingChange(
-                          "earlyReleasePreview",
-                          !settings.earlyReleasePreview
-                        )
-                      }
-                    />
+                    {settings.earlyReleasePreview && (
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => navigate("/earlypreviewdash")}
+                      >
+                        <LayoutDashboard size={18} />
+                        {t("settings.earlyPreviewDash")}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2103,29 +2114,6 @@ function Settings() {
           </div>
         </div>
       </div>
-
-      {/* Torrent Warning Dialog */}
-      <AlertDialog open={showEarlyReleasePrompt} onOpenChange={setShowEarlyReleasePrompt}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-bold text-foreground">
-              {t("settings.torrentWarningDialog.title")}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4 text-muted-foreground"></AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="text-primary">
-              {t("settings.torrentWarningDialog.cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleEnableTorrent}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              {t("settings.torrentWarningDialog.continue")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Torrent Warning Dialog */}
       <AlertDialog open={showTorrentWarning} onOpenChange={setShowTorrentWarning}>
