@@ -216,6 +216,7 @@ function Settings() {
   const [twitchSecret, setTwitchSecret] = useState("");
   const [twitchClientId, setTwitchClientId] = useState("");
   const [showReloadDialog, setShowReloadDialog] = useState(false);
+  const [showEarlyPreviewDialog, setShowEarlyPreviewDialog] = useState(false);
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
   const [dependencyStatus, setDependencyStatus] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
@@ -701,7 +702,7 @@ function Settings() {
           {isExperiment ? (
             <div className="group relative ml-auto flex items-center text-sm text-muted-foreground">
               <div className="px-2 font-medium">
-                <span>Experiment Build, Subject to Change</span>
+                <span>Experiment Build {__APP_VERSION__}</span>
               </div>
             </div>
           ) : (
@@ -2110,12 +2111,7 @@ function Settings() {
                       </Label>
                       <Switch
                         checked={settings.earlyReleasePreview}
-                        onCheckedChange={() =>
-                          handleSettingChange(
-                            "earlyReleasePreview",
-                            !settings.earlyReleasePreview
-                          )
-                        }
+                        onCheckedChange={() => setShowEarlyPreviewDialog(true)}
                       />
                     </div>
                     {settings.earlyReleasePreview && (
@@ -2265,6 +2261,40 @@ function Settings() {
               className="bg-red-500 hover:bg-red-600"
             >
               {t("settings.torrentWarningDialog.continue")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {/* Early Release Preview Dialog */}
+      <AlertDialog open={showEarlyPreviewDialog} onOpenChange={setShowEarlyPreviewDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {!settings.earlyReleasePreview
+                ? "Enable Experimental Build?"
+                : "Switch to Stable Version?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              {!settings.earlyReleasePreview
+                ? "Would you like to install and restart with the latest experimental build now?"
+                : "You'll need to install the latest stable version. Would you like to do this now?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-primary">Later</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleSettingChange("earlyReleasePreview", !settings.earlyReleasePreview);
+                if (!settings.earlyReleasePreview) {
+                  // Logic to install experimental build
+                } else {
+                  // Logic to install stable version
+                }
+                setShowEarlyPreviewDialog(false);
+              }}
+              className="bg-primary text-secondary"
+            >
+              {!settings.earlyReleasePreview ? "Install Now" : "Install Stable Version"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
