@@ -130,29 +130,84 @@ app.on("before-quit", () => {
 
 function destroyDiscordRPC() {
   if (rpc) {
-    rpc.clearActivity();
-    rpc.destroy();
+    try {
+      if (rpc.transport && rpc.transport.socket) {
+        rpc.destroy().catch(() => {
+          // Ignore destroy errors
+        });
+      }
+    } catch (error) {
+      // Ignore any errors during cleanup
+    } finally {
+      rpc = null;
+    }
     console.log("Discord RPC has been destroyed");
   }
 }
 
+// Add a connection attempt counter
+let rpcConnectionAttempts = 0;
+const MAX_RPC_ATTEMPTS = 3;
+
 // Initialize Discord RPC
 function initializeDiscordRPC() {
+  if (rpcConnectionAttempts >= MAX_RPC_ATTEMPTS) {
+    console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    return;
+  }
+
+  // Ensure any existing client is cleaned up
+  destroyDiscordRPC();
+
   rpc = new Client({ transport: "ipc" });
 
   rpc.on("ready", () => {
+    // Reset connection attempts on successful connection
+    rpcConnectionAttempts = 0;
     // Start with library state
-    rpc.setActivity({
-      state: "In Library",
-      details: "Browsing Games",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+    rpc
+      .setActivity({
+        state: "In Library",
+        details: "Browsing Games",
+        largeImageKey: "ascendara",
+        largeImageText: "Ascendara",
+      })
+      .catch(() => {
+        // Ignore activity setting errors
+      });
 
     console.log("Discord RPC is ready");
   });
 
-  rpc.login({ clientId }).catch(console.error);
+  rpc.on("error", error => {
+    console.error("Discord RPC error:", error);
+    rpcConnectionAttempts++;
+
+    if (rpcConnectionAttempts < MAX_RPC_ATTEMPTS) {
+      console.log(
+        `Discord RPC connection attempt ${rpcConnectionAttempts}/${MAX_RPC_ATTEMPTS}`
+      );
+      // Wait a bit before retrying
+      setTimeout(initializeDiscordRPC, 1000);
+    } else {
+      console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    }
+  });
+
+  rpc.login({ clientId }).catch(error => {
+    console.error("Discord RPC login error:", error);
+    rpcConnectionAttempts++;
+
+    if (rpcConnectionAttempts < MAX_RPC_ATTEMPTS) {
+      console.log(
+        `Discord RPC connection attempt ${rpcConnectionAttempts}/${MAX_RPC_ATTEMPTS}`
+      );
+      // Wait a bit before retrying
+      setTimeout(initializeDiscordRPC, 1000);
+    } else {
+      console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    }
+  });
 }
 
 const updateDiscordRPCToLibrary = () => {
@@ -4194,19 +4249,36 @@ ipcMain.handle("welcome-complete", event => {
 });
 
 ipcMain.handle("switch-rpc", (event, state) => {
-  if (state === "default") {
-    rpc.setActivity({
-      state: "In Library",
-      details: "Browsing Games",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
-  } else if (state === "downloading") {
-    rpc.setActivity({
-      state: "Watching download progress...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+  if (!rpc?.connected) {
+    console.log("Discord RPC not connected, skipping activity update");
+    return;
+  }
+
+  try {
+    if (state === "default") {
+      rpc
+        .setActivity({
+          state: "In Library",
+          details: "Browsing Games",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        })
+        .catch(err => {
+          console.log("Failed to set Discord RPC activity:", err);
+        });
+    } else if (state === "downloading") {
+      rpc
+        .setActivity({
+          state: "Watching download progress...",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        })
+        .catch(err => {
+          console.log("Failed to set Discord RPC activity:", err);
+        });
+    }
+  } catch (err) {
+    console.log("Failed to update Discord RPC activity:", err);
   }
 });
 
