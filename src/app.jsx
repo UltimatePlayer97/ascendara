@@ -376,6 +376,7 @@ const AppRoutes = () => {
   useEffect(() => {
     if (showWelcome) return;
     let isSubscribed = true;
+    const isExperiment = window.electron.isExperiment();
 
     const checkVersionAndSetupUpdates = async () => {
       try {
@@ -388,15 +389,22 @@ const AppRoutes = () => {
           !settings.autoUpdate
         ) {
           hasShownUpdateNotification.current = true;
-          toast(t("app.toasts.outOfDate"), {
-            description: t("app.toasts.outOfDateDesc"),
-            action: {
-              label: t("app.toasts.updateNow"),
-              onClick: () => window.electron.openURL("https://ascendara.app/"),
-            },
-            duration: 10000,
-            id: "update-available",
-          });
+          toast(
+            isExperiment
+              ? t("app.toasts.experimentOutOfDate")
+              : t("app.toasts.outOfDate"),
+            {
+              description: isExperiment
+                ? t("app.toasts.experimentOutOfDateDesc")
+                : t("app.toasts.outOfDateDesc"),
+              action: {
+                label: t("app.toasts.updateNow"),
+                onClick: () => window.electron.openURL("https://ascendara.app/"),
+              },
+              duration: 10000,
+              id: "update-available",
+            }
+          );
         }
       } catch (error) {
         console.error("Error checking version:", error);
@@ -407,15 +415,22 @@ const AppRoutes = () => {
       if (!isSubscribed || hasShownUpdateReadyNotification.current) return;
 
       hasShownUpdateReadyNotification.current = true;
-      toast(t("app.toasts.updateReady"), {
-        description: t("app.toasts.updateReadyDesc"),
-        action: {
-          label: t("app.toasts.installAndRestart"),
-          onClick: handleInstallAndRestart,
-        },
-        duration: Infinity,
-        id: "update-ready",
-      });
+      toast(
+        isExperiment
+          ? t("app.toasts.experimentUpdateReady")
+          : t("app.toasts.updateReady"),
+        {
+          description: isExperiment
+            ? t("app.toasts.experimentUpdateReadyDesc")
+            : t("app.toasts.updateReadyDesc"),
+          action: {
+            label: t("app.toasts.installAndRestart"),
+            onClick: handleInstallAndRestart,
+          },
+          duration: Infinity,
+          id: "update-ready",
+        }
+      );
     };
 
     checkVersionAndSetupUpdates();
