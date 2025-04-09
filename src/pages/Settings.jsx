@@ -941,10 +941,13 @@ function Settings() {
                         htmlFor="downloadThreads"
                         className={isDownloaderRunning ? "opacity-50" : ""}
                       >
-                        <span className="text-sm">{t("settings.downloadThreads")}</span>
-                        <p className="text-sm text-muted-foreground">
-                          {t("settings.downloadThreadsDescription")}
-                        </p>
+                        <div className="space-y-0.5">
+                          <Label>{t("settings.downloadThreads")}</Label>
+                          <p className="text-sm font-normal text-muted-foreground">
+                            {t("settings.downloadThreadsDescription")}
+                          </p>
+                        </div>
+
                         {settings.threadCount > 8 && (
                           <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
                             <CircleAlert size={14} />
