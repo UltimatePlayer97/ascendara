@@ -57,6 +57,13 @@ const fetchEarlyChanges = async () => {
 const voteForFeature = async (featureId, voteType) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
+      // Ensure featureId is a number
+      const numericFeatureId = parseInt(featureId, 10);
+      if (isNaN(numericFeatureId)) {
+        reject(new Error("Invalid feature ID"));
+        return;
+      }
+
       const token = await getToken();
       const response = await fetch("https://api.ascendara.app/app/earlychanges/vote", {
         method: "POST",
@@ -65,13 +72,15 @@ const voteForFeature = async (featureId, voteType) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          featureId,
+          featureId: numericFeatureId,
           voteType, // "up" or "down"
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        resolve(await response.json());
+        resolve(data);
       } else if (response.status === 401) {
         // If token expired, try once with a new token
         const newToken = await getToken();
