@@ -19,7 +19,7 @@
       "title": "Oh no..."
     },
     "downloading-update": "Downloading Update...",
-    "experiment": "EXPERIMENTAL BUILD",
+    "experiment": "EXPERIMENTAL",
     "loading": {
       "ascendaraWillRestart": "Ascendara will restart automatically",
       "installingUpdate": "Installing Update"
@@ -53,11 +53,21 @@
       "title": "Let me know how you like it"
     },
     "toasts": {
+      "buildSwitchReady": "Build Switch Ready",
+      "buildSwitchReadyDesc": "The selected build has been downloaded. Install now to switch versions.",
+      "experimentOutOfDate": "This build is out of date",
+      "experimentOutOfDateDesc": "It is recommended that you stay on the latest experimental build.",
+      "experimentUpdateReady": "New Build Available",
+      "experimentUpdateReadyDesc": "A new experimental build is available. Ascendara can update automatically to it.",
       "installAndRestart": "Install & Restart",
       "justUpdated": "Update Complete",
       "justUpdatedDesc": "You've just updated to {{version}}",
       "outOfDate": "Ascendara is out of date",
       "outOfDateDesc": "Please download the latest version from the official website",
+      "switchToExperimental": "Switch to Experimental Build",
+      "switchToExperimentalDesc": "Switch to the experimental build to test new features and provide feedback.",
+      "switchToStable": "Switch to Stable Build",
+      "switchToStableDesc": "Switch to the stable build of Ascendara for the most reliable experience.",
       "updateNow": "Update Now",
       "updateReady": "Ascendara is ready to update",
       "updateReadyDesc": "Ascendara downloaded the update and is ready to install and restart now",
@@ -323,6 +333,7 @@
   },
   "earlyPreview": {
     "actions": "Quick Actions",
+    "alreadyVoted": "You have already voted for this feature",
     "debugInfo": "Access debug logs to help diagnose and fix any technical issues you encounter.",
     "debugLogError": "Failed to open debug logs folder",
     "description": "View and vote the different experimental features in the early builds of Ascendare before they are released. Your feedback and vote matters and will help shape Ascendara.",
@@ -360,9 +371,13 @@
     },
     "title": "Early Preview Dashboard",
     "voteDown": "Has Problems",
+    "voteDownSuccess": "You're downvote was submitted successfully",
     "voteError": "Failed to submit your vote",
     "voteSuccess": "Thanks for your feedback!",
     "voteUp": "Works Great",
+    "voteUpSuccess": "You're upvote was submitted successfully",
+    "votedDown": "You said this feature has problems",
+    "votedUp": "You said this feature works great",
     "votingClosed": "Voting is closed",
     "votingInProgress": "Processing vote...",
     "warning": "These features are in early development and may be unstable. You are using at your own risk."
