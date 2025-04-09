@@ -448,54 +448,12 @@ ipcMain.handle("has-admin", async () => {
 
 // Switch between stable and experimental build
 ipcMain.handle("switch-build", async (event, buildType) => {
-  try {
-    const response = await axios.get("https://api.ascendara.app/builds");
-    let downloadUrl;
-
-    if (buildType === "stable") {
-      downloadUrl = response.data.stableUrl;
-    } else if (buildType === "experimental") {
-      downloadUrl = response.data.experimentalUrl;
-    } else {
-      throw new Error("Invalid build type");
-    }
-
-    // Start the download process
-    const settings = await getSettings();
-    updateDownloadInProgress = true;
-
-    // Notify the renderer about download start
-    BrowserWindow.getAllWindows().forEach(window => {
-      window.webContents.send("update-download-started");
-    });
-
-    // Download the setup file
-    const setupPath = await downloadUpdate(downloadUrl);
-
-    // Once download is complete, run the installer
-    if (setupPath) {
-      // Notify about install
-      BrowserWindow.getAllWindows().forEach(window => {
-        window.webContents.send("update-downloaded");
-      });
-
-      // Run the installer
-      await installUpdate(setupPath);
-    }
-
-    updateDownloadInProgress = false;
-    return true;
-  } catch (error) {
-    console.error("Error switching build:", error);
-    updateDownloadInProgress = false;
-
-    // Notify about error
-    BrowserWindow.getAllWindows().forEach(window => {
-      window.webContents.send("update-error", error.message);
-    });
-
-    return false;
+  if (buildType === "stable") {
+    experiment = false;
+  } else if (buildType === "experimental") {
+    experiment = true;
   }
+  return true;
 });
 
 // Install steamcmd.exe from Ascendara CDN and store it in the ascendaraSteamcmd directory

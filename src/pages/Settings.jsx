@@ -216,6 +216,7 @@ function Settings() {
   const [twitchSecret, setTwitchSecret] = useState("");
   const [twitchClientId, setTwitchClientId] = useState("");
   const [showReloadDialog, setShowReloadDialog] = useState(false);
+  const [reloadMessage, setReloadMessage] = useState("");
   const [showEarlyPreviewDialog, setShowEarlyPreviewDialog] = useState(false);
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
   const [dependencyStatus, setDependencyStatus] = useState(null);
@@ -386,6 +387,18 @@ function Settings() {
         }));
       }
     });
+  };
+
+  const handleBuildSwitch = async () => {
+    handleSettingChange("earlyReleasePreview", !settings.earlyReleasePreview);
+    if (!settings.earlyReleasePreview) {
+      window.electron.switchBuild("experimental");
+    } else {
+      window.electron.switchBuild("stable");
+    }
+    setShowEarlyPreviewDialog(false);
+    setReloadMessage(t("settings.buildSwitchReload"));
+    setShowReloadDialog(true);
   };
 
   const handleDirectorySelect = useCallback(async () => {
@@ -2265,6 +2278,7 @@ function Settings() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
       {/* Early Release Preview Dialog */}
       <AlertDialog open={showEarlyPreviewDialog} onOpenChange={setShowEarlyPreviewDialog}>
         <AlertDialogContent>
@@ -2284,13 +2298,7 @@ function Settings() {
             <AlertDialogCancel className="text-primary">Later</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleSettingChange("earlyReleasePreview", !settings.earlyReleasePreview);
-                if (!settings.earlyReleasePreview) {
-                  // Logic to install experimental build
-                } else {
-                  // Logic to install stable version
-                }
-                setShowEarlyPreviewDialog(false);
+                handleBuildSwitch();
               }}
               className="bg-primary text-secondary"
             >
@@ -2382,7 +2390,7 @@ function Settings() {
               {t("settings.reloadRequired")}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
-              {t("settings.sourceChangeReload")}
+              {reloadMessage || t("settings.sourceChangeReload")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -2396,7 +2404,7 @@ function Settings() {
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-primary hover:bg-primary/90"
+              className="text-secondary"
               onClick={() => {
                 setSettings(prev => ({ ...prev, gameSource: pendingSourceChange }));
                 const newSettings = { ...settings, gameSource: pendingSourceChange };

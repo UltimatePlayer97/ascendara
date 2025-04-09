@@ -657,6 +657,7 @@
     "ascendaraWorkshopDownloaderEnable": "Add to Navigation Bar",
     "autoCreateShortcuts": "Automatically Create Shortcuts",
     "autoCreateShortcutsDescription": "Automatically create shortcuts on desktop for games that run successfully for the first time",
+    "buildSwitchReload": "You'll need to reload Ascendara in order to queue the update file for the Experimental Build. Would you like to do this now?",
     "cannotCheckDependencies": "Cannot check dependencies on this system",
     "cannotDisableTorrent": "Switch to SteamRIP source before disabling torrent support",
     "checkConfig": "Check Configuration",
