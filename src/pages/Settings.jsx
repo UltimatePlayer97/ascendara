@@ -2111,23 +2111,25 @@ function Settings() {
             <Card className="p-6">
               <div className="mb-2 flex items-center gap-2">
                 <Eye className="mb-2 h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold text-primary">
-                  {t("settings.earlyReleasePreview")}
+                <h2 className="text-md font-semibold text-primary">
+                  {t("settings.earlyReleasePreview")} (Coming Soon)
                 </h2>
               </div>
-              <div className="space-y-6">
+              <div className="space-y-6 opacity-50">
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
                     {t("settings.earlyReleasePreviewDesc")}
                   </p>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">
+                      <Label className="text-sm font-medium opacity-50">
                         {t("settings.enableEarlyReleasePreview")}
                       </Label>
                       <Switch
-                        checked={settings.earlyReleasePreview}
-                        onCheckedChange={() => setShowEarlyPreviewDialog(true)}
+                        disabled
+                        checked={false}
+                        //checked={settings.earlyReleasePreview}
+                        //onCheckedChange={() => setShowEarlyPreviewDialog(true)}
                       />
                     </div>
                     {settings.earlyReleasePreview && (
