@@ -159,6 +159,11 @@ function initializeDiscordRPC() {
     return;
   }
 
+  if (isDev) {
+    console.log("Discord RPC is disabled in development mode");
+    return;
+  }
+
   // Ensure any existing client is cleaned up
   destroyDiscordRPC();
 
