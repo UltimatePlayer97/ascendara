@@ -19,7 +19,7 @@
       "title": "أوه لا ..."
     },
     "downloading-update": "تنزيل التحديث ...",
-    "experiment": "بناء تجريبي",
+    "experiment": "تجريبي",
     "loading": {
       "ascendaraWillRestart": "ستعيد Ascendara تلقائيًا",
       "installingUpdate": "تثبيت التحديث"
@@ -53,11 +53,21 @@
       "title": "اسمحوا لي أن أعرف كيف تحب ذلك"
     },
     "toasts": {
+      "buildSwitchReady": "بناء مفتاح جاهز",
+      "buildSwitchReadyDesc": "تم تنزيل البناء المحدد. تثبيت الآن لتبديل الإصدارات.",
+      "experimentOutOfDate": "هذا البناء قديم",
+      "experimentOutOfDateDesc": "يوصى بالبقاء في أحدث بناء تجريبي.",
+      "experimentUpdateReady": "بناء جديد متاح",
+      "experimentUpdateReadyDesc": "بناء تجريبي جديد متاح. يمكن لـ Ascendara التحديث تلقائيًا.",
       "installAndRestart": "تثبيت وإعادة التشغيل",
       "justUpdated": "تحديث كاملة",
       "justUpdatedDesc": "لقد قمت للتو بالتحديث إلى {{version}}",
       "outOfDate": "Ascendara بعيدا عن التاريخ",
       "outOfDateDesc": "يرجى تنزيل أحدث إصدار من الموقع الرسمي",
+      "switchToExperimental": "التبديل إلى البناء التجريبي",
+      "switchToExperimentalDesc": "قم بالتبديل إلى البناء التجريبي لاختبار ميزات جديدة وتقديم ملاحظات.",
+      "switchToStable": "التبديل إلى بناء مستقر",
+      "switchToStableDesc": "قم بالتبديل إلى البناء المستقر لـ Ascendara للتجربة الأكثر موثوقية.",
       "updateNow": "تحديث الآن",
       "updateReady": "Ascendara جاهزة للتحديث",
       "updateReadyDesc": "قامت Ascendara بتنزيل التحديث وهي جاهزة للتثبيت وإعادة التشغيل الآن",
@@ -318,6 +328,57 @@
     "waiting": "في انتظار أقرانهم",
     "waitingDescription": "تبحث QBitTorrent عن أقرانها للاتصال بتنزيل أجزاء من ملف التورنت من مستخدمين آخرين وتحميلهم بدورهم. قد يتمكن الآخرون من رؤية ما تقوم بتنزيله و/أو تحديد عنوان IP العام."
   },
+  "earlyPreview": {
+    "actions": "إجراءات سريعة",
+    "alreadyVoted": "لقد صوتت بالفعل لهذه الميزة",
+    "debugInfo": "الوصول إلى سجلات التصحيح للمساعدة في تشخيص أي مشكلات تقنية وتواجهها.",
+    "debugLogError": "فشل في فتح مجلد سجلات التصحيح",
+    "description": "عرض والتصويت الميزات التجريبية المختلفة في المباني المبكرة لـ Ascendare قبل إطلاقها. ملاحظاتك وتصويت الأمور وسوف تساعد في تشكيل Ascendara.",
+    "discordInfo": "انضم إلى مجتمع Discord لطلب ميزات جديدة ومناقشة الأفكار مع المستخدمين الآخرين.",
+    "earlyBuild": "أحدث معاينة بناء",
+    "experimentalFeatures": "ميزات تجريبية",
+    "fetchError": "فشل في تحميل الميزات التجريبية",
+    "getOnExperimental": "من أجل رؤية والتصويت على أحدث الميزات التجريبية ، تحتاج إلى الحصول على بناء تجريبي من Ascendara. إما إعادة تشغيل Ascendara تمامًا لتشغيل تحديث أو تثبيت أحدث بناء تجريبي من صفحة التنزيل.",
+    "helpUsImprove": "تحسين Ascendara",
+    "joinDiscord": "انضم إلى Discord",
+    "noExperimentalFeatures": "لا توجد ميزات تجريبية حتى الآن ...",
+    "noFeatures": "لا توجد ميزات تجريبية متوفرة في الوقت الحالي.",
+    "openDebugFolder": "عرض سجلات التصحيح",
+    "released": "الإصدار الرسمي",
+    "reportInfo": "وجدت خطأ؟ أبلغ عن ذلك مباشرة إلى الخادم وسيتم التحقيق في المشكلة.",
+    "reportIssue": "قضية الإبلاغ",
+    "requestFeature": "طلب ميزة",
+    "status": {
+      "active": {
+        "description": "هذه الميزة نشطة حاليًا في البناء المبكر وجاهزة للاختبار",
+        "title": "نشيط"
+      },
+      "deprecated": {
+        "description": "لا تزال هذه الميزة موجودة ولكن ستتم إزالتها في تحديث مستقبلي",
+        "title": "تم إهماله"
+      },
+      "implemented": {
+        "description": "تم تنفيذ هذه الميزة بنجاح وهي الآن في الإصدار الذي تم إصداره",
+        "title": "مُنفّذ"
+      },
+      "trashed": {
+        "description": "تم التخلص من هذه الميزة ولن يتم تنفيذها",
+        "title": "محطمة"
+      }
+    },
+    "title": "لوحة معلومات معاينة مبكرة",
+    "voteDown": "لديه مشاكل",
+    "voteDownSuccess": "تم تقديم البوت السفلي بنجاح",
+    "voteError": "فشل في تقديم تصويتك",
+    "voteSuccess": "شكرا لتعليقاتك!",
+    "voteUp": "يعمل بشكل رائع",
+    "voteUpSuccess": "تم إرسال التصويت بنجاح",
+    "votedDown": "قلت أن هذه الميزة لديها مشاكل",
+    "votedUp": "قلت أن هذه الميزة تعمل بشكل رائع",
+    "votingClosed": "التصويت مغلق",
+    "votingInProgress": "التصويت معالجة ...",
+    "warning": "هذه الميزات في التطوير المبكر وقد تكون غير مستقرة. أنت تستخدم على مسؤوليتك الخاصة."
+  },
   "game": {
     "metadata": {
       "developer": "المطور",
@@ -337,6 +398,7 @@
     "ratingTooltip": "هذا هو متوسط ​​تصنيف من الآخرين الذين قاموا بتنزيل ولعب هذه اللعبة على Ascendara.",
     "showLess": "تظهر أقل",
     "size": "مقاس",
+    "update": "تحديث",
     "version": "إصدار"
   },
   "gameScreen": {
@@ -592,6 +654,7 @@
     "ascendaraWorkshopDownloaderEnable": "أضف إلى شريط الملاحة",
     "autoCreateShortcuts": "إنشاء اختصارات تلقائيا",
     "autoCreateShortcutsDescription": "قم بإنشاء اختصارات على سطح المكتب تلقائيًا للألعاب التي تعمل بنجاح لأول مرة",
+    "buildSwitchReload": "ستحتاج إلى إعادة تحميل Ascendara من أجل طابور ملف التحديث للبناء التجريبي. هل ترغب في القيام بذلك الآن؟",
     "cannotCheckDependencies": "لا يمكن التحقق من التبعيات على هذا النظام",
     "cannotDisableTorrent": "قم بالتبديل إلى مصدر steamrip قبل تعطيل دعم التورنت",
     "checkConfig": "تحقق من التكوين",
@@ -605,7 +668,9 @@
     "darkThemes": "موضوعات مظلمة",
     "defaultDownloadLocation": "موقع التنزيل الافتراضي",
     "downloadLocationWarning": "لا يمكن لـ Ascendara كتابة الملفات إلى الدليل المختار. لم يتم حفظ التغيير.",
-    "downloadThreads": "تنزيل الأداء",
+    "downloadPaths": "تنزيل المسارات",
+    "downloadThreads": "تنزيل المواضيع",
+    "downloadThreadsDescription": "تنزيل المواضيع حدد عدد الاتصالات المتزامنة التي يتم استخدامها عند التنزيل",
     "downloadThreadsPresets": {
       "extreme": "Extreme (16 threads) - استخدم بحذر",
       "high": "عالية (8 موضوعات) - أداء أفضل",
@@ -614,7 +679,11 @@
       "veryHigh": "عالية جدا (12 موضوع) - للاتصالات السريعة"
     },
     "downloaderRunningWarning": "لا يمكنك تغيير هذه الإعدادات أثناء التنزيل قيد التقدم",
+    "earlyPreviewDash": "قم بزيارة لوحة القيادة",
+    "earlyReleasePreview": "معاينة الإصدار المبكر",
+    "earlyReleasePreviewDesc": "قم بتثبيت إصدارات Ascendara بميزات جديدة قبل إصدارها رسميًا. ساعد في تحسين Ascendara عن طريق اختبار القضايا والإبلاغ.",
     "enableAscendaraTimechine": "تمكين Ascendara timemachine",
+    "enableEarlyReleasePreview": "احصل على تحديثات المعاينة المبكرة",
     "enterGiantBombApiKey": "الصق مفتاح API GiantBomb الخاص بك",
     "enterIgdbApiKey": "الصق مفتاح نشلتك السري",
     "enterTwitchClientId": "الصق معرف عميل Twitch الخاص بك",
@@ -703,6 +772,7 @@
     "steamripDescription": "SteamRip هو المصدر الرئيسي لـ Ascendara ، حيث يوفر مجموعة آمنة وموثوقة من الألعاب مع تحديثات منتظمة.",
     "switchSource": "التبديل إلى هذا المصدر",
     "theme": "مظهر",
+    "threads": "المواضيع",
     "timeMachineDisabledFitgirl": "لا يتوفر Ascendara Timemachine عند استخدام Fitgirl Repacks كمصدر للعبة.",
     "title": "تفضيلات Ascendara",
     "torrentDescription": "تمكين وظائف سيلسارا التورنت. تتطلب هذه الميزة تثبيت QBitTorrent ويوصى بها للمستخدمين ذوي الخبرة فقط.",

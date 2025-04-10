@@ -19,7 +19,7 @@
       "title": "Oh não..."
     },
     "downloading-update": "Download da atualização ...",
-    "experiment": "Construção experimental",
+    "experiment": "EXPERIMENTAL",
     "loading": {
       "ascendaraWillRestart": "Ascendara reiniciará automaticamente",
       "installingUpdate": "Instalando a atualização"
@@ -53,11 +53,21 @@
       "title": "Deixe -me saber como você gosta"
     },
     "toasts": {
+      "buildSwitchReady": "Chave de construção pronto",
+      "buildSwitchReadyDesc": "A compilação selecionada foi baixada. Instale agora para alternar as versões.",
+      "experimentOutOfDate": "Esta construção está desatualizada",
+      "experimentOutOfDateDesc": "Recomenda -se que você permaneça na última construção experimental.",
+      "experimentUpdateReady": "Nova construção disponível",
+      "experimentUpdateReadyDesc": "Uma nova construção experimental está disponível. Ascendara pode atualizar automaticamente para ele.",
       "installAndRestart": "Instalar e reiniciar",
       "justUpdated": "Atualização completa",
       "justUpdatedDesc": "Você acabou de atualizar para {{version}}",
       "outOfDate": "Ascendara está desatualizada",
       "outOfDateDesc": "Faça o download da versão mais recente do site oficial",
+      "switchToExperimental": "Mudar para a construção experimental",
+      "switchToExperimentalDesc": "Mude para a construção experimental para testar novos recursos e fornecer feedback.",
+      "switchToStable": "Mudar para a construção estável",
+      "switchToStableDesc": "Mude para a construção estável de Ascendara para a experiência mais confiável.",
       "updateNow": "Atualizar agora",
       "updateReady": "Ascendara está pronta para atualizar",
       "updateReadyDesc": "Ascendara baixou a atualização e está pronto para instalar e reiniciar agora",
@@ -321,6 +331,57 @@
     "waiting": "Esperando por colegas",
     "waitingDescription": "O QBitTorrent está procurando colegas para se conectar para baixar peças do arquivo torrent de outros usuários e fazer upload para eles. Outros podem ver o que você está baixando e/ou determinar seu endereço IP público."
   },
+  "earlyPreview": {
+    "actions": "Ações rápidas",
+    "alreadyVoted": "Você já votou neste recurso",
+    "debugInfo": "Acesse logs de depuração para ajudar a diagnosticar e corrigir quaisquer problemas técnicos que você encontrar.",
+    "debugLogError": "Falha ao abrir a pasta de logs de depuração",
+    "description": "Ver e vote as diferentes características experimentais nas primeiras construções do Ascendare antes de serem divulgadas. Seus comentários e votos são importantes e ajudarão a moldar Ascendara.",
+    "discordInfo": "Junte -se à comunidade Discord para solicitar novos recursos e discutir idéias com outros usuários.",
+    "earlyBuild": "Última compilação de visualização",
+    "experimentalFeatures": "Características experimentais",
+    "fetchError": "Falha ao carregar recursos experimentais",
+    "getOnExperimental": "Para ver e votar sobre os mais recentes recursos experimentais, você precisa obter uma construção experimental de Ascendara. Reinicie completamente ascendara para acionar uma verificação de atualização ou instalar a última compilação experimental na página de download.",
+    "helpUsImprove": "Melhorar ascendara",
+    "joinDiscord": "Junte -se à discórdia",
+    "noExperimentalFeatures": "Ainda não há recursos experimentais ...",
+    "noFeatures": "Não há recursos experimentais disponíveis no momento.",
+    "openDebugFolder": "Ver logs de depuração",
+    "released": "Liberação oficial",
+    "reportInfo": "Encontrou um bug? Relate -o diretamente ao servidor e o problema será investigado.",
+    "reportIssue": "Questão do relatório",
+    "requestFeature": "Recurso de solicitação",
+    "status": {
+      "active": {
+        "description": "Este recurso está atualmente ativo na construção inicial e pronto para testar",
+        "title": "Ativo"
+      },
+      "deprecated": {
+        "description": "Esse recurso ainda está presente, mas será removido em uma atualização futura",
+        "title": "Descontinuado"
+      },
+      "implemented": {
+        "description": "Esse recurso foi implementado com sucesso e agora está na versão lançada",
+        "title": "Implementado"
+      },
+      "trashed": {
+        "description": "Este recurso foi descartado e não será implementado",
+        "title": "Lixo"
+      }
+    },
+    "title": "Painel de visualização antecipada",
+    "voteDown": "Tem problemas",
+    "voteDownSuccess": "Seu voto descendente foi enviado com sucesso",
+    "voteError": "Falhou em enviar seu voto",
+    "voteSuccess": "Obrigado pelo seu feedback!",
+    "voteUp": "Funciona muito bem",
+    "voteUpSuccess": "Seu voto up foi enviado com sucesso",
+    "votedDown": "Você disse que esse recurso tem problemas",
+    "votedUp": "Você disse que esse recurso funciona muito bem",
+    "votingClosed": "A votação está fechada",
+    "votingInProgress": "Processando voto ...",
+    "warning": "Esses recursos estão no desenvolvimento inicial e podem ser instáveis. Você está usando por sua conta e risco."
+  },
   "game": {
     "metadata": {
       "developer": "Desenvolvedor",
@@ -340,6 +401,7 @@
     "ratingTooltip": "Esta é uma classificação média de outras pessoas que baixaram e jogaram este jogo em Ascendara.",
     "showLess": "Mostre menos",
     "size": "Tamanho",
+    "update": "Atualizar",
     "version": "Versão"
   },
   "gameScreen": {
@@ -595,6 +657,7 @@
     "ascendaraWorkshopDownloaderEnable": "Adicionar à barra de navegação",
     "autoCreateShortcuts": "Crie atalhos automaticamente",
     "autoCreateShortcutsDescription": "Crie atalhos automaticamente no desktop para jogos que são executados com sucesso pela primeira vez",
+    "buildSwitchReload": "Você precisará recarregar ascendara para fazer fila o arquivo de atualização para a construção experimental. Você gostaria de fazer isso agora?",
     "cannotCheckDependencies": "Não pode verificar as dependências deste sistema",
     "cannotDisableTorrent": "Alterne para a fonte do SteamRip antes de desativar o suporte de torrent",
     "checkConfig": "Verifique a configuração",
@@ -608,7 +671,9 @@
     "darkThemes": "Temas escuros",
     "defaultDownloadLocation": "Localização de download padrão",
     "downloadLocationWarning": "Ascendara não pode gravar arquivos no diretório escolhido. A mudança não foi salva.",
-    "downloadThreads": "Baixar desempenho",
+    "downloadPaths": "Baixar caminhos",
+    "downloadThreads": "Baixar tópicos",
+    "downloadThreadsDescription": "O download dos tópicos determinar quantas conexões simultâneas são usadas ao baixar",
     "downloadThreadsPresets": {
       "extreme": "Extremo (16 threads) - use com cautela",
       "high": "High (8 threads) - Melhor desempenho",
@@ -617,7 +682,11 @@
       "veryHigh": "Muito alto (12 threads) - para conexões rápidas"
     },
     "downloaderRunningWarning": "Você não pode alterar essas configurações enquanto um download está em andamento",
+    "earlyPreviewDash": "Visite o painel",
+    "earlyReleasePreview": "Visualização de lançamento antecipada",
+    "earlyReleasePreviewDesc": "Instale as versões de Ascendara com novos recursos antes de serem oficialmente lançados. Ajude a melhorar as Ascendara testando e relatando questões.",
     "enableAscendaraTimechine": "Ativar a Ascendara Timemachine",
+    "enableEarlyReleasePreview": "Obtenha atualizações antecipadas de visualização",
     "enterGiantBombApiKey": "Cole sua chave da API GiantBomb",
     "enterIgdbApiKey": "Cole a sua chave secreta do Twitch",
     "enterTwitchClientId": "Cole o seu ID do cliente Twitch",
@@ -706,6 +775,7 @@
     "steamripDescription": "O SteamRip é a principal fonte de Ascendara, fornecendo uma coleção segura e confiável de jogos com atualizações regulares.",
     "switchSource": "Mudar para esta fonte",
     "theme": "Aparência",
+    "threads": "Tópicos",
     "timeMachineDisabledFitgirl": "Ascendara Timemachine não está disponível ao usar o Fitgirl reembala como fonte de jogo.",
     "title": "Preferências de Ascendara",
     "torrentDescription": "Ativar a funcionalidade de torrent de Ascendara. Esse recurso exige que o QBitTorrent seja instalado e é recomendado apenas para usuários experientes.",
@@ -715,7 +785,7 @@
       "continue": "Eu entendo os riscos",
       "description": "Leia isso com cuidado antes de ativar a funcionalidade de torrent:",
       "legalWarning": "O download do conteúdo protegido por direitos autorais pode ser ilegal em sua região. Você é responsável por suas próprias ações.",
-      "qbitWarning": "Este recurso requer Qbittorrent. Verifique se está configurado corretamente com sua VPN.",
+      "qbitWarning": "Esse recurso requer Qbittorrent. Verifique se está configurado corretamente com sua VPN.",
       "title": "Ativar suporte de torrent",
       "vpnWarning": "Seu endereço IP será visível para outros colegas. Use uma VPN para proteger sua privacidade e evitar possíveis problemas legais."
     },

@@ -19,7 +19,7 @@
       "title": "Oh non..."
     },
     "downloading-update": "Télécharger la mise à jour ...",
-    "experiment": "Construction expérimentale",
+    "experiment": "EXPÉRIMENTAL",
     "loading": {
       "ascendaraWillRestart": "Ascendara redémarre automatiquement",
       "installingUpdate": "Installation de mise à jour"
@@ -53,11 +53,21 @@
       "title": "Faites-moi savoir comment vous l'aimez"
     },
     "toasts": {
+      "buildSwitchReady": "Construire l'interrupteur prêt",
+      "buildSwitchReadyDesc": "La version sélectionnée a été téléchargée. Installez maintenant pour changer de versions.",
+      "experimentOutOfDate": "Cette construction est obsolète",
+      "experimentOutOfDateDesc": "Il est recommandé de rester sur la dernière construction expérimentale.",
+      "experimentUpdateReady": "Nouvelle construction disponible",
+      "experimentUpdateReadyDesc": "Une nouvelle version expérimentale est disponible. Ascendara peut y mettre à jour automatiquement.",
       "installAndRestart": "Installer et redémarrer",
       "justUpdated": "Mise à jour complète",
       "justUpdatedDesc": "Vous venez de mettre à jour {{version}}",
       "outOfDate": "Ascendara est obsolète",
       "outOfDateDesc": "Veuillez télécharger la dernière version sur le site officiel",
+      "switchToExperimental": "Passez à la construction expérimentale",
+      "switchToExperimentalDesc": "Passez à la version expérimentale pour tester de nouvelles fonctionnalités et fournissez des commentaires.",
+      "switchToStable": "Passez à la construction stable",
+      "switchToStableDesc": "Passez à la construction stable d'Ascendara pour l'expérience la plus fiable.",
       "updateNow": "Mettre à jour maintenant",
       "updateReady": "Ascendara est prête à mettre à jour",
       "updateReadyDesc": "Ascendara a téléchargé la mise à jour et est prêt à installer et à redémarrer maintenant",
@@ -321,6 +331,57 @@
     "waiting": "En attendant ses pairs",
     "waitingDescription": "QBitTorrent recherche des pairs pour se connecter pour télécharger des pièces du fichier torrent des autres utilisateurs et leur télécharger à leur tour. D'autres peuvent voir ce que vous téléchargez et / ou déterminer votre adresse IP publique."
   },
+  "earlyPreview": {
+    "actions": "Actions rapides",
+    "alreadyVoted": "Vous avez déjà voté pour cette fonctionnalité",
+    "debugInfo": "Accédez aux journaux de débogage pour aider à diagnostiquer et résoudre les problèmes techniques que vous rencontrez.",
+    "debugLogError": "Échec de l'ouverture du dossier de journaux de débogage",
+    "description": "Voir et voter les différentes caractéristiques expérimentales dans les premières constructions d'Ascendare avant leur sortie. Vos commentaires et vote sont importants et vous aideront à façonner Ascendara.",
+    "discordInfo": "Rejoignez la communauté Discord pour demander de nouvelles fonctionnalités et discuter des idées avec d'autres utilisateurs.",
+    "earlyBuild": "Dernière version d'aperçu",
+    "experimentalFeatures": "Caractéristiques expérimentales",
+    "fetchError": "Échec du chargement des fonctionnalités expérimentales",
+    "getOnExperimental": "Afin de voir et de voter sur les dernières fonctionnalités expérimentales, vous devez vous mettre sur la construction expérimentale d'Ascendara. Soit redémarrer Ascendara complètement pour déclencher une vérification de mise à jour ou installer la dernière version expérimentale à partir de la page de téléchargement.",
+    "helpUsImprove": "Améliorer Ascendara",
+    "joinDiscord": "Rejoignez Discord",
+    "noExperimentalFeatures": "Aucune fonctionnalité expérimentale encore ...",
+    "noFeatures": "Aucune fonctionnalité expérimentale disponible pour le moment.",
+    "openDebugFolder": "Afficher les journaux de débogage",
+    "released": "Libération officielle",
+    "reportInfo": "Vous avez trouvé un bug? Signalez-le directement au serveur et le problème sera étudié.",
+    "reportIssue": "Signaler une question",
+    "requestFeature": "Demande de demande",
+    "status": {
+      "active": {
+        "description": "Cette fonctionnalité est actuellement active dans la construction précoce et prête à tester",
+        "title": "Actif"
+      },
+      "deprecated": {
+        "description": "Cette fonctionnalité est toujours présente mais sera supprimée dans une future mise à jour",
+        "title": "Déprécié"
+      },
+      "implemented": {
+        "description": "Cette fonctionnalité a été implémentée avec succès et est maintenant dans la version publiée",
+        "title": "Mis en œuvre"
+      },
+      "trashed": {
+        "description": "Cette fonctionnalité a été jetée et ne sera pas mise en œuvre",
+        "title": "Piétiné"
+      }
+    },
+    "title": "Tableau de bord prévisual précoce",
+    "voteDown": "A des problèmes",
+    "voteDownSuccess": "Votre vote Down a été soumis avec succès",
+    "voteError": "N'a pas soumis votre vote",
+    "voteSuccess": "Merci pour vos commentaires!",
+    "voteUp": "Fonctionne très",
+    "voteUpSuccess": "Vous êtes soumis avec succès",
+    "votedDown": "Vous avez dit que cette fonctionnalité a des problèmes",
+    "votedUp": "Vous avez dit que cette fonctionnalité fonctionne très bien",
+    "votingClosed": "Le vote est fermé",
+    "votingInProgress": "Vote de traitement ...",
+    "warning": "Ces fonctionnalités sont en début de développement et peuvent être instables. Vous utilisez à vos propres risques."
+  },
   "game": {
     "metadata": {
       "developer": "Promoteur",
@@ -340,6 +401,7 @@
     "ratingTooltip": "Il s'agit d'une note moyenne des autres qui ont téléchargé et joué ce jeu sur Ascendara.",
     "showLess": "Montrer moins",
     "size": "Taille",
+    "update": "Mise à jour",
     "version": "Version"
   },
   "gameScreen": {
@@ -595,6 +657,7 @@
     "ascendaraWorkshopDownloaderEnable": "Ajouter à la barre de navigation",
     "autoCreateShortcuts": "Créer automatiquement les raccourcis",
     "autoCreateShortcutsDescription": "Créez automatiquement les raccourcis sur le bureau pour les jeux qui s'exécutent avec succès pour la première fois",
+    "buildSwitchReload": "Vous devrez recharger Ascendara afin de filer le fichier de mise à jour pour la version expérimentale. Souhaitez-vous faire cela maintenant?",
     "cannotCheckDependencies": "Impossible de vérifier les dépendances sur ce système",
     "cannotDisableTorrent": "Passez à la source Steamrip avant de désactiver le support torrent",
     "checkConfig": "Vérifier la configuration",
@@ -608,7 +671,9 @@
     "darkThemes": "Thèmes sombres",
     "defaultDownloadLocation": "Emplacement de téléchargement par défaut",
     "downloadLocationWarning": "Ascendara ne peut pas écrire de fichiers dans le répertoire choisi. Le changement n'a pas été sauvé.",
-    "downloadThreads": "Performance de téléchargement",
+    "downloadPaths": "Télécharger des chemins",
+    "downloadThreads": "Télécharger les fils",
+    "downloadThreadsDescription": "Télécharger les threads Déterminer combien de connexions simultanées sont utilisées lors du téléchargement",
     "downloadThreadsPresets": {
       "extreme": "Extreme (16 threads) - Utiliser avec prudence",
       "high": "Élevé (8 fils) - meilleures performances",
@@ -617,7 +682,11 @@
       "veryHigh": "Très haut (12 threads) - pour les connexions rapides"
     },
     "downloaderRunningWarning": "Vous ne pouvez pas modifier ces paramètres pendant qu'un téléchargement est en cours",
+    "earlyPreviewDash": "Visiter le tableau de bord",
+    "earlyReleasePreview": "Aperçu de la version anticipée",
+    "earlyReleasePreviewDesc": "Installez les versions d'Ascendara avec de nouvelles fonctionnalités avant d'être officiellement publiées. Aidez à améliorer Ascendara en testant et en rapportant les problèmes.",
     "enableAscendaraTimechine": "Activer le calendrier Ascendara",
+    "enableEarlyReleasePreview": "Obtenez les mises à jour prévisionnelles précoces",
     "enterGiantBombApiKey": "Collez votre clé API Giantbomb",
     "enterIgdbApiKey": "Collez votre touche secrète secrète",
     "enterTwitchClientId": "Collez votre identifiant client Twitch",
@@ -706,6 +775,7 @@
     "steamripDescription": "Steamrip est la principale source d'Ascencerara, offrant une collection sécurisée et fiable de jeux avec des mises à jour régulières.",
     "switchSource": "Passez à cette source",
     "theme": "Apparence",
+    "threads": "Threads",
     "timeMachineDisabledFitgirl": "Ascendara TimeMachine n'est pas disponible lors de l'utilisation de Fitgirl Repacks comme source de jeu.",
     "title": "Préférences Ascencera",
     "torrentDescription": "Activez la fonctionnalité torrent d'Ascencera. Cette fonctionnalité nécessite l'installation de QbitTorrent et est recommandée uniquement pour les utilisateurs expérimentés.",
@@ -810,7 +880,7 @@
     "continue": "Continuer",
     "continueWithoutSharing": "Continuer sans partager",
     "darkThemes": "Thèmes sombres",
-    "dependenciesDesc": "Si vous jouez sur un nouveau PC ou avez récemment installé Windows, Ascendara peut vous aider à installer ces composants essentiels pour assurer la meilleure expérience",
+    "dependenciesDesc": "Si vous jouez sur un nouveau PC ou que vous avez récemment installé Windows, Ascendara peut vous aider à installer ces composants essentiels pour assurer la meilleure expérience",
     "downloadGamesFaster": "Télécharger les jeux plus rapidement",
     "enableAutoUpdates": "Activer les mises à jour automatique",
     "errorInstallingDependencies": "Erreur d'installation des dépendances",
@@ -885,7 +955,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Maintenant, vous n'aurez plus à vous soucier de l'extraction, de l'installation ou du déplacement de fichiers. Avant de commencer, veuillez lire et accepter les conditions d'utilisation et la politique de confidentialité.",
-    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascendara",
+    "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascencera",
     "wineIsRequired": "Le vin est requis",
     "wineMustBeInstalled": "Le vin doit être installé pour exécuter des jeux Windows sur votre système",
     "youCanAddMoreLater": "Vous pouvez ajouter plus de répertoires dans les préférences plus tard",
