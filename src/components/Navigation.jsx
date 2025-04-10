@@ -75,7 +75,10 @@ const Navigation = memo(({ items }) => {
       if (path === "/search" && location.pathname === "/download") {
         return true;
       }
-      if (path === "/settings" && location.pathname === "/extralanguages") {
+      if (
+        path === "/settings" &&
+        ["/settings", "/extralanguages", "/earlypreviewdash"].includes(location.pathname)
+      ) {
         return true;
       }
       if (path === "/library" && location.pathname === "/gamescreen") {

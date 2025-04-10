@@ -14,6 +14,7 @@ export function SettingsProvider({ children }) {
     additionalDirectories: [],
     showOldDownloadLinks: false,
     seeInappropriateContent: false,
+    earlyReleasePreview: false,
     viewWorkshopPage: false,
     notifications: true,
     downloadHandler: false,

@@ -263,11 +263,21 @@ Before building, ensure you have all required dependencies. [View full requireme
    git clone https://github.com/ascendara/ascendara.git
    ```
 
-2. **Install Yarn Dependencies**
+2. **Install Node Dependencies**
 
-   ```sh
-   yarn
-   ```
+> **Note:** You can use any package manager you prefer, such as npm, yarn, or pnpm.
+
+Using npm:
+
+```sh
+npm install
+```
+
+Or using yarn:
+
+```sh
+yarn
+```
 
 3. **Install Python Dependencies**
 
@@ -278,6 +288,14 @@ Before building, ensure you have all required dependencies. [View full requireme
 4. **Run the Development App**
 
    > ⚠️ **Note:** Before running, set `isDev = true` in `electron/app.js`.
+
+   Using npm:
+
+   ```sh
+   npm run start
+   ```
+
+   Or using yarn:
 
    ```sh
    yarn start

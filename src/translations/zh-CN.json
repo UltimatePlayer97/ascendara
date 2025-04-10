@@ -19,7 +19,7 @@
       "title": "哦，不..."
     },
     "downloading-update": "下载更新...",
-    "experiment": "实验性构建",
+    "experiment": "实验",
     "loading": {
       "ascendaraWillRestart": "Ascendara将自动重新启动",
       "installingUpdate": "安装更新"
@@ -53,11 +53,21 @@
       "title": "让我知道你喜欢它"
     },
     "toasts": {
+      "buildSwitchReady": "准备就绪开关",
+      "buildSwitchReadyDesc": "选定的构建已下载。立即安装以切换版本。",
+      "experimentOutOfDate": "这个构建已过时",
+      "experimentOutOfDateDesc": "建议您保持最新的实验构建。",
+      "experimentUpdateReady": "可用的新构建",
+      "experimentUpdateReadyDesc": "有一个新的实验构建。 Ascendara可以自动更新到它。",
       "installAndRestart": "安装并重新启动",
       "justUpdated": "更新完成",
       "justUpdatedDesc": "您刚刚更新为{{version}}",
       "outOfDate": "Ascendara不合时宜",
       "outOfDateDesc": "请从官方网站下载最新版本",
+      "switchToExperimental": "切换到实验构建",
+      "switchToExperimentalDesc": "切换到实验构建以测试新功能并提供反馈。",
+      "switchToStable": "切换到稳定的构建",
+      "switchToStableDesc": "切换到稳定的Ascendara建造，以获得最可靠的体验。",
       "updateNow": "立即更新",
       "updateReady": "Ascendara准备更新",
       "updateReadyDesc": "Ascendara下载了更新，准备安装和重新启动",
@@ -315,6 +325,51 @@
     "waiting": "等待同龄人",
     "waitingDescription": "Qbittorrent正在寻找同行连接以从其他用户下载Torrent文件的零件，然后依次将其上传到它们。其他人也许可以看到您正在下载的内容和/或确定您的公共IP地址。"
   },
+  "earlyPreview": {
+    "actions": "快速动作",
+    "alreadyVoted": "您已经投票支持此功能",
+    "debugInfo": "访问调试日志，以帮助诊断并解决您遇到的任何技术问题。",
+    "debugLogError": "无法打开调试日志文件夹",
+    "description": "在Ascendare释放之前，在Ascendare的早期版本中查看并投票。您的反馈和投票很重要，将有助于塑造Ascendara。",
+    "discordInfo": "加入Discord社区，要求新功能并与其他用户讨论想法。",
+    "earlyBuild": "最新的预览构建",
+    "experimentalFeatures": "实验特征",
+    "fetchError": "无法加载实验特征",
+    "getOnExperimental": "为了查看和投票，您需要对Ascendara进行实验性构建。要么完全重新启动Ascendara以触发更新检查，要么从下载页面安装最新的实验构建。",
+    "helpUsImprove": "改善Ascendara",
+    "joinDiscord": "加入Discord",
+    "noExperimentalFeatures": "还没有实验特征...",
+    "noFeatures": "目前尚无实验功能。",
+    "openDebugFolder": "查看调试日志",
+    "released": "官方发布",
+    "reportInfo": "找到一个错误？将其直接报告给服务器，并将研究问题。",
+    "reportIssue": "报告问题",
+    "requestFeature": "请求功能",
+    "status": {
+      "active": {
+        "description": "此功能当前在早期构建中处于活动状态，可以进行测试",
+        "title": "积极的"
+      },
+      "deprecated": {
+        "description": "此功能仍然存在，但将在以后的更新中删除",
+        "title": "弃用"
+      },
+      "implemented": { "description": "此功能已成功实施，现在已发布", "title": "实施的" },
+      "trashed": { "description": "此功能已被丢弃，不会实施", "title": "垃圾" }
+    },
+    "title": "早期预览仪表板",
+    "voteDown": "有问题",
+    "voteDownSuccess": "您的投票成功提交了",
+    "voteError": "未能提交投票",
+    "voteSuccess": "感谢您的反馈！",
+    "voteUp": "效果很好",
+    "voteUpSuccess": "您已成功提交了您",
+    "votedDown": "您说此功能有问题",
+    "votedUp": "您说此功能效果很好",
+    "votingClosed": "投票关闭",
+    "votingInProgress": "处理投票...",
+    "warning": "这些功能处于早期开发状态，可能是不稳定的。您自身使用。"
+  },
   "game": {
     "metadata": {
       "developer": "开发人员",
@@ -334,6 +389,7 @@
     "ratingTooltip": "这是其他在Ascendara下载并玩过此游戏的人的平均评分。",
     "showLess": "少显示",
     "size": "尺寸",
+    "update": "更新",
     "version": "版本"
   },
   "gameScreen": {
@@ -589,6 +645,7 @@
     "ascendaraWorkshopDownloaderEnable": "添加到导航栏",
     "autoCreateShortcuts": "自动创建快捷方式",
     "autoCreateShortcutsDescription": "自动在桌面上为第一次成功运行的游戏创建快捷方式",
+    "buildSwitchReload": "您需要重新加载Ascendara，以便为实验构建的更新文件排队。您现在想这样做吗？",
     "cannotCheckDependencies": "无法检查对此系统的依赖性",
     "cannotDisableTorrent": "在禁用洪流支持之前，请切换到Steamrip源",
     "checkConfig": "检查配置",
@@ -602,7 +659,9 @@
     "darkThemes": "黑暗主题",
     "defaultDownloadLocation": "默认下载位置",
     "downloadLocationWarning": "Ascendara无法将文件写入所选目录。变化没有保存。",
-    "downloadThreads": "下载性能",
+    "downloadPaths": "下载路径",
+    "downloadThreads": "下载线程",
+    "downloadThreadsDescription": "下载线程确定下载时使用了多少个同时连接",
     "downloadThreadsPresets": {
       "extreme": "极限（16个线程） - 谨慎使用",
       "high": "高（8个线程） - 表现更好",
@@ -611,7 +670,11 @@
       "veryHigh": "非常高（12个线程） - 用于快速连接"
     },
     "downloaderRunningWarning": "下载正在进行时，您无法更改这些设置",
+    "earlyPreviewDash": "访问仪表板",
+    "earlyReleasePreview": "早期发布预览",
+    "earlyReleasePreviewDesc": "在正式发布之前，安装具有新功能的Ascendara版本。通过测试和报告问题帮助改善Ascendara。",
     "enableAscendaraTimechine": "启用Ascendara timemachine",
+    "enableEarlyReleasePreview": "获取早期预览更新",
     "enterGiantBombApiKey": "粘贴您的巨型炸弹API密钥",
     "enterIgdbApiKey": "粘贴您的秘密抽搐键",
     "enterTwitchClientId": "粘贴Twitch客户端ID",
@@ -700,6 +763,7 @@
     "steamripDescription": "STEAMRIP是Ascendara的主要来源，提供了带有常规更新的安全可靠的游戏集合。",
     "switchSource": "切换到此源",
     "theme": "外貌",
+    "threads": "线程",
     "timeMachineDisabledFitgirl": "使用Fitgirl重复包装作为游戏源时，Ascendara Timemachine不可用。",
     "title": "Ascendara偏好",
     "torrentDescription": "启用Ascendara的洪流功能。此功能需要安装qbittorrent，并仅适用于有经验的用户。",
@@ -835,7 +899,7 @@
     "installPython": "安装Python",
     "installWine": "安装葡萄酒",
     "installationFailed": "安装失败",
-    "installingDependencies": "安装依赖关系...",
+    "installingDependencies": "安装依赖...",
     "lightThemes": "轻主题",
     "lightningFastDesc": "V7的速度和性能优化，使您的体验比以往任何时候都更加顺畅，更快",
     "lightningFastTitle": "快速闪电",
@@ -845,8 +909,8 @@
     "next": "下一个",
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
-    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
-    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
+    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
+    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
     "privacyPolicy": "隐私政策",

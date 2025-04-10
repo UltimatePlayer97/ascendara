@@ -19,7 +19,7 @@
       "title": "なんてこった..."
     },
     "downloading-update": "更新のダウンロード...",
-    "experiment": "実験的なビルド",
+    "experiment": "実験的",
     "loading": {
       "ascendaraWillRestart": "アセンダラは自動的に再起動します",
       "installingUpdate": "更新のインストール"
@@ -53,11 +53,21 @@
       "title": "気に入っていることを教えてください"
     },
     "toasts": {
+      "buildSwitchReady": "Build Switch ready",
+      "buildSwitchReadyDesc": "選択したビルドがダウンロードされました。今すぐインストールしてバージョンを切り替えます。",
+      "experimentOutOfDate": "このビルドは古くなっています",
+      "experimentOutOfDateDesc": "最新の実験ビルドにとどまることをお勧めします。",
+      "experimentUpdateReady": "新しいビルドが利用可能です",
+      "experimentUpdateReadyDesc": "新しい実験ビルドが利用可能です。 Ascendaraは自動的に更新できます。",
       "installAndRestart": "インストールして再起動します",
       "justUpdated": "完了します",
       "justUpdatedDesc": "{{version}}に更新したばかりです",
       "outOfDate": "アセンダラは古くなっています",
       "outOfDateDesc": "公式Webサイトから最新バージョンをダウンロードしてください",
+      "switchToExperimental": "実験的なビルドに切り替えます",
+      "switchToExperimentalDesc": "実験的なビルドに切り替えて、新機能をテストし、フィードバックを提供します。",
+      "switchToStable": "安定したビルドに切り替えます",
+      "switchToStableDesc": "最も信頼できる体験のために、アセンダラの安定したビルドに切り替えます。",
       "updateNow": "今すぐ更新してください",
       "updateReady": "Ascendaraは更新する準備ができています",
       "updateReadyDesc": "Ascendaraはアップデートをダウンロードし、今すぐインストールして再起動する準備ができています",
@@ -289,7 +299,7 @@
     "contentTypeError": "ダウンローダーからコンテンツタイプエラーを受信しました。リンクをダウンロードする可能性が最も高いです",
     "currentTotalSpeed": "現在の総速度",
     "downloadError": "エラーをダウンロードします",
-    "errorHelp": "ダウンロードの問題はすでに報告されるべきです。問題が続く場合は、Tagoworks Discord Serverに参加してサポートしてください。",
+    "errorHelp": "ダウンロードの問題は既に報告する必要があります。問題が続く場合は、Tagoworks Discord Serverに参加してサポートしてください。",
     "errorReported": "問題が正常に報告されています",
     "errorReportedDescription": "アセンダラの改善を手伝ってくれてありがとう。 Ascendara開発者チームがこの問題を調査します。",
     "extracting": "ゲームファイルの抽出...",
@@ -321,6 +331,57 @@
     "waiting": "仲間を待っています",
     "waitingDescription": "Qbittorrentは、他のユーザーからトレントファイルのダウンロードをダウンロードし、順番にアップロードするために接続する仲間を探しています。他の人は、あなたがダウンロードしているものを見たり、パブリックIPアドレスを決定できるかもしれません。"
   },
+  "earlyPreview": {
+    "actions": "クイックアクション",
+    "alreadyVoted": "あなたはすでにこの機能に投票しています",
+    "debugInfo": "デバッグログにアクセスして、遭遇する技術的な問題の診断と修正に役立ちます。",
+    "debugLogError": "デバッグログフォルダーを開くことができませんでした",
+    "description": "リリースする前に、アセンデアの初期のビルドでさまざまな実験機能を表示して投票してください。あなたのフィードバックと投票が重要であり、アセンダラを形作るのに役立ちます。",
+    "discordInfo": "Discordコミュニティに参加して、新機能をリクエストし、他のユーザーとアイデアについて話し合います。",
+    "earlyBuild": "最新のプレビュービルド",
+    "experimentalFeatures": "実験機能",
+    "fetchError": "実験機能をロードできませんでした",
+    "getOnExperimental": "最新の実験機能を確認して投票するには、Ascendaraの実験的な構築に参加する必要があります。 Ascendaraを完全に再起動して更新チェックをトリガーするか、ダウンロードページから最新の実験ビルドをインストールします。",
+    "helpUsImprove": "アセンダラを改善します",
+    "joinDiscord": "Discordに参加してください",
+    "noExperimentalFeatures": "まだ実験的な機能はありません...",
+    "noFeatures": "現時点では実験機能はありません。",
+    "openDebugFolder": "デバッグログを表示します",
+    "released": "公式リリース",
+    "reportInfo": "バグを見つけましたか？サーバーに直接報告すると、問題が調査されます。",
+    "reportIssue": "報告の問題",
+    "requestFeature": "リクエスト機能",
+    "status": {
+      "active": {
+        "description": "この機能は現在、初期のビルドでアクティブであり、テストの準備ができています",
+        "title": "アクティブ"
+      },
+      "deprecated": {
+        "description": "この機能はまだ存在しますが、将来の更新で削除されます",
+        "title": "非推奨"
+      },
+      "implemented": {
+        "description": "この機能は正常に実装されており、現在リリースバージョンにあります",
+        "title": "実装"
+      },
+      "trashed": {
+        "description": "この機能は廃棄されており、実装されません",
+        "title": "ゴミ箱"
+      }
+    },
+    "title": "早期プレビューダッシュボード",
+    "voteDown": "問題があります",
+    "voteDownSuccess": "ダウン投票は正常に提出されました",
+    "voteError": "投票を提出できませんでした",
+    "voteSuccess": "フィードバックをありがとう！",
+    "voteUp": "うまく機能します",
+    "voteUpSuccess": "upvoteは正常に提出されました",
+    "votedDown": "この機能には問題があると言いました",
+    "votedUp": "この機能はうまく機能すると言いました",
+    "votingClosed": "投票は閉鎖されています",
+    "votingInProgress": "投票の処理...",
+    "warning": "これらの機能は早期に開発されており、不安定である可能性があります。あなたはあなた自身の責任で使用しています。"
+  },
   "game": {
     "metadata": {
       "developer": "開発者",
@@ -340,6 +401,7 @@
     "ratingTooltip": "これは、Ascendaraでこのゲームをダウンロードしてプレイした他の人からの平均格付けです。",
     "showLess": "少なく表示します",
     "size": "サイズ",
+    "update": "アップデート",
     "version": "バージョン"
   },
   "gameScreen": {
@@ -595,6 +657,7 @@
     "ascendaraWorkshopDownloaderEnable": "ナビゲーションバーに追加します",
     "autoCreateShortcuts": "ショートカットを自動的に作成します",
     "autoCreateShortcutsDescription": "初めて正常に実行されるゲームのデスクトップにショートカットを自動的に作成する",
+    "buildSwitchReload": "実験的なビルドの更新ファイルをキューにするために、アセンダラをリロードする必要があります。今これをやりたいですか？",
     "cannotCheckDependencies": "このシステムの依存関係を確認できません",
     "cannotDisableTorrent": "トレントサポートを無効にする前に、SteamRipソースに切り替えます",
     "checkConfig": "構成を確認します",
@@ -608,7 +671,9 @@
     "darkThemes": "暗いテーマ",
     "defaultDownloadLocation": "デフォルトのダウンロード場所",
     "downloadLocationWarning": "Ascendaraは、選択したディレクトリにファイルを書き込むことができません。変更は保存されませんでした。",
-    "downloadThreads": "パフォーマンスをダウンロードします",
+    "downloadPaths": "パスをダウンロードします",
+    "downloadThreads": "スレッドをダウンロードします",
+    "downloadThreadsDescription": "ダウンロードスレッドは、ダウンロード時に使用される同時接続の数を決定します",
     "downloadThreadsPresets": {
       "extreme": "Extreme（16スレッド） - 注意して使用します",
       "high": "high（8スレッド） - パフォーマンスの向上",
@@ -617,7 +682,11 @@
       "veryHigh": "非常に高い（12スレッド） - 高速接続用"
     },
     "downloaderRunningWarning": "ダウンロードが進行中にこれらの設定を変更することはできません",
+    "earlyPreviewDash": "ダッシュボードにアクセスしてください",
+    "earlyReleasePreview": "早期リリースプレビュー",
+    "earlyReleasePreviewDesc": "正式にリリースされる前に、新機能を備えたAscendaraのバージョンをインストールします。テストと報告の問題により、アセンダラを改善するのに役立ちます。",
     "enableAscendaraTimechine": "Ascendaraのタイムマシンを有効にします",
+    "enableEarlyReleasePreview": "早期プレビューの更新を取得します",
     "enterGiantBombApiKey": "ジャイアントボムAPIキーを貼り付けます",
     "enterIgdbApiKey": "秘密のTwitchキーを貼り付けます",
     "enterTwitchClientId": "TwitchクライアントIDを貼り付けます",
@@ -706,6 +775,7 @@
     "steamripDescription": "SteamRipはAscendaraの主要な情報源であり、定期的な更新を備えた安全で信頼できるゲームのコレクションを提供します。",
     "switchSource": "このソースに切り替えます",
     "theme": "外観",
+    "threads": "スレッド",
     "timeMachineDisabledFitgirl": "Ascendara Timemachineは、Fitgirl Repacksをゲームソースとして使用する場合は利用できません。",
     "title": "アセンダラの好み",
     "torrentDescription": "Ascendaraの急流機能を有効にします。この機能には、QBittorrentをインストールする必要があり、経験豊富なユーザーにのみ推奨されます。",

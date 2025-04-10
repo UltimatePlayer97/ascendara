@@ -58,6 +58,7 @@ let updateDownloadInProgress = false;
 let experiment = false;
 let installedTools = [];
 let isBrokenVersion = false;
+let rpcIsConnected = false;
 let hasAdmin = false;
 let isWindows = os.platform().startsWith("win");
 let rpc;
@@ -77,10 +78,11 @@ try {
 } catch (e) {
   config = {};
 }
-const APIKEY = process.env.AUTHORIZATION || config.AUTHORIZATION;
-const analyticsAPI = process.env.ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
-const imageKey = process.env.IMAGE_KEY || config.IMAGE_KEY;
-const clientId = process.env.DISCKEY || config.DISCKEY;
+
+const APIKEY = process.env.REACT_APP_AUTHORIZATION || config.AUTHORIZATION;
+const analyticsAPI = process.env.REACT_APP_ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
+const imageKey = process.env.REACT_APP_IMAGE_KEY || config.IMAGE_KEY;
+const clientId = process.env.REACT_APP_DISCKEY || config.DISCKEY;
 
 // Get the app data path for the log file
 const logPath = path.join(app.getPath("appData"), "Ascendara by tagoWorks", "debug.log");
@@ -101,51 +103,145 @@ const formatMessage = args => {
 
 console.log = (...args) => {
   const message = formatMessage(args);
-  logStream.write(message);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(message);
+  }
   originalConsole.log(...args);
 };
 
 console.error = (...args) => {
   const message = formatMessage(args);
-  logStream.write(`ERROR: ${message}`);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(`ERROR: ${message}`);
+  }
   originalConsole.error(...args);
 };
 
 console.warn = (...args) => {
   const message = formatMessage(args);
-  logStream.write(`WARN: ${message}`);
+  if (!logStream.destroyed && !logStream.closed) {
+    logStream.write(`WARN: ${message}`);
+  }
   originalConsole.warn(...args);
 };
 
 // Ensure logs are written before app exits
 app.on("before-quit", () => {
   logStream.end();
+  destroyDiscordRPC();
 });
 
 function destroyDiscordRPC() {
   if (rpc) {
-    rpc.clearActivity();
-    rpc.destroy();
+    try {
+      if (rpc.transport && rpc.transport.socket) {
+        rpc.destroy().catch(() => {
+          // Ignore destroy errors
+        });
+      }
+    } catch (error) {
+      // Ignore any errors during cleanup
+    } finally {
+      rpc = null;
+    }
     console.log("Discord RPC has been destroyed");
   }
 }
 
+// Add a connection attempt counter
+let rpcConnectionAttempts = 0;
+const MAX_RPC_ATTEMPTS = 3;
+
 // Initialize Discord RPC
 function initializeDiscordRPC() {
+  if (rpcConnectionAttempts >= MAX_RPC_ATTEMPTS) {
+    console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    return;
+  }
+
+  if (isDev) {
+    console.log("Discord RPC is disabled in development mode");
+    return;
+  }
+
+  // Ensure any existing client is cleaned up
+  destroyDiscordRPC();
+
   rpc = new Client({ transport: "ipc" });
 
   rpc.on("ready", () => {
-    rpc.setActivity({
-      state: "Searching for games...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+    // Reset connection attempts on successful connection
+    rpcConnectionAttempts = 0;
+    // Start with library state
+    rpc
+      .setActivity({
+        state: "In Library",
+        details: "Browsing Games",
+        largeImageKey: "ascendara",
+        largeImageText: "Ascendara",
+      })
+      .catch(() => {
+        // Ignore activity setting errors
+      });
 
     console.log("Discord RPC is ready");
+    rpcIsConnected = true;
   });
 
-  rpc.login({ clientId }).catch(console.error);
+  rpc.on("error", error => {
+    console.error("Discord RPC error:", error);
+    rpcConnectionAttempts++;
+
+    if (rpcConnectionAttempts < MAX_RPC_ATTEMPTS) {
+      console.log(
+        `Discord RPC connection attempt ${rpcConnectionAttempts}/${MAX_RPC_ATTEMPTS}`
+      );
+      // Wait a bit before retrying
+      setTimeout(initializeDiscordRPC, 1000);
+    } else {
+      console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    }
+  });
+
+  rpc.login({ clientId }).catch(error => {
+    console.error("Discord RPC login error:", error);
+    rpcConnectionAttempts++;
+    rpcIsConnected = false;
+
+    if (rpcConnectionAttempts < MAX_RPC_ATTEMPTS) {
+      console.log(
+        `Discord RPC connection attempt ${rpcConnectionAttempts}/${MAX_RPC_ATTEMPTS}`
+      );
+      // Wait a bit before retrying
+      setTimeout(initializeDiscordRPC, 1000);
+    } else {
+      console.log("Maximum Discord RPC connection attempts reached. Stopping retries.");
+    }
+  });
 }
+
+const updateDiscordRPCToLibrary = () => {
+  if (!rpc || !rpcIsConnected) return;
+
+  // First disconnect any existing activity
+  rpc
+    .clearActivity()
+    .then(() => {
+      // Wait a bit longer to ensure clean state
+      setTimeout(() => {
+        // Then set new activity
+        rpc.setActivity({
+          state: "In Library",
+          details: "Browsing Games",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        });
+      }, 500);
+    })
+    .catch(error => {
+      console.error("Error updating Discord RPC:", error);
+    });
+};
 
 // Handle app ready event
 app.whenReady().then(() => {
@@ -353,6 +449,16 @@ ipcMain.handle("timestamp-time", async () => {
 // Check if app is running in admin mode
 ipcMain.handle("has-admin", async () => {
   return hasAdmin;
+});
+
+// Switch between stable and experimental build
+ipcMain.handle("switch-build", async (event, buildType) => {
+  if (buildType === "stable") {
+    experiment = false;
+  } else if (buildType === "experimental") {
+    experiment = true;
+  }
+  return true;
 });
 
 // Install steamcmd.exe from Ascendara CDN and store it in the ascendaraSteamcmd directory
@@ -590,6 +696,7 @@ class SettingsManager {
       additionalDirectories: [],
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
+      earlyReleasePreview: false,
       viewWorkshopPage: false,
       notifications: true,
       downloadHandler: false,
@@ -3465,6 +3572,12 @@ ipcMain.handle("open-game-directory", (event, game, isCustom) => {
     return;
   }
 
+  if (game === "debuglog") {
+    const appDataPath = path.join(process.env.APPDATA, "Ascendara by tagoWorks");
+    shell.openPath(appDataPath);
+    return;
+  }
+
   if (game === "workshop") {
     const steamCMDDir = path.join(os.homedir(), "ascendaraSteamcmd");
     const workshopContentPath = path.join(steamCMDDir, "steamapps/workshop/content");
@@ -3768,46 +3881,20 @@ ipcMain.handle(
           },
         ],
       });
-
+      // In the game close handler
       runGame.on("exit", code => {
         console.log(`Game ${game} exited with code ${code}`);
 
-        // Update game status to not running in JSON files
-        try {
-          // Update settings.json
-          const settings = JSON.parse(fs.readFileSync(filePath, "utf8"));
-          if (settings.runningGames) {
-            delete settings.runningGames[game];
-            fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
-          }
-
-          // Update games.json
-          const gamesPath = path.join(settings.downloadDirectory, "games.json");
-          if (fs.existsSync(gamesPath)) {
-            const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
-            if (games[game]) {
-              games[game].running = false;
-              fs.writeFileSync(gamesPath, JSON.stringify(games, null, 2));
-            }
-          }
-        } catch (error) {
-          console.error("Error updating game running status:", error);
-        }
-
+        // Update game status and show window first
         runGameProcesses.delete(game);
         showWindow();
 
-        // Update Discord RPC
-        rpc.setActivity({
-          state: "Searching for games...",
-          largeImageKey: "ascendara",
-          largeImageText: "Ascendara",
-        });
+        // Then update Discord RPC with longer delay
+        setTimeout(updateDiscordRPCToLibrary, 1000);
 
         // Notify renderer that game has closed
         event.sender.send("game-closed", { game });
       });
-
       return true;
     } catch (error) {
       console.error("Error launching game:", error);
@@ -3822,12 +3909,8 @@ ipcMain.handle("stop-game", (event, game) => {
   const runGame = runGameProcesses.get(game);
   if (runGame) {
     runGame.kill();
-
-    rpc.setActivity({
-      state: "Searching for games...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+    // Use the same RPC update function with delay
+    setTimeout(updateDiscordRPCToLibrary, 1000);
   }
 });
 
@@ -4091,7 +4174,6 @@ function createWindow() {
 
   mainWindow.on("show", () => {
     mainWindowHidden = false;
-    initializeDiscordRPC();
     console.log("Window shown event fired");
   });
 
@@ -4192,18 +4274,36 @@ ipcMain.handle("welcome-complete", event => {
 });
 
 ipcMain.handle("switch-rpc", (event, state) => {
-  if (state === "default") {
-    rpc.setActivity({
-      state: "Searching for games...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
-  } else if (state === "downloading") {
-    rpc.setActivity({
-      state: "Watching download progress...",
-      largeImageKey: "ascendara",
-      largeImageText: "Ascendara",
-    });
+  if (!rpcIsConnected) {
+    console.log("Discord RPC not connected, skipping activity update");
+    return;
+  }
+
+  try {
+    if (state === "default") {
+      rpc
+        .setActivity({
+          state: "In Library",
+          details: "Browsing Games",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        })
+        .catch(err => {
+          console.log("Failed to set Discord RPC activity:", err);
+        });
+    } else if (state === "downloading") {
+      rpc
+        .setActivity({
+          state: "Watching download progress...",
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+        })
+        .catch(err => {
+          console.log("Failed to set Discord RPC activity:", err);
+        });
+    }
+  } catch (err) {
+    console.log("Failed to update Discord RPC activity:", err);
   }
 });
 

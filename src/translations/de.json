@@ -19,7 +19,7 @@
       "title": "Oh nein ..."
     },
     "downloading-update": "Update herunterladen ...",
-    "experiment": "Versuchsbau",
+    "experiment": "EXPERIMENTAL",
     "loading": {
       "ascendaraWillRestart": "Ascendara wird automatisch neu starten",
       "installingUpdate": "Update installieren"
@@ -53,11 +53,21 @@
       "title": "Lassen Sie mich wissen, wie es Ihnen gefällt"
     },
     "toasts": {
+      "buildSwitchReady": "Schalter bereit bauen",
+      "buildSwitchReadyDesc": "Der ausgewählte Build wurde heruntergeladen. Installieren Sie jetzt, um Versionen zu wechseln.",
+      "experimentOutOfDate": "Dieser Build ist veraltet",
+      "experimentOutOfDateDesc": "Es wird empfohlen, im neuesten experimentellen Build zu bleiben.",
+      "experimentUpdateReady": "Neubau verfügbar",
+      "experimentUpdateReadyDesc": "Ein neuer experimenteller Build ist verfügbar. Ascendara kann automatisch aktualisieren.",
       "installAndRestart": "Installieren und neu starten",
       "justUpdated": "Aktualisieren Sie vollständig",
       "justUpdatedDesc": "Sie haben gerade auf {{version}} aktualisiert",
       "outOfDate": "Ascendara ist veraltet veraltet",
       "outOfDateDesc": "Bitte laden Sie die neueste Version von der offiziellen Website herunter",
+      "switchToExperimental": "Wechseln Sie zum experimentellen Build",
+      "switchToExperimentalDesc": "Wechseln Sie zum experimentellen Build, um neue Funktionen zu testen und Feedback zu geben.",
+      "switchToStable": "Wechseln Sie zu stabilem Build",
+      "switchToStableDesc": "Wechseln Sie zum stabilen Aufbau von Ascendara für die zuverlässigste Erfahrung.",
       "updateNow": "Aktualisieren Sie jetzt",
       "updateReady": "Ascendara ist bereit zu aktualisieren",
       "updateReadyDesc": "Ascendara hat das Update heruntergeladen und ist jetzt bereit, jetzt zu installieren und neu zu starten",
@@ -321,6 +331,57 @@
     "waiting": "Warten auf Gleichaltrige",
     "waitingDescription": "QBITTORRENT sucht nach Kollegen, die eine Verbindung zum Herunterladen von Torrent -Datei von anderen Benutzern herstellen und sie wiederum auf sie hochladen. Andere können möglicherweise sehen, was Sie herunterladen und/oder Ihre öffentliche IP -Adresse ermitteln."
   },
+  "earlyPreview": {
+    "actions": "Schnelle Aktionen",
+    "alreadyVoted": "Sie haben bereits für diese Funktion gestimmt",
+    "debugInfo": "Greifen Sie auf Debug -Protokolle zu, um alle technischen Probleme zu diagnostizieren und zu beheben, auf die Sie begegnen.",
+    "debugLogError": "Debug -Protokollen -Ordner nicht geöffnet",
+    "description": "Zeigen und stimmen Sie die verschiedenen experimentellen Merkmale in den frühen Aufbauten von Ascendare an, bevor sie veröffentlicht werden. Ihr Feedback und Ihre Abstimmung sind wichtig und werden helfen, Ascendara zu formen.",
+    "discordInfo": "Treten Sie der Discord -Community bei, um neue Funktionen anzufordern und Ideen mit anderen Benutzern zu besprechen.",
+    "earlyBuild": "Neueste Vorschau -Build",
+    "experimentalFeatures": "Experimentelle Merkmale",
+    "fetchError": "Versäumte Belastung experimenteller Merkmale",
+    "getOnExperimental": "Um die neuesten experimentellen Funktionen zu sehen und abzustimmen, müssen Sie den experimentellen Aufbau von Ascendara einbeziehen. Entweder starten Sie Ascendara vollständig neu, um eine Update -Prüfung auszulösen oder den neuesten experimentellen Build auf der Download -Seite zu installieren.",
+    "helpUsImprove": "Verbesserung von Ascendara",
+    "joinDiscord": "Treten Sie Discord bei",
+    "noExperimentalFeatures": "Noch keine experimentellen Merkmale ...",
+    "noFeatures": "Derzeit keine experimentellen Funktionen verfügbar.",
+    "openDebugFolder": "Debug -Protokolle anzeigen",
+    "released": "Offizielle Veröffentlichung",
+    "reportInfo": "Einen Fehler gefunden? Melden Sie es direkt an den Server und das Problem wird untersucht.",
+    "reportIssue": "Berichtsproblem",
+    "requestFeature": "Anforderungsfunktion",
+    "status": {
+      "active": {
+        "description": "Diese Funktion ist derzeit im frühen Build aktiv und testen bereit",
+        "title": "Aktiv"
+      },
+      "deprecated": {
+        "description": "Diese Funktion ist noch vorhanden, wird jedoch in einem zukünftigen Update entfernt",
+        "title": "Veraltet"
+      },
+      "implemented": {
+        "description": "Diese Funktion wurde erfolgreich implementiert und befindet sich jetzt in der veröffentlichten Version",
+        "title": "Implementiert"
+      },
+      "trashed": {
+        "description": "Diese Funktion wurde verworfen und wird nicht implementiert",
+        "title": "Verwirrt"
+      }
+    },
+    "title": "Frühes Vorschau -Dashboard",
+    "voteDown": "Hat Probleme",
+    "voteDownSuccess": "Ihr Downvote wurde erfolgreich eingereicht",
+    "voteError": "Ich habe Ihre Stimme nicht einreichen",
+    "voteSuccess": "Vielen Dank für Ihr Feedback!",
+    "voteUp": "Funktioniert großartig",
+    "voteUpSuccess": "Ihre upvote wurde erfolgreich eingereicht",
+    "votedDown": "Sie sagten, diese Funktion habe Probleme",
+    "votedUp": "Sie sagten, diese Funktion funktioniert großartig",
+    "votingClosed": "Die Abstimmung ist geschlossen",
+    "votingInProgress": "Bearbeitung der Abstimmung ...",
+    "warning": "Diese Merkmale sind in der frühen Entwicklung und können instabil sein. Sie verwenden auf eigenes Risiko."
+  },
   "game": {
     "metadata": {
       "developer": "Entwickler",
@@ -340,6 +401,7 @@
     "ratingTooltip": "Dies ist eine durchschnittliche Bewertung von anderen, die dieses Spiel auf Ascendara heruntergeladen und gespielt haben.",
     "showLess": "Weniger zeigen",
     "size": "Größe",
+    "update": "Aktualisieren",
     "version": "Version"
   },
   "gameScreen": {
@@ -595,6 +657,7 @@
     "ascendaraWorkshopDownloaderEnable": "In die Navigationsleiste hinzufügen",
     "autoCreateShortcuts": "Erstellen Sie automatisch Verknüpfungen",
     "autoCreateShortcutsDescription": "Erstellen Sie automatisch Verknüpfungen auf dem Desktop für Spiele, die zum ersten Mal erfolgreich ausgeführt werden",
+    "buildSwitchReload": "Sie müssen Ascendara neu laden, um die Aktualisierungsdatei für den experimentellen Build zu stapfen. Möchten Sie das jetzt tun?",
     "cannotCheckDependencies": "Die Abhängigkeiten von diesem System können nicht überprüfen",
     "cannotDisableTorrent": "Wechseln Sie zur Dampfrip -Quelle, bevor Sie den Torrentunterstützung deaktivieren",
     "checkConfig": "Konfiguration überprüfen",
@@ -608,7 +671,9 @@
     "darkThemes": "Dunkle Themen",
     "defaultDownloadLocation": "Standard -Download -Speicherort",
     "downloadLocationWarning": "Ascendara kann keine Dateien in das ausgewählte Verzeichnis schreiben. Veränderung wurde nicht gerettet.",
-    "downloadThreads": "Aufführung herunterladen",
+    "downloadPaths": "Pfade herunterladen",
+    "downloadThreads": "Threads herunterladen",
+    "downloadThreadsDescription": "Laden Sie Threads herunter, wie viele gleichzeitige Verbindungen beim Herunterladen verwendet werden",
     "downloadThreadsPresets": {
       "extreme": "Extreme (16 Threads) - Verwendung mit Vorsicht verwenden",
       "high": "Hoch (8 Threads) - bessere Leistung",
@@ -617,7 +682,11 @@
       "veryHigh": "Sehr hoch (12 Threads) - für schnelle Verbindungen"
     },
     "downloaderRunningWarning": "Sie können diese Einstellungen nicht ändern, während ein Download in Arbeit ist",
+    "earlyPreviewDash": "Besuchen Sie das Dashboard",
+    "earlyReleasePreview": "Vorschau für Frühveröffentlichungen",
+    "earlyReleasePreviewDesc": "Installieren Sie Versionen von Ascendara mit neuen Funktionen, bevor sie offiziell veröffentlicht werden. Bessere Ascendara durch Testen und Berichterstattung.",
     "enableAscendaraTimechine": "Aktivieren Sie die Ascendara -Timemachine",
+    "enableEarlyReleasePreview": "Erhalten Sie frühzeitige Vorschau -Updates",
     "enterGiantBombApiKey": "Fügen Sie Ihre Giantbomb -API -Schlüssel ein",
     "enterIgdbApiKey": "Fügen Sie Ihren geheimen Twitch -Schlüssel ein",
     "enterTwitchClientId": "Fügen Sie Ihre Twitch -Client -ID ein",
@@ -706,6 +775,7 @@
     "steamripDescription": "Steamrip ist die Hauptquelle für Ascendara und bietet eine sichere und zuverlässige Sammlung von Spielen mit regelmäßigen Updates.",
     "switchSource": "Wechseln Sie zu dieser Quelle",
     "theme": "Aussehen",
+    "threads": "Themen",
     "timeMachineDisabledFitgirl": "Ascendara Timemachine ist bei der Verwendung von Fitgirl -Wiederholungen als Spielquelle nicht verfügbar.",
     "title": "Ascendara -Vorlieben",
     "torrentDescription": "Aktivieren Sie die Torrent -Funktionalität von Ascendara. Diese Funktion erfordert, dass QBITTorrent installiert wird, und wird nur für erfahrene Benutzer empfohlen.",
