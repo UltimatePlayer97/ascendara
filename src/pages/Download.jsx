@@ -52,6 +52,7 @@ import {
   Gift,
   ArrowDownCircle,
   Share,
+  ArrowUpFromLine,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -114,6 +115,7 @@ export default function DownloadPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [gameData, setGameData] = useState(state?.gameData);
+  const [isUpdating, setIsUpdating] = useState(state?.gameData?.isUpdating || false);
   const { t } = useLanguage();
   const { settings, setSettings } = useSettings();
   const igdbConfig = useIgdbConfig();
@@ -1312,8 +1314,16 @@ export default function DownloadPage() {
                         <Loader className="mr-2 h-5 w-5 animate-spin" />
                         {t("download.downloadOptions.downloading")}
                       </>
+                    ) : gameData.isUpdating ? (
+                      <>
+                        <ArrowUpFromLine className="mr-2 h-5 w-5" />
+                        {t("gameCard.update")}
+                      </>
                     ) : (
-                      t("download.downloadOptions.downloadNow")
+                      <>
+                        <Download className="mr-2 h-5 w-5" />
+                        {t("download.downloadOptions.downloadNow")}
+                      </>
                     )}
                   </Button>
                 </div>
@@ -1518,6 +1528,11 @@ export default function DownloadPage() {
                           <>
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                             {t("download.downloadOptions.downloading")}
+                          </>
+                        ) : gameData.isUpdating ? (
+                          <>
+                            <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                            {t("gameCard.update")}
                           </>
                         ) : (
                           t("download.downloadOptions.downloadNow")
