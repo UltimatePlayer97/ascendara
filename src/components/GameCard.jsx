@@ -2,7 +2,7 @@ import React, { useState, memo, useCallback, useEffect, useMemo, useRef } from "
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Gift, Gamepad2, Zap, Loader } from "lucide-react";
+import { Download, Gift, Gamepad2, Zap, Loader, ArrowUpFromLine } from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -21,6 +21,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
   const [showAllTags, setShowAllTags] = useState(false);
   const { cachedImage, loading, error } = useImageLoader(game?.imgID);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [needsUpdate, setNeedsUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isMounted = useRef(true);
   const { t } = useLanguage();
@@ -40,9 +41,16 @@ const GameCard = memo(function GameCard({ game, compact }) {
       try {
         const installedGames = await window.electron.getGames();
         if (isMounted.current) {
-          setIsInstalled(
-            installedGames.some(installedGame => installedGame.game === game.game)
-          );
+          const installedGame = installedGames.find(ig => ig.game === game.game);
+          if (installedGame && game.version) {
+            const installedVersion = installedGame.version || "0.0.0";
+            const newVersion = game.version;
+            setNeedsUpdate(installedVersion !== newVersion);
+            setIsInstalled(!needsUpdate);
+          } else {
+            setIsInstalled(!!installedGame);
+            setNeedsUpdate(false);
+          }
         }
       } catch (error) {
         console.error("Error checking game installation:", error);
@@ -56,8 +64,8 @@ const GameCard = memo(function GameCard({ game, compact }) {
     };
   }, [game.game]);
 
-  const handleDownload = useCallback(async () => {
-    if (isInstalled) return;
+  const handleDownload = useCallback(() => {
+    if (isInstalled && !needsUpdate) return;
     setIsLoading(true);
     const downloadLinks = game.download_links || {};
     setTimeout(() => {
@@ -66,11 +74,12 @@ const GameCard = memo(function GameCard({ game, compact }) {
           gameData: {
             ...game,
             download_links: downloadLinks,
+            isUpdating: needsUpdate,
           },
         },
       });
     });
-  }, [navigate, game, isInstalled, t]);
+  }, [navigate, game, isInstalled, needsUpdate, t]);
 
   if (compact) {
     return (
@@ -226,12 +235,16 @@ const GameCard = memo(function GameCard({ game, compact }) {
           size="sm"
           className="w-full bg-accent font-medium text-accent-foreground hover:bg-accent/90"
           onClick={handleDownload}
-          disabled={isInstalled || isLoading}
+          disabled={isLoading}
         >
           {isLoading ? (
             <Loader className="mr-2 h-4 w-4 animate-spin" />
           ) : isInstalled ? (
-            <Gamepad2 className="mr-2 h-4 w-4" />
+            needsUpdate ? (
+              <ArrowUpFromLine className="mr-2 h-4 w-4" />
+            ) : (
+              <Gamepad2 className="mr-2 h-4 w-4" />
+            )
           ) : Object.keys(game.download_links || {}).includes("gofile") ? (
             <Zap className="mr-2 h-4 w-4" />
           ) : (
@@ -239,9 +252,11 @@ const GameCard = memo(function GameCard({ game, compact }) {
           )}
           {isLoading
             ? t("gameCard.loading")
-            : isInstalled
-              ? t("gameCard.installed")
-              : t("gameCard.download")}
+            : needsUpdate
+              ? t("gameCard.update")
+              : isInstalled
+                ? t("gameCard.installed")
+                : t("gameCard.download")}
         </Button>
       </CardFooter>
     </Card>
