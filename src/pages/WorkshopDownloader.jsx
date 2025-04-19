@@ -275,7 +275,7 @@ const WorkshopDownloader = () => {
                 className="cursor-pointer items-center text-primary hover:underline"
                 onClick={() =>
                   window.electron.openURL(
-                    "https://steamcommunity.com/workshop/browse/?appid=431960"
+                    "https://ascendara.app/docs/features/overview#ascendara-workshop-downloader"
                   )
                 }
               >
