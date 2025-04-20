@@ -248,7 +248,7 @@ app.whenReady().then(() => {
   if (isDev) {
     printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
   }
-  checkAdmin();
+  //  checkAdmin();
   createWindow();
   initializeDiscordRPC();
   axios
