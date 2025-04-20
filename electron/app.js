@@ -3868,19 +3868,21 @@ ipcMain.handle(
       }
 
       // Update Discord Rich Presence
-      rpc.setActivity({
-        details: "Playing a Game",
-        state: `${game}`,
-        startTimestamp: new Date(),
-        largeImageKey: "ascendara",
-        largeImageText: "Ascendara",
-        buttons: [
-          {
-            label: "Play on Ascendara",
-            url: "https://ascendara.app/",
-          },
-        ],
-      });
+      if (settings.rpc) {
+        rpc.setActivity({
+          details: "Playing a Game",
+          state: `${game}`,
+          startTimestamp: new Date(),
+          largeImageKey: "ascendara",
+          largeImageText: "Ascendara",
+          buttons: [
+            {
+              label: "Play on Ascendara",
+              url: "https://ascendara.app/",
+            },
+          ],
+        });
+      }
       // In the game close handler
       runGame.on("exit", code => {
         console.log(`Game ${game} exited with code ${code}`);
