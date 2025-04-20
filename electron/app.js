@@ -4099,33 +4099,6 @@ function shouldLogError(errorKey) {
   return false;
 }
 
-function checkAdmin() {
-  const isWindows = os.platform().startsWith("win");
-  if (isWindows) {
-    try {
-      // Use a simpler and more reliable PowerShell command
-      const execSync = require("child_process").execSync;
-      const output = execSync(
-        'powershell.exe -NoProfile -Command "&{([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)}"',
-        {
-          stdio: ["pipe", "pipe", "pipe"],
-          encoding: "utf-8",
-        }
-      )
-        .trim()
-        .toLowerCase();
-      hasAdmin = output === "true";
-    } catch (e) {
-      console.error("Admin check error:", e);
-      hasAdmin = false;
-    }
-  } else {
-    // For non-Windows (Unix-like systems), check using process.getuid()
-    hasAdmin = process.getuid && process.getuid() === 0;
-  }
-  return hasAdmin;
-}
-
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
