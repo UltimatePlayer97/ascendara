@@ -175,8 +175,7 @@ function initializeDiscordRPC() {
     // Start with library state
     rpc
       .setActivity({
-        state: "In Library",
-        details: "Browsing Games",
+        state: "Searching for games...",
         largeImageKey: "ascendara",
         largeImageText: "Ascendara",
       })
@@ -231,8 +230,7 @@ const updateDiscordRPCToLibrary = () => {
       setTimeout(() => {
         // Then set new activity
         rpc.setActivity({
-          state: "In Library",
-          details: "Browsing Games",
+          state: "Searching for games...",
           largeImageKey: "ascendara",
           largeImageText: "Ascendara",
         });
@@ -3868,7 +3866,7 @@ ipcMain.handle(
       }
 
       // Update Discord Rich Presence
-      if (settings.rpc) {
+      if (rpc) {
         rpc.setActivity({
           details: "Playing a Game",
           state: `${game}`,
@@ -4258,8 +4256,7 @@ ipcMain.handle("switch-rpc", (event, state) => {
     if (state === "default") {
       rpc
         .setActivity({
-          state: "In Library",
-          details: "Browsing Games",
+          state: "Searching for games...",
           largeImageKey: "ascendara",
           largeImageText: "Ascendara",
         })
