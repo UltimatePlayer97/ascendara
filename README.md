@@ -307,10 +307,9 @@ To build the source code into an executable, read the [Developer Docs](https://a
 
 ### Current Goals
 
-- [ ] Endpoint for known games that have weird installation paths, issues, etc.
-- [ ] Break up code into files for better Organizations
 - [ ] Add semi-support for Linux, and macOS with Wine and Winetricks
-- [ ] Update games when a new scrape is out
+- [ ] Update game logic for saving time played and other metrics
+- [ ] Import games from Steam into library
 
 ### Future Goals
 
@@ -318,7 +317,11 @@ To build the source code into an executable, read the [Developer Docs](https://a
 
 - [ ] Ascendara approved additional sources
 - [ ] Debrid support for downloads
-- [ ] Revamp game info scraping logic/API
+- [ ] Community driven path finding tool
+- [ ] Cloud data support
+- [ ] Endpoint for known games that have weird installation paths, issues, etc.
+- [ ] Break up code into files for better Organizations
+- [ ] Revamp game info scraping logic/API (Dynamic game indexing)
 - [ ] Retry Download & Extract functionality
 - [ ] Improved download management (pausing, resuming)
 
