@@ -226,6 +226,7 @@ export default function DownloadPage() {
   const [guideImages, setGuideImages] = useState({});
   const [lastProcessedUrl, setLastProcessedUrl] = useState(null);
   const [isProcessingUrl, setIsProcessingUrl] = useState(false);
+  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
   const [igdbData, setIgdbData] = useState(null);
   const [igdbError, setIgdbError] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
@@ -239,6 +240,13 @@ export default function DownloadPage() {
   const scrollThreshold = 30; // Even lower threshold for quicker response
 
   async function whereToDownload(directUrl = null) {
+    // Check if game is wanting to update
+    if (gameData.isUpdating) {
+      // Handle update flow
+      setShowUpdatePrompt(true);
+      return;
+    }
+
     // Check if additional directories are set in settings
     if (settings.additionalDirectories && settings.additionalDirectories.length > 0) {
       // Show path selection dialog
@@ -352,6 +360,7 @@ export default function DownloadPage() {
         gameData.online || false,
         gameData.dlc || false,
         isVrGame || false,
+        gameData.isUpdating || false,
         gameData.version || "",
         gameData.imgID,
         gameData.size || "",
@@ -2008,6 +2017,31 @@ export default function DownloadPage() {
           onOpenChange={setShowTimemachineSelection}
         />
       )}
+
+      <AlertDialog open={showUpdatePrompt} onOpenChange={setShowUpdatePrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-foreground">
+              {t("download.update.title", { game: gameData.game })}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 text-muted-foreground">
+              {t("download.update.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button
+              variant="outline"
+              className="text-primary"
+              onClick={() => setShowUpdatePrompt(false)}
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button className="text-secondary" onClick={() => handleDownload()}>
+              {t("common.ok")}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Select Download Path Dialog */}
       <AlertDialog open={showSelectPath} onOpenChange={setShowSelectPath}>

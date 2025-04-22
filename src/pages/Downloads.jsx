@@ -39,6 +39,9 @@ import {
   ExternalLink,
   CircleCheck,
   Coffee,
+  RefreshCw,
+  HardDriveDownload,
+  PackageOpen,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -377,13 +380,13 @@ const Downloads = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => gameToStop && executeStopDownload(gameToStop, false)}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary text-secondary hover:bg-primary/90"
             >
               {t("downloads.actions.stopDownload")}
             </AlertDialogAction>
             <AlertDialogAction
               onClick={() => gameToStop && executeStopDownload(gameToStop, true)}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary text-secondary hover:bg-primary/90"
             >
               <Trash2 className="h-4 w-4" />
               <span className="ml-2">{t("downloads.actions.stopAndDelete")}</span>
@@ -591,7 +594,15 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
     <Card className="mb-4 w-full transition-all duration-200 hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
-          <h3 className="font-semibold leading-none tracking-tight">{game.game}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold leading-none tracking-tight">{game.game}</h3>
+            {downloadingData.updating && (
+              <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                {t("downloads.updating")}
+              </span>
+            )}
+          </div>
           <p className="text-sm font-medium text-muted-foreground">{game.size}</p>
         </div>
 
@@ -837,7 +848,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                 </div>
               </div>
             )}
-            {(isExtracting || isUpdating) && (
+            {isExtracting && (
               <div className="mt-2 space-y-2">
                 <div className="relative overflow-hidden rounded-full bg-muted">
                   <Progress value={undefined} />
@@ -859,12 +870,10 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                 <div className="flex flex-col items-center justify-center rounded-lg bg-muted/40 py-2">
                   <span className="flex items-center gap-2 text-lg font-semibold">
                     <Loader className="h-4 w-4 animate-spin" />
-                    {isExtracting ? t("downloads.extracting") : t("downloads.updating")}
+                    {t("downloads.extracting")}
                   </span>
                   <span className="mt-1 text-sm text-muted-foreground">
-                    {isExtracting
-                      ? t("downloads.extractingDescription")
-                      : t("downloads.updatingDescription")}
+                    {t("downloads.extractingDescription")}
                   </span>
                 </div>
               </div>

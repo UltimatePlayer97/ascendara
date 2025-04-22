@@ -144,7 +144,7 @@ def handleerror(game_info, game_info_path, e):
     safe_write_json(game_info_path, game_info)
 
 class GofileDownloader:
-    def __init__(self, game, online, dlc, isVr, version, size, download_dir, max_workers=5):
+    def __init__(self, game, online, dlc, isVr, updateFlow, version, size, download_dir, max_workers=5):
         self._max_retries = 3
         self._download_timeout = 30 
         self._token = self._getToken()
@@ -155,6 +155,7 @@ class GofileDownloader:
         self._current_file_progress = {}  # Track progress per file
         self._total_downloaded = 0  # Track total bytes downloaded
         self._total_size = 0  # Track total bytes to download
+        self.updateFlow = updateFlow
         self.game = game
         self.online = online
         self.dlc = dlc
@@ -164,25 +165,33 @@ class GofileDownloader:
         self.download_dir = os.path.join(download_dir, sanitize_folder_name(game))
         os.makedirs(self.download_dir, exist_ok=True)
         self.game_info_path = os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.ascendara.json")
-        self.game_info = {
-            "game": game,
-            "online": online,
-            "dlc": dlc,
-            "isVr": isVr,
-            "version": version if version else "",
-            "size": size,
-            "executable": os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.exe"),
-            "isRunning": False,
-            "downloadingData": {
-                "downloading": False,
-                "verifying": False,
-                "extracting": False,
-                "updating": False,
-                "progressCompleted": "0.00",
-                "progressDownloadSpeeds": "0.00 KB/s",
-                "timeUntilComplete": "0s"
+        # If updateFlow is True, preserve the JSON file and set updating flag
+        if updateFlow and os.path.exists(self.game_info_path):
+            with open(self.game_info_path, 'r') as f:
+                self.game_info = json.load(f)
+            if 'downloadingData' not in self.game_info:
+                self.game_info['downloadingData'] = {}
+            self.game_info['downloadingData']['updating'] = True
+        else:
+            self.game_info = {
+                "game": game,
+                "online": online,
+                "dlc": dlc,
+                "isVr": isVr,
+                "version": version if version else "",
+                "size": size,
+                "executable": os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.exe"),
+                "isRunning": False,
+                "downloadingData": {
+                    "downloading": False,
+                    "verifying": False,
+                    "extracting": False,
+                    "updating": updateFlow,
+                    "progressCompleted": "0.00",
+                    "progressDownloadSpeeds": "0.00 KB/s",
+                    "timeUntilComplete": "0s"
+                }
             }
-        }
         safe_write_json(self.game_info_path, self.game_info)
 
     @staticmethod
@@ -216,42 +225,73 @@ class GofileDownloader:
 
         # Calculate total size first
         self._total_size = 0
-        self._total_downloaded = 0
-        for item in files_info.values():
-            filepath = os.path.join(self.download_dir, item["path"], item["filename"])
-            if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                file_size = os.path.getsize(filepath)
-                self._total_downloaded += file_size
-                self._total_size += file_size
-            else:
-                # Get file size from headers
-                try:
-                    headers = {
-                        "Cookie": f"accountToken={self._token}",
-                        "User-Agent": os.getenv("GF_USERAGENT", "Mozilla/5.0")
-                    }
-                    response = requests.head(item["link"], headers=headers, allow_redirects=True)
-                    if response.status_code == 200:
-                        file_size = int(response.headers.get("Content-Length", 0))
-                        self._total_size += file_size
-                except:
-                    continue
+        for file_info in files_info.values():
+            try:
+                response = requests.head(
+                    file_info["link"],
+                    headers={"Cookie": f"accountToken={self._token}"},
+                    timeout=self._download_timeout
+                )
+                if response.status_code == 200:
+                    file_size = int(response.headers.get('content-length', 0))
+                    self._total_size += file_size
+            except:
+                continue
 
         total_files = len(files_info)
         current_file = 0
         
-        for item in files_info.values():
-            current_file += 1
-            try:
-                print(f"\nDownloading file {current_file}/{total_files}: {item.get('name', 'Unknown')}")
-                self._downloadContent(item)
-            except Exception as e:
-                print(f"Error downloading {item.get('name', 'Unknown')}: {str(e)}")
-                # Wait a bit before trying the next file
-                time.sleep(2)
-                continue
+        try:
+            for item in files_info.values():
+                current_file += 1
+                try:
+                    print(f"\nDownloading file {current_file}/{total_files}: {item.get('name', 'Unknown')}")
+                    self._downloadContent(item)
+                except Exception as e:
+                    print(f"Error downloading {item.get('name', 'Unknown')}: {str(e)}")
+                    # Wait a bit before trying the next file
+                    time.sleep(2)
+                    continue
 
-        self._extract_files()
+            print("All files downloaded successfully, starting extraction...")
+            self._extract_files()
+            
+            # Handle post-download cleanup and updates
+            print("Download and extraction completed, finalizing...")
+            self.game_info["downloadingData"]["downloading"] = False
+            self.game_info["downloadingData"]["extracting"] = False
+            self.game_info["downloadingData"]["verifying"] = False
+            self.game_info["downloadingData"]["updating"] = False
+            self.game_info["downloadingData"]["progressCompleted"] = "100.00"
+            self.game_info["downloadingData"]["progressDownloadSpeeds"] = "0.00 KB/s"
+            self.game_info["downloadingData"]["timeUntilComplete"] = "0s"
+            
+            # Update version in JSON if this is an update flow
+            if self.updateFlow and self.version:
+                print(f"Updating version to: {self.version}")
+                self.game_info["version"] = self.version
+            
+            safe_write_json(self.game_info_path, self.game_info)
+            print("Process completed successfully")
+            
+            if withNotification:
+                _launch_notification(
+                    withNotification,
+                    "Download Complete",
+                    f"Successfully {'updated' if self.updateFlow else 'downloaded'} {self.game_info['game']}"
+                )
+                
+        except Exception as e:
+            print(f"Error during download process: {str(e)}")
+            logging.error(f"Error during download process: {str(e)}")
+            handleerror(self.game_info, self.game_info_path, str(e))
+            if withNotification:
+                _launch_notification(
+                    withNotification,
+                    "Download Error",
+                    f"Error {'updating' if self.updateFlow else 'downloading'} {self.game_info['game']}: {str(e)}"
+                )
+            raise
 
     def _parseLinksRecursively(self, content_id, password, current_path=""):
         url = f"https://api.gofile.io/contents/{content_id}?wt=4fd6sg89d7s6&cache=true"
@@ -759,6 +799,15 @@ class GofileDownloader:
 
         # Set verifying to false when done
         self.game_info["downloadingData"]["verifying"] = False
+        
+        # If all processes are complete (not downloading, not extracting, not verifying),
+        # and there are no verify errors, remove the downloadingData key
+        if (not self.game_info["downloadingData"]["downloading"] and
+            not self.game_info["downloadingData"]["extracting"] and
+            not self.game_info["downloadingData"]["verifying"] and
+            "verifyError" not in self.game_info["downloadingData"]):
+            del self.game_info["downloadingData"]
+        
         safe_write_json(self.game_info_path, self.game_info)
 
 def open_console():
@@ -782,6 +831,7 @@ def main():
     parser.add_argument("online", type=parse_boolean, help="Is the game online (true/false)?")
     parser.add_argument("dlc", type=parse_boolean, help="Is DLC included (true/false)?")
     parser.add_argument("isVr", type=parse_boolean, help="Is the game a VR game (true/false)?")
+    parser.add_argument("updateFlow", type=parse_boolean, help="Is this an update (true/false)?")
     parser.add_argument("version", help="Version of the game")
     parser.add_argument("size", help="Size of the file in (ex: 12 GB, 439 MB)")
     parser.add_argument("download_dir", help="Directory to save the downloaded files")
@@ -799,10 +849,10 @@ def main():
         args = parser.parse_args()
         logging.info(f"Starting download process for game: {args.game}")
         logging.debug(f"Arguments: url={args.url}, online={args.online}, dlc={args.dlc}, "
-                     f"isVr={args.isVr}, version={args.version}, size={args.size}, "
+                     f"isVr={args.isVr}, update={args.updateFlow}, version={args.version}, size={args.size}, "
                      f"download_dir={args.download_dir}, withNotification={args.withNotification}")
         
-        downloader = GofileDownloader(args.game, args.online, args.dlc, args.isVr, args.version, args.size, args.download_dir)
+        downloader = GofileDownloader(args.game, args.online, args.dlc, args.isVr, args.updateFlow, args.version, args.size, args.download_dir)
         if args.withNotification:
             _launch_notification(args.withNotification, "Download Started", f"Starting download for {args.game}")
         downloader.download_from_gofile(args.url, args.password, args.withNotification)

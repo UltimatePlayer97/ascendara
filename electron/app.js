@@ -1973,28 +1973,96 @@ ipcMain.handle(
     online,
     dlc,
     isVr,
+    updateFlow,
     version,
     imgID,
     size,
     additionalDirIndex
   ) => {
     console.log(
-      `Downloading file: ${link}, game: ${game}, online: ${online}, dlc: ${dlc}, isVr: ${isVr}, version: ${version}, size: ${size}, additionalDirIndex: ${additionalDirIndex}`
+      `Downloading file: ${link}, game: ${game}, online: ${online}, dlc: ${dlc}, isVr: ${isVr}, updateFlow: ${updateFlow}, version: ${version}, size: ${size}, additionalDirIndex: ${additionalDirIndex}`
     );
 
     const settings = settingsManager.getSettings();
     let targetDirectory;
-    if (additionalDirIndex === 0) {
-      // Use default download directory from settings
-      targetDirectory = settings.downloadDirectory;
-    } else {
-      // Get additional directories array from settings and use the specified index
-      const additionalDirectories = settings.additionalDirectories || [];
-      targetDirectory = additionalDirectories[additionalDirIndex - 1];
+    let gameDirectory;
+    const sanitizedGame = sanitizeGameName(sanitizeText(game));
+    console.log(`Sanitized game name: ${sanitizedGame}`);
+
+    // If it's an update flow, search for existing game directory
+    if (updateFlow) {
+      console.log(`Update flow detected - searching for existing game directory`);
+      const allDirectories = [
+        settings.downloadDirectory,
+        ...(settings.additionalDirectories || []),
+      ];
+      console.log(`Searching in directories:`, allDirectories);
+
+      // Search through all directories to find the game
+      for (let i = 0; i < allDirectories.length; i++) {
+        const testPath = path.join(allDirectories[i], sanitizedGame);
+        console.log(`Checking directory: ${testPath}`);
+        try {
+          await fs.promises.access(testPath);
+          // Found the game directory
+          targetDirectory = allDirectories[i];
+          gameDirectory = testPath;
+          console.log(`Found existing game directory at: ${gameDirectory}`);
+
+          // Delete all contents except game.ascendara.json
+          console.log(`Starting cleanup of existing game directory`);
+          const files = await fs.promises.readdir(gameDirectory);
+          console.log(`Found ${files.length} files/directories to process`);
+          for (const file of files) {
+            if (file !== `${sanitizedGame}.ascendara.json`) {
+              const filePath = path.join(gameDirectory, file);
+              const stat = await fs.promises.stat(filePath);
+              if (stat.isDirectory()) {
+                console.log(`Removing directory: ${filePath}`);
+                await fs.promises.rm(filePath, { recursive: true });
+              } else {
+                console.log(`Removing file: ${filePath}`);
+                await fs.promises.unlink(filePath);
+              }
+            } else {
+              console.log(`Preserving file: ${file}`);
+            }
+          }
+          console.log(`Directory cleanup completed`);
+          break;
+        } catch (err) {
+          console.log(`Directory not found or inaccessible: ${testPath}`);
+          continue;
+        }
+      }
 
       if (!targetDirectory) {
-        throw new Error(`Invalid additional directory index: ${additionalDirIndex}`);
+        console.error(
+          `Failed to find existing game directory for update: ${sanitizedGame}`
+        );
+        throw new Error(
+          `Could not find existing game directory for update: ${sanitizedGame}`
+        );
       }
+    } else {
+      console.log(`New download flow - setting up directories`);
+      if (additionalDirIndex === 0) {
+        targetDirectory = settings.downloadDirectory;
+        console.log(`Using default download directory: ${targetDirectory}`);
+      } else {
+        const additionalDirectories = settings.additionalDirectories || [];
+        targetDirectory = additionalDirectories[additionalDirIndex - 1];
+        console.log(
+          `Using additional directory ${additionalDirIndex}: ${targetDirectory}`
+        );
+        if (!targetDirectory) {
+          console.error(`Invalid additional directory index: ${additionalDirIndex}`);
+          throw new Error(`Invalid additional directory index: ${additionalDirIndex}`);
+        }
+      }
+      gameDirectory = path.join(targetDirectory, sanitizedGame);
+      console.log(`Creating new game directory at: ${gameDirectory}`);
+      await fs.promises.mkdir(gameDirectory, { recursive: true });
     }
 
     try {
@@ -2002,40 +2070,35 @@ ipcMain.handle(
         console.error("Download directory not set");
         return;
       }
-      originalGame = game;
-      game = sanitizeText(game);
-      // Create game directory using sanitized name
-      const sanitizedGame = sanitizeGameName(game);
-      const gameDirectory = path.join(targetDirectory, sanitizedGame);
-      await fs.promises.mkdir(gameDirectory, { recursive: true });
 
       // Download game header image
       const imageLink =
         settings.gameSource === "fitgirl"
           ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
           : `https://api.ascendara.app/v2/image/${imgID}`;
+      console.log(`Downloading header image from: ${imageLink}`);
 
       const response = await axios({
         url: imageLink,
         method: "GET",
         responseType: "arraybuffer",
       });
+      console.log(`Header image downloaded successfully`);
 
       // Save the image
       const imageBuffer = Buffer.from(response.data);
       const mimeType = response.headers["content-type"];
       const extension = getExtensionFromMimeType(mimeType);
-      await fs.promises.writeFile(
-        path.join(gameDirectory, `header.ascendara${extension}`), // No need to sanitize extension as it comes from MIME type
-        imageBuffer
-      );
+      const headerImagePath = path.join(gameDirectory, `header.ascendara${extension}`);
+      await fs.promises.writeFile(headerImagePath, imageBuffer);
+      console.log(`Header image saved to: ${headerImagePath}`);
 
       const isWindows = process.platform === "win32";
+      console.log(`Platform detected: ${isWindows ? "Windows" : "Non-Windows"}`);
       let executablePath;
       let spawnCommand;
 
       if (isWindows) {
-        // Windows: Use .exe files
         executablePath = isDev
           ? path.join(
               settings.gameSource === "fitgirl"
@@ -2052,6 +2115,7 @@ ipcMain.handle(
                   ? "/resources/AscendaraGofileHelper.exe"
                   : "/resources/AscendaraDownloader.exe"
             );
+        console.log(`Using executable: ${executablePath}`);
 
         spawnCommand =
           settings.gameSource === "fitgirl"
@@ -2060,7 +2124,9 @@ ipcMain.handle(
                 sanitizedGame,
                 online,
                 dlc,
-                version,
+                isVr,
+                updateFlow,
+                version || -1,
                 size,
                 settings.downloadDirectory,
               ]
@@ -2070,12 +2136,12 @@ ipcMain.handle(
                 online,
                 dlc,
                 isVr,
-                version,
+                updateFlow,
+                version || -1,
                 size,
                 targetDirectory,
               ];
       } else {
-        // Non-Windows: Use Python scripts
         executablePath = "python3";
         const scriptPath = isDev
           ? path.join(
@@ -2094,6 +2160,7 @@ ipcMain.handle(
                   ? "/resources/AscendaraGofileHelper.py"
                   : "/resources/AscendaraDownloader.py"
             );
+        console.log(`Using Python script: ${scriptPath}`);
 
         spawnCommand =
           settings.gameSource === "fitgirl"
@@ -2103,7 +2170,9 @@ ipcMain.handle(
                 game,
                 online,
                 dlc,
-                version,
+                isVr,
+                updateFlow,
+                version || -1,
                 size,
                 settings.downloadDirectory,
               ]
@@ -2114,18 +2183,23 @@ ipcMain.handle(
                 online,
                 dlc,
                 isVr,
-                version,
+                updateFlow,
+                version || -1,
                 size,
                 targetDirectory,
               ];
       }
 
+      console.log(`Spawn command parameters:`, spawnCommand);
+
       // Add notification flags if enabled
       if (settings.notifications) {
+        console.log(`Adding notification flags with theme: ${settings.theme}`);
         spawnCommand = spawnCommand.concat(["--withNotification", settings.theme]);
       }
 
       try {
+        console.log(`Reading timestamp file`);
         const data = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
         timestampData = JSON.parse(data);
       } catch (error) {
@@ -2134,12 +2208,15 @@ ipcMain.handle(
       if (!timestampData.downloadedHistory) {
         timestampData.downloadedHistory = [];
       }
+      console.log(`Adding download history entry for: ${sanitizedGame}`);
       timestampData.downloadedHistory.push({
-        game: sanitizedGame, // Use sanitized name for consistency
+        game: sanitizedGame,
         timestamp: new Date().toISOString(),
       });
       await fs.promises.writeFile(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
+      console.log(`Updated timestamp file successfully`);
 
+      console.log(`Spawning download process`);
       const downloadProcess = spawn(executablePath, spawnCommand, {
         detached: true,
         stdio: "ignore",
@@ -2151,8 +2228,10 @@ ipcMain.handle(
         event.sender.send("download-error", { game: sanitizedGame, error: err.message });
       });
 
+      console.log(`Adding download process to tracking map`);
       downloadProcesses.set(sanitizedGame, downloadProcess);
       downloadProcess.unref();
+      console.log(`Download process started successfully`);
     } catch (error) {
       console.error("Error in download-file handler:", error);
       event.sender.send("download-error", { game: sanitizedGame, error: error.message });

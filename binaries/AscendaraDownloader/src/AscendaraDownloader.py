@@ -128,41 +128,87 @@ def retryfolder(game, online, dlc, version, size, download_dir, newfolder):
     shutil.rmtree(tempdownloading, ignore_errors=True)
     safe_write_json(game_info_path, game_info)
 
-def safe_write_json(filepath, data):
-    temp_dir = os.path.dirname(filepath)
-    temp_file_path = None
-    try:
-        # Create a unique temporary filename in the same directory
-        temp_file_path = filepath + '.tmp'
-        # Write the data directly to the temporary file
-        with open(temp_file_path, 'w') as temp_file:
-            json.dump(data, temp_file, indent=4)
-        
-        retry_attempts = 3
-        for attempt in range(retry_attempts):
-            try:
-                # Try to rename the temporary file to the target file
-                if os.path.exists(filepath):
-                    # If target exists, try to remove it first
-                    try:
-                        os.remove(filepath)
-                    except PermissionError:
-                        time.sleep(1)
-                        continue
-                os.rename(temp_file_path, filepath)
-                break
-            except PermissionError:
-                if attempt < retry_attempts - 1:
-                    time.sleep(1)
+def safe_write_json(filepath, data, max_retries=5):
+    import msvcrt
+    import random
+    
+    def generate_temp_path(base_path):
+        return f"{base_path}.{int(time.time()*1000)}.{random.randint(1000, 9999)}.tmp"
+    
+    def try_lock_file(f):
+        try:
+            msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            return True
+        except IOError:
+            return False
+    
+    def release_lock(f):
+        try:
+            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+        except IOError:
+            pass
+
+    base_dir = os.path.dirname(filepath)
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir, exist_ok=True)
+
+    for attempt in range(max_retries):
+        temp_file_path = generate_temp_path(filepath)
+        try:
+            # Write to temp file first
+            with open(temp_file_path, 'w') as temp_file:
+                if try_lock_file(temp_file):
+                    json.dump(data, temp_file, indent=4)
+                    temp_file.flush()
+                    os.fsync(temp_file.fileno())
+                    release_lock(temp_file)
                 else:
-                    raise
-    finally:
-        # Clean up the temporary file if it still exists
-        if temp_file_path and os.path.exists(temp_file_path):
+                    continue  # Couldn't get lock, try new temp file
+
+            # Now try to replace the target file
             try:
-                os.remove(temp_file_path)
+                if os.path.exists(filepath):
+                    # Try to open existing file to ensure we can access it
+                    with open(filepath, 'r+') as existing:
+                        if try_lock_file(existing):
+                            release_lock(existing)
+                        else:
+                            time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+                            continue
+                    
+                    # Use replace which is atomic on Windows
+                    os.replace(temp_file_path, filepath)
+                else:
+                    # If file doesn't exist, simple rename is fine
+                    os.rename(temp_file_path, filepath)
+                
+                return  # Success!
+                
+            except PermissionError:
+                time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+                continue
+                
+        except Exception as e:
+            # If any other error occurs, try to clean up and continue
+            try:
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
             except:
-                pass  # Ignore cleanup errors
+                pass
+            
+            if attempt == max_retries - 1:  # Last attempt
+                raise Exception(f"Failed to write JSON after {max_retries} attempts: {str(e)}")
+            
+            time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+            continue
+        
+        finally:
+            # Always try to clean up temp file
+            try:
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
+            except:
+                pass
 
 class SSLContextAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
@@ -181,90 +227,137 @@ class DownloadChunk:
         self.downloaded = 0
 
 class DownloadManager:
-    def __init__(self, url, total_size, num_threads=None, max_chunk_size=100*1024*1024):  
+    def __init__(self, url, total_size, num_threads=None, max_chunk_size=64*1024*1024):
         self.url = url
         self.total_size = total_size
         self.max_chunk_size = max_chunk_size
-        
-        # Read thread count from settings
+        self.chunks = []
+        self.downloaded_size = 0
+        self.lock = threading.Lock()
+        self.max_retries = 4
+        self.per_thread_speeds = {}
+        self.range_supported = True  # Assume true, will probe
+        self.last_update_time = time.time()
+        self.last_downloaded_size = 0
+        self.current_speed = 0.0  # Track current speed for smoother updates
+
+        # Read thread count and chunk size from settings
         try:
             settings_path = os.path.join(os.getenv('APPDATA'), 'ascendara', 'ascendarasettings.json')
             if os.path.exists(settings_path):
                 with open(settings_path, 'r') as f:
                     settings = json.load(f)
-                    self.num_threads = settings.get('threadCount', 4)
+                    self.num_threads = settings.get('threadCount', 8)  # Increased default threads
+                    # Allow chunk size override from settings
+                    if 'downloadChunkSize' in settings:
+                        self.max_chunk_size = settings['downloadChunkSize'] * 1024 * 1024
             else:
-                self.num_threads = 4
+                self.num_threads = 8
         except Exception:
-            self.num_threads = 4
+            self.num_threads = 8
             
-        self.chunks = []
-        self.downloaded_size = 0
-        self.lock = threading.Lock()
-        self.max_retries = 3  # Maximum number of retries per chunk
-        
     def split_chunks(self, temp_dir):
-        # Calculate optimal chunk size based on total size and thread count
-        # but don't exceed max_chunk_size to prevent excessive memory usage
-        optimal_chunk_size = min(self.total_size // self.num_threads, self.max_chunk_size)
-        num_chunks = (self.total_size + optimal_chunk_size - 1) // optimal_chunk_size
+        # Dynamic chunk sizing based on file size
+        if self.total_size < 100 * 1024 * 1024:  # Files < 100MB
+            chunk_size = 5 * 1024 * 1024  # 5MB chunks
+        elif self.total_size < 1024 * 1024 * 1024:  # Files < 1GB
+            chunk_size = 20 * 1024 * 1024  # 20MB chunks
+        else:  # Large files
+            chunk_size = min(self.total_size // (self.num_threads * 2), self.max_chunk_size)
+        
+        num_chunks = (self.total_size + chunk_size - 1) // chunk_size
         
         for i in range(int(num_chunks)):
-            start = i * optimal_chunk_size
-            end = min(start + optimal_chunk_size - 1, self.total_size - 1)
-            self.chunks.append(DownloadChunk(start, end, self.url, i, temp_dir))
+            start = i * chunk_size
+            end = min(start + chunk_size - 1, self.total_size - 1)
+            chunk = DownloadChunk(start, end, self.url, i, temp_dir)
+            self.chunks.append(chunk)
             
     def download_chunk(self, chunk, session, callback=None):
         headers = {
             'Range': f'bytes={chunk.start}-{chunk.end}',
             'Connection': 'keep-alive',
-            'Keep-Alive': '300'
+            'Keep-Alive': '300',
+            'Accept-Encoding': 'gzip, deflate',
+            'Cache-Control': 'no-cache'
         }
         
         retries = 0
+        backoff_factor = 1.5  # Less aggressive backoff
+        chunk_buffer_size = 2 * 1024 * 1024  # 2MB buffer size for better throughput
+        
+        bytes_this_thread = 0
         while retries < self.max_retries:
             try:
-                response = session.get(chunk.url, headers=headers, stream=True, timeout=(30, 300))
+                # Use a session with keep-alive and optimized settings
+                response = session.get(
+                    chunk.url,
+                    headers=headers,
+                    stream=True,
+                    timeout=(30, 300),
+                    verify=True
+                )
                 response.raise_for_status()
                 
-                # Verify we got the expected content length
                 expected_size = chunk.end - chunk.start + 1
                 content_length = int(response.headers.get('content-length', 0))
-                if content_length and content_length != expected_size:
-                    raise ValueError(f"Received content length {content_length} does not match expected size {expected_size}")
                 
-                with open(chunk.temp_file_path, "wb") as f:
-                    for data in response.iter_content(chunk_size=1024*1024):
+                if content_length and content_length != expected_size:
+                    if retries < self.max_retries - 1:  # Try again if not last retry
+                        raise ValueError(f"Size mismatch: got {content_length}, expected {expected_size}")
+                
+                # Use buffered writing for better performance
+                with open(chunk.temp_file_path, "wb", buffering=chunk_buffer_size) as f:
+                    for data in response.iter_content(chunk_size=512*1024):  # Smaller chunks for smoother updates
                         if not data:
                             break
                         f.write(data)
                         chunk.downloaded += len(data)
+                        bytes_this_thread += len(data)
                         with self.lock:
                             self.downloaded_size += len(data)
-                            if callback:
-                                callback(len(data))
+                            # Update speed calculation more frequently
+                            now = time.time()
+                            time_diff = now - self.last_update_time
+                            if time_diff >= 0.1:  # Update every 100ms
+                                current_speed = (self.downloaded_size - self.last_downloaded_size) / time_diff
+                                # Smooth speed updates
+                                self.current_speed = self.current_speed * 0.7 + current_speed * 0.3
+                                self.last_downloaded_size = self.downloaded_size
+                                self.last_update_time = now
+                        if callback:
+                            callback(len(data))
                 
-                # Verify the downloaded size matches expected size
-                if os.path.getsize(chunk.temp_file_path) != expected_size:
-                    raise ValueError(f"Downloaded size {os.path.getsize(chunk.temp_file_path)} does not match expected size {expected_size}")
+                # Quick size verification
+                actual_size = os.path.getsize(chunk.temp_file_path)
+                if actual_size == expected_size:
+                    return True  # Success
                 
-                return  # Success, exit the retry loop
+                # Partial download - try to resume if supported
+                if self.resume_support and actual_size < expected_size:
+                    chunk.start += actual_size
+                    headers['Range'] = f'bytes={chunk.start}-{chunk.end}'
+                    continue
+                
+                raise ValueError(f"Size verification failed: {actual_size} != {expected_size}")
                 
             except (requests.exceptions.RequestException, ValueError) as e:
                 retries += 1
                 if retries >= self.max_retries:
-                    raise Exception(f"Failed to download chunk after {self.max_retries} retries: {str(e)}")
+                    with self.lock:
+                        self.failed_chunks.append(chunk)
+                    raise Exception(f"Chunk download failed after {self.max_retries} retries: {str(e)}")
                 
-                # Reset chunk data and downloaded count before retry
+                # Smart backoff with jitter
+                wait_time = (backoff_factor ** retries) + (random.random() * 0.1)
+                time.sleep(min(wait_time, 10))  # Cap at 10 seconds
+                
+                # Reset progress for retry
                 chunk.downloaded = 0
                 with self.lock:
                     self.downloaded_size -= chunk.downloaded
-                chunk.downloaded = 0
-                
-                # Wait before retrying with exponential backoff
-                time.sleep(2 ** retries)
 
-def download_file(link, game, online, dlc, isVr, version, size, download_dir, withNotification=None):
+def download_file(link, game, online, dlc, isVr, updateFlow, version, size, download_dir, withNotification=None):
     # First ensure the base download directory exists
     os.makedirs(download_dir, exist_ok=True)
     
@@ -288,7 +381,7 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
         "downloadingData": {
             "downloading": False,
             "extracting": False,
-            "updating": False,
+            "updating": updateFlow,
             "progressCompleted": "0.00",
             "progressDownloadSpeeds": "0.00 KB/s",
             "timeUntilComplete": "0s"
@@ -353,32 +446,41 @@ def download_file(link, game, online, dlc, isVr, version, size, download_dir, wi
 
                     def update_progress(bytes_downloaded):
                         nonlocal start_time
-                        progress = min(100.0, (manager.downloaded_size / total_size) * 100)  # Cap at 100%
+                        # Update progress with higher precision for small files
+                        progress = min(100.0, (manager.downloaded_size / total_size) * 100)
                         game_info["downloadingData"]["progressCompleted"] = f"{progress:.2f}"
 
                         elapsed_time = time.time() - start_time
                         download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
 
-                        if download_speed < 1024:
-                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed:.2f} B/s"
-                        elif download_speed < 1024 * 1024:
-                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / 1024:.2f} KB/s"
+                        # Format download speed with appropriate units and precision
+                        # Use the smoothed speed from the manager
+                        current_speed = manager.current_speed
+                        if current_speed < 1024:
+                            speed_str = f"{current_speed:.2f} B/s"
+                        elif current_speed < 1024 * 1024:
+                            speed_str = f"{current_speed / 1024:.2f} KB/s"
                         else:
-                            game_info["downloadingData"]["progressDownloadSpeeds"] = f"{download_speed / (1024 * 1024):.2f} MB/s"
+                            speed_str = f"{current_speed / (1024 * 1024):.2f} MB/s"
+                        game_info["downloadingData"]["progressDownloadSpeeds"] = speed_str
 
+                        # Calculate remaining time with improved formatting
                         remaining_size = total_size - manager.downloaded_size
                         if download_speed > 0 and remaining_size > 0:
                             time_until_complete = remaining_size / download_speed
                             minutes, seconds = divmod(time_until_complete, 60)
                             hours, minutes = divmod(minutes, 60)
+                            
+                            # Format time including seconds
                             if hours > 0:
-                                game_info["downloadingData"]["timeUntilComplete"] = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                                time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
                             else:
-                                game_info["downloadingData"]["timeUntilComplete"] = f"{int(minutes)}m {int(seconds)}s"
-                        elif remaining_size <= 0:  # Download is complete
-                            game_info["downloadingData"]["timeUntilComplete"] = "0s"
+                                time_str = f"{int(minutes)}m {int(seconds)}s"
+                            game_info["downloadingData"]["timeUntilComplete"] = time_str
+                        elif remaining_size <= 0:
+                            game_info["downloadingData"]["timeUntilComplete"] = "0"
                         else:
-                            game_info["downloadingData"]["timeUntilComplete"] = "Calculating..."
+                            game_info["downloadingData"]["timeUntilComplete"] = "Calculating"
 
                         safe_write_json(game_info_path, game_info)
 
@@ -624,6 +726,7 @@ def main():
     parser.add_argument("online", type=parse_boolean, help="Is the game online (true/false)?")
     parser.add_argument("dlc", type=parse_boolean, help="Is DLC included (true/false)?")
     parser.add_argument("isVr", type=parse_boolean, help="Is the game a VR game (true/false)?")
+    parser.add_argument("updateFlow", type=parse_boolean, help="Is this an update (true/false)?")
     parser.add_argument("version", help="Version of the game")
     parser.add_argument("size", help="Size of the file (ex: 12 GB, 439 MB)")
     parser.add_argument("download_dir", help="Directory to save the downloaded files")
@@ -636,7 +739,7 @@ def main():
             sys.exit(1)
             
         args = parser.parse_args()
-        download_file(args.link, args.game, args.online, args.dlc, args.isVr, args.version, args.size, args.download_dir, args.withNotification)
+        download_file(args.link, args.game, args.online, args.dlc, args.isVr, args.updateFlow, args.version, args.size, args.download_dir, args.withNotification)
     except (argparse.ArgumentError, SystemExit) as e:
         error_msg = "Invalid or missing arguments. Please provide all required arguments."
         launch_crash_reporter(1, error_msg)
