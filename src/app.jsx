@@ -42,6 +42,7 @@ import Welcome from "./pages/Welcome";
 import i18n from "./i18n";
 import "./index.css";
 import "./styles/scrollbar.css";
+import { AlertTriangle, BugIcon, RefreshCwIcon } from "lucide-react";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -703,19 +704,39 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
-          <div className="w-full max-w-md space-y-4 text-center">
-            <h2 className="text-2xl font-bold text-primary">
-              {i18n.t("app.crashScreen.title")}
-            </h2>
-            <p className="text-muted-foreground">
-              {i18n.t("app.crashScreen.description")}
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="text-primary-foreground text-secondary-foreground inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-            >
-              {i18n.t("app.crashScreen.reload")}
-            </button>
+          <div className="w-full max-w-lg space-y-6 rounded-lg border border-border bg-card p-8 shadow-lg">
+            <div className="space-y-2">
+              <div className="flex justify-center">
+                <AlertTriangle className="h-12 w-12 text-primary" />
+              </div>
+              <h2 className="text-center text-2xl font-bold text-primary">
+                {i18n.t("app.crashScreen.title")}
+              </h2>
+              <p className="text-center text-muted-foreground">
+                {i18n.t("app.crashScreen.description")}
+              </p>
+            </div>
+
+            <div className="space-y-4 rounded-md bg-muted/50 p-4">
+              <p className="text-sm text-muted-foreground">
+                {i18n.t("app.crashScreen.troubleshooting")}
+              </p>
+              <ul className="list-inside list-disc space-y-2 text-sm text-muted-foreground">
+                <li>{i18n.t("app.crashScreen.clearCache")}</li>
+                <li>{i18n.t("app.crashScreen.checkConnection")}</li>
+                <li>{i18n.t("app.crashScreen.contactSupport")}</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => (window.location.href = "/")}
+                className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-secondary ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              >
+                <RefreshCwIcon className="h-4 w-4" />
+                {i18n.t("app.crashScreen.reload")}
+              </button>
+            </div>
           </div>
         </div>
       );
