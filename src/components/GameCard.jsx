@@ -2,7 +2,15 @@ import React, { useState, memo, useCallback, useEffect, useMemo, useRef } from "
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Gift, Gamepad2, Zap, Loader, ArrowUpFromLine } from "lucide-react";
+import {
+  Download,
+  Gift,
+  Gamepad2,
+  Zap,
+  Loader,
+  ArrowUpFromLine,
+  ArrowBigDown,
+} from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -237,19 +245,6 @@ const GameCard = memo(function GameCard({ game, compact }) {
           onClick={handleDownload}
           disabled={isLoading}
         >
-          {isLoading ? (
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-          ) : isInstalled ? (
-            needsUpdate ? (
-              <ArrowUpFromLine className="mr-2 h-4 w-4" />
-            ) : (
-              <Gamepad2 className="mr-2 h-4 w-4" />
-            )
-          ) : Object.keys(game.download_links || {}).includes("gofile") ? (
-            <Zap className="mr-2 h-4 w-4" />
-          ) : (
-            <Download className="mr-2 h-4 w-4" />
-          )}
           {isLoading
             ? t("gameCard.loading")
             : needsUpdate
@@ -257,6 +252,19 @@ const GameCard = memo(function GameCard({ game, compact }) {
               : isInstalled
                 ? t("gameCard.installed")
                 : t("gameCard.download")}
+          {isLoading ? (
+            <Loader className="ml-2 h-4 w-4 animate-spin" />
+          ) : isInstalled ? (
+            needsUpdate ? (
+              <ArrowUpFromLine className="ml-2 h-4 w-4 stroke-[3]" />
+            ) : (
+              <Gamepad2 className="ml-2 h-4 w-4" />
+            )
+          ) : Object.keys(game.download_links || {}).includes("gofile") ? (
+            <Zap fill="currentColor" className="ml-2 h-3.5 w-3.5" />
+          ) : (
+            <ArrowBigDown fill="currentColor" className="ml-2 h-4 w-4" />
+          )}
         </Button>
       </CardFooter>
     </Card>

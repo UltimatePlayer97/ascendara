@@ -1270,8 +1270,8 @@ export default function DownloadPage() {
                   >
                     {isStartingDownload ? (
                       <>
-                        <Loader className="mr-2 h-4 w-4 animate-spin" />
                         {t("download.sendingTorrent")}
+                        <Loader className="ml-2 h-4 w-4 animate-spin" />
                       </>
                     ) : (
                       t("download.downloadOptions.downloadTorrent")
@@ -1286,7 +1286,8 @@ export default function DownloadPage() {
                 <div className="flex w-full items-center justify-between">
                   <h2 className="flex items-center gap-2 text-xl font-semibold">
                     <span className="flex items-center gap-1">
-                      Seamless <Zap className="h-5 w-5 text-primary" />
+                      Seamless{" "}
+                      <Zap fill="currentColor" className="h-5 w-5 text-primary" />
                     </span>
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
                       (GoFile <BadgeCheckIcon className="h-4 w-4" />)
@@ -1320,19 +1321,16 @@ export default function DownloadPage() {
                   >
                     {isStartingDownload ? (
                       <>
-                        <Loader className="mr-2 h-5 w-5 animate-spin" />
                         {t("download.downloadOptions.downloading")}
+                        <Loader className="ml-2 h-5 w-5 animate-spin" />
                       </>
                     ) : gameData.isUpdating ? (
                       <>
-                        <ArrowUpFromLine className="mr-2 h-5 w-5" />
                         {t("gameCard.update")}
+                        <ArrowUpFromLine className="ml-2 h-5 w-5 stroke-[3]" />
                       </>
                     ) : (
-                      <>
-                        <Download className="mr-2 h-5 w-5" />
-                        {t("download.downloadOptions.downloadNow")}
-                      </>
+                      <>{t("download.downloadOptions.downloadNow")}</>
                     )}
                   </Button>
                 </div>
@@ -1608,8 +1606,8 @@ export default function DownloadPage() {
                           >
                             {isStartingDownload ? (
                               <>
-                                <Loader className="mr-2 h-5 w-5 animate-spin" />
                                 {t("download.downloadOptions.downloading")}
+                                <Loader className="ml-2 h-5 w-5 animate-spin" />
                               </>
                             ) : (
                               <>{t("download.downloadOptions.downloadNow")}</>
@@ -2036,7 +2034,13 @@ export default function DownloadPage() {
             >
               {t("common.cancel")}
             </Button>
-            <Button className="text-secondary" onClick={() => handleDownload()}>
+            <Button
+              className="text-secondary"
+              onClick={() => {
+                setShowUpdatePrompt(false);
+                handleDownload();
+              }}
+            >
               {t("common.ok")}
             </Button>
           </AlertDialogFooter>
@@ -2090,9 +2094,13 @@ export default function DownloadPage() {
             ))}
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-foreground">
+            <Button
+              variant="outline"
+              className="text-primary"
+              onClick={() => setShowSelectPath(false)}
+            >
               {t("common.cancel")}
-            </AlertDialogCancel>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
