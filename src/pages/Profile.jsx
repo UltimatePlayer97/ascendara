@@ -14,10 +14,8 @@ import {
   Archive,
   FileDown,
   Trash2,
-  HelpCircle,
   Upload,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
@@ -73,29 +71,30 @@ const Profile = () => {
     let totalPlaytime = 0;
 
     allGames.forEach(game => {
-      // Base XP for having the game - reduced to make progression more balanced
-      let gameXP = 50; // Base XP for each game
+      // Increased base XP for each game
+      let gameXP = 100; // Base XP for each game
 
-      // XP from playtime - more reasonable scaling
+      // Increased XP from playtime
       const playtimeHours = (game.playTime || 0) / 3600;
-      gameXP += Math.floor(playtimeHours * 25); // 25 XP per hour of playtime
+      gameXP += Math.floor(playtimeHours * 50); // 50 XP per hour of playtime
 
-      // XP from launches - smaller contribution
-      gameXP += Math.min((game.launchCount || 0) * 5, 50);
+      // Increased XP from launches
+      gameXP += Math.min((game.launchCount || 0) * 10, 100);
 
-      // Bonus XP for completed games
+      // Increased bonus XP for completed games
       if (game.completed) {
-        gameXP += 75; // Bonus XP for completing a game
+        gameXP += 150; // Bonus XP for completing a game
       }
 
       totalXP += gameXP;
       totalPlaytime += game.playTime || 0;
     });
 
-    // Add milestone bonuses based on total playtime - reduced to prevent excessive XP
+    // Add milestone bonuses based on total playtime - easier milestones
     const totalPlaytimeHours = totalPlaytime / 3600;
 
-    // Milestone bonuses for reaching certain playtime thresholds
+    // New milestone bonuses for reaching certain playtime thresholds
+    if (totalPlaytimeHours >= 25) totalXP += 100;
     if (totalPlaytimeHours >= 50) totalXP += 200;
     if (totalPlaytimeHours >= 100) totalXP += 300;
     if (totalPlaytimeHours >= 200) totalXP += 500;
@@ -105,15 +104,12 @@ const Profile = () => {
     // Using a common RPG-style formula where each level requires a bit more XP than the last
     // but the curve is much gentler
 
-    // Base XP needed for level 2
-    const baseXP = 100;
+    // Base XP needed for level 2 (lowered)
+    const baseXP = 50;
 
-    // Calculate level directly from total XP using a formula
-    // This formula creates a curve where early levels are easy to get
-    // and higher levels require progressively more XP, but not exponentially more
-
-    // Ensure we never go below level 1, even with 0 XP
-    let level = Math.max(1, Math.floor(1 + Math.sqrt(totalXP / baseXP)));
+    // Calculate level directly from total XP using a gentler formula
+    // Multiplied by 1.5 for faster leveling
+    let level = Math.max(1, Math.floor(1 + Math.sqrt(totalXP / baseXP) * 1.5));
 
     // Cap at level 999
     level = Math.min(level, 999);
