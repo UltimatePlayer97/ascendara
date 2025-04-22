@@ -14,9 +14,13 @@
       "update": "Update Now"
     },
     "crashScreen": {
+      "checkConnection": "Check your internet connection",
+      "clearCache": "Clear your browser cache and cookies",
+      "contactSupport": "If the issue persists, please report it to support",
       "description": "Ascendara did not like what just happened. No worries, if you have analytics enabled this error has been tracked and the developer will get this fixed.",
       "reload": "Reload Ascendara",
-      "title": "Oh no..."
+      "title": "Oh no...",
+      "troubleshooting": "Try these steps to resolve the issue:"
     },
     "downloading-update": "Downloading Update...",
     "experiment": "EXPERIMENTAL",
@@ -281,6 +285,10 @@
       "reportFailed": "Failed to submit report",
       "reportSubmitted": "Report submitted successfully",
       "torrentSent": "Torrent sent to qBittorrent"
+    },
+    "update": {
+      "description": "This will reinstall the game in the same directory. While most games save data in separate locations, it is recommended to back up any important save files or custom content before proceeding with the update.",
+      "title": "Ready to update {{game}}?"
     }
   },
   "downloads": {
@@ -441,8 +449,8 @@
     "topGames": "Top Games"
   },
   "library": {
-    "addGame": "Add Game",
-    "addGameDescription1": "Add your own game to your library.",
+    "addGame": "Add to Library",
+    "addGameDescription1": "Add your own games or import from Steam.",
     "addGameDescription2": "Add a game to your Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
     "addToFavorites": "Add to Favorites",
     "alreadyRunning": "{{game}} is already running",
@@ -494,6 +502,7 @@
     "cannotRunDev": "Cannot run games in developer mode",
     "cannotVerifyFiles": "Cannot verify game files",
     "changeExecutable": "Change Executable",
+    "chooseDirectory": "Choose Directory",
     "chooseExecutableFile": "Choose executable file...",
     "confirmDelete": "Woah!",
     "coverSearchError": "Error searching for image",
@@ -519,6 +528,9 @@
       "version": "Game Version",
       "vrGame": "Virtual Reality Game"
     },
+    "import": "Import",
+    "importSteamGames": "Import Steam Games",
+    "importSteamGamesDescription": "Choose the steamapps directory you want to import in and Ascendara will import all the games in that directory. Online, DLC, version tags and other metadata will all be skipped while adding the games.",
     "includesAllDLCs": "Includes All DLCs",
     "launchError": "Launch Error",
     "launchErrorMessage": "Failed to run {{game}}. Sometimes game executables are not named the same as the game name. Please make sure Ascendara is trying to run the correct file.",
@@ -569,6 +581,7 @@
     },
     "steamNotRunning": "Steam is not running",
     "steamNotRunningMessage": "Online-Fix games require Steam to be running. Please start Steam and make sure you're signed into your account then launch the game again.",
+    "steamappsDirectory": "Directory to Import",
     "verifyGameFiles": "Verify Game Files",
     "version": "Version",
     "versionPlaceholder": "e.g., 1.0.0",

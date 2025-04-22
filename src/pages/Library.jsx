@@ -21,6 +21,7 @@ import {
   Tag,
   PackageOpen,
   Loader,
+  Import,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -771,6 +772,24 @@ InstalledGameCard.displayName = "InstalledGameCard";
 
 const AddGameForm = ({ onSuccess }) => {
   const { t } = useLanguage();
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [steamappsDirectory, setSteamappsDirectory] = useState("");
+
+  // Handler for directory picking
+  const handleChooseSteamappsDirectory = async () => {
+    const dir = await window.electron.openDirectoryDialog();
+    if (dir) setSteamappsDirectory(dir);
+  };
+
+  // Handler for import action (to be implemented)
+  const handleImportSteamGames = () => {
+    // TODO: Implement import logic
+    // Example placeholder:
+    // await importSteamGames(steamappsDirectory);
+    setShowImportDialog(false);
+    setSteamappsDirectory("");
+  };
+
   const [formData, setFormData] = useState({
     executable: "",
     name: "",
@@ -862,6 +881,73 @@ const AddGameForm = ({ onSuccess }) => {
               {formData.executable || t("library.chooseExecutableFile")}
             </span>
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start truncate bg-background text-left font-normal text-primary hover:bg-accent"
+            onClick={() => setShowImportDialog(true)}
+          >
+            <Import className="mr-2 h-4 w-4 flex-shrink-0" />
+            <span>{t("library.importSteamGames")}</span>
+          </Button>
+
+          {/* Import Steam Games Dialog */}
+          <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                  {t("library.importSteamGames")}
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-foreground">
+                  {t("library.importSteamGamesDescription")}{" "}
+                  <a
+                    className="cursor-pointer text-primary hover:underline"
+                    onClick={() => window.electron.openURL("https://ascendara.app/docs")}
+                  >
+                    {t("common.learnMore")}{" "}
+                    <ExternalLink className="mb-1 inline-block h-3 w-3" />
+                  </a>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-2">
+                <Label htmlFor="steamapps-directory" className="text-foreground">
+                  {t("library.steamappsDirectory")}
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="steamapps-directory"
+                    value={steamappsDirectory}
+                    readOnly
+                    className="flex-1 border-input bg-background text-foreground"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleChooseSteamappsDirectory}
+                    className="bg-primary text-secondary"
+                  >
+                    {t("library.chooseDirectory")}
+                  </Button>
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  onClick={() => setSteamappsDirectory("")}
+                  className="text-primary"
+                >
+                  {t("common.cancel")}
+                </AlertDialogCancel>
+                <Button
+                  type="button"
+                  onClick={handleImportSteamGames}
+                  disabled={!steamappsDirectory}
+                  className="bg-primary text-secondary"
+                >
+                  {t("library.import")}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <div className="space-y-2">
