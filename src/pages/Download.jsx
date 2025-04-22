@@ -1282,15 +1282,15 @@ export default function DownloadPage() {
             </div>
           ) : selectedProvider === "gofile" ? (
             <div className="mx-auto max-w-xl">
-              <div className="flex flex-col items-center space-y-8 py-2">
+              <div className="flex flex-col items-center space-y-8 py-6">
                 <div className="flex w-full items-center justify-between">
                   <h2 className="flex items-center gap-2 text-xl font-semibold">
                     <span className="flex items-center gap-1">
                       Seamless{" "}
-                      <Zap fill="currentColor" className="h-5 w-5 text-primary" />
+                      <Zap fill="currentColor" className="h-4 w-4 text-primary" />
                     </span>
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      (GoFile <BadgeCheckIcon className="h-4 w-4" />)
+                      ( GoFile <BadgeCheckIcon className="h-3.5 w-3.5" />)
                     </span>
                   </h2>
                   <Button
@@ -1334,10 +1334,6 @@ export default function DownloadPage() {
                     )}
                   </Button>
                 </div>
-
-                <p className="text-muted-foreground">
-                  {t("download.downloadOptions.gofileInstructions.action")}
-                </p>
               </div>
             </div>
           ) : (
@@ -1405,18 +1401,6 @@ export default function DownloadPage() {
                                 >
                                   <div className="flex items-center gap-2">
                                     {displayName}
-                                    {isVerified && (
-                                      <TooltipProvider>
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <BadgeCheckIcon className="h-4 w-4 text-primary" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>Verified Provider</p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </TooltipProvider>
-                                    )}
                                   </div>
                                 </SelectItem>
                               );
@@ -1587,75 +1571,21 @@ export default function DownloadPage() {
                 )}
                 {selectedProvider ? (
                   <div>
-                    {selectedProvider === "gofile" ? (
-                      <div className="mt-8 flex flex-col items-center justify-center space-y-6">
-                        <div className="max-w-md space-y-2 text-center">
-                          <h2 className="text-2xl font-semibold">
-                            {t("download.downloadOptions.gofileInstructions.thanks")}
-                          </h2>
-                          <p className="text-muted-foreground">
-                            {t("download.downloadOptions.gofileInstructions.description")}
-                          </p>
-                        </div>
-
-                        <div className="w-full max-w-sm">
-                          <Button
-                            onClick={() => whereToDownload()}
-                            disabled={isStartingDownload || !gameData}
-                            className="h-12 w-full text-lg text-secondary"
-                          >
-                            {isStartingDownload ? (
-                              <>
-                                {t("download.downloadOptions.downloading")}
-                                <Loader className="ml-2 h-5 w-5 animate-spin" />
-                              </>
-                            ) : (
-                              <>{t("download.downloadOptions.downloadNow")}</>
-                            )}
-                          </Button>
-                        </div>
-
-                        <div className="text-center text-muted-foreground">
-                          <p>{t("download.downloadOptions.gofileInstructions.action")}</p>
-                        </div>
-                      </div>
+                    {useAscendara ? (
+                      <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground">
+                        <li>{t("download.downloadOptions.handlerInstructions.step1")}</li>
+                        <li>{t("download.downloadOptions.handlerInstructions.step2")}</li>
+                        <li>{t("download.downloadOptions.handlerInstructions.step3")}</li>
+                      </ol>
                     ) : (
-                      <div>
-                        {useAscendara ? (
-                          <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground">
-                            <li>
-                              {t("download.downloadOptions.handlerInstructions.step1")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.handlerInstructions.step2")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.handlerInstructions.step3")}
-                            </li>
-                          </ol>
-                        ) : (
-                          <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground">
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step1")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step2")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step3")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step4")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step5")}
-                            </li>
-                            <li>
-                              {t("download.downloadOptions.manualInstructions.step6")}
-                            </li>
-                          </ol>
-                        )}
-                      </div>
+                      <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground">
+                        <li>{t("download.downloadOptions.manualInstructions.step1")}</li>
+                        <li>{t("download.downloadOptions.manualInstructions.step2")}</li>
+                        <li>{t("download.downloadOptions.manualInstructions.step3")}</li>
+                        <li>{t("download.downloadOptions.manualInstructions.step4")}</li>
+                        <li>{t("download.downloadOptions.manualInstructions.step5")}</li>
+                        <li>{t("download.downloadOptions.manualInstructions.step6")}</li>
+                      </ol>
                     )}
                   </div>
                 ) : (

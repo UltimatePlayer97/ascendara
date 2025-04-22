@@ -2,15 +2,7 @@ import React, { useState, memo, useCallback, useEffect, useMemo, useRef } from "
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Download,
-  Gift,
-  Gamepad2,
-  Zap,
-  Loader,
-  ArrowUpFromLine,
-  ArrowBigDown,
-} from "lucide-react";
+import { Gift, Gamepad2, Zap, Loader, ArrowUpFromLine, ArrowDown } from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -258,12 +250,12 @@ const GameCard = memo(function GameCard({ game, compact }) {
             needsUpdate ? (
               <ArrowUpFromLine className="ml-2 h-4 w-4 stroke-[3]" />
             ) : (
-              <Gamepad2 className="ml-2 h-4 w-4" />
+              <Gamepad2 className="ml-2 h-3 w-3" />
             )
           ) : Object.keys(game.download_links || {}).includes("gofile") ? (
-            <Zap fill="currentColor" className="ml-2 h-3.5 w-3.5" />
+            <Zap fill="currentColor" className="ml-2 h-3 w-3" />
           ) : (
-            <ArrowBigDown fill="currentColor" className="ml-2 h-4 w-4" />
+            <ArrowDown className="ml-2 h-3.5 w-3.5 stroke-[4]" />
           )}
         </Button>
       </CardFooter>
