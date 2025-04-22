@@ -233,7 +233,7 @@ const Library = () => {
     });
   };
 
-  const searchGameCovers = async query => {
+  const searchGameCovers = React.useCallback(async query => {
     if (!query.trim()) {
       setCoverSearchResults([]);
       return;
@@ -260,15 +260,14 @@ const Library = () => {
     } finally {
       setIsCoverSearchLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       searchGameCovers(coverSearchQuery);
     }, 300);
-
     return () => clearTimeout(debounceTimer);
-  }, [coverSearchQuery, searchGameCovers]); // Add searchGameCovers dependency
+  }, [coverSearchQuery, searchGameCovers]);
 
   if (loading) {
     return (
