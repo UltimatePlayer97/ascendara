@@ -4,7 +4,9 @@
 class ImageCacheService {
   constructor() {
     // Core caching
-    this.memoryCache = new Map();
+    this.memoryCache = new Map(); // imgID -> url
+    this.memoryCacheOrder = []; // LRU order
+    this.maxMemoryCacheSize = 100;
     this.db = null;
     this.isInitialized = false;
     this.initPromise = null;
@@ -13,7 +15,7 @@ class ImageCacheService {
 
     // Request management
     this.activeRequests = new Map();
-    this.maxConcurrentRequests = 4;
+    this.maxConcurrentRequests = 8; // Increased for faster image loads
     this.retryDelay = 2000;
     this.maxRetries = 2;
 
@@ -105,15 +107,24 @@ class ImageCacheService {
     }
   }
 
+  /**
+   * Get image URL for given imgID. Uses LRU memory cache, IndexedDB, and deduplication.
+   * If the image is requested multiple times concurrently, all requests await the same promise.
+   */
   async getImage(imgID) {
     if (!imgID) return null;
 
     // Wait for initialization
     await this.initPromise;
 
-    // Check memory cache first
+    // Check memory cache first (LRU)
     if (this.memoryCache.has(imgID)) {
-      console.log(`[ImageCache] Hit memory cache for ${imgID}`);
+      // Move to most recently used
+      this.memoryCacheOrder = this.memoryCacheOrder.filter(id => id !== imgID);
+      this.memoryCacheOrder.push(imgID);
+      // Logging for cache hit
+      console.debug(`[ImageCache] Memory cache HIT for ${imgID}`);
+      // Return cached URL
       return this.memoryCache.get(imgID);
     }
 
@@ -122,9 +133,10 @@ class ImageCacheService {
       try {
         const cachedImage = await this.getFromIndexedDB(imgID);
         if (cachedImage) {
-          console.log(`[ImageCache] Hit IndexedDB cache for ${imgID}`);
           const url = URL.createObjectURL(cachedImage);
-          this.memoryCache.set(imgID, url);
+          this._setMemoryCache(imgID, url);
+          // Logging for IndexedDB hit
+          console.debug(`[ImageCache] IndexedDB cache HIT for ${imgID}`);
           return url;
         }
       } catch (error) {
@@ -134,23 +146,38 @@ class ImageCacheService {
 
     // If already being loaded, return the existing promise
     if (this.activeRequests.has(imgID)) {
-      console.log(`[ImageCache] Already loading ${imgID}`);
       return this.activeRequests.get(imgID);
     }
 
     // Start loading
-    console.log(`[ImageCache] Fetching ${imgID} from network`);
+    // Logging for cache miss (network fetch)
+    console.debug(`[ImageCache] Cache MISS for ${imgID}, fetching from network`);
     const loadPromise = this.loadImage(imgID);
     this.activeRequests.set(imgID, loadPromise);
 
     try {
       const result = await loadPromise;
+      this._setMemoryCache(imgID, result);
       return result;
     } catch (error) {
-      console.error(`[ImageCache] Error loading image ${imgID}:`, error);
-      return null;
+      this.activeRequests.delete(imgID);
+      throw error;
     } finally {
       this.activeRequests.delete(imgID);
+    }
+  }
+
+  _setMemoryCache(imgID, url) {
+    this.memoryCache.set(imgID, url);
+    this.memoryCacheOrder = this.memoryCacheOrder.filter(id => id !== imgID);
+    this.memoryCacheOrder.push(imgID);
+    if (this.memoryCacheOrder.length > this.maxMemoryCacheSize) {
+      const oldest = this.memoryCacheOrder.shift();
+      if (oldest) {
+        const oldUrl = this.memoryCache.get(oldest);
+        if (oldUrl) URL.revokeObjectURL(oldUrl);
+        this.memoryCache.delete(oldest);
+      }
     }
   }
 
@@ -175,21 +202,17 @@ class ImageCacheService {
           "Cache-Control": "no-store",
         },
       });
-
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-
       // Cache the result
-      this.memoryCache.set(imgID, url);
-
+      this._setMemoryCache(imgID, url);
       // Save to IndexedDB in the background if available
       if (this.db) {
         this.saveToIndexedDB(imgID, blob).catch(error => {
           console.warn(`[ImageCache] Failed to save image ${imgID} to IndexedDB:`, error);
         });
       }
-
       return url;
     } catch (error) {
       if (retryCount < this.maxRetries) {

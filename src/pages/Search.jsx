@@ -101,40 +101,74 @@ const Search = memo(() => {
     );
   }, []);
 
-  const fuzzyMatch = (text, query) => {
-    if (!text || !query) return false;
-    text = text.toLowerCase();
-    query = query.toLowerCase();
+  const useDebouncedValue = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
 
-    // Split query into words and check if each word matches
-    const queryWords = query.split(/\s+/).filter(word => word.length > 0);
-    if (queryWords.length === 0) return false;
+    useEffect(() => {
+      const timer = setTimeout(() => setDebouncedValue(value), delay);
+      return () => clearTimeout(timer);
+    }, [value, delay]);
 
-    return queryWords.every(queryWord => {
-      // Check for exact number matches first
-      if (/\d/.test(queryWord)) {
-        return text.includes(queryWord);
+    return debouncedValue;
+  };
+
+  const fuzzyMatch = useMemo(() => {
+    const cache = new Map();
+
+    return (text, query) => {
+      if (!text || !query) return false;
+
+      const cacheKey = `${text.toLowerCase()}-${query.toLowerCase()}`;
+      if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+      text = text.toLowerCase();
+      query = query.toLowerCase();
+
+      // Direct substring match for better performance
+      if (text.includes(query)) {
+        cache.set(cacheKey, true);
+        return true;
       }
 
-      const words = text.split(/\s+/);
-      return words.some(word => {
-        // For words containing numbers, require exact substring match
-        if (/\d/.test(word)) {
-          return word.includes(queryWord);
-        }
+      const queryWords = query.split(/\s+/).filter(word => word.length > 0);
+      if (queryWords.length === 0) {
+        cache.set(cacheKey, false);
+        return false;
+      }
 
-        // For regular words, use fuzzy matching
-        if (word.includes(queryWord)) return true;
-        let matches = 0;
-        const uniqueChars = [...new Set(queryWord)];
-        uniqueChars.forEach(char => {
-          if (word.includes(char)) matches++;
+      const result = queryWords.every(queryWord => {
+        if (/\d/.test(queryWord)) return text.includes(queryWord);
+
+        const words = text.split(/\s+/);
+        return words.some(word => {
+          if (/\d/.test(word)) return word.includes(queryWord);
+          if (word.includes(queryWord)) return true;
+
+          // Optimize character matching
+          let matches = 0;
+          let lastIndex = -1;
+
+          for (const char of queryWord) {
+            const index = word.indexOf(char, lastIndex + 1);
+            if (index > lastIndex) {
+              matches++;
+              lastIndex = index;
+            }
+          }
+
+          return matches >= queryWord.length * 0.8;
         });
-
-        return matches >= queryWord.length * 0.8;
       });
-    });
-  };
+
+      cache.set(cacheKey, result);
+      if (cache.size > 1000) {
+        // Clear cache if it gets too large
+        const keys = Array.from(cache.keys());
+        keys.slice(0, 100).forEach(key => cache.delete(key));
+      }
+      return result;
+    };
+  }, []);
 
   const refreshGames = useCallback(
     async (forceRefresh = false) => {
@@ -238,82 +272,91 @@ const Search = memo(() => {
     return () => stopStatusCheck();
   }, []);
 
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
+
   const filteredGames = useMemo(() => {
-    if (!games) return [];
+    if (!games?.length) return [];
 
-    let filtered = [...games];
-
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter(game => {
-        const gameTitle = game.game.toLowerCase();
-        const gameDesc = (game.desc || "").toLowerCase();
-        return fuzzyMatch(gameTitle + " " + gameDesc, searchQuery);
-      });
-    }
-
-    // Apply category filter
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter(game =>
-        selectedCategories.every(category => game.category?.includes(category))
-      );
-    }
-
-    // Apply DLC and Online filters
-    if (showDLC || showOnline) {
-      filtered = filtered.filter(game => {
-        if (showDLC && showOnline) return game.dlc || game.online;
-        if (showDLC) return game.dlc;
-        if (showOnline) return game.online;
-        return true;
-      });
-    }
-
-    // Apply online filter from radio buttons
-    if (onlineFilter !== "all") {
-      filtered = filtered.filter(game => {
-        if (onlineFilter === "online") return game.online;
-        if (onlineFilter === "offline") return !game.online;
-        return true;
-      });
-    }
-
-    // Apply source filter
+    // Create a fast lookup for categories
+    const categorySet = new Set(selectedCategories);
     const source = settings?.gameSource || "steamrip";
-    if (source === "fitgirl") {
-      // For fitgirl, show all games without additional filtering
-      return filtered;
-    }
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (selectedSort) {
-        case "weight":
-          return parseInt(b.weight || 0) - parseInt(a.weight || 0);
-        case "weight-asc":
-          return parseInt(a.weight || 0) - parseInt(b.weight || 0);
-        case "name":
-          return a.game.localeCompare(b.game);
-        case "name-desc":
-          return b.game.localeCompare(a.game);
-        default:
-          return 0;
+    // Pre-compute filter conditions
+    const hasCategories = categorySet.size > 0;
+    const hasContentFilters = showDLC || showOnline;
+    const hasOnlineFilter = onlineFilter !== "all";
+    const isFitGirl = source === "fitgirl";
+
+    // Apply all filters in a single pass
+    const filtered = games.filter(game => {
+      // Search filter
+      if (debouncedSearchQuery) {
+        const gameTitle = game.game;
+        const gameDesc = game.desc || "";
+        if (!fuzzyMatch(gameTitle + " " + gameDesc, debouncedSearchQuery)) {
+          return false;
+        }
       }
+
+      // Category filter
+      if (hasCategories && !game.category?.some(cat => categorySet.has(cat))) {
+        return false;
+      }
+
+      // Content filters (DLC/Online)
+      if (hasContentFilters) {
+        if (showDLC && showOnline) {
+          if (!game.dlc && !game.online) return false;
+        } else if (showDLC && !game.dlc) {
+          return false;
+        } else if (showOnline && !game.online) {
+          return false;
+        }
+      }
+
+      // Online filter
+      if (hasOnlineFilter) {
+        if (onlineFilter === "online" && !game.online) return false;
+        if (onlineFilter === "offline" && game.online) return false;
+      }
+
+      return true;
     });
 
-    return filtered;
+    // Skip sorting for FitGirl source
+    if (isFitGirl) return filtered;
+
+    // Optimize sorting
+    const sortFn = (() => {
+      switch (selectedSort) {
+        case "weight":
+          return (a, b) => (b.weight || 0) - (a.weight || 0);
+        case "weight-asc":
+          return (a, b) => (a.weight || 0) - (b.weight || 0);
+        case "name":
+          return (a, b) => a.game.localeCompare(b.game);
+        case "name-desc":
+          return (a, b) => b.game.localeCompare(a.game);
+        default:
+          return null;
+      }
+    })();
+
+    return sortFn ? [...filtered].sort(sortFn) : filtered;
   }, [
     games,
-    searchQuery,
+    debouncedSearchQuery,
     selectedCategories,
     onlineFilter,
     selectedSort,
     settings?.gameSource,
     showDLC,
     showOnline,
+    fuzzyMatch,
   ]);
 
   useEffect(() => {
+    // Initialize with first batch of games
     setDisplayedGames(filteredGames.slice(0, gamesPerLoad));
     setHasMore(filteredGames.length > gamesPerLoad);
   }, [filteredGames, gamesPerLoad]);
@@ -323,23 +366,26 @@ const Search = memo(() => {
 
     setIsLoadingMore(true);
     const currentLength = displayedGames.length;
-    const nextGames = filteredGames.slice(currentLength, currentLength + gamesPerLoad);
+    const nextBatch = filteredGames.slice(currentLength, currentLength + gamesPerLoad);
 
-    setTimeout(() => {
-      setDisplayedGames(prev => [...prev, ...nextGames]);
+    requestAnimationFrame(() => {
+      setDisplayedGames(prev => [...prev, ...nextBatch]);
       setHasMore(currentLength + gamesPerLoad < filteredGames.length);
       setIsLoadingMore(false);
-    }, 500);
+    });
   }, [displayedGames.length, filteredGames, gamesPerLoad, hasMore, isLoadingMore]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !isLoadingMore && hasMore) {
           loadMore();
         }
       },
-      { threshold: 0.1 }
+      {
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
     );
 
     if (loaderRef.current) {
@@ -347,7 +393,7 @@ const Search = memo(() => {
     }
 
     return () => observer.disconnect();
-  }, [loadMore]);
+  }, [loadMore, isLoadingMore, hasMore]);
 
   const handleDownload = async game => {
     try {
