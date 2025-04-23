@@ -14,9 +14,13 @@
       "update": "Actualización ahora"
     },
     "crashScreen": {
+      "checkConnection": "Revise su conexión a Internet",
+      "clearCache": "Borrar el caché y las cookies de su navegador",
+      "contactSupport": "Si el problema persiste, informe para apoyar",
       "description": "ASCENDARA no le gustó lo que acaba de pasar. No se preocupe, si tiene análisis habilitados, este error ha sido rastreado y el desarrollador lo arreglará.",
       "reload": "Recargar ascendara",
-      "title": "Oh, no..."
+      "title": "Oh, no...",
+      "troubleshooting": "Pruebe estos pasos para resolver el problema:"
     },
     "downloading-update": "Descargar actualización ...",
     "experiment": "EXPERIMENTAL",
@@ -90,6 +94,7 @@
     "library": "Biblioteca",
     "next": "Próximo",
     "ok": "DE ACUERDO",
+    "page": "Estás viendo la página",
     "preferences": "Preferencias",
     "prev": "Anterior",
     "profile": "Perfil",
@@ -281,6 +286,10 @@
       "reportFailed": "No se pudo enviar el informe",
       "reportSubmitted": "Informe presentado con éxito",
       "torrentSent": "Torrent enviado a Qbittorrent"
+    },
+    "update": {
+      "description": "Esto reinstalará el juego en el mismo directorio. Si bien la mayoría de los juegos guardan datos en ubicaciones separadas, se recomienda hacer una copia de seguridad de cualquier archivo de guardado importante o contenido personalizado antes de continuar con la actualización.",
+      "title": "Listo para actualizar {{game}}?"
     }
   },
   "downloads": {
@@ -440,8 +449,8 @@
     "topGames": "Juegos superiores"
   },
   "library": {
-    "addGame": "Agregar juego",
-    "addGameDescription1": "Agrega tu propio juego a tu biblioteca.",
+    "addGame": "Agregar a la biblioteca",
+    "addGameDescription1": "Agregue sus propios juegos o importe de Steam.",
     "addGameDescription2": "Agregue un juego a su biblioteca Ascendara para iniciarlo fácilmente y rastrear el tiempo de juego. No se modificarán archivos al agregar un juego.",
     "addToFavorites": "Agregar a los favoritos",
     "alreadyRunning": "{{game}} ya se está ejecutando",
@@ -492,7 +501,9 @@
     "calculatingSize": "Calculador...",
     "cannotRunDev": "No se puede ejecutar juegos en modo desarrollador",
     "cannotVerifyFiles": "No se puede verificar archivos de juego",
+    "changeCoverImage": "Cambiar imagen de portada",
     "changeExecutable": "Cambiar ejecutable",
+    "chooseDirectory": "Elija directorio",
     "chooseExecutableFile": "Elija el archivo ejecutable ...",
     "confirmDelete": "¡Woah!",
     "coverSearchError": "Error en busca de imagen",
@@ -504,6 +515,11 @@
     "enterMoreChars": "Los resultados de la imagen aparecerán aquí mientras escribe",
     "executable": "Ejecutable",
     "executableNotFound": "Ejecutable del juego no encontrado",
+    "filters": {
+      "favorites": "Favoritos",
+      "onlineGames": "Juegos en línea",
+      "vrGames": "Juegos de realidad virtual"
+    },
     "gameName": "Nombre del juego",
     "gamesInLibrary": "Total Juegos",
     "gamesSpace": "Juegos instalados",
@@ -518,6 +534,16 @@
       "version": "Versión de juego",
       "vrGame": "Juego de realidad virtual"
     },
+    "igdbKeysRequired": "Configurar IGDB en preferencias",
+    "import": "Importar",
+    "importFailedDesc": "Hubo un problema para importar tus juegos de Steam. Vuelva a intentarlo o consulte su directorio.",
+    "importFailedTitle": "Importación fallida",
+    "importSteamGames": "Importar juegos de Steam",
+    "importSteamGamesDescription": "Elija el directorio SteamApps en el que desea importar y Ascendara importará todos los juegos en ese directorio. En línea, DLC, etiquetas de versión y otros metadatos se omitirán al agregar los juegos.",
+    "importSuccessDesc": "Tus juegos de Steam se han importado con éxito. Algunas portadas de juego junto con rutas ejecutables pueden faltar o incorrectas, puede solucionar esto actualizando la información del juego.",
+    "importSuccessTitle": "Importar completa!",
+    "importingGames": "Importando juegos de Steam ...",
+    "importingGamesDesc": "Espere mientras se importan sus juegos de Steam. Esto puede tomar unos minutos dependiendo del tamaño de su biblioteca.",
     "includesAllDLCs": "Incluye todos los DLC",
     "launchError": "Error de lanzamiento",
     "launchErrorMessage": "No se pudo ejecutar {{game}}. A veces, los ejecutables de juegos no se nombran igual que el nombre del juego. Asegúrese de que Ascendara esté tratando de ejecutar el archivo correcto.",
@@ -555,6 +581,7 @@
     "removeFromFavorites": "Eliminar de los favoritos",
     "removeGameFromLibrary": "Eliminar de la biblioteca",
     "running": "Correr",
+    "searchForCoverImage": "Busque una imagen de portada para reemplazar la actual",
     "searchGameCover": "Buscar ascendara para una portada de imagen",
     "searchGameCoverNotice": "Las cubiertas se buscarán desde la fuente de vapor indexada actual.",
     "searchLibrary": "Busca en tus juegos ...",
@@ -562,12 +589,19 @@
     "shortcutCreated": "Atajo creado",
     "shortcutError": "Error a crear atajo. ¿Quizás la ruta ejecutable no existe?",
     "size": "Tamaño",
+    "sort": { "aToZ": "Ordenar A a Z", "zToA": "Ordena Z a un" },
     "spaceTooltip": {
       "games": "Espacio utilizado por los juegos de Ascendara: {{size}}",
       "other": "Espacio utilizado por otros archivos: {{size}}"
     },
     "steamNotRunning": "Steam no está funcionando",
     "steamNotRunningMessage": "Los juegos en línea fijo requieren que Steam se ejecute. Comience a Steam y asegúrese de que haya iniciado sesión en su cuenta y luego vuelva a iniciar el juego.",
+    "steamappsDirectory": "Directorio para importar",
+    "steamappsDirectoryMissingCommon": "El directorio seleccionado no contiene ningún juego. Seleccione el directorio 'Common` dentro del directorio SteamApps.",
+    "tools": {
+      "bulkRemove": "Eliminar juegos seleccionados",
+      "selected": "Multiselección está habilitada"
+    },
     "verifyGameFiles": "Verificar archivos de juego",
     "version": "Versión",
     "versionPlaceholder": "por ejemplo, 1.0.0",
@@ -951,7 +985,7 @@
     "stayUpToDate": "Mantenga a Ascendara al día",
     "takeTour": "Hacer el recorrido",
     "termsOfService": "Términos de servicio",
-    "theExtensionBlocksKnownProviders": "La extensión escucha las descargas de proveedores conocidos y los detiene antes de que comiencen en su navegador, luego enviándolo a Ascendara para descargar",
+    "theExtensionBlocksKnownProviders": "La extensión escucha descargas de proveedores conocidos y los detiene antes de comenzar en su navegador, luego enviándolas a Ascendara para descargar",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Aquí es donde se almacenarán todos sus juegos descargados",
     "welcomeTo": "Bienvenido",
     "welcomeToAscendaraDescription": "Ahora no tendrá que preocuparse por extraer, instalar o mover archivos. Antes de comenzar, lea y acepte términos de servicio y política de privacidad.",

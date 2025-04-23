@@ -14,9 +14,13 @@
       "update": "今すぐ更新してください"
     },
     "crashScreen": {
+      "checkConnection": "インターネット接続を確認してください",
+      "clearCache": "ブラウザのキャッシュとCookieをクリアします",
+      "contactSupport": "問題が続いている場合は、サポートするために報告してください",
       "description": "アセンダラは今起こったことが好きではありませんでした。このエラーが追跡され、開発者がこれを修正することを可能にした場合、心配はありません。",
       "reload": "アセンダラをリロードします",
-      "title": "なんてこった..."
+      "title": "なんてこった...",
+      "troubleshooting": "これらの手順を試して問題を解決してください。"
     },
     "downloading-update": "更新のダウンロード...",
     "experiment": "実験的",
@@ -90,6 +94,7 @@
     "library": "図書館",
     "next": "次",
     "ok": "わかりました",
+    "page": "あなたはページを表示しています",
     "preferences": "好み",
     "prev": "前の",
     "profile": "プロフィール",
@@ -281,6 +286,10 @@
       "reportFailed": "レポートの提出に失敗しました",
       "reportSubmitted": "正常に送信されたレポート",
       "torrentSent": "トレントはQbittorrentに送られました"
+    },
+    "update": {
+      "description": "これにより、同じディレクトリにゲームを再インストールします。ほとんどのゲームは別の場所にデータを保存しますが、更新を進める前に重要な保存ファイルまたはカスタムコンテンツをバックアップすることをお勧めします。",
+      "title": "{{game}}を更新する準備ができましたか？"
     }
   },
   "downloads": {
@@ -440,8 +449,8 @@
     "topGames": "トップゲーム"
   },
   "library": {
-    "addGame": "ゲームを追加します",
-    "addGameDescription1": "自分のゲームをライブラリに追加します。",
+    "addGame": "ライブラリに追加します",
+    "addGameDescription1": "独自のゲームを追加するか、Steamからインポートします。",
     "addGameDescription2": "Ascendaraライブラリにゲームを追加して簡単に起動し、プレイ時間を追跡します。ゲームを追加するときにファイルは変更されません。",
     "addToFavorites": "お気に入りに追加します",
     "alreadyRunning": "{{game}}はすでに実行されています",
@@ -492,7 +501,9 @@
     "calculatingSize": "計算...",
     "cannotRunDev": "開発者モードでゲームを実行できません",
     "cannotVerifyFiles": "ゲームファイルを確認できません",
+    "changeCoverImage": "カバー画像を変更します",
     "changeExecutable": "実行可能ファイルを変更します",
+    "chooseDirectory": "ディレクトリを選択します",
     "chooseExecutableFile": "実行可能ファイルを選択してください...",
     "confirmDelete": "うわー！",
     "coverSearchError": "画像の検索エラー",
@@ -504,6 +515,11 @@
     "enterMoreChars": "入力すると、画像の結果がここに表示されます",
     "executable": "実行可能",
     "executableNotFound": "ゲーム実行可能ファイルが見つかりません",
+    "filters": {
+      "favorites": "お気に入り",
+      "onlineGames": "オンラインゲーム",
+      "vrGames": "VRゲーム"
+    },
     "gameName": "ゲーム名",
     "gamesInLibrary": "合計ゲーム",
     "gamesSpace": "インストールされたゲーム",
@@ -518,6 +534,16 @@
       "version": "ゲームバージョン",
       "vrGame": "バーチャルリアリティゲーム"
     },
+    "igdbKeysRequired": "設定でIGDBをセットアップします",
+    "import": "輸入",
+    "importFailedDesc": "Steamゲームのインポートに問題がありました。再試行するか、ディレクトリを確認してください。",
+    "importFailedTitle": "インポートが失敗しました",
+    "importSteamGames": "スチームゲームをインポートします",
+    "importSteamGamesDescription": "インポートするSteamAppsディレクトリを選択すると、Ascendaraがそのディレクトリにすべてのゲームをインポートします。オンライン、DLC、バージョンタグ、その他のメタデータは、ゲームを追加してスキップされます。",
+    "importSuccessDesc": "スチームゲームは正常にインポートされています。一部のゲームカバーと実行可能パスが欠落しているか、間違っている可能性があります。これを修正して、ゲーム情報を更新できます。",
+    "importSuccessTitle": "完全にインポート！",
+    "importingGames": "スチームゲームのインポート...",
+    "importingGamesDesc": "スチームゲームがインポートされている間お待ちください。ライブラリのサイズに応じて、これには数分かかる場合があります。",
     "includesAllDLCs": "すべてのDLCが含まれています",
     "launchError": "起動エラー",
     "launchErrorMessage": "{{game}}の実行に失敗しました。ゲーム実行可能ファイルは、ゲーム名と同じ名前が付けられない場合があります。 Ascendaraが正しいファイルを実行しようとしていることを確認してください。",
@@ -555,6 +581,7 @@
     "removeFromFavorites": "お気に入りから取り外します",
     "removeGameFromLibrary": "ライブラリから取り外します",
     "running": "ランニング",
+    "searchForCoverImage": "カバー画像を検索して現在の画像を置き換える",
     "searchGameCover": "Ascendaraを検索して画像カバーをご覧ください",
     "searchGameCoverNotice": "カバーは、現在のインデックス付きSteamRipソースから検索されます。",
     "searchLibrary": "あなたのゲームを検索...",
@@ -562,12 +589,19 @@
     "shortcutCreated": "作成されたショートカット",
     "shortcutError": "ショートカットの作成エラー。たぶん実行可能パスは存在しませんか？",
     "size": "サイズ",
+    "sort": { "aToZ": "zをzに並べ替えます", "zToA": "zをaに並べ替えます" },
     "spaceTooltip": {
       "games": "Ascendara Gamesが使用するスペース：{{size}}",
       "other": "他のファイルが使用するスペース：{{size}}"
     },
     "steamNotRunning": "蒸気は走っていません",
     "steamNotRunningMessage": "オンラインフィックスゲームでは、Steamが実行される必要があります。 Steamを起動して、アカウントに署名されていることを確認してから、もう一度ゲームを開始してください。",
+    "steamappsDirectory": "インポートするディレクトリ",
+    "steamappsDirectoryMissingCommon": "選択したディレクトリにはゲームが含まれていません。 SteamAppsディレクトリ内の「Common」ディレクトリを選択してください。",
+    "tools": {
+      "bulkRemove": "選択したゲームを削除します",
+      "selected": "マルチセレクションが有効になっています"
+    },
     "verifyGameFiles": "ゲームファイルを確認します",
     "version": "バージョン",
     "versionPlaceholder": "たとえば、1.0.0",

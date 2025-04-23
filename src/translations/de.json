@@ -14,9 +14,13 @@
       "update": "Aktualisieren Sie jetzt"
     },
     "crashScreen": {
+      "checkConnection": "Überprüfen Sie Ihre Internetverbindung",
+      "clearCache": "Löschen Sie Ihren Browser -Cache und Cookies",
+      "contactSupport": "Wenn das Problem weiterhin besteht, melden Sie es bitte zur Unterstützung",
       "description": "Ascendara mochte nicht, was gerade passiert ist. Keine Sorge, wenn Sie Analysen aktiviert haben, wurde dieser Fehler verfolgt und der Entwickler wird dies behoben.",
       "reload": "Reload Ascendara neu laden",
-      "title": "Oh nein ..."
+      "title": "Oh nein ...",
+      "troubleshooting": "Versuchen Sie diese Schritte, um das Problem zu lösen:"
     },
     "downloading-update": "Update herunterladen ...",
     "experiment": "EXPERIMENTAL",
@@ -90,6 +94,7 @@
     "library": "Bibliothek",
     "next": "Nächste",
     "ok": "OK",
+    "page": "Sie sehen die Seite",
     "preferences": "Vorlieben",
     "prev": "Vorherige",
     "profile": "Profil",
@@ -281,6 +286,10 @@
       "reportFailed": "Versäumnis, Bericht einzureichen",
       "reportSubmitted": "Bericht erfolgreich eingereicht",
       "torrentSent": "Torrent an Qbittorrent gesendet"
+    },
+    "update": {
+      "description": "Dies wird das Spiel im selben Verzeichnis neu installieren. Während die meisten Spiele Daten an separaten Standorten speichern, wird empfohlen, wichtige Speichern von Dateien oder benutzerdefinierten Inhalten zu sichern, bevor Sie mit dem Update fortfahren.",
+      "title": "Bereit zu aktualisieren {{game}}?"
     }
   },
   "downloads": {
@@ -440,8 +449,8 @@
     "topGames": "Top -Spiele"
   },
   "library": {
-    "addGame": "Spiel hinzufügen",
-    "addGameDescription1": "Fügen Sie Ihr eigenes Spiel Ihrer Bibliothek hinzu.",
+    "addGame": "Zur Bibliothek hinzufügen",
+    "addGameDescription1": "Fügen Sie Ihre eigenen Spiele hinzu oder importieren Sie sie aus Steam.",
     "addGameDescription2": "Fügen Sie Ihrer Ascendara -Bibliothek ein Spiel hinzu, um es einfach zu starten und die Spielzeit zu verfolgen. Beim Hinzufügen eines Spiels werden keine Dateien geändert.",
     "addToFavorites": "Favoriten hinzufügen",
     "alreadyRunning": "{{game}} läuft bereits",
@@ -492,7 +501,9 @@
     "calculatingSize": "Berechnung ...",
     "cannotRunDev": "Im Entwicklermodus können Spiele nicht ausgeführt werden",
     "cannotVerifyFiles": "Spieldateien können nicht überprüfen",
+    "changeCoverImage": "Deckbild ändern",
     "changeExecutable": "Ändern Sie die ausführbare Datei",
+    "chooseDirectory": "Wählen Sie Verzeichnis",
     "chooseExecutableFile": "Wählen Sie ausführbare Datei ...",
     "confirmDelete": "Woah!",
     "coverSearchError": "Fehler bei der Suche nach Bild",
@@ -504,6 +515,11 @@
     "enterMoreChars": "Bildergebnisse werden hier beim Eingeben angezeigt",
     "executable": "Ausführbar",
     "executableNotFound": "Spiele ausführbar nicht gefunden",
+    "filters": {
+      "favorites": "Favoriten",
+      "onlineGames": "Online -Spiele",
+      "vrGames": "VR -Spiele"
+    },
     "gameName": "Spielname",
     "gamesInLibrary": "Gesamtspiele",
     "gamesSpace": "Installierte Spiele",
@@ -518,6 +534,16 @@
       "version": "Spielversion",
       "vrGame": "Virtual Reality -Spiel"
     },
+    "igdbKeysRequired": "Setup IGDB in Vorlieben einrichten",
+    "import": "Import",
+    "importFailedDesc": "Es gab ein Problem beim Importieren Ihrer Steam -Spiele. Bitte versuchen Sie es erneut oder überprüfen Sie Ihr Verzeichnis.",
+    "importFailedTitle": "Import fehlgeschlagen",
+    "importSteamGames": "Dampfspiele importieren",
+    "importSteamGamesDescription": "Wählen Sie das SteamApps -Verzeichnis, in dem Sie importieren möchten, und Ascendara importieren alle Spiele in diesem Verzeichnis. Online, DLC, Versions -Tags und andere Metadaten werden beim Hinzufügen der Spiele übersprungen.",
+    "importSuccessDesc": "Ihre Steam -Spiele wurden erfolgreich importiert. Einige Spielabdeckungen sowie ausführbare Pfade fehlen möglicherweise oder falsch. Sie können dies beheben, indem Sie die Spielinformationen aktualisieren.",
+    "importSuccessTitle": "Importieren!",
+    "importingGames": "Dampfspiele importieren ...",
+    "importingGamesDesc": "Bitte warten Sie, während Ihre Steam -Spiele importiert werden. Dies kann je nach Größe Ihrer Bibliothek einige Minuten dauern.",
     "includesAllDLCs": "Enthält alle DLCs",
     "launchError": "Startfehler",
     "launchErrorMessage": "Fehlgeschlagen {{game}}. Manchmal werden Spiele ausführbare Geräte nicht mit dem Spielnamen genannt. Bitte stellen Sie sicher, dass Ascendara versucht, die richtige Datei auszuführen.",
@@ -555,6 +581,7 @@
     "removeFromFavorites": "Favoriten entfernen",
     "removeGameFromLibrary": "Aus der Bibliothek entfernen",
     "running": "Läuft",
+    "searchForCoverImage": "Suchen Sie nach einem Titelbild, um die aktuelle zu ersetzen",
     "searchGameCover": "Suche Ascendara nach einem Bildabdeckung",
     "searchGameCoverNotice": "Abdeckungen werden von der aktuellen indizierten Steamrip -Quelle durchsucht.",
     "searchLibrary": "Suche deine Spiele ...",
@@ -562,12 +589,19 @@
     "shortcutCreated": "Verknüpfung erstellt",
     "shortcutError": "Fehler beim Erstellen von Verknüpfungen. Vielleicht existiert der ausführbare Pfad nicht?",
     "size": "Größe",
+    "sort": { "aToZ": "Sortieren a bis z", "zToA": "Sortieren Z zu a" },
     "spaceTooltip": {
       "games": "Raum verwendet von Ascendara Games: {{size}}",
       "other": "Speicherplatz verwendet von anderen Dateien: {{size}}"
     },
     "steamNotRunning": "Dampf läuft nicht",
     "steamNotRunningMessage": "Online-Fix-Spiele erfordern, dass Steam ausgeführt wird. Bitte starten Sie Steam und stellen Sie sicher, dass Sie in Ihrem Konto angemeldet sind und das Spiel erneut starten.",
+    "steamappsDirectory": "Verzeichnis zum Import",
+    "steamappsDirectoryMissingCommon": "Das ausgewählte Verzeichnis enthält keine Spiele. Bitte wählen Sie das Verzeichnis \"Common\" im SteamApps -Verzeichnis.",
+    "tools": {
+      "bulkRemove": "Entfernen Sie ausgewählte Spiele",
+      "selected": "Die Multiselektion ist aktiviert"
+    },
     "verifyGameFiles": "Überprüfen Sie die Spieldateien",
     "version": "Version",
     "versionPlaceholder": "z. B. 1.0.0",

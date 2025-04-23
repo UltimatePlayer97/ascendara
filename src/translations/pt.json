@@ -14,9 +14,13 @@
       "update": "Atualizar agora"
     },
     "crashScreen": {
+      "checkConnection": "Verifique sua conexão com a Internet",
+      "clearCache": "Limpe o cache e os cookies do navegador",
+      "contactSupport": "Se o problema persistir, informe -o para apoiar",
       "description": "Ascendara não gostou do que aconteceu. Não se preocupe, se você tiver análises ativadas, esse erro foi rastreado e o desenvolvedor será corrigido.",
       "reload": "Reload Ascendara",
-      "title": "Oh não..."
+      "title": "Oh não...",
+      "troubleshooting": "Experimente estas etapas para resolver o problema:"
     },
     "downloading-update": "Download da atualização ...",
     "experiment": "EXPERIMENTAL",
@@ -90,6 +94,7 @@
     "library": "Biblioteca",
     "next": "Próximo",
     "ok": "OK",
+    "page": "Você está visualizando a página",
     "preferences": "Preferências",
     "prev": "Anterior",
     "profile": "Perfil",
@@ -281,6 +286,10 @@
       "reportFailed": "Falha ao enviar o relatório",
       "reportSubmitted": "Relatório enviado com sucesso",
       "torrentSent": "Torrent enviado para Qbittorrent"
+    },
+    "update": {
+      "description": "Isso reinstalará o jogo no mesmo diretório. Enquanto a maioria dos jogos salva dados em locais separados, é recomendável fazer backup de arquivos salvos importantes ou conteúdo personalizado antes de prosseguir com a atualização.",
+      "title": "Pronto para atualizar {{game}}?"
     }
   },
   "downloads": {
@@ -353,7 +362,7 @@
     "requestFeature": "Recurso de solicitação",
     "status": {
       "active": {
-        "description": "Este recurso está atualmente ativo na construção inicial e pronto para testar",
+        "description": "Esse recurso está atualmente ativo na construção inicial e pronta para testar",
         "title": "Ativo"
       },
       "deprecated": {
@@ -440,8 +449,8 @@
     "topGames": "Principais jogos"
   },
   "library": {
-    "addGame": "Adicionar jogo",
-    "addGameDescription1": "Adicione seu próprio jogo à sua biblioteca.",
+    "addGame": "Adicionar à biblioteca",
+    "addGameDescription1": "Adicione seus próprios jogos ou importação do Steam.",
     "addGameDescription2": "Adicione um jogo à sua biblioteca Ascendara para iniciá -lo facilmente e rastrear o tempo de reprodução. Nenhum arquivo será modificado ao adicionar um jogo.",
     "addToFavorites": "Adicione aos favoritos",
     "alreadyRunning": "{{game}} já está em execução",
@@ -464,7 +473,7 @@
       "confirmSpecificRestore": "Confirme a restauração de backup específica",
       "createBackupFirst": "Crie um backup primeiro para vê -lo listado aqui.",
       "creatingBackup": "Criando backup",
-      "gameBackupTitle": "Backups de salvamento de jogos",
+      "gameBackupTitle": "Backups de economia de jogo",
       "listBackups": "Escolha o backup para restaurar",
       "loadBackupsFailed": "Falha ao carregar backups",
       "loadingBackups": "Carregando backups",
@@ -492,7 +501,9 @@
     "calculatingSize": "Calculando ...",
     "cannotRunDev": "Não é possível executar jogos no modo de desenvolvedor",
     "cannotVerifyFiles": "Não é possível verificar os arquivos do jogo",
+    "changeCoverImage": "Alterar a imagem da capa",
     "changeExecutable": "Alterar executável",
+    "chooseDirectory": "Escolha o diretório",
     "chooseExecutableFile": "Escolha o arquivo executável ...",
     "confirmDelete": "Woah!",
     "coverSearchError": "Erro à pesquisa de imagem",
@@ -504,6 +515,11 @@
     "enterMoreChars": "Os resultados da imagem aparecerão aqui enquanto você digita",
     "executable": "Executável",
     "executableNotFound": "Executável do jogo não encontrado",
+    "filters": {
+      "favorites": "Favoritos",
+      "onlineGames": "Jogos online",
+      "vrGames": "Jogos de VR"
+    },
     "gameName": "Nome do jogo",
     "gamesInLibrary": "Total de jogos",
     "gamesSpace": "Jogos instalados",
@@ -518,6 +534,16 @@
       "version": "Versão do jogo",
       "vrGame": "Jogo de realidade virtual"
     },
+    "igdbKeysRequired": "Configurar o IGDB em preferências",
+    "import": "Importar",
+    "importFailedDesc": "Houve um problema em importar seus jogos a vapor. Por favor, tente novamente ou verifique seu diretório.",
+    "importFailedTitle": "A importação falhou",
+    "importSteamGames": "Importar jogos a vapor",
+    "importSteamGamesDescription": "Escolha o diretório SteamApps em que você deseja importar e Ascendara importará todos os jogos nesse diretório. Tags online, DLC, versão e outros metadados serão ignorados ao adicionar os jogos.",
+    "importSuccessDesc": "Seus jogos a vapor foram importados com sucesso. Algumas capas de jogo, juntamente com os caminhos executáveis, podem estar ausentes ou incorretos, você pode corrigir isso atualizando as informações do jogo.",
+    "importSuccessTitle": "Importar completo!",
+    "importingGames": "Importando jogos a vapor ...",
+    "importingGamesDesc": "Aguarde enquanto seus jogos a vapor estão sendo importados. Isso pode levar alguns minutos, dependendo do tamanho da sua biblioteca.",
     "includesAllDLCs": "Inclui todos os DLCs",
     "launchError": "Erro de lançamento",
     "launchErrorMessage": "Falha ao executar {{game}}. Às vezes, os executáveis ​​dos jogos não são nomeados da mesma forma que o nome do jogo. Certifique -se de que Ascendara esteja tentando executar o arquivo correto.",
@@ -555,6 +581,7 @@
     "removeFromFavorites": "Remova dos favoritos",
     "removeGameFromLibrary": "Retire da biblioteca",
     "running": "Correndo",
+    "searchForCoverImage": "Procure uma imagem de capa para substituir a atual",
     "searchGameCover": "Pesquise ascendara para uma capa de imagem",
     "searchGameCoverNotice": "As tampas serão pesquisadas a partir da fonte SteamRIP indexada atual.",
     "searchLibrary": "Pesquise seus jogos ...",
@@ -562,12 +589,19 @@
     "shortcutCreated": "Atalho criado",
     "shortcutError": "Erro a criação de atalho. Talvez o caminho executável não exista?",
     "size": "Tamanho",
+    "sort": { "aToZ": "Classificar A a Z", "zToA": "Classificar z para um" },
     "spaceTooltip": {
       "games": "Espaço usado por Ascendara Games: {{size}}",
       "other": "Espaço usado por outros arquivos: {{size}}"
     },
     "steamNotRunning": "Steam não está funcionando",
     "steamNotRunningMessage": "Os jogos de Fix Online exigem que o Steam esteja em execução. Por favor, comece a vapor e verifique se você está assinado em sua conta e inicie o jogo novamente.",
+    "steamappsDirectory": "Diretório para importar",
+    "steamappsDirectoryMissingCommon": "O diretório selecionado não contém nenhum jogo. Selecione o diretório `Common` no diretório Steamapps.",
+    "tools": {
+      "bulkRemove": "Remova os jogos selecionados",
+      "selected": "A multisseleção está ativada"
+    },
     "verifyGameFiles": "Verifique os arquivos do jogo",
     "version": "Versão",
     "versionPlaceholder": "por exemplo, 1.0.0",
@@ -785,7 +819,7 @@
       "continue": "Eu entendo os riscos",
       "description": "Leia isso com cuidado antes de ativar a funcionalidade de torrent:",
       "legalWarning": "O download do conteúdo protegido por direitos autorais pode ser ilegal em sua região. Você é responsável por suas próprias ações.",
-      "qbitWarning": "Esse recurso requer Qbittorrent. Verifique se está configurado corretamente com sua VPN.",
+      "qbitWarning": "Este recurso requer Qbittorrent. Verifique se está configurado corretamente com sua VPN.",
       "title": "Ativar suporte de torrent",
       "vpnWarning": "Seu endereço IP será visível para outros colegas. Use uma VPN para proteger sua privacidade e evitar possíveis problemas legais."
     },

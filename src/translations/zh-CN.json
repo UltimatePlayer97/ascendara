@@ -14,9 +14,13 @@
       "update": "立即更新"
     },
     "crashScreen": {
+      "checkConnection": "检查您的互联网连接",
+      "clearCache": "清除您的浏览器缓存和饼干",
+      "contactSupport": "如果问题仍然存在，请报告以支持",
       "description": "Ascendara不喜欢刚刚发生的事情。不用担心，如果您启用了分析，则已经跟踪此错误，并且开发人员将解决此问题。",
       "reload": "重新加载Ascendara",
-      "title": "哦，不..."
+      "title": "哦，不...",
+      "troubleshooting": "尝试以下步骤解决该问题："
     },
     "downloading-update": "下载更新...",
     "experiment": "实验",
@@ -90,6 +94,7 @@
     "library": "图书馆",
     "next": "下一个",
     "ok": "好的",
+    "page": "您正在查看页面",
     "preferences": "偏好",
     "prev": "以前的",
     "profile": "轮廓",
@@ -275,6 +280,10 @@
       "reportFailed": "未能提交报告",
       "reportSubmitted": "报告成功提交",
       "torrentSent": "洪流发送到qbittorrent"
+    },
+    "update": {
+      "description": "这将重新安装在同一目录中。尽管大多数游戏将数据保存在不同的位置，但建议在进行更新之前备份任何重要的保存文件或自定义内容。",
+      "title": "准备更新{{game}}了吗？"
     }
   },
   "downloads": {
@@ -428,8 +437,8 @@
     "topGames": "顶级游戏"
   },
   "library": {
-    "addGame": "添加游戏",
-    "addGameDescription1": "将自己的游戏添加到您的库中。",
+    "addGame": "添加到库",
+    "addGameDescription1": "添加自己的游戏或从Steam中导入。",
     "addGameDescription2": "将游戏添加到您的Ascendara库中，以轻松启动并跟踪游戏时间。添加游戏时不会修改文件。",
     "addToFavorites": "添加到收藏夹",
     "alreadyRunning": "{{game}}已经在运行",
@@ -480,7 +489,9 @@
     "calculatingSize": "计算...",
     "cannotRunDev": "无法在开发人员模式下运行游戏",
     "cannotVerifyFiles": "无法验证游戏文件",
+    "changeCoverImage": "更改封面图像",
     "changeExecutable": "更改可执行文件",
+    "chooseDirectory": "选择目录",
     "chooseExecutableFile": "选择可执行文件...",
     "confirmDelete": "哇！",
     "coverSearchError": "错误搜索图像",
@@ -492,6 +503,7 @@
     "enterMoreChars": "图像结果将在您输入时出现在这里",
     "executable": "可执行",
     "executableNotFound": "没有找到游戏可执行文件",
+    "filters": { "favorites": "最爱", "onlineGames": "在线游戏", "vrGames": "VR游戏" },
     "gameName": "游戏名称",
     "gamesInLibrary": "总游戏",
     "gamesSpace": "安装游戏",
@@ -506,6 +518,16 @@
       "version": "游戏版本",
       "vrGame": "虚拟现实游戏"
     },
+    "igdbKeysRequired": "偏好设置IGDB",
+    "import": "进口",
+    "importFailedDesc": "导入您的Steam游戏存在问题。请重试或检查您的目录。",
+    "importFailedTitle": "导入失败",
+    "importSteamGames": "进口蒸汽游戏",
+    "importSteamGamesDescription": "选择要导入的Steamapps目录，Ascendara将导入该目录中的所有游戏。在添加游戏时，将跳过在线，DLC，版本标签和其他元数据。",
+    "importSuccessDesc": "您的Steam游戏已成功进口。一些游戏封面以及可执行路径可能会丢失或不正确，您可以通过更新游戏信息来解决此问题。",
+    "importSuccessTitle": "导入完整！",
+    "importingGames": "进口蒸汽游戏...",
+    "importingGamesDesc": "请等待您的Steam游戏进口。这可能需要几分钟的时间，具体取决于您的图书馆尺寸。",
     "includesAllDLCs": "包括所有DLC",
     "launchError": "启动错误",
     "launchErrorMessage": "无法运行{{game}}。有时游戏可执行文件的命名与游戏名称相同。请确保Ascendara试图运行正确的文件。",
@@ -543,6 +565,7 @@
     "removeFromFavorites": "从收藏夹中删除",
     "removeGameFromLibrary": "从库中删除",
     "running": "跑步",
+    "searchForCoverImage": "搜索封面图像以替换当前的图像",
     "searchGameCover": "搜索Ascendara以获取图像封面",
     "searchGameCoverNotice": "将从当前的索引蒸汽源搜索盖子。",
     "searchLibrary": "搜索您的游戏...",
@@ -550,12 +573,16 @@
     "shortcutCreated": "创建的快捷方式",
     "shortcutError": "错误创建快捷方式。也许可执行路径不存在？",
     "size": "尺寸",
+    "sort": { "aToZ": "排序", "zToA": "将z分类为" },
     "spaceTooltip": {
       "games": "Ascendara游戏使用的空间：{{size}}",
       "other": "其他文件使用的空间：{{size}}"
     },
     "steamNotRunning": "蒸汽没有运行",
     "steamNotRunningMessage": "在线修饰游戏需要蒸汽运行。请启动Steam，并确保您已登录您的帐户，然后再次启动游戏。",
+    "steamappsDirectory": "导入目录",
+    "steamappsDirectoryMissingCommon": "选定的目录不包含任何游戏。请在SteamApps目录中选择“公共”目录。",
+    "tools": { "bulkRemove": "删除选定的游戏", "selected": "启用了多启示" },
     "verifyGameFiles": "验证游戏文件",
     "version": "版本",
     "versionPlaceholder": "例如，1.0.0",
@@ -909,8 +936,8 @@
     "next": "下一个",
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
-    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
-    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
+    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
+    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
     "privacyPolicy": "隐私政策",

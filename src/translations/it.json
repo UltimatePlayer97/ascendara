@@ -14,9 +14,13 @@
       "update": "Aggiorna ora"
     },
     "crashScreen": {
+      "checkConnection": "Controlla la tua connessione Internet",
+      "clearCache": "Cancella la cache e i cookie del browser",
+      "contactSupport": "Se il problema persiste, si prega di segnalarlo per supportare",
       "description": "Ascendara non piaceva quello che è appena successo. Non preoccuparti, se hai abilitato l'analisi questo errore è stato tracciato e lo sviluppatore lo risolverà.",
       "reload": "Ricarica Ascendara",
-      "title": "Oh no..."
+      "title": "Oh no...",
+      "troubleshooting": "Prova questi passaggi per risolvere il problema:"
     },
     "downloading-update": "Download di aggiornamento ...",
     "experiment": "SPERIMENTALE",
@@ -90,6 +94,7 @@
     "library": "Biblioteca",
     "next": "Prossimo",
     "ok": "OK",
+    "page": "Stai visualizzando la pagina",
     "preferences": "Preferenze",
     "prev": "Precedente",
     "profile": "Profilo",
@@ -154,17 +159,17 @@
       "invalidLink": "Inserisci un link per il download valido per",
       "manualInstructions": {
         "step1": "Copia e incolla il link nel browser",
-        "step2": "Completa il captcha e inizia il download",
-        "step3": "Ferma il download una volta iniziato nel browser",
+        "step2": "--",
+        "step3": "--",
         "step4": "Premi Ctrl+J per aprire i tuoi download",
         "step5": "Copia il link che il browser ha iniziato a scaricare",
         "step6": "Incolla il DDL nella casella di input e fai clic su Scarica ora"
       },
-      "noProviders": "Nessun fornitore di download disponibile per questo gioco.",
+      "noProviders": "--",
       "openInBrowser": "Aprire nel browser",
-      "pasteLink": "Incolla il tuo link per il download diretto (DDL) qui",
+      "pasteLink": "--",
       "selectProvider": "Seleziona un provider di download",
-      "selectProviderPrompt": "Seleziona un provider di download per vedere le istruzioni.",
+      "selectProviderPrompt": "--",
       "startingDownload": "Avvio del download ...",
       "torrentInstructions": {
         "description": "Fai clic sul pulsante in basso per scaricare il file torrent. Assicurati di avere un client torrent installato e una VPN abilitata per il download sicuro.",
@@ -173,13 +178,13 @@
       },
       "waitingForBrowser": "Aspettando che il tuo browser invii il download ..."
     },
-    "firstReleasedOn": "Gioco rilasciato",
-    "gameNeedsEmulator": "Ciò richiede che un emulatore sia eseguito.",
-    "gameNeedsVR": "Per questo gioco potrebbe essere richiesto VR.",
+    "firstReleasedOn": "--",
+    "gameNeedsEmulator": "--",
+    "gameNeedsVR": "--",
     "igdbLoading": "Caricamento delle informazioni sul gioco ...",
     "igdbRating": "Questo gioco è valutato {{rating}} mele. Le valutazioni di Apple sono diverse dalle valutazioni delle stelle su Ascendara e sono più una valutazione generale del gioco.",
     "infoMaybeInaccurate": "Le informazioni sul gioco potrebbero essere inaccurate.",
-    "linkCopied": "Link copiato negli appunti",
+    "linkCopied": "--",
     "newUserGuide": {
       "close": "Vicino",
       "description": "Non hai mai installato un gioco prima, quindi Ascendara ti guiderà attraverso il processo di configurazione.",
@@ -281,6 +286,10 @@
       "reportFailed": "Impossibile inviare il rapporto",
       "reportSubmitted": "Rapporto inviato con successo",
       "torrentSent": "Torrent inviato a QbitTorrent"
+    },
+    "update": {
+      "description": "Questo reinstallerà il gioco nella stessa directory. Mentre la maggior parte dei giochi salva i dati in posizioni separate, si consiglia di eseguire il backup di eventuali file di salvataggio importanti o contenuti personalizzati prima di procedere con l'aggiornamento.",
+      "title": "Pronto per aggiornare {{game}}?"
     }
   },
   "downloads": {
@@ -440,8 +449,8 @@
     "topGames": "I migliori giochi"
   },
   "library": {
-    "addGame": "Aggiungi il gioco",
-    "addGameDescription1": "Aggiungi il tuo gioco alla tua biblioteca.",
+    "addGame": "Aggiungi alla libreria",
+    "addGameDescription1": "Aggiungi i tuoi giochi o importa da Steam.",
     "addGameDescription2": "Aggiungi un gioco alla tua biblioteca Ascendara per lanciarlo facilmente e tenere traccia del tempo di gioco. Nessun file verrà modificato quando si aggiunge un gioco.",
     "addToFavorites": "Aggiungi ai preferiti",
     "alreadyRunning": "{{game}} è già in esecuzione",
@@ -492,7 +501,9 @@
     "calculatingSize": "Calcolo ...",
     "cannotRunDev": "Impossibile eseguire giochi in modalità sviluppatore",
     "cannotVerifyFiles": "Impossibile verificare i file di gioco",
+    "changeCoverImage": "Cambia l'immagine di copertina",
     "changeExecutable": "Cambia eseguibile",
+    "chooseDirectory": "Scegli la directory",
     "chooseExecutableFile": "Scegli il file eseguibile ...",
     "confirmDelete": "Woah!",
     "coverSearchError": "Errore di ricerca dell'immagine",
@@ -504,6 +515,11 @@
     "enterMoreChars": "I risultati dell'immagine appariranno qui come digiti",
     "executable": "Eseguibile",
     "executableNotFound": "Game eseguibile non trovato",
+    "filters": {
+      "favorites": "Preferiti",
+      "onlineGames": "Giochi online",
+      "vrGames": "Giochi VR"
+    },
     "gameName": "Nome del gioco",
     "gamesInLibrary": "Giochi totali",
     "gamesSpace": "Giochi installati",
@@ -518,6 +534,16 @@
       "version": "Versione del gioco",
       "vrGame": "Gioco di realtà virtuale"
     },
+    "igdbKeysRequired": "IGOT IGDB nelle preferenze",
+    "import": "Importare",
+    "importFailedDesc": "C'è stato un problema a importare i tuoi giochi Steam. Riprova o controlla la tua directory.",
+    "importFailedTitle": "Importazione non riuscita",
+    "importSteamGames": "Importa giochi a vapore",
+    "importSteamGamesDescription": "Scegli la directory di Steolepps in cui si desidera importare e Ascendara importerà tutti i giochi in quella directory. Online, DLC, i tag della versione e altri metadati verranno saltati mentre aggiungeranno i giochi.",
+    "importSuccessDesc": "I tuoi giochi Steam sono stati importati con successo. Alcune copertine di gioco insieme a percorsi eseguibili potrebbero mancare o errate, è possibile risolvere questo problema aggiornando le informazioni sul gioco.",
+    "importSuccessTitle": "Import Complete!",
+    "importingGames": "Importazione di giochi Steam ...",
+    "importingGamesDesc": "Per favore, aspetta mentre i tuoi giochi Steam vengono importati. Potrebbero richiedere alcuni minuti a seconda delle dimensioni della libreria.",
     "includesAllDLCs": "Include tutti i DLC",
     "launchError": "Errore di avvio",
     "launchErrorMessage": "Impossibile eseguire {{game}}. A volte gli eseguibili del gioco non sono nominati come il nome del gioco. Assicurati che Ascendara stia cercando di eseguire il file corretto.",
@@ -555,6 +581,7 @@
     "removeFromFavorites": "Togliere dai preferiti",
     "removeGameFromLibrary": "Togliere dalla libreria",
     "running": "Corsa",
+    "searchForCoverImage": "Cerca un'immagine di copertina per sostituire quella corrente",
     "searchGameCover": "Cerca Ascendara per una copertura dell'immagine",
     "searchGameCoverNotice": "Le copertine verranno cercate dall'origine Steamrip indicizzata corrente.",
     "searchLibrary": "Cerca i tuoi giochi ...",
@@ -562,12 +589,19 @@
     "shortcutCreated": "Collegamento creato",
     "shortcutError": "Errore Creazione di scorciatoie. Forse il percorso eseguibile non esiste?",
     "size": "Misurare",
+    "sort": { "aToZ": "Ordinare da a a z", "zToA": "Ordinare z su a" },
     "spaceTooltip": {
       "games": "Spazio usato da Ascendara Games: {{size}}",
       "other": "Spazio usato da altri file: {{size}}"
     },
     "steamNotRunning": "Il vapore non funziona",
     "steamNotRunningMessage": "I giochi per riquadri online richiedono che Steam sia in esecuzione. Avvia Steam e assicurati di essere firmato nel tuo account, quindi riavvia il gioco.",
+    "steamappsDirectory": "Directory all'importazione",
+    "steamappsDirectoryMissingCommon": "La directory selezionata non contiene giochi. Selezionare la directory `comune\" all'interno della directory di Steolepps.",
+    "tools": {
+      "bulkRemove": "Rimuovere i giochi selezionati",
+      "selected": "La multiselezione è abilitata"
+    },
     "verifyGameFiles": "Verifica i file di gioco",
     "version": "Versione",
     "versionPlaceholder": "ad esempio, 1.0.0",
@@ -951,11 +985,11 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Ora non dovrai preoccuparti di estrarre, installare o spostare i file. Prima di iniziare, si prega di leggere e accettare i termini di servizio e l'informativa sulla privacy.",
-    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverterà in Ascendara",
+    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverrà in Ascendara",
     "wineIsRequired": "È richiesto il vino",
     "wineMustBeInstalled": "Il vino deve essere installato per eseguire giochi Windows sul tuo sistema",
     "youCanAddMoreLater": "Puoi aggiungere più directory nelle preferenze in seguito",

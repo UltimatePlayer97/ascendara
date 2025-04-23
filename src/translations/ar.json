@@ -14,9 +14,13 @@
       "update": "تحديث الآن"
     },
     "crashScreen": {
+      "checkConnection": "تحقق من اتصال الإنترنت الخاص بك",
+      "clearCache": "امسح ذاكرة التخزين المؤقت وملفات تعريف الارتباط الخاصة بالمتصفح",
+      "contactSupport": "إذا استمرت المشكلة ، فيرجى الإبلاغ عنها لدعمها",
       "description": "لم يعجب Ascendara ما حدث للتو. لا تقلق ، إذا قمت بتحليلات تمكين ، فقد تم تتبع هذا الخطأ وسيحصل المطور على ذلك.",
       "reload": "إعادة تحميل Ascendara",
-      "title": "أوه لا ..."
+      "title": "أوه لا ...",
+      "troubleshooting": "جرب هذه الخطوات لحل المشكلة:"
     },
     "downloading-update": "تنزيل التحديث ...",
     "experiment": "تجريبي",
@@ -90,6 +94,7 @@
     "library": "مكتبة",
     "next": "التالي",
     "ok": "نعم",
+    "page": "أنت تشاهد الصفحة",
     "preferences": "التفضيلات",
     "prev": "سابق",
     "profile": "حساب تعريفي",
@@ -278,6 +283,10 @@
       "reportFailed": "فشل في تقديم التقرير",
       "reportSubmitted": "تم تقديم التقرير بنجاح",
       "torrentSent": "تم إرسال التورنت إلى Qbittorrent"
+    },
+    "update": {
+      "description": "سيؤدي هذا إلى إعادة تثبيت اللعبة في نفس الدليل. على الرغم من أن معظم الألعاب تنقذ البيانات في مواقع منفصلة ، إلا أنه يوصى بدعم أي ملفات حفظ مهمة أو محتوى مخصص قبل المتابعة مع التحديث.",
+      "title": "هل أنت مستعد لتحديث {{game}}؟"
     }
   },
   "downloads": {
@@ -437,8 +446,8 @@
     "topGames": "أفضل الألعاب"
   },
   "library": {
-    "addGame": "أضف اللعبة",
-    "addGameDescription1": "أضف لعبتك إلى مكتبتك.",
+    "addGame": "أضف إلى المكتبة",
+    "addGameDescription1": "أضف ألعابك الخاصة أو استيراد من Steam.",
     "addGameDescription2": "أضف لعبة إلى مكتبة Ascendara الخاصة بك لبدء تشغيلها بسهولة وتتبع وقت التشغيل. لن يتم تعديل أي ملفات عند إضافة لعبة.",
     "addToFavorites": "إضافة إلى المفضلة",
     "alreadyRunning": "{{game}} يعمل بالفعل",
@@ -489,7 +498,9 @@
     "calculatingSize": "حساب ...",
     "cannotRunDev": "لا يمكن تشغيل الألعاب في وضع المطور",
     "cannotVerifyFiles": "لا يمكن التحقق من ملفات اللعبة",
+    "changeCoverImage": "تغيير صورة الغلاف",
     "changeExecutable": "تغيير قابلة للتنفيذ",
+    "chooseDirectory": "اختر الدليل",
     "chooseExecutableFile": "اختر ملفًا قابلًا للتنفيذ ...",
     "confirmDelete": "واو!",
     "coverSearchError": "خطأ في البحث عن الصورة",
@@ -501,6 +512,11 @@
     "enterMoreChars": "ستظهر نتائج الصورة هنا أثناء الكتابة",
     "executable": "قابلة للتنفيذ",
     "executableNotFound": "اللعبة غير قابلة للتنفيذ",
+    "filters": {
+      "favorites": "المفضلة",
+      "onlineGames": "الألعاب عبر الإنترنت",
+      "vrGames": "ألعاب VR"
+    },
     "gameName": "اسم اللعبة",
     "gamesInLibrary": "إجمالي الألعاب",
     "gamesSpace": "الألعاب المثبتة",
@@ -515,6 +531,16 @@
       "version": "نسخة اللعبة",
       "vrGame": "لعبة الواقع الافتراضي"
     },
+    "igdbKeysRequired": "قم بإعداد IGDB في التفضيلات",
+    "import": "يستورد",
+    "importFailedDesc": "كانت هناك مشكلة في استيراد ألعاب Steam الخاصة بك. يرجى المحاولة مرة أخرى أو التحقق من الدليل الخاص بك.",
+    "importFailedTitle": "فشل الاستيراد",
+    "importSteamGames": "استيراد ألعاب البخار",
+    "importSteamGamesDescription": "اختر دليل SteamApps الذي تريد استيراده وسيقوم Ascendara باستيراد جميع الألعاب في هذا الدليل. عبر الإنترنت ، سيتم تخطي علامات الإصدار عبر الإنترنت ، DLC ، والبيانات الوصفية الأخرى أثناء إضافة الألعاب.",
+    "importSuccessDesc": "تم استيراد ألعاب Steam الخاصة بك بنجاح. قد تكون بعض أغطية اللعبة جنبًا إلى جنب مع المسارات القابلة للتنفيذ مفقودة أو غير صحيحة ، يمكنك إصلاح ذلك عن طريق تحديث معلومات اللعبة.",
+    "importSuccessTitle": "استيراد كاملة!",
+    "importingGames": "استيراد ألعاب البخار ...",
+    "importingGamesDesc": "يرجى الانتظار أثناء استيراد ألعاب Steam الخاصة بك. قد يستغرق هذا بضع دقائق حسب حجم مكتبتك.",
     "includesAllDLCs": "يشمل جميع DLCs",
     "launchError": "خطأ إطلاق",
     "launchErrorMessage": "فشل تشغيل {{game}}. في بعض الأحيان لا يتم تسمية Textables Game بنفس اسم اللعبة. يرجى التأكد من أن Ascendara تحاول تشغيل الملف الصحيح.",
@@ -552,6 +578,7 @@
     "removeFromFavorites": "ترفع من المفضلة",
     "removeGameFromLibrary": "ترفع من المكتبة",
     "running": "جري",
+    "searchForCoverImage": "ابحث عن صورة غلاف لاستبدال الصورة الحالية",
     "searchGameCover": "ابحث في Ascendara عن غطاء صورة",
     "searchGameCoverNotice": "سيتم البحث في الأغطية من مصدر SteamRip الحالي المفهرس.",
     "searchLibrary": "ابحث في ألعابك ...",
@@ -559,12 +586,19 @@
     "shortcutCreated": "اختصار خلق",
     "shortcutError": "خطأ إنشاء اختصار. ربما لا يوجد المسار القابل للتنفيذ؟",
     "size": "مقاس",
+    "sort": { "aToZ": "فرز من A إلى Z", "zToA": "فرز z إلى أ" },
     "spaceTooltip": {
       "games": "مساحة تستخدمها ألعاب Ascendara: {{size}}",
       "other": "المساحة التي تستخدمها الملفات الأخرى: {{size}}"
     },
     "steamNotRunning": "البخار لا يعمل",
     "steamNotRunningMessage": "تتطلب ألعاب الإصلاح عبر الإنترنت أن تعمل Steam. يرجى بدء Steam والتأكد من تسجيل الدخول إلى حسابك ثم قم بتشغيل اللعبة مرة أخرى.",
+    "steamappsDirectory": "دليل للاستيراد",
+    "steamappsDirectoryMissingCommon": "الدليل المحدد لا يحتوي على أي ألعاب. يرجى تحديد دليل \"المشترك\" داخل دليل SteamApps.",
+    "tools": {
+      "bulkRemove": "إزالة الألعاب المحددة",
+      "selected": "يتم تمكين MultiSelection"
+    },
     "verifyGameFiles": "تحقق من ملفات اللعبة",
     "version": "إصدار",
     "versionPlaceholder": "على سبيل المثال ، 1.0.0",
@@ -923,7 +957,7 @@
     "personalizeYourExperience": "تخصيص تجربتك مع موضوع يناسب أسلوبك",
     "pleaseWaitAndRespondToAdminPrompts": "يرجى الانتظار والرد على أي مطالبات مسؤول تظهر. لا تغلق التطبيق.",
     "privacyPolicy": "سياسة الخصوصية",
-    "pythonIsRequired": "مطلوب بيثون",
+    "pythonIsRequired": "المطلوب بيثون",
     "pythonMustBeInstalled": "يجب تثبيت Python على جهاز الكمبيوتر الخاص بك من أجل تشغيل Ascendara على نظام التشغيل هذا",
     "requiredForModernGames": "مطلوب للألعاب الحديثة",
     "restart": "إعادة تشغيل",
