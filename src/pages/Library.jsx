@@ -1379,7 +1379,11 @@ const AddGameForm = ({ onSuccess }) => {
                   {t("library.importSteamGamesDescription")}{" "}
                   <a
                     className="cursor-pointer text-primary hover:underline"
-                    onClick={() => window.electron.openURL("https://ascendara.app/docs")}
+                    onClick={() =>
+                      window.electron.openURL(
+                        "https://ascendara.app/docs/features/overview#importing-from-steam"
+                      )
+                    }
                   >
                     {t("common.learnMore")}{" "}
                     <ExternalLink className="mb-1 inline-block h-3 w-3" />
