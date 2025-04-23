@@ -799,15 +799,11 @@ class GofileDownloader:
 
         # Set verifying to false when done
         self.game_info["downloadingData"]["verifying"] = False
-        
-        # If all processes are complete (not downloading, not extracting, not verifying),
-        # and there are no verify errors, remove the downloadingData key
-        if (not self.game_info["downloadingData"]["downloading"] and
-            not self.game_info["downloadingData"]["extracting"] and
-            not self.game_info["downloadingData"]["verifying"] and
-            "verifyError" not in self.game_info["downloadingData"]):
-            del self.game_info["downloadingData"]
-        
+
+        # Only remove verifyError if verification succeeded
+        if "verifyError" in self.game_info["downloadingData"] and not verify_errors:
+            del self.game_info["downloadingData"]["verifyError"]
+
         safe_write_json(self.game_info_path, self.game_info)
 
 def open_console():
