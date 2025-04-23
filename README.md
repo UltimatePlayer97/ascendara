@@ -308,8 +308,8 @@ To build the source code into an executable, read the [Developer Docs](https://a
 ### Current Goals
 
 - [ ] Add semi-support for Linux, and macOS with Wine and Winetricks
-- [ ] Update game logic for saving time played and other metrics
-- [ ] Import games from Steam into library
+- [ ] Revamp game info scraping logic/API (Dynamic game indexing)
+- [ ] Improved download management (pausing, resuming)
 
 ### Future Goals
 
@@ -321,16 +321,16 @@ To build the source code into an executable, read the [Developer Docs](https://a
 - [ ] Cloud data support
 - [ ] Endpoint for known games that have weird installation paths, issues, etc.
 - [ ] Break up code into files for better Organizations
-- [ ] Revamp game info scraping logic/API (Dynamic game indexing)
 - [ ] Retry Download & Extract functionality
-- [ ] Improved download management (pausing, resuming)
 
 ### Completed Features
 
 - [x] Complete UI overhaul (V7)
 - [x] Legacy game version support (Ascendara Timemachine)
 - [x] Enhanced antivirus operation checks (File Verification)
+- [x] Game updating logic to be able to save time played and other metrics while updating the game
 - [x] Game ratings and reliability system
+- [x] Import games from Steam into library
 - [x] Steam workshop downloading page
 - [x] FitGirl and torrenting support
 - [x] Notification handling for desktop
