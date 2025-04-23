@@ -150,16 +150,6 @@ const Library = () => {
   // Filter games based on search query
   const filteredGames = games
     .slice()
-    .sort((a, b) => {
-      const aName = a.game || a.name;
-      const bName = b.game || b.name;
-      const aFavorite = favorites.includes(aName);
-      const bFavorite = favorites.includes(bName);
-      if (aFavorite === bFavorite) {
-        return aName.localeCompare(bName);
-      }
-      return aFavorite ? -1 : 1;
-    })
     .filter(game => {
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch = (game.game || game.name || "")
@@ -172,8 +162,14 @@ const Library = () => {
       return matchesSearch && matchesFavorites && matchesVr && matchesOnline;
     })
     .sort((a, b) => {
-      const aName = (a.game || a.name || "").toLowerCase();
-      const bName = (b.game || b.name || "").toLowerCase();
+      const aName = a.game || a.name || "";
+      const bName = b.game || b.name || "";
+      const aFavorite = favorites.includes(aName);
+      const bFavorite = favorites.includes(bName);
+      if (aFavorite !== bFavorite) {
+        return aFavorite ? -1 : 1; // Favorites always first
+      }
+      // Within each group, sort alphabetically according to sortOrder
       return sortOrder === "asc"
         ? aName.localeCompare(bName)
         : bName.localeCompare(aName);
