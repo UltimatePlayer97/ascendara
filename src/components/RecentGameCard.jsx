@@ -77,7 +77,7 @@ const RecentGameCard = ({ game, onPlay }) => {
     <Card
       className={cn(
         "group relative overflow-hidden transition-all duration-300",
-        "cursor-pointer hover:shadow-lg",
+        "cursor-pointer border-none hover:shadow-lg",
         isRunning && "ring-2 ring-primary"
       )}
       onMouseEnter={() => setIsHovered(true)}
