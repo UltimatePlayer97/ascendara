@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef, memo } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -9,7 +17,6 @@ import {
   Plus,
   FolderOpen,
   ExternalLink,
-  Pencil,
   User,
   HardDrive,
   Gamepad2,
@@ -22,6 +29,11 @@ import {
   PackageOpen,
   Loader,
   Import,
+  AlertCircle,
+  CheckSquareIcon,
+  SortAscIcon,
+  ArrowUpAZ,
+  ArrowDownAZ,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -48,11 +60,42 @@ import igdbService from "@/services/gameInfoService";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
 
 const Library = () => {
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedGames, setSelectedGames] = useState([]);
+  const handleSelectGame = game => {
+    if (!game.isCustom) return;
+    setSelectedGames(prev =>
+      prev.includes(game.game) ? prev.filter(g => g !== game.game) : [...prev, game.game]
+    );
+  };
+
+  // Bulk remove selected custom games
+  const handleBulkRemove = async () => {
+    if (selectedGames.length === 0) return;
+    try {
+      for (const gameName of selectedGames) {
+        await window.electron.removeCustomGame(gameName);
+      }
+      setSelectedGames([]);
+      setSelectionMode(false);
+      await loadGames();
+    } catch (error) {
+      console.error("Bulk remove failed:", error);
+    }
+  };
+
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    favorites: false,
+    vrOnly: false,
+    onlineGames: false,
+  });
   const [lastLaunchedGame, setLastLaunchedGame] = useState(null);
   const lastLaunchedGameRef = useRef(null);
   const [isOnWindows, setIsOnWindows] = useState(true);
@@ -83,8 +126,6 @@ const Library = () => {
     checkWindows();
   }, []);
 
-  // Username event listeners removed - Library only needs to display username
-
   useEffect(() => {
     // Add keyframes to document
     const styleSheet = document.styleSheets[0];
@@ -100,6 +141,55 @@ const Library = () => {
   useEffect(() => {
     lastLaunchedGameRef.current = lastLaunchedGame;
   }, [lastLaunchedGame]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
+
+  // Filter games based on search query
+  const filteredGames = games
+    .slice()
+    .sort((a, b) => {
+      const aName = a.game || a.name;
+      const bName = b.game || b.name;
+      const aFavorite = favorites.includes(aName);
+      const bFavorite = favorites.includes(bName);
+      if (aFavorite === bFavorite) {
+        return aName.localeCompare(bName);
+      }
+      return aFavorite ? -1 : 1;
+    })
+    .filter(game => {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = (game.game || game.name || "")
+        .toLowerCase()
+        .includes(searchLower);
+      const matchesFavorites =
+        !filters.favorites || favorites.includes(game.game || game.name);
+      const matchesVr = !filters.vrOnly || game.isVr;
+      const matchesOnline = !filters.onlineGames || game.online;
+      return matchesSearch && matchesFavorites && matchesVr && matchesOnline;
+    })
+    .sort((a, b) => {
+      const aName = (a.game || a.name || "").toLowerCase();
+      const bName = (b.game || b.name || "").toLowerCase();
+      return sortOrder === "asc"
+        ? aName.localeCompare(bName)
+        : bName.localeCompare(aName);
+    });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredGames.length / PAGE_SIZE);
+  const paginatedGames = filteredGames.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  // Reset to first page if filter/search changes and current page is out of range
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [filteredGames.length, totalPages, currentPage]);
 
   const toggleFavorite = gameName => {
     setFavorites(prev => {
@@ -281,27 +371,6 @@ const Library = () => {
     );
   }
 
-  // Filter games based on search query
-  const filteredGames = games
-    .slice()
-    .sort((a, b) => {
-      const aName = a.game || a.name;
-      const bName = b.game || b.name;
-      const aFavorite = favorites.includes(aName);
-      const bFavorite = favorites.includes(bName);
-
-      // If both are favorites or both are not favorites, sort alphabetically
-      if (aFavorite === bFavorite) {
-        return aName.localeCompare(bName);
-      }
-      // If a is favorite and b is not, a comes first
-      return aFavorite ? -1 : 1;
-    })
-    .filter(game => {
-      const searchLower = searchQuery.toLowerCase();
-      return (game.game || game.name).toLowerCase().includes(searchLower);
-    });
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto max-w-7xl p-4 md:p-8">
@@ -379,7 +448,7 @@ const Library = () => {
                   </TooltipProvider>
                 </div>
 
-                <div className="relative mr-12">
+                <div className="relative mr-12 flex items-center gap-2">
                   <SearchIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="text"
@@ -388,7 +457,147 @@ const Library = () => {
                     onChange={e => setSearchQuery(e.target.value)}
                     className="pl-10"
                   />
+                  <div className="ml-2 flex items-center gap-1">
+                    <TooltipProvider>
+                      <DropdownMenu
+                        open={isDropdownOpen}
+                        onOpenChange={setIsDropdownOpen}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="rounded p-2 hover:bg-secondary/50"
+                            type="button"
+                          >
+                            <SortAscIcon className="h-5 w-5" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            onClick={() => setSortOrder("asc")}
+                            className={cn(
+                              "cursor-pointer",
+                              sortOrder === "asc" && "bg-accent/50"
+                            )}
+                          >
+                            <ArrowUpAZ className="mr-2 h-4 w-4" />
+                            {t("library.sort.aToZ")}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setSortOrder("desc")}
+                            className={cn(
+                              "cursor-pointer",
+                              sortOrder === "desc" && "bg-accent/50"
+                            )}
+                          >
+                            <ArrowDownAZ className="mr-2 h-4 w-4" />
+                            {t("library.sort.zToA")}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuCheckboxItem
+                            className="cursor-pointer"
+                            checked={filters.favorites}
+                            onCheckedChange={checked =>
+                              setFilters(prev => ({ ...prev, favorites: checked }))
+                            }
+                          >
+                            <Heart className="mr-2 h-4 w-4" />
+                            {t("library.filters.favorites")}
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                            checked={filters.vrOnly}
+                            onCheckedChange={checked =>
+                              setFilters(prev => ({ ...prev, vrOnly: checked }))
+                            }
+                            className="cursor-pointer"
+                          >
+                            <svg
+                              className="mr-2 h-4 w-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M2 10C2 8.89543 2.89543 8 4 8H20C21.1046 8 22 8.89543 22 10V17C22 18.1046 21.1046 19 20 19H16.1324C15.4299 19 14.7788 18.6314 14.4174 18.029L12.8575 15.4292C12.4691 14.7818 11.5309 14.7818 11.1425 15.4292L9.58261 18.029C9.22116 18.6314 8.57014 19 7.86762 19H4C2.89543 19 2 18.1046 2 17V10Z"
+                                stroke="currentColor"
+                                strokeWidth={1.3}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M3.81253 6.7812C4.5544 5.6684 5.80332 5 7.14074 5H16.8593C18.1967 5 19.4456 5.6684 20.1875 6.7812L21 8H3L3.81253 6.7812Z"
+                                stroke="currentColor"
+                                strokeWidth={1.3}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            {t("library.filters.vrGames")}
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                            checked={filters.onlineGames}
+                            onCheckedChange={checked =>
+                              setFilters(prev => ({ ...prev, onlineGames: checked }))
+                            }
+                            className="cursor-pointer"
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            {t("library.filters.onlineGames")}
+                          </DropdownMenuCheckboxItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              "rounded p-2 hover:bg-secondary/50",
+                              selectionMode && "bg-primary/10 text-primary"
+                            )}
+                            type="button"
+                            aria-label={t("library.tools.multiselect")}
+                            onClick={() => {
+                              setSelectionMode(prev => !prev);
+                              setSelectedGames([]);
+                            }}
+                          >
+                            <CheckSquareIcon className="h-5 w-5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-secondary">
+                          {t("library.tools.multiselect")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
+
+                {/* Bulk Remove Bar (only in selection mode) */}
+                {selectionMode && (
+                  <div className="mb-4 mt-2 flex items-center justify-between rounded-md bg-secondary/30 p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-primary">
+                        {t("library.tools.selected", { count: selectedGames.length })}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="destructive"
+                        disabled={selectedGames.length === 0}
+                        onClick={handleBulkRemove}
+                      >
+                        {t("library.tools.bulkRemove")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSelectionMode(false);
+                          setSelectedGames([]);
+                        }}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right side: Storage Info and Settings */}
@@ -406,9 +615,7 @@ const Library = () => {
                         size="icon"
                         className="h-9 w-9"
                         onClick={() => navigate("/profile")}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      ></Button>
                     </div>
 
                     <div className="mt-2 flex items-center justify-between">
@@ -536,17 +743,47 @@ const Library = () => {
               </AlertDialogContent>
             </AlertDialog>
 
-            {filteredGames.map(game => (
+            {paginatedGames.map(game => (
               <div key={game.game || game.name}>
                 <InstalledGameCard
                   game={game}
-                  onPlay={() => handlePlayGame(game)}
+                  onPlay={() =>
+                    selectionMode ? handleSelectGame(game) : handlePlayGame(game)
+                  }
                   favorites={favorites}
                   onToggleFavorite={() => toggleFavorite(game.game || game.name)}
+                  selectionMode={selectionMode}
+                  isSelected={selectedGames.includes(game.game)}
+                  onSelectCheckbox={() => handleSelectGame(game)}
                 />
               </div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              <Button
+                variant="outline"
+                className="px-3"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                {t("common.prev")}
+              </Button>
+              <span className="px-4 py-2 text-sm text-muted-foreground">
+                {t("common.page")} {currentPage} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                className="px-3"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                {t("common.next")}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -578,7 +815,15 @@ const AddGameCard = React.forwardRef((props, ref) => {
 AddGameCard.displayName = "AddGameCard";
 
 const InstalledGameCard = memo(
-  ({ game, onPlay, isSelected, favorites, onToggleFavorite }) => {
+  ({
+    game,
+    onPlay,
+    isSelected,
+    favorites,
+    onToggleFavorite,
+    selectionMode,
+    onSelectCheckbox,
+  }) => {
     const { t } = useLanguage();
     const [isRunning, setIsRunning] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -633,16 +878,31 @@ const InstalledGameCard = memo(
       };
     }, [game.game, game.name]); // Only depend on game ID properties
 
-    // Load game image
+    // Load game image with localStorage cache
     useEffect(() => {
       let isMounted = true;
       const gameId = game.game || game.name;
+      const localStorageKey = `game-image-${gameId}`;
 
       const loadGameImage = async () => {
+        // Try localStorage first
+        const cachedImage = localStorage.getItem(localStorageKey);
+        if (cachedImage) {
+          if (isMounted) setImageData(cachedImage);
+          return;
+        }
+        // Otherwise, fetch from Electron
         try {
           const imageBase64 = await window.electron.getGameImage(gameId);
           if (imageBase64 && isMounted) {
-            setImageData(`data:image/jpeg;base64,${imageBase64}`);
+            const dataUrl = `data:image/jpeg;base64,${imageBase64}`;
+            setImageData(dataUrl);
+            try {
+              localStorage.setItem(localStorageKey, dataUrl);
+            } catch (e) {
+              // If storage quota exceeded, skip caching
+              console.warn("Could not cache game image:", e);
+            }
           }
         } catch (error) {
           console.error("Error loading game image:", error);
@@ -662,13 +922,33 @@ const InstalledGameCard = memo(
           className={cn(
             "group relative overflow-hidden transition-all duration-200",
             "hover:-translate-y-1 hover:shadow-lg",
-            isSelected && "ring-2 ring-primary",
+            isSelected && "bg-primary/10 ring-2 ring-primary",
+            selectionMode && game.isCustom && "selectable-card",
             "cursor-pointer"
           )}
-          onClick={onPlay}
+          onClick={e => {
+            if (selectionMode && game.isCustom) {
+              e.stopPropagation();
+              onSelectCheckbox();
+            } else {
+              onPlay();
+            }
+          }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
+          {/* Overlay Checkbox for selection mode (only for custom games) */}
+          {selectionMode && game.isCustom && (
+            <div className="absolute left-2 top-2 z-20 flex items-center justify-center rounded bg-white/80 p-0.5 shadow backdrop-blur-sm">
+              <input
+                type="checkbox"
+                checked={isSelected}
+                tabIndex={-1}
+                readOnly
+                className="pointer-events-none h-5 w-5 rounded border-muted accent-primary focus:ring-primary"
+              />
+            </div>
+          )}
           <CardContent className="p-0">
             <div className="relative aspect-[4/3]">
               <img
