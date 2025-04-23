@@ -668,7 +668,7 @@ export default function GameScreen() {
             </div>
 
             <div className="mt-2 flex flex-wrap gap-4">
-              {game.version && (
+              {game.version && game.version !== "-1" && (
                 <div className="flex items-center gap-1 text-sm text-primary/80">
                   <Tag className="h-4 w-4" />
                   <span>{game.version}</span>
