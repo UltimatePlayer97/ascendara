@@ -71,6 +71,7 @@ contextBridge.exposeInMainWorld("electron", {
   deleteGameDirectory: game => ipcRenderer.invoke("delete-game-directory", game),
   getInstalledGames: () => ipcRenderer.invoke("get-installed-games"),
   getInstalledGamesSize: () => ipcRenderer.invoke("get-installed-games-size"),
+  importSteamGames: directory => ipcRenderer.invoke("import-steam-games", directory),
 
   // Download Status
   onDownloadProgress: callback => {

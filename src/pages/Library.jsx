@@ -45,6 +45,7 @@ import gameService from "@/services/gameService";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import igdbService from "@/services/gameInfoService";
+import { useIgdbConfig } from "@/services/gameInfoConfig";
 
 const Library = () => {
   const [games, setGames] = useState([]);
@@ -773,7 +774,10 @@ InstalledGameCard.displayName = "InstalledGameCard";
 const AddGameForm = ({ onSuccess }) => {
   const { t } = useLanguage();
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showImportingDialog, setShowImportingDialog] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
   const [steamappsDirectory, setSteamappsDirectory] = useState("");
+  const [isSteamappsDirectoryInvalid, setIsSteamappsDirectoryInvalid] = useState(false);
 
   // Handler for directory picking
   const handleChooseSteamappsDirectory = async () => {
@@ -781,13 +785,33 @@ const AddGameForm = ({ onSuccess }) => {
     if (dir) setSteamappsDirectory(dir);
   };
 
-  // Handler for import action (to be implemented)
-  const handleImportSteamGames = () => {
-    // TODO: Implement import logic
-    // Example placeholder:
-    // await importSteamGames(steamappsDirectory);
+  // Check if the steamappsDirectory contains 'common'
+  useEffect(() => {
+    if (steamappsDirectory && !steamappsDirectory.toLowerCase().includes("common")) {
+      setIsSteamappsDirectoryInvalid(true);
+    } else {
+      setIsSteamappsDirectoryInvalid(false);
+    }
+  }, [steamappsDirectory]);
+
+  const handleImportSteamGames = async () => {
+    if (!steamappsDirectory) return;
+    setIsSteamappsDirectoryInvalid(false);
     setShowImportDialog(false);
-    setSteamappsDirectory("");
+    setShowImportingDialog(true);
+    setImportSuccess(null);
+    try {
+      await window.electron.importSteamGames(steamappsDirectory);
+      setImportSuccess(true);
+    } catch (error) {
+      setImportSuccess(false);
+    }
+  };
+
+  // Close importing dialog
+  const handleCloseImportingDialog = () => {
+    setShowImportingDialog(false);
+    setImportSuccess(null);
   };
 
   const [formData, setFormData] = useState({
@@ -870,6 +894,28 @@ const AddGameForm = ({ onSuccess }) => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div>
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-start truncate bg-background text-left font-normal text-primary hover:bg-accent"
+              onClick={() => setShowImportDialog(true)}
+              disabled={!useIgdbConfig().enabled}
+            >
+              <Import className="mr-2 h-4 w-4 flex-shrink-0" />
+              <span>{t("library.importSteamGames")}</span>
+            </Button>
+
+            {!useIgdbConfig().enabled && (
+              <div className="flex items-center gap-2 rounded-md bg-yellow-500/10 px-3 py-1.5 text-xs text-yellow-600 dark:text-yellow-400">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span>{t("library.igdbKeysRequired")}</span>
+              </div>
+            )}
+          </div>
+
+          <Separator className="my-2" />
+
           <Button
             type="button"
             variant="outline"
@@ -880,15 +926,6 @@ const AddGameForm = ({ onSuccess }) => {
             <span className="truncate">
               {formData.executable || t("library.chooseExecutableFile")}
             </span>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full justify-start truncate bg-background text-left font-normal text-primary hover:bg-accent"
-            onClick={() => setShowImportDialog(true)}
-          >
-            <Import className="mr-2 h-4 w-4 flex-shrink-0" />
-            <span>{t("library.importSteamGames")}</span>
           </Button>
 
           {/* Import Steam Games Dialog */}
@@ -929,6 +966,11 @@ const AddGameForm = ({ onSuccess }) => {
                     {t("library.chooseDirectory")}
                   </Button>
                 </div>
+                {isSteamappsDirectoryInvalid && (
+                  <div className="mt-1 text-sm font-semibold text-red-500">
+                    {t("library.steamappsDirectoryMissingCommon")}
+                  </div>
+                )}
               </div>
               <AlertDialogFooter>
                 <AlertDialogCancel
@@ -949,6 +991,47 @@ const AddGameForm = ({ onSuccess }) => {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+
+        {/* Importing Dialog */}
+        <AlertDialog open={showImportingDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                {importSuccess === null && (
+                  <>
+                    <Loader className="mr-2 inline h-5 w-5 animate-spin text-primary" />
+                    {t("library.importingGames")}
+                  </>
+                )}
+                {importSuccess === true && t("library.importSuccessTitle")}
+                {importSuccess === false && t("library.importFailedTitle")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-foreground">
+                {importSuccess === null && (
+                  <div className="flex items-center gap-2">
+                    {t("library.importingGamesDesc")}
+                  </div>
+                )}
+                {importSuccess === true && (
+                  <div className="text-primary">{t("library.importSuccessDesc")}</div>
+                )}
+                {importSuccess === false && (
+                  <div className="text-primary">{t("library.importFailedDesc")}</div>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              {importSuccess !== null && (
+                <Button
+                  className="bg-primary text-secondary"
+                  onClick={handleCloseImportingDialog}
+                >
+                  {t("common.ok")}
+                </Button>
+              )}
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="space-y-2">
           <Label htmlFor="name" className="text-foreground">

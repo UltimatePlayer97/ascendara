@@ -94,6 +94,7 @@
     "library": "Library",
     "next": "Next",
     "ok": "OK",
+    "page": "You're viewing page",
     "preferences": "Preferences",
     "prev": "Previous",
     "profile": "Profile",
@@ -514,6 +515,11 @@
     "enterMoreChars": "Image results will appear here as you type",
     "executable": "Executable",
     "executableNotFound": "Game executable not found",
+    "filters": {
+      "favorites": "Favorites",
+      "onlineGames": "Online Games",
+      "vrGames": "VR Games"
+    },
     "gameName": "Game Name",
     "gamesInLibrary": "Total Games",
     "gamesSpace": "Installed Games",
@@ -528,9 +534,16 @@
       "version": "Game Version",
       "vrGame": "Virtual Reality Game"
     },
+    "igdbKeysRequired": "Setup IGDB in Preferences",
     "import": "Import",
+    "importFailedDesc": "There was a problem importing your Steam games. Please try again or check your directory.",
+    "importFailedTitle": "Import Failed",
     "importSteamGames": "Import Steam Games",
-    "importSteamGamesDescription": "Choose the steamapps directory you want to import in and Ascendara will import all the games in that directory. Online, DLC, version tags and other metadata will all be skipped while adding the games.",
+    "importSteamGamesDescription": "Choose the steamapps directory you want to import in and Ascendara will import all the games in that directory. Online, DLC, version tags and other metadata will be skipped while adding the games.",
+    "importSuccessDesc": "Your Steam games have been imported successfully. Some game covers along with executable paths may be missing or incorrect, you can fix this by updating the game info.",
+    "importSuccessTitle": "Import Complete!",
+    "importingGames": "Importing Steam Games...",
+    "importingGamesDesc": "Please wait while your Steam games are being imported. This may take a few minutes depending on your library size.",
     "includesAllDLCs": "Includes All DLCs",
     "launchError": "Launch Error",
     "launchErrorMessage": "Failed to run {{game}}. Sometimes game executables are not named the same as the game name. Please make sure Ascendara is trying to run the correct file.",
@@ -575,6 +588,10 @@
     "shortcutCreated": "Shortcut created",
     "shortcutError": "Error creating shortcut. Maybe the executable path doesn't exist?",
     "size": "Size",
+    "sort": {
+      "aToZ": "Sort A to Z",
+      "zToA": "Sort Z to A"
+    },
     "spaceTooltip": {
       "games": "Space used by Ascendara games: {{size}}",
       "other": "Space used by other files: {{size}}"
@@ -582,6 +599,11 @@
     "steamNotRunning": "Steam is not running",
     "steamNotRunningMessage": "Online-Fix games require Steam to be running. Please start Steam and make sure you're signed into your account then launch the game again.",
     "steamappsDirectory": "Directory to Import",
+    "steamappsDirectoryMissingCommon": "The selected directory does not contain any games. Please select the `common` directory within the steamapps directory.",
+    "tools": {
+      "bulkRemove": "Remove Selected Games",
+      "selected": "Multiselection is enabled"
+    },
     "verifyGameFiles": "Verify Game Files",
     "version": "Version",
     "versionPlaceholder": "e.g., 1.0.0",

@@ -3446,6 +3446,191 @@ ipcMain.handle("uninstall-ascendara", async () => {
     reject(error);
   });
 });
+const getTwitchToken = async (clientId, clientSecret) => {
+  try {
+    console.log("Getting Twitch token...");
+    const response = await axios.post(
+      `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`
+    );
+    console.log("Got Twitch token successfully");
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Error getting Twitch token:", error.message);
+    throw error;
+  }
+};
+
+const searchGameIGDB = async (gameName, clientId, accessToken) => {
+  try {
+    console.log(`Searching IGDB for game: ${gameName}`);
+    const response = await axios.post(
+      "https://api.igdb.com/v4/games",
+      `search "${gameName}"; fields name,cover.*; limit 1;`,
+      {
+        headers: {
+          "Client-ID": clientId,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log("IGDB search response:", response.data);
+
+    if (response.data.length > 0) {
+      if (response.data[0].cover) {
+        console.log(`Found cover for ${gameName}:`, response.data[0].cover);
+        return {
+          name: response.data[0].name,
+          image_id: response.data[0].cover.image_id,
+        };
+      }
+      console.log(`No cover found for ${gameName}`);
+    } else {
+      console.log(`No game found for ${gameName}`);
+    }
+    return null;
+  } catch (error) {
+    console.error("Error searching game:", error.message);
+    return null;
+  }
+};
+
+const getGameDetails = async (gameName, config) => {
+  try {
+    const settings = settingsManager.getSettings();
+    console.log(`Getting game details for: ${gameName}`);
+
+    const accessToken = await getTwitchToken(
+      settings.twitchClientId,
+      settings.twitchSecret
+    );
+    const game = await searchGameIGDB(gameName, settings.twitchClientId, accessToken);
+
+    if (game?.image_id) {
+      const imageUrl = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.image_id}.jpg`;
+      console.log(`Generated image URL for ${gameName}:`, imageUrl);
+      return {
+        name: game.name,
+        cover: {
+          url: imageUrl,
+        },
+      };
+    }
+    console.log(`No image_id found for ${gameName}`);
+    return null;
+  } catch (error) {
+    console.error("Error getting game details:", error.message);
+    return null;
+  }
+};
+
+ipcMain.handle("import-steam-games", async (event, directory) => {
+  const settings = settingsManager.getSettings();
+  try {
+    console.log("Starting Steam games import from:", directory);
+
+    if (!settings.downloadDirectory) {
+      console.error("Download directory not set");
+      return;
+    }
+    const downloadDirectory = settings.downloadDirectory;
+    const gamesFilePath = path.join(downloadDirectory, "games.json");
+    const gamesDirectory = path.join(downloadDirectory, "games");
+
+    console.log("Using directories:", {
+      downloadDirectory,
+      gamesFilePath,
+      gamesDirectory,
+    });
+
+    // Create games directory if it doesn't exist
+    if (!fs.existsSync(gamesDirectory)) {
+      console.log("Creating games directory");
+      fs.mkdirSync(gamesDirectory, { recursive: true });
+    }
+
+    const directories = await fs.promises.readdir(directory, { withFileTypes: true });
+    const gameFolders = directories.filter(dirent => dirent.isDirectory());
+    console.log(`Found ${gameFolders.length} game folders`);
+
+    try {
+      await fs.promises.access(gamesFilePath, fs.constants.F_OK);
+    } catch (error) {
+      console.log("Creating new games.json file");
+      await fs.promises.mkdir(downloadDirectory, { recursive: true });
+      await fs.promises.writeFile(gamesFilePath, JSON.stringify({ games: [] }, null, 2));
+    }
+    const gamesData = JSON.parse(await fs.promises.readFile(gamesFilePath, "utf8"));
+
+    for (const folder of gameFolders) {
+      console.log(`\nProcessing game: ${folder.name}`);
+      try {
+        const gameInfo = await getGameDetails(folder.name, {
+          clientId: settings.twitchClientId,
+          clientSecret: settings.twitchSecret,
+        });
+
+        if (gameInfo?.cover?.url) {
+          console.log(`Downloading image for ${folder.name} from:`, gameInfo.cover.url);
+          try {
+            const response = await axios({
+              url: gameInfo.cover.url,
+              method: "GET",
+              responseType: "arraybuffer",
+            });
+
+            console.log(`Got image response for ${folder.name}:`, {
+              size: response.data.length,
+              type: response.headers["content-type"],
+            });
+
+            const imageBuffer = Buffer.from(response.data);
+            const mimeType = response.headers["content-type"];
+            const extension = getExtensionFromMimeType(mimeType);
+            const imagePath = path.join(
+              gamesDirectory,
+              `${folder.name}.ascendara${extension}`
+            );
+
+            console.log(`Saving image to:`, imagePath);
+            await fs.promises.writeFile(imagePath, imageBuffer);
+            console.log(`Successfully saved image for ${folder.name}`);
+          } catch (imageError) {
+            console.error(
+              `Error downloading image for ${folder.name}:`,
+              imageError.message
+            );
+          }
+        } else {
+          console.log(`No cover URL found for ${folder.name}`);
+        }
+
+        if (!gamesData.games.some(g => g.game === folder.name)) {
+          console.log(`Adding ${folder.name} to games.json`);
+          const newGame = {
+            game: folder.name,
+            online: false,
+            dlc: false,
+            version: "-1",
+            executable: path.join(directory, folder.name, `${folder.name}.exe`),
+            isRunning: false,
+          };
+          gamesData.games.push(newGame);
+        }
+      } catch (err) {
+        console.error(`Error processing game folder ${folder.name}:`, err.message);
+        continue;
+      }
+    }
+
+    console.log("Saving updated games.json");
+    await fs.promises.writeFile(gamesFilePath, JSON.stringify(gamesData, null, 2));
+    console.log("Import completed successfully");
+    return true;
+  } catch (error) {
+    console.error("Error during import:", error.message);
+    return false;
+  }
+});
 
 // Save the custom game
 ipcMain.handle(
