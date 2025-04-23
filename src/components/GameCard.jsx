@@ -104,7 +104,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
   }
 
   return (
-    <Card className="group flex min-h-[400px] flex-col overflow-hidden bg-card text-card-foreground transition-all duration-300 animate-in fade-in-50 hover:shadow-lg">
+    <Card className="group flex min-h-[400px] flex-col overflow-hidden border-none bg-card text-card-foreground transition-all duration-300 animate-in fade-in-50 hover:shadow-lg">
       <CardContent className="flex-1 p-0">
         <div className="relative">
           <AspectRatio ratio={16 / 9}>
