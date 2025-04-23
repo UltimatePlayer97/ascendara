@@ -1214,7 +1214,7 @@ InstalledGameCard.displayName = "InstalledGameCard";
 const AddGameForm = ({ onSuccess }) => {
   const { t } = useLanguage();
   const [showImportDialog, setShowImportDialog] = useState(false);
-  const [showImportingDialog, setShowImportingDialog] = useState(true);
+  const [showImportingDialog, setShowImportingDialog] = useState(false);
   const [importSuccess, setImportSuccess] = useState(null);
   const [steamappsDirectory, setSteamappsDirectory] = useState("");
   const [isSteamappsDirectoryInvalid, setIsSteamappsDirectoryInvalid] = useState(false);
