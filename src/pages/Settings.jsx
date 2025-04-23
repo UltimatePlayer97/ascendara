@@ -217,7 +217,6 @@ function Settings() {
   const [twitchClientId, setTwitchClientId] = useState("");
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [reloadMessage, setReloadMessage] = useState("");
-  const [showEarlyPreviewDialog, setShowEarlyPreviewDialog] = useState(false);
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
   const [dependencyStatus, setDependencyStatus] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
@@ -387,18 +386,6 @@ function Settings() {
         }));
       }
     });
-  };
-
-  const handleBuildSwitch = async () => {
-    handleSettingChange("earlyReleasePreview", !settings.earlyReleasePreview);
-    if (!settings.earlyReleasePreview) {
-      window.electron.switchBuild("experimental");
-    } else {
-      window.electron.switchBuild("stable");
-    }
-    setShowEarlyPreviewDialog(false);
-    setReloadMessage(t("settings.buildSwitchReload"));
-    setShowReloadDialog(true);
   };
 
   const handleDirectorySelect = useCallback(async () => {
@@ -2107,46 +2094,6 @@ function Settings() {
               </div>
             </Card>
 
-            {/* Early Preview Card */}
-            <Card className="p-6">
-              <div className="mb-2 flex items-center gap-2">
-                <Eye className="mb-2 h-5 w-5 text-primary" />
-                <h2 className="text-md font-semibold text-primary">
-                  {t("settings.earlyReleasePreview")} (Coming Soon)
-                </h2>
-              </div>
-              <div className="space-y-6 opacity-50">
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {t("settings.earlyReleasePreviewDesc")}
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium opacity-50">
-                        {t("settings.enableEarlyReleasePreview")}
-                      </Label>
-                      <Switch
-                        disabled
-                        checked={false}
-                        //checked={settings.earlyReleasePreview}
-                        //onCheckedChange={() => setShowEarlyPreviewDialog(true)}
-                      />
-                    </div>
-                    {settings.earlyReleasePreview && (
-                      <Button
-                        variant="outline"
-                        className="w-full gap-2"
-                        onClick={() => navigate("/earlypreviewdash")}
-                      >
-                        <LayoutDashboard size={18} />
-                        {t("settings.earlyPreviewDash")}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
             {/* Developer Settings Card - Only shown in development mode */}
             {isDev && (
               <Card className="p-6">
@@ -2279,35 +2226,6 @@ function Settings() {
               className="bg-red-500 hover:bg-red-600"
             >
               {t("settings.torrentWarningDialog.continue")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Early Release Preview Dialog */}
-      <AlertDialog open={showEarlyPreviewDialog} onOpenChange={setShowEarlyPreviewDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-bold text-foreground">
-              {!settings.earlyReleasePreview
-                ? "Enable Experimental Build?"
-                : "Switch to Stable Version?"}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
-              {!settings.earlyReleasePreview
-                ? "Would you like to install and restart with the latest experimental build now?"
-                : "You'll need to install the latest stable version. Would you like to do this now?"}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="text-primary">Later</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                handleBuildSwitch();
-              }}
-              className="bg-primary text-secondary"
-            >
-              {!settings.earlyReleasePreview ? "Install Now" : "Install Stable Version"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

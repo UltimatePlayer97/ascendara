@@ -57,21 +57,11 @@
       "title": "Let me know how you like it"
     },
     "toasts": {
-      "buildSwitchReady": "Build Switch Ready",
-      "buildSwitchReadyDesc": "The selected build has been downloaded. Install now to switch versions.",
-      "experimentOutOfDate": "This build is out of date",
-      "experimentOutOfDateDesc": "It is recommended that you stay on the latest experimental build.",
-      "experimentUpdateReady": "New Build Available",
-      "experimentUpdateReadyDesc": "A new experimental build is available. Ascendara can update automatically to it.",
       "installAndRestart": "Install & Restart",
       "justUpdated": "Update Complete",
       "justUpdatedDesc": "You've just updated to {{version}}",
       "outOfDate": "Ascendara is out of date",
       "outOfDateDesc": "Please download the latest version from the official website",
-      "switchToExperimental": "Switch to Experimental Build",
-      "switchToExperimentalDesc": "Switch to the experimental build to test new features and provide feedback.",
-      "switchToStable": "Switch to Stable Build",
-      "switchToStableDesc": "Switch to the stable build of Ascendara for the most reliable experience.",
       "updateNow": "Update Now",
       "updateReady": "Ascendara is ready to update",
       "updateReadyDesc": "Ascendara downloaded the update and is ready to install and restart now",
@@ -147,7 +137,6 @@
       "downloading": "Downloading",
       "getExtension": "Don't have the extension? Get it for Chrome or Firefox",
       "gofileInstructions": {
-        "action": "Simply click on Download Now to start downloading this game.",
         "description": "Unlike other providers that require a CAPTCHA verification, GoFile allows direct downloads through their API.",
         "thanks": "Thanks to ltsdw on GitHub"
       },
@@ -194,36 +183,7 @@
       "nextStep": "Next Step →",
       "noThanks": "No Thanks",
       "startGuide": "Start Guide",
-      "steps": [
-        {
-          "description": "The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don't have it, close the guide and click the \"Don't have the extension? Get it for Chrome or Firefox\" button to download it.",
-          "title": "The Ascendara Download Handler"
-        },
-        {
-          "description": "After installing the extension, click the extension icon to enable the handler.",
-          "title": "Step 1: Enable the Handler"
-        },
-        {
-          "description": "The extension can stay on as it will only send known providers to Ascendara.",
-          "title": "The Download Handler"
-        },
-        {
-          "description": "Complete the CAPTCHA, and start the download.",
-          "title": "Step 2: Start the download"
-        },
-        {
-          "description": "Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.",
-          "title": "Step 3: Using the Extension"
-        },
-        {
-          "description": "Click the button to Open Ascendara.",
-          "title": "Step 4: Downloading"
-        },
-        {
-          "description": "Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.",
-          "title": "That's it!"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "Downloading with Ascendara"
     },
     "noGameInfoAvailable": "Setup Ascendara Xtra in Preferences to see more information about this game",
@@ -340,58 +300,6 @@
     "waiting": "Waiting for Peers",
     "waitingDescription": "qBittorrent is looking for peers to connect to download pieces of the torrent file from other users and upload to them in turn. Others may be able to see what you're downloading and/or determine your public IP address."
   },
-  "earlyPreview": {
-    "actions": "Quick Actions",
-    "alreadyVoted": "You have already voted for this feature",
-    "debugInfo": "Access debug logs to help diagnose and fix any technical issues you encounter.",
-    "debugLogError": "Failed to open debug logs folder",
-    "description": "View and vote the different experimental features in the early builds of Ascendare before they are released. Your feedback and vote matters and will help shape Ascendara.",
-    "discordInfo": "Join the Discord community to request new features and discuss ideas with other users.",
-    "earlyBuild": "Latest Preview Build",
-    "experimentalFeatures": "Experimental Features",
-    "fetchError": "Failed to load experimental features",
-    "getOnExperimental": "In order to see and vote on the latest experimental features, you need to get on Experimental build of Ascendara. Either restart Ascendara completely to trigger an update check or install the latest Experimental build from the download page.",
-    "helpUsImprove": "Improve Ascendara",
-    "joinDiscord": "Join Discord",
-    "noExperimentalFeatures": "No Experimental Features Yet...",
-    "noFeatures": "No experimental features available at the moment.",
-    "openDebugFolder": "View Debug Logs",
-    "released": "Official Release",
-    "reportInfo": "Found a bug? Report it directly to the server and the issue will be investigated.",
-    "reportIssue": "Report Issue",
-    "requestFeature": "Request Feature",
-    "status": {
-      "active": {
-        "description": "This feature is currently active in the early build and ready for testing",
-        "title": "Active"
-      },
-      "deprecated": {
-        "description": "This feature is still present but will be removed in a future update",
-        "title": "Deprecated"
-      },
-      "implemented": {
-        "description": "This feature has been successfully implemented and is now in the released version",
-        "title": "Implemented"
-      },
-      "trashed": {
-        "description": "This feature has been discarded and will not be implemented",
-        "title": "Trashed"
-      }
-    },
-    "title": "Early Preview Dashboard",
-    "voteDown": "Has Problems",
-    "voteDownSuccess": "You're downvote was submitted successfully",
-    "voteError": "Failed to submit your vote",
-    "voteSuccess": "Thanks for your feedback!",
-    "voteUp": "Works Great",
-    "voteUpSuccess": "You're upvote was submitted successfully",
-    "votedDown": "You said this feature has problems",
-    "votedUp": "You said this feature works great",
-    "votingClosed": "Voting is closed",
-    "votingInProgress": "Processing vote...",
-    "warning": "These features are in early development and may be unstable. You are using at your own risk."
-  },
-
   "game": {
     "metadata": {
       "developer": "Developer",
@@ -695,7 +603,6 @@
     "ascendaraWorkshopDownloaderEnable": "Add to Navigation Bar",
     "autoCreateShortcuts": "Automatically Create Shortcuts",
     "autoCreateShortcutsDescription": "Automatically create shortcuts on desktop for games that run successfully for the first time",
-    "buildSwitchReload": "You'll need to reload Ascendara in order to queue the update file for the Experimental Build. Would you like to do this now?",
     "cannotCheckDependencies": "Cannot check dependencies on this system",
     "cannotDisableTorrent": "Switch to SteamRIP source before disabling torrent support",
     "checkConfig": "Check Configuration",
@@ -708,6 +615,12 @@
     "customThreadCountDesc": "Higher values may improve download speed but require more CPU power and memory. Maximum: 32 threads",
     "darkThemes": "Dark Themes",
     "defaultDownloadLocation": "Default Download Location",
+    "downloadLimit": "Download Speed Limit",
+    "downloadLimitDescription": "Set a maximum speed for downloads. 0 means unlimited.",
+    "downloadLimitHigh": "High",
+    "downloadLimitLow": "Low",
+    "downloadLimitMedium": "Medium",
+    "downloadLimitUnlimited": "Unlimited",
     "downloadLocationWarning": "Ascendara cannot write files to the chosen directory. Change was not saved.",
     "downloadPaths": "Download Paths",
     "downloadThreads": "Download Threads",
@@ -720,11 +633,7 @@
       "veryHigh": "Very High (12 threads) - For fast connections"
     },
     "downloaderRunningWarning": "You cannot change these settings while a download is in progress",
-    "earlyPreviewDash": "Visit Dashboard",
-    "earlyReleasePreview": "Early Release Preview",
-    "earlyReleasePreviewDesc": "Install versions of Ascendara with new features before they're officially released. Help improve Ascendara by testing and reporting issues.",
     "enableAscendaraTimechine": "Enable the Ascendara Timemachine",
-    "enableEarlyReleasePreview": "Get early preview updates",
     "enterGiantBombApiKey": "Paste your GiantBomb API Key",
     "enterIgdbApiKey": "Paste your secret Twitch key",
     "enterTwitchClientId": "Paste your Twitch client ID",
