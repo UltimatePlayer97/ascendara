@@ -3632,6 +3632,49 @@ ipcMain.handle("import-steam-games", async (event, directory) => {
   }
 });
 
+// Update a custom game's cover image
+ipcMain.handle("update-game-cover", async (event, game, imgID) => {
+  const settings = settingsManager.getSettings();
+  try {
+    if (!settings.downloadDirectory) {
+      console.error("Download directory not set");
+      return false;
+    }
+    const downloadDirectory = settings.downloadDirectory;
+    const gamesFilePath = path.join(downloadDirectory, "games.json");
+    const gamesDirectory = path.join(downloadDirectory, "games");
+
+    // Download and save the new cover image
+    if (imgID) {
+      const imageLink =
+        settings.gameSource === "fitgirl"
+          ? `https://api.ascendara.app/v2/fitgirl/image/${imgID}`
+          : `https://api.ascendara.app/v2/image/${imgID}`;
+
+      const response = await axios({
+        url: imageLink,
+        method: "GET",
+        responseType: "arraybuffer",
+      });
+
+      const imageBuffer = Buffer.from(response.data);
+      const mimeType = response.headers["content-type"];
+      const extension = getExtensionFromMimeType(mimeType);
+
+      // Overwrite the existing image file
+      await fs.promises.writeFile(
+        path.join(gamesDirectory, `${game}.ascendara${extension}`),
+        imageBuffer
+      );
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error updating game cover:", error);
+    return false;
+  }
+});
+
 // Save the custom game
 ipcMain.handle(
   "save-custom-game",

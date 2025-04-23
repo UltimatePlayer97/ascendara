@@ -34,6 +34,8 @@ import {
   SortAscIcon,
   ArrowUpAZ,
   ArrowDownAZ,
+  Pencil,
+  ImageUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -916,12 +918,160 @@ const InstalledGameCard = memo(
       };
     }, [game.game, game.name]); // Only depend on game ID properties
 
+    // Dialog state for editing cover
+    const [showEditCoverDialog, setShowEditCoverDialog] = useState(false);
+    const minSearchLength = 3;
+    const [coverSearch, setCoverSearch] = useState({
+      query: "",
+      isLoading: false,
+      results: [],
+      selectedCover: null,
+    });
+
+    const handleCoverSearch = async query => {
+      setCoverSearch(prev => ({
+        ...prev,
+        query,
+        isLoading: true,
+        results: [],
+        selectedCover: null,
+      }));
+      if (query.length < minSearchLength) {
+        setCoverSearch(prev => ({ ...prev, isLoading: false, results: [] }));
+        return;
+      }
+      try {
+        const covers = await gameService.searchGameCovers(query);
+        setCoverSearch(prev => ({ ...prev, isLoading: false, results: covers || [] }));
+      } catch (err) {
+        setCoverSearch(prev => ({ ...prev, isLoading: false, results: [] }));
+      }
+    };
+
     return (
       <>
+        {/* Edit Cover Dialog */}
+        <AlertDialog open={showEditCoverDialog} onOpenChange={setShowEditCoverDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                {t("library.changeCoverImage")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground">
+                {t("library.searchForCoverImage")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            {/* Game Cover Search Section (copied and adapted from AddGameForm) */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="relative flex-grow">
+                  <SearchIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-5 transform text-muted-foreground" />
+                  <Input
+                    id="coverSearch"
+                    value={coverSearch.query}
+                    onChange={e => handleCoverSearch(e.target.value)}
+                    className="border-input bg-background pl-8 text-foreground"
+                    placeholder={t("library.searchGameCover")}
+                    minLength={minSearchLength}
+                  />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {t("library.searchGameCoverNotice")}
+                  </p>
+                </div>
+              </div>
+              {/* Cover Search Results */}
+              {coverSearch.query.length < minSearchLength ? (
+                <div className="py-2 text-center text-sm text-muted-foreground">
+                  {t("library.enterMoreChars", { count: minSearchLength })}
+                </div>
+              ) : coverSearch.isLoading ? (
+                <div className="flex justify-center py-4">
+                  <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+                </div>
+              ) : coverSearch.results.length > 0 ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {coverSearch.results.map((cover, index) => (
+                    <div
+                      key={index}
+                      onClick={() =>
+                        setCoverSearch(prev => ({ ...prev, selectedCover: cover }))
+                      }
+                      className={cn(
+                        "relative aspect-video cursor-pointer overflow-hidden rounded-lg border-2 transition-all",
+                        coverSearch.selectedCover === cover
+                          ? "border-primary shadow-lg"
+                          : "border-transparent hover:border-primary/50"
+                      )}
+                    >
+                      <img
+                        src={gameService.getImageUrl(cover.imgID)}
+                        alt={cover.title}
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity hover:opacity-100">
+                        <p className="px-2 text-center text-sm text-white">
+                          {cover.title}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-2 text-center text-sm text-muted-foreground">
+                  {t("library.noResultsFound")}
+                </div>
+              )}
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                className="text-primary"
+                onClick={() => setShowEditCoverDialog(false)}
+              >
+                {t("common.cancel")}
+              </AlertDialogCancel>
+              <Button
+                variant="primary"
+                className="bg-primary text-secondary"
+                disabled={!coverSearch.selectedCover}
+                onClick={async () => {
+                  if (!coverSearch.selectedCover) return;
+                  // Remove old image from localStorage
+                  const localStorageKey = `game-cover-${game.game || game.name}`;
+                  localStorage.removeItem(localStorageKey);
+                  // Fetch new image and save to localStorage
+                  try {
+                    const imageUrl = gameService.getImageUrl(
+                      coverSearch.selectedCover.imgID
+                    );
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      const dataUrl = reader.result;
+                      try {
+                        localStorage.setItem(localStorageKey, dataUrl);
+                      } catch (e) {
+                        console.warn("Could not cache new cover image:", e);
+                      }
+                      setImageData(dataUrl);
+                      setShowEditCoverDialog(false);
+                    };
+                    reader.readAsDataURL(blob);
+                  } catch (e) {
+                    console.error("Failed to update cover image", e);
+                  }
+                }}
+              >
+                {t("library.updateImage")}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <Card
           className={cn(
-            "group relative overflow-hidden transition-all duration-200",
-            "hover:-translate-y-1 hover:shadow-lg",
+            "group relative overflow-hidden rounded-xl border border-border bg-card shadow-lg transition-all duration-200",
+            "hover:-translate-y-1 hover:shadow-xl",
             isSelected && "bg-primary/10 ring-2 ring-primary",
             selectionMode && game.isCustom && "selectable-card",
             "cursor-pointer"
@@ -937,7 +1087,6 @@ const InstalledGameCard = memo(
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Overlay Checkbox for selection mode (only for custom games) */}
           {selectionMode && game.isCustom && (
             <div className="absolute left-2 top-2 z-20 flex items-center justify-center rounded bg-white/80 p-0.5 shadow backdrop-blur-sm">
               <input
@@ -950,98 +1099,109 @@ const InstalledGameCard = memo(
             </div>
           )}
           <CardContent className="p-0">
-            <div className="relative aspect-[4/3]">
+            <div className="relative aspect-[4/3] overflow-hidden">
               <img
                 src={imageData}
                 alt={game.game}
-                className="h-full w-full object-cover"
+                className="h-full w-full border-b border-border object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <div
-                className={cn(
-                  "absolute inset-0 to-transparent",
-                  "opacity-0 transition-opacity group-hover:opacity-100",
-                  "flex flex-col justify-end p-4 text-secondary"
-                )}
-              >
-                <div className="absolute right-4 top-4">
+              {/* Floating action bar for buttons */}
+              <div className="absolute bottom-3 right-3 z-10 flex gap-2 rounded-lg bg-black/60 p-2 opacity-90 shadow-md transition-opacity hover:opacity-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                  title={
+                    isFavorite ? t("library.removeFavorite") : t("library.addFavorite")
+                  }
+                  tabIndex={0}
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleFavorite(game.game || game.name);
+                  }}
+                >
+                  <Heart
+                    className={cn(
+                      "h-6 w-6",
+                      isFavorite ? "fill-primary text-primary" : "fill-none text-white"
+                    )}
+                  />
+                </Button>
+                {game.isCustom && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-white/20 hover:text-primary"
+                    className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                    style={{ pointerEvents: "auto" }}
+                    title={t("library.editCoverImage")}
+                    tabIndex={0}
                     onClick={e => {
                       e.stopPropagation();
-                      onToggleFavorite(game.game || game.name);
+                      setShowEditCoverDialog(true);
                     }}
                   >
-                    <Heart
-                      className={cn(
-                        "h-6 w-6",
-                        isFavorite ? "fill-primary text-primary" : "fill-none text-white"
-                      )}
-                    />
+                    <ImageUp className="h-5 w-5 fill-none text-white" />
                   </Button>
-                </div>
+                )}
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex items-center justify-between p-4">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="truncate font-semibold text-foreground">{game.game}</h3>
-                {game.online && <Gamepad2 className="h-4 w-4 text-muted-foreground" />}
-                {game.dlc && <Gift className="h-4 w-4 text-muted-foreground" />}
-                {game.isVr && (
-                  <svg
-                    className="p-0.5 text-foreground"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 10C2 8.89543 2.89543 8 4 8H20C21.1046 8 22 8.89543 22 10V17C22 18.1046 21.1046 19 20 19H16.1324C15.4299 19 14.7788 18.6314 14.4174 18.029L12.8575 15.4292C12.4691 14.7818 11.5309 14.7818 11.1425 15.4292L9.58261 18.029C9.22116 18.6314 8.57014 19 7.86762 19H4C2.89543 19 2 18.1046 2 17V10Z"
-                      stroke="currentColor"
-                      strokeWidth={1.3}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M3.81253 6.7812C4.5544 5.6684 5.80332 5 7.14074 5H16.8593C18.1967 5 19.4456 5.6684 20.1875 6.7812L21 8H3L3.81253 6.7812Z"
-                      stroke="currentColor"
-                      strokeWidth={1.3}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-                {executableExists === true && (
-                  <AlertTriangle
-                    className="h-4 w-4 text-yellow-500"
-                    title={t("library.executableNotFound")}
+          <CardFooter className="flex flex-col items-start gap-2 p-4 pt-3">
+            <div className="flex w-full items-center gap-2">
+              <h3 className="flex-1 truncate text-lg font-semibold text-foreground">
+                {game.game}
+              </h3>
+              {game.online && <Gamepad2 className="h-4 w-4 text-muted-foreground" />}
+              {game.dlc && <Gift className="h-4 w-4 text-muted-foreground" />}
+              {game.isVr && (
+                <svg
+                  className="p-0.5 text-foreground"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2 10C2 8.89543 2.89543 8 4 8H20C21.1046 8 22 8.89543 22 10V17C22 18.1046 21.1046 19 20 19H16.1324C15.4299 19 14.7788 18.6314 14.4174 18.029L12.8575 15.4292C12.4691 14.7818 11.5309 14.7818 11.1425 15.4292L9.58261 18.029C9.22116 18.6314 8.57014 19 7.86762 19H4C2.89543 19 2 18.1046 2 17V10Z"
+                    stroke="currentColor"
+                    strokeWidth={1.3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
-                )}
-              </div>
-              <p className="line-clamp-2 text-sm text-muted-foreground">
-                {game.playTime !== undefined ? (
-                  <span className="font-medium md:text-xs">
-                    {game.playTime < 60
-                      ? t("library.lessThanMinute")
-                      : game.playTime < 120
-                        ? `1 ${t("library.minute")} ${t("library.ofPlaytime")}`
-                        : game.playTime < 3600
-                          ? `${Math.floor(game.playTime / 60)} ${t("library.minutes")} ${t("library.ofPlaytime")}`
-                          : game.playTime < 7200
-                            ? `1 ${t("library.hour")} ${t("library.ofPlaytime")}`
-                            : `${Math.floor(game.playTime / 3600)} ${t("library.hours")} ${t("library.ofPlaytime")}`}
-                  </span>
-                ) : (
-                  <span className="font-medium md:text-xs">
-                    {t("library.neverPlayed")}
-                  </span>
-                )}
-              </p>
+                  <path
+                    d="M3.81253 6.7812C4.5544 5.6684 5.80332 5 7.14074 5H16.8593C18.1967 5 19.4456 5.6684 20.1875 6.7812L21 8H3L3.81253 6.7812Z"
+                    stroke="currentColor"
+                    strokeWidth={1.3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+              {executableExists === true && (
+                <AlertTriangle
+                  className="h-4 w-4 text-yellow-500"
+                  title={t("library.executableNotFound")}
+                />
+              )}
             </div>
+            <p className="line-clamp-2 w-full text-sm text-muted-foreground">
+              {game.playTime !== undefined ? (
+                <span className="font-medium md:text-xs">
+                  {game.playTime < 60
+                    ? t("library.lessThanMinute")
+                    : game.playTime < 120
+                      ? `1 ${t("library.minute")} ${t("library.ofPlaytime")}`
+                      : game.playTime < 3600
+                        ? `${Math.floor(game.playTime / 60)} ${t("library.minutes")} ${t("library.ofPlaytime")}`
+                        : game.playTime < 7200
+                          ? `1 ${t("library.hour")} ${t("library.ofPlaytime")}`
+                          : `${Math.floor(game.playTime / 3600)} ${t("library.hours")} ${t("library.ofPlaytime")}`}
+                </span>
+              ) : (
+                <span className="font-medium md:text-xs">{t("library.neverPlayed")}</span>
+              )}
+            </p>
           </CardFooter>
         </Card>
       </>
@@ -1054,7 +1214,7 @@ InstalledGameCard.displayName = "InstalledGameCard";
 const AddGameForm = ({ onSuccess }) => {
   const { t } = useLanguage();
   const [showImportDialog, setShowImportDialog] = useState(false);
-  const [showImportingDialog, setShowImportingDialog] = useState(false);
+  const [showImportingDialog, setShowImportingDialog] = useState(true);
   const [importSuccess, setImportSuccess] = useState(null);
   const [steamappsDirectory, setSteamappsDirectory] = useState("");
   const [isSteamappsDirectoryInvalid, setIsSteamappsDirectoryInvalid] = useState(false);
@@ -1279,7 +1439,7 @@ const AddGameForm = ({ onSuccess }) => {
               <AlertDialogTitle className="text-2xl font-bold text-foreground">
                 {importSuccess === null && (
                   <>
-                    <Loader className="mr-2 inline h-5 w-5 animate-spin text-primary" />
+                    <Loader className="text-foreground-muted mr-2 inline h-5 w-5 animate-spin" />
                     {t("library.importingGames")}
                   </>
                 )}
@@ -1293,10 +1453,14 @@ const AddGameForm = ({ onSuccess }) => {
                   </div>
                 )}
                 {importSuccess === true && (
-                  <div className="text-primary">{t("library.importSuccessDesc")}</div>
+                  <div className="text-foreground-muted">
+                    {t("library.importSuccessDesc")}
+                  </div>
                 )}
                 {importSuccess === false && (
-                  <div className="text-primary">{t("library.importFailedDesc")}</div>
+                  <div className="text-foreground-muted">
+                    {t("library.importFailedDesc")}
+                  </div>
                 )}
               </AlertDialogDescription>
             </AlertDialogHeader>
