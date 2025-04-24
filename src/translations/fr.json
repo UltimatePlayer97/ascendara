@@ -57,21 +57,11 @@
       "title": "Faites-moi savoir comment vous l'aimez"
     },
     "toasts": {
-      "buildSwitchReady": "Construire l'interrupteur prêt",
-      "buildSwitchReadyDesc": "La version sélectionnée a été téléchargée. Installez maintenant pour changer de versions.",
-      "experimentOutOfDate": "Cette construction est obsolète",
-      "experimentOutOfDateDesc": "Il est recommandé de rester sur la dernière construction expérimentale.",
-      "experimentUpdateReady": "Nouvelle construction disponible",
-      "experimentUpdateReadyDesc": "Une nouvelle version expérimentale est disponible. Ascendara peut y mettre à jour automatiquement.",
       "installAndRestart": "Installer et redémarrer",
       "justUpdated": "Mise à jour complète",
       "justUpdatedDesc": "Vous venez de mettre à jour {{version}}",
       "outOfDate": "Ascendara est obsolète",
       "outOfDateDesc": "Veuillez télécharger la dernière version sur le site officiel",
-      "switchToExperimental": "Passez à la construction expérimentale",
-      "switchToExperimentalDesc": "Passez à la version expérimentale pour tester de nouvelles fonctionnalités et fournissez des commentaires.",
-      "switchToStable": "Passez à la construction stable",
-      "switchToStableDesc": "Passez à la construction stable d'Ascendara pour l'expérience la plus fiable.",
       "updateNow": "Mettre à jour maintenant",
       "updateReady": "Ascendara est prête à mettre à jour",
       "updateReadyDesc": "Ascendara a téléchargé la mise à jour et est prêt à installer et à redémarrer maintenant",
@@ -147,7 +137,6 @@
       "downloading": "Téléchargement",
       "getExtension": "Vous n'avez pas l'extension? Obtenez-le pour Chrome ou Firefox",
       "gofileInstructions": {
-        "action": "Cliquez simplement sur Télécharger maintenant pour commencer à télécharger ce jeu.",
         "description": "Contrairement aux autres fournisseurs qui nécessitent une vérification CAPTCHA, GoFile permet des téléchargements directs via leur API.",
         "thanks": "Merci à LTSDW sur GitHub"
       },
@@ -194,36 +183,7 @@
       "nextStep": "Étape suivante →",
       "noThanks": "Non merci",
       "startGuide": "Guide de démarrage",
-      "steps": [
-        {
-          "description": "Le gestionnaire de téléchargement Ascendara arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous à Ascendara. Si vous ne l'avez pas, fermez le guide et cliquez sur le bouton \"Ne pas avoir l'extension? Obtenez-le pour Chrome ou Firefox\" pour le télécharger.",
-          "title": "Le gestionnaire de téléchargement Ascencera"
-        },
-        {
-          "description": "Après avoir installé l'extension, cliquez sur l'icône d'extension pour activer le gestionnaire.",
-          "title": "Étape 1: Activer le gestionnaire"
-        },
-        {
-          "description": "L'extension peut rester en marche car elle n'enverra que des fournisseurs connus à Ascendara.",
-          "title": "Le gestionnaire de téléchargement"
-        },
-        {
-          "description": "Complétez le captcha et commencez le téléchargement.",
-          "title": "Étape 2: Démarrez le téléchargement"
-        },
-        {
-          "description": "Une fois que le téléchargement essaie de commencer, vous verrez une fenêtre contextuelle demander à ouvrir Ascendara. Basculez le bouton toujours autoriser à permettre à l'extension d'envoyer toujours les fournisseurs connus à Ascendara.",
-          "title": "Étape 3: Utilisation de l'extension"
-        },
-        {
-          "description": "Cliquez sur le bouton pour ouvrir Ascendara.",
-          "title": "Étape 4: téléchargement"
-        },
-        {
-          "description": "Votre téléchargement commencera automatiquement dans Ascendara. Si vous n'êtes pas amené à la page de téléchargement, passez-y.",
-          "title": "C'est ça!"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}, {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}, {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}, {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}, {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}, {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}, {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "Téléchargement avec Ascendara"
     },
     "noGameInfoAvailable": "Configurez Ascendara Xtra dans les préférences pour voir plus d'informations sur ce jeu",
@@ -288,7 +248,7 @@
       "torrentSent": "Torrent envoyé à QbitTorrent"
     },
     "update": {
-      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements distincts, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
+      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements séparés, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
       "title": "Prêt à mettre à jour {{game}}?"
     }
   },
@@ -318,6 +278,7 @@
       "title": "Téléchargement sur Ascendara",
       "understand": "Je comprends"
     },
+    "limitedTo": "Limité à",
     "noDownloads": "Eh bien, c'est relaxant ...",
     "noDownloadsMessage": "Vous ne téléchargez rien pour le moment, commencez un téléchargement pour suivre ses progrès ici.",
     "noFilesError": "N'a reçu aucune erreur de fichiers du téléchargeur. Le lien de téléchargement a probablement été supprimé de la source",
@@ -339,57 +300,6 @@
     "verifyingDescription": "Ascendara vérifie les fichiers de jeu. Cela peut également prendre un certain temps en fonction de la taille du jeu.",
     "waiting": "En attendant ses pairs",
     "waitingDescription": "QBitTorrent recherche des pairs pour se connecter pour télécharger des pièces du fichier torrent des autres utilisateurs et leur télécharger à leur tour. D'autres peuvent voir ce que vous téléchargez et / ou déterminer votre adresse IP publique."
-  },
-  "earlyPreview": {
-    "actions": "Actions rapides",
-    "alreadyVoted": "Vous avez déjà voté pour cette fonctionnalité",
-    "debugInfo": "Accédez aux journaux de débogage pour aider à diagnostiquer et résoudre les problèmes techniques que vous rencontrez.",
-    "debugLogError": "Échec de l'ouverture du dossier de journaux de débogage",
-    "description": "Voir et voter les différentes caractéristiques expérimentales dans les premières constructions d'Ascendare avant leur sortie. Vos commentaires et vote sont importants et vous aideront à façonner Ascendara.",
-    "discordInfo": "Rejoignez la communauté Discord pour demander de nouvelles fonctionnalités et discuter des idées avec d'autres utilisateurs.",
-    "earlyBuild": "Dernière version d'aperçu",
-    "experimentalFeatures": "Caractéristiques expérimentales",
-    "fetchError": "Échec du chargement des fonctionnalités expérimentales",
-    "getOnExperimental": "Afin de voir et de voter sur les dernières fonctionnalités expérimentales, vous devez vous mettre sur la construction expérimentale d'Ascendara. Soit redémarrer Ascendara complètement pour déclencher une vérification de mise à jour ou installer la dernière version expérimentale à partir de la page de téléchargement.",
-    "helpUsImprove": "Améliorer Ascendara",
-    "joinDiscord": "Rejoignez Discord",
-    "noExperimentalFeatures": "Aucune fonctionnalité expérimentale encore ...",
-    "noFeatures": "Aucune fonctionnalité expérimentale disponible pour le moment.",
-    "openDebugFolder": "Afficher les journaux de débogage",
-    "released": "Libération officielle",
-    "reportInfo": "Vous avez trouvé un bug? Signalez-le directement au serveur et le problème sera étudié.",
-    "reportIssue": "Signaler une question",
-    "requestFeature": "Demande de demande",
-    "status": {
-      "active": {
-        "description": "Cette fonctionnalité est actuellement active dans la construction précoce et prête à tester",
-        "title": "Actif"
-      },
-      "deprecated": {
-        "description": "Cette fonctionnalité est toujours présente mais sera supprimée dans une future mise à jour",
-        "title": "Déprécié"
-      },
-      "implemented": {
-        "description": "Cette fonctionnalité a été implémentée avec succès et est maintenant dans la version publiée",
-        "title": "Mis en œuvre"
-      },
-      "trashed": {
-        "description": "Cette fonctionnalité a été jetée et ne sera pas mise en œuvre",
-        "title": "Piétiné"
-      }
-    },
-    "title": "Tableau de bord prévisual précoce",
-    "voteDown": "A des problèmes",
-    "voteDownSuccess": "Votre vote Down a été soumis avec succès",
-    "voteError": "N'a pas soumis votre vote",
-    "voteSuccess": "Merci pour vos commentaires!",
-    "voteUp": "Fonctionne très",
-    "voteUpSuccess": "Vous êtes soumis avec succès",
-    "votedDown": "Vous avez dit que cette fonctionnalité a des problèmes",
-    "votedUp": "Vous avez dit que cette fonctionnalité fonctionne très bien",
-    "votingClosed": "Le vote est fermé",
-    "votingInProgress": "Vote de traitement ...",
-    "warning": "Ces fonctionnalités sont en début de développement et peuvent être instables. Vous utilisez à vos propres risques."
   },
   "game": {
     "metadata": {
@@ -691,7 +601,6 @@
     "ascendaraWorkshopDownloaderEnable": "Ajouter à la barre de navigation",
     "autoCreateShortcuts": "Créer automatiquement les raccourcis",
     "autoCreateShortcutsDescription": "Créez automatiquement les raccourcis sur le bureau pour les jeux qui s'exécutent avec succès pour la première fois",
-    "buildSwitchReload": "Vous devrez recharger Ascendara afin de filer le fichier de mise à jour pour la version expérimentale. Souhaitez-vous faire cela maintenant?",
     "cannotCheckDependencies": "Impossible de vérifier les dépendances sur ce système",
     "cannotDisableTorrent": "Passez à la source Steamrip avant de désactiver le support torrent",
     "checkConfig": "Vérifier la configuration",
@@ -704,23 +613,21 @@
     "customThreadCountDesc": "Des valeurs plus élevées peuvent améliorer la vitesse de téléchargement mais nécessitent plus de puissance et de mémoire CPU. Maximum: 32 fils",
     "darkThemes": "Thèmes sombres",
     "defaultDownloadLocation": "Emplacement de téléchargement par défaut",
+    "downloadLimit": "Télécharger la limite de vitesse",
+    "downloadLimitDescription": "Définissez une vitesse maximale pour les téléchargements. 0 signifie illimité.",
     "downloadLocationWarning": "Ascendara ne peut pas écrire de fichiers dans le répertoire choisi. Le changement n'a pas été sauvé.",
-    "downloadPaths": "Télécharger des chemins",
     "downloadThreads": "Télécharger les fils",
     "downloadThreadsDescription": "Télécharger les threads Déterminer combien de connexions simultanées sont utilisées lors du téléchargement",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (16 threads) - Utiliser avec prudence",
-      "high": "Élevé (8 fils) - meilleures performances",
-      "low": "Faible (2 threads) - utilisation minimale du processeur",
-      "normal": "Normal (4 threads) - Recommandé pour la plupart des utilisateurs",
-      "veryHigh": "Très haut (12 threads) - pour les connexions rapides"
+      "extreme": "Extreme (> 32 threads) - Utiliser avec prudence",
+      "high": "High (9-16 Threads) - Téléchargements rapides",
+      "low": "Faible (<4 threads) - utilisation minimale du processeur",
+      "normal": "Normal (4-8 Threads) - Recommandé pour la plupart des utilisateurs",
+      "veryHigh": "Très haut (17-32 threads) - pour des connexions très rapides"
     },
     "downloaderRunningWarning": "Vous ne pouvez pas modifier ces paramètres pendant qu'un téléchargement est en cours",
-    "earlyPreviewDash": "Visiter le tableau de bord",
-    "earlyReleasePreview": "Aperçu de la version anticipée",
-    "earlyReleasePreviewDesc": "Installez les versions d'Ascendara avec de nouvelles fonctionnalités avant d'être officiellement publiées. Aidez à améliorer Ascendara en testant et en rapportant les problèmes.",
+    "downloaderSettings": "Télécharger le gestionnaire",
     "enableAscendaraTimechine": "Activer le calendrier Ascendara",
-    "enableEarlyReleasePreview": "Obtenez les mises à jour prévisionnelles précoces",
     "enterGiantBombApiKey": "Collez votre clé API Giantbomb",
     "enterIgdbApiKey": "Collez votre touche secrète secrète",
     "enterTwitchClientId": "Collez votre identifiant client Twitch",
@@ -765,7 +672,7 @@
     "giantBombApiKey": "Clé API GiantBomb",
     "giantBombDescription": "GiantBomb fournit des informations de jeu d'un wiki de jeu axé sur la communauté avec de brèves descriptions. Nécessite une clé API.",
     "giantBombLearnHowtoGet": "Apprenez à obtenir une clé API",
-    "highThreadWarning": "Un nombre élevé de threads peut entraîner des problèmes de téléchargement. Envisagez d'utiliser 4-8 threads pour une meilleure fiabilité.",
+    "highThreadWarning": "L'utilisation de plus de 32 threads est considérée comme extrême et peut provoquer des problèmes d'instabilité, d'interdiction ou de réseau. Utiliser avec prudence.",
     "igdbApiKeyDescription": "IGDB fournit des informations de jeu plus détaillées avec la base de données soutenue par les développeurs et les entrées de jeu officielles. Vous oblige à avoir un compte Twitch et à obtenir un identifiant client et un secret.",
     "igdbLearnHowtoGet": "Apprenez à configurer cela",
     "installGameDependencies": "Dépendances de jeu",

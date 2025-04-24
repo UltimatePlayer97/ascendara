@@ -618,12 +618,7 @@
     "defaultDownloadLocation": "Default Download Location",
     "downloadLimit": "Download Speed Limit",
     "downloadLimitDescription": "Set a maximum speed for downloads. 0 means unlimited.",
-    "downloadLimitHigh": "High",
-    "downloadLimitLow": "Low",
-    "downloadLimitMedium": "Medium",
-    "downloadLimitUnlimited": "Unlimited",
     "downloadLocationWarning": "Ascendara cannot write files to the chosen directory. Change was not saved.",
-    "downloadPaths": "Download Paths",
     "downloadThreads": "Download Threads",
     "downloadThreadsDescription": "Download threads determine how many simultaneous connections are used when downloading",
     "downloadThreadsPresets": {

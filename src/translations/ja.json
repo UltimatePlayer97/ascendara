@@ -57,21 +57,11 @@
       "title": "気に入っていることを教えてください"
     },
     "toasts": {
-      "buildSwitchReady": "Build Switch ready",
-      "buildSwitchReadyDesc": "選択したビルドがダウンロードされました。今すぐインストールしてバージョンを切り替えます。",
-      "experimentOutOfDate": "このビルドは古くなっています",
-      "experimentOutOfDateDesc": "最新の実験ビルドにとどまることをお勧めします。",
-      "experimentUpdateReady": "新しいビルドが利用可能です",
-      "experimentUpdateReadyDesc": "新しい実験ビルドが利用可能です。 Ascendaraは自動的に更新できます。",
       "installAndRestart": "インストールして再起動します",
       "justUpdated": "完了します",
       "justUpdatedDesc": "{{version}}に更新したばかりです",
       "outOfDate": "アセンダラは古くなっています",
       "outOfDateDesc": "公式Webサイトから最新バージョンをダウンロードしてください",
-      "switchToExperimental": "実験的なビルドに切り替えます",
-      "switchToExperimentalDesc": "実験的なビルドに切り替えて、新機能をテストし、フィードバックを提供します。",
-      "switchToStable": "安定したビルドに切り替えます",
-      "switchToStableDesc": "最も信頼できる体験のために、アセンダラの安定したビルドに切り替えます。",
       "updateNow": "今すぐ更新してください",
       "updateReady": "Ascendaraは更新する準備ができています",
       "updateReadyDesc": "Ascendaraはアップデートをダウンロードし、今すぐインストールして再起動する準備ができています",
@@ -147,7 +137,6 @@
       "downloading": "ダウンロード",
       "getExtension": "拡張機能がありませんか？ ChromeまたはFirefoxのために入手してください",
       "gofileInstructions": {
-        "action": "今すぐダウンロードをクリックして、このゲームのダウンロードを開始します。",
         "description": "Captchaの検証を必要とする他のプロバイダーとは異なり、GofileはAPIを介して直接ダウンロードを許可します。",
         "thanks": "GithubのLTSDWに感謝します"
       },
@@ -194,36 +183,7 @@
       "nextStep": "次のステップ→",
       "noThanks": "結構です",
       "startGuide": "ガイドを開始します",
-      "steps": [
-        {
-          "description": "Ascendaraダウンロードハンドラーは、ブラウザでダウンロードを自動的に停止し、Ascendaraで起動します。持っていない場合は、ガイドを閉じて、「拡張機能を持っていないのですか？ChromeまたはFirefox用に入手してください」ボタンをクリックしてダウンロードします。",
-          "title": "Ascendaraダウンロードハンドラー"
-        },
-        {
-          "description": "拡張機能をインストールしたら、拡張機能アイコンをクリックしてハンドラーを有効にします。",
-          "title": "ステップ1：ハンドラーを有効にします"
-        },
-        {
-          "description": "拡張機能は、既知のプロバイダーをAscendaraに送信するだけなので、留まることができます。",
-          "title": "ダウンロードハンドラー"
-        },
-        {
-          "description": "Captchaを完成させ、ダウンロードを開始します。",
-          "title": "ステップ2：ダウンロードを開始します"
-        },
-        {
-          "description": "ダウンロードが起動しようとすると、Ascendaraを開くように要求するポップアップが表示されます。常に許可されたボタンを切り替えて、拡張機能が常に既知のプロバイダーをAscendaraに送信できるようにします。",
-          "title": "ステップ3：拡張機能を使用します"
-        },
-        {
-          "description": "ボタンをクリックしてアセンダラを開きます。",
-          "title": "ステップ4：ダウンロード"
-        },
-        {
-          "description": "ダウンロードはAscendaraで自動的に開始されます。ダウンロードページに持ってこない場合は、ナビゲートしてください。",
-          "title": "それでおしまい！"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}、{'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}、{'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}、{'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}、{'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}、{'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}、{'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "Ascendaraでダウンロードします"
     },
     "noGameInfoAvailable": "このゲームに関する詳細情報を見るために好みのascendaraxtraをセットアップ",
@@ -318,6 +278,7 @@
       "title": "Ascendaraでダウンロードします",
       "understand": "わかりました"
     },
+    "limitedTo": "に制限されています",
     "noDownloads": "まあそれはリラックスしています...",
     "noDownloadsMessage": "今すぐダウンロードしているわけではありません。ダウンロードを開始して、ここで進捗状況を追跡してください。",
     "noFilesError": "ダウンローダーからファイルエラーを受け取りませんでした。ダウンロードリンクは、ソースから削除された可能性が最も高くなります",
@@ -339,57 +300,6 @@
     "verifyingDescription": "Ascendaraはゲームファイルを確認しています。これには、ゲームのサイズに応じて時間がかかる場合があります。",
     "waiting": "仲間を待っています",
     "waitingDescription": "Qbittorrentは、他のユーザーからトレントファイルのダウンロードをダウンロードし、順番にアップロードするために接続する仲間を探しています。他の人は、あなたがダウンロードしているものを見たり、パブリックIPアドレスを決定できるかもしれません。"
-  },
-  "earlyPreview": {
-    "actions": "クイックアクション",
-    "alreadyVoted": "あなたはすでにこの機能に投票しています",
-    "debugInfo": "デバッグログにアクセスして、遭遇する技術的な問題の診断と修正に役立ちます。",
-    "debugLogError": "デバッグログフォルダーを開くことができませんでした",
-    "description": "リリースする前に、アセンデアの初期のビルドでさまざまな実験機能を表示して投票してください。あなたのフィードバックと投票が重要であり、アセンダラを形作るのに役立ちます。",
-    "discordInfo": "Discordコミュニティに参加して、新機能をリクエストし、他のユーザーとアイデアについて話し合います。",
-    "earlyBuild": "最新のプレビュービルド",
-    "experimentalFeatures": "実験機能",
-    "fetchError": "実験機能をロードできませんでした",
-    "getOnExperimental": "最新の実験機能を確認して投票するには、Ascendaraの実験的な構築に参加する必要があります。 Ascendaraを完全に再起動して更新チェックをトリガーするか、ダウンロードページから最新の実験ビルドをインストールします。",
-    "helpUsImprove": "アセンダラを改善します",
-    "joinDiscord": "Discordに参加してください",
-    "noExperimentalFeatures": "まだ実験的な機能はありません...",
-    "noFeatures": "現時点では実験機能はありません。",
-    "openDebugFolder": "デバッグログを表示します",
-    "released": "公式リリース",
-    "reportInfo": "バグを見つけましたか？サーバーに直接報告すると、問題が調査されます。",
-    "reportIssue": "報告の問題",
-    "requestFeature": "リクエスト機能",
-    "status": {
-      "active": {
-        "description": "この機能は現在、初期のビルドでアクティブであり、テストの準備ができています",
-        "title": "アクティブ"
-      },
-      "deprecated": {
-        "description": "この機能はまだ存在しますが、将来の更新で削除されます",
-        "title": "非推奨"
-      },
-      "implemented": {
-        "description": "この機能は正常に実装されており、現在リリースバージョンにあります",
-        "title": "実装"
-      },
-      "trashed": {
-        "description": "この機能は廃棄されており、実装されません",
-        "title": "ゴミ箱"
-      }
-    },
-    "title": "早期プレビューダッシュボード",
-    "voteDown": "問題があります",
-    "voteDownSuccess": "ダウン投票は正常に提出されました",
-    "voteError": "投票を提出できませんでした",
-    "voteSuccess": "フィードバックをありがとう！",
-    "voteUp": "うまく機能します",
-    "voteUpSuccess": "upvoteは正常に提出されました",
-    "votedDown": "この機能には問題があると言いました",
-    "votedUp": "この機能はうまく機能すると言いました",
-    "votingClosed": "投票は閉鎖されています",
-    "votingInProgress": "投票の処理...",
-    "warning": "これらの機能は早期に開発されており、不安定である可能性があります。あなたはあなた自身の責任で使用しています。"
   },
   "game": {
     "metadata": {
@@ -691,7 +601,6 @@
     "ascendaraWorkshopDownloaderEnable": "ナビゲーションバーに追加します",
     "autoCreateShortcuts": "ショートカットを自動的に作成します",
     "autoCreateShortcutsDescription": "初めて正常に実行されるゲームのデスクトップにショートカットを自動的に作成する",
-    "buildSwitchReload": "実験的なビルドの更新ファイルをキューにするために、アセンダラをリロードする必要があります。今これをやりたいですか？",
     "cannotCheckDependencies": "このシステムの依存関係を確認できません",
     "cannotDisableTorrent": "トレントサポートを無効にする前に、SteamRipソースに切り替えます",
     "checkConfig": "構成を確認します",
@@ -704,23 +613,21 @@
     "customThreadCountDesc": "値が高いとダウンロード速度が向上する可能性がありますが、より多くのCPUパワーとメモリが必要です。最大：32スレッド",
     "darkThemes": "暗いテーマ",
     "defaultDownloadLocation": "デフォルトのダウンロード場所",
+    "downloadLimit": "ダウンロード速度制限",
+    "downloadLimitDescription": "ダウンロードの最大速度を設定します。 0は無制限を意味します。",
     "downloadLocationWarning": "Ascendaraは、選択したディレクトリにファイルを書き込むことができません。変更は保存されませんでした。",
-    "downloadPaths": "パスをダウンロードします",
     "downloadThreads": "スレッドをダウンロードします",
     "downloadThreadsDescription": "ダウンロードスレッドは、ダウンロード時に使用される同時接続の数を決定します",
     "downloadThreadsPresets": {
-      "extreme": "Extreme（16スレッド） - 注意して使用します",
-      "high": "high（8スレッド） - パフォーマンスの向上",
-      "low": "低（2スレッド） - 最小限のCPU使用",
-      "normal": "通常（4スレッド） - ほとんどのユーザーに推奨されます",
-      "veryHigh": "非常に高い（12スレッド） - 高速接続用"
+      "extreme": "Extreme（> 32スレッド） - 注意して使用します",
+      "high": "high（9-16スレッド） - 高速ダウンロード",
+      "low": "低（<4スレッド） - 最小限のCPU使用",
+      "normal": "通常（4-8スレッド） - ほとんどのユーザーに推奨されます",
+      "veryHigh": "非常に高い（17-32スレッド） - 非常に高速な接続用"
     },
     "downloaderRunningWarning": "ダウンロードが進行中にこれらの設定を変更することはできません",
-    "earlyPreviewDash": "ダッシュボードにアクセスしてください",
-    "earlyReleasePreview": "早期リリースプレビュー",
-    "earlyReleasePreviewDesc": "正式にリリースされる前に、新機能を備えたAscendaraのバージョンをインストールします。テストと報告の問題により、アセンダラを改善するのに役立ちます。",
+    "downloaderSettings": "ダウンロードマネージャー",
     "enableAscendaraTimechine": "Ascendaraのタイムマシンを有効にします",
-    "enableEarlyReleasePreview": "早期プレビューの更新を取得します",
     "enterGiantBombApiKey": "ジャイアントボムAPIキーを貼り付けます",
     "enterIgdbApiKey": "秘密のTwitchキーを貼り付けます",
     "enterTwitchClientId": "TwitchクライアントIDを貼り付けます",
@@ -765,7 +672,7 @@
     "giantBombApiKey": "GiantBomb APIキー",
     "giantBombDescription": "GiantBombは、コミュニティ主導のゲームWikiからのゲーム情報を簡単な説明で提供します。 APIキーが必要です。",
     "giantBombLearnHowtoGet": "APIキーを取得する方法を学びます",
-    "highThreadWarning": "スレッド数が高いとダウンロードの問題が発生する場合があります。信頼性を向上させるために、4〜8個のスレッドを使用することを検討してください。",
+    "highThreadWarning": "32を超えるスレッドを使用することは極端であると見なされ、不安定性、禁止、またはネットワークの問題を引き起こす可能性があります。注意して使用してください。",
     "igdbApiKeyDescription": "IGDBは、開発者が支援するデータベースと公式ゲームエントリを使用して、より詳細なゲーム情報を提供します。 Twitchアカウントを取得し、クライアントIDと秘密を取得する必要があります。",
     "igdbLearnHowtoGet": "これをセットアップする方法を学びます",
     "installGameDependencies": "ゲームの依存関係",

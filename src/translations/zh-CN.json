@@ -57,21 +57,11 @@
       "title": "让我知道你喜欢它"
     },
     "toasts": {
-      "buildSwitchReady": "准备就绪开关",
-      "buildSwitchReadyDesc": "选定的构建已下载。立即安装以切换版本。",
-      "experimentOutOfDate": "这个构建已过时",
-      "experimentOutOfDateDesc": "建议您保持最新的实验构建。",
-      "experimentUpdateReady": "可用的新构建",
-      "experimentUpdateReadyDesc": "有一个新的实验构建。 Ascendara可以自动更新到它。",
       "installAndRestart": "安装并重新启动",
       "justUpdated": "更新完成",
       "justUpdatedDesc": "您刚刚更新为{{version}}",
       "outOfDate": "Ascendara不合时宜",
       "outOfDateDesc": "请从官方网站下载最新版本",
-      "switchToExperimental": "切换到实验构建",
-      "switchToExperimentalDesc": "切换到实验构建以测试新功能并提供反馈。",
-      "switchToStable": "切换到稳定的构建",
-      "switchToStableDesc": "切换到稳定的Ascendara建造，以获得最可靠的体验。",
       "updateNow": "立即更新",
       "updateReady": "Ascendara准备更新",
       "updateReadyDesc": "Ascendara下载了更新，准备安装和重新启动",
@@ -147,7 +137,6 @@
       "downloading": "下载",
       "getExtension": "没有扩展名？为Chrome或Firefox获取它",
       "gofileInstructions": {
-        "action": "只需单击下载立即下载即可开始下载此游戏。",
         "description": "与其他需要验证验证的提供商不同，Gofile允许通过其API直接下载。",
         "thanks": "感谢Github上的LTSDW"
       },
@@ -194,30 +183,7 @@
       "nextStep": "下一步→",
       "noThanks": "不，谢谢",
       "startGuide": "开始指南",
-      "steps": [
-        {
-          "description": "Ascendara下载处理程序将自动停止在您的浏览器中下载，并在Ascendara中为您启动它。如果没有它，请关闭指南，然后单击“没有扩展名？为Chrome或Firefox获取它”按钮下载它。",
-          "title": "Ascendara下载处理程序"
-        },
-        {
-          "description": "安装扩展程序后，单击扩展图标以启用处理程序。",
-          "title": "步骤1：启用处理程序"
-        },
-        {
-          "description": "该扩展名可以保持继续下去，因为它只会将已知的提供商发送到Ascendara。",
-          "title": "下载处理程序"
-        },
-        { "description": "完成验证码，然后开始下载。", "title": "步骤2：开始下载" },
-        {
-          "description": "下载尝试开始后，您将看到一个弹出窗口要求打开Ascendara。切换始终允许按钮，以允许扩展程序始终将已知的提供商发送到Ascendara。",
-          "title": "步骤3：使用扩展"
-        },
-        { "description": "单击按钮打开Ascendara。", "title": "步骤4：下载" },
-        {
-          "description": "您的下载将自动从Ascendara开始。如果您没有被带到下载页面，请导航到它。",
-          "title": "就是这样！"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'}，{'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'}，{'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'}，{'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'}，{'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'}，{'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'}，{'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "与Ascendara下载"
     },
     "noGameInfoAvailable": "设置Ascendara Xtra以偏好的方式查看有关此游戏的更多信息",
@@ -312,6 +278,7 @@
       "title": "在Ascendara上下载",
       "understand": "我明白"
     },
+    "limitedTo": "限制为",
     "noDownloads": "好吧，这是放松的...",
     "noDownloadsMessage": "您现在没有下载任何内容，请在此处开始下载以跟踪其进度。",
     "noFilesError": "未收到下载器的文件错误。下载链接很可能是从源中删除的",
@@ -333,51 +300,6 @@
     "verifyingDescription": "Ascendara正在验证游戏文件。这也可能需要一段时间，具体取决于游戏尺寸。",
     "waiting": "等待同龄人",
     "waitingDescription": "Qbittorrent正在寻找同行连接以从其他用户下载Torrent文件的零件，然后依次将其上传到它们。其他人也许可以看到您正在下载的内容和/或确定您的公共IP地址。"
-  },
-  "earlyPreview": {
-    "actions": "快速动作",
-    "alreadyVoted": "您已经投票支持此功能",
-    "debugInfo": "访问调试日志，以帮助诊断并解决您遇到的任何技术问题。",
-    "debugLogError": "无法打开调试日志文件夹",
-    "description": "在Ascendare释放之前，在Ascendare的早期版本中查看并投票。您的反馈和投票很重要，将有助于塑造Ascendara。",
-    "discordInfo": "加入Discord社区，要求新功能并与其他用户讨论想法。",
-    "earlyBuild": "最新的预览构建",
-    "experimentalFeatures": "实验特征",
-    "fetchError": "无法加载实验特征",
-    "getOnExperimental": "为了查看和投票，您需要对Ascendara进行实验性构建。要么完全重新启动Ascendara以触发更新检查，要么从下载页面安装最新的实验构建。",
-    "helpUsImprove": "改善Ascendara",
-    "joinDiscord": "加入Discord",
-    "noExperimentalFeatures": "还没有实验特征...",
-    "noFeatures": "目前尚无实验功能。",
-    "openDebugFolder": "查看调试日志",
-    "released": "官方发布",
-    "reportInfo": "找到一个错误？将其直接报告给服务器，并将研究问题。",
-    "reportIssue": "报告问题",
-    "requestFeature": "请求功能",
-    "status": {
-      "active": {
-        "description": "此功能当前在早期构建中处于活动状态，可以进行测试",
-        "title": "积极的"
-      },
-      "deprecated": {
-        "description": "此功能仍然存在，但将在以后的更新中删除",
-        "title": "弃用"
-      },
-      "implemented": { "description": "此功能已成功实施，现在已发布", "title": "实施的" },
-      "trashed": { "description": "此功能已被丢弃，不会实施", "title": "垃圾" }
-    },
-    "title": "早期预览仪表板",
-    "voteDown": "有问题",
-    "voteDownSuccess": "您的投票成功提交了",
-    "voteError": "未能提交投票",
-    "voteSuccess": "感谢您的反馈！",
-    "voteUp": "效果很好",
-    "voteUpSuccess": "您已成功提交了您",
-    "votedDown": "您说此功能有问题",
-    "votedUp": "您说此功能效果很好",
-    "votingClosed": "投票关闭",
-    "votingInProgress": "处理投票...",
-    "warning": "这些功能处于早期开发状态，可能是不稳定的。您自身使用。"
   },
   "game": {
     "metadata": {
@@ -672,7 +594,6 @@
     "ascendaraWorkshopDownloaderEnable": "添加到导航栏",
     "autoCreateShortcuts": "自动创建快捷方式",
     "autoCreateShortcutsDescription": "自动在桌面上为第一次成功运行的游戏创建快捷方式",
-    "buildSwitchReload": "您需要重新加载Ascendara，以便为实验构建的更新文件排队。您现在想这样做吗？",
     "cannotCheckDependencies": "无法检查对此系统的依赖性",
     "cannotDisableTorrent": "在禁用洪流支持之前，请切换到Steamrip源",
     "checkConfig": "检查配置",
@@ -685,23 +606,21 @@
     "customThreadCountDesc": "更高的值可以提高下载速度，但需要更多的CPU功率和内存。最大：32个线程",
     "darkThemes": "黑暗主题",
     "defaultDownloadLocation": "默认下载位置",
+    "downloadLimit": "下载速度限制",
+    "downloadLimitDescription": "设定下载速度的最大速度。 0表示无限。",
     "downloadLocationWarning": "Ascendara无法将文件写入所选目录。变化没有保存。",
-    "downloadPaths": "下载路径",
     "downloadThreads": "下载线程",
     "downloadThreadsDescription": "下载线程确定下载时使用了多少个同时连接",
     "downloadThreadsPresets": {
-      "extreme": "极限（16个线程） - 谨慎使用",
-      "high": "高（8个线程） - 表现更好",
-      "low": "低（2个线程） - 最小CPU使用率",
-      "normal": "普通（4个线程） - 建议大多数用户",
-      "veryHigh": "非常高（12个线程） - 用于快速连接"
+      "extreme": "极端（> 32个线程） - 谨慎使用",
+      "high": "高（9-16个线程） - 快速下载",
+      "low": "低（<4个线程） - 最小CPU使用率",
+      "normal": "普通（4-8个线程） - 建议大多数用户",
+      "veryHigh": "非常高（17-32个线程） - 对于非常快速的连接"
     },
     "downloaderRunningWarning": "下载正在进行时，您无法更改这些设置",
-    "earlyPreviewDash": "访问仪表板",
-    "earlyReleasePreview": "早期发布预览",
-    "earlyReleasePreviewDesc": "在正式发布之前，安装具有新功能的Ascendara版本。通过测试和报告问题帮助改善Ascendara。",
+    "downloaderSettings": "下载管理器",
     "enableAscendaraTimechine": "启用Ascendara timemachine",
-    "enableEarlyReleasePreview": "获取早期预览更新",
     "enterGiantBombApiKey": "粘贴您的巨型炸弹API密钥",
     "enterIgdbApiKey": "粘贴您的秘密抽搐键",
     "enterTwitchClientId": "粘贴Twitch客户端ID",
@@ -746,7 +665,7 @@
     "giantBombApiKey": "巨型炸弹API键",
     "giantBombDescription": "GiantBomb提供了由社区驱动的游戏Wiki的游戏信息，并简要说明。需要一个API键。",
     "giantBombLearnHowtoGet": "了解如何获取API密钥",
-    "highThreadWarning": "高线程计数可能会导致下载问题。考虑使用4-8个线程以提高可靠性。",
+    "highThreadWarning": "使用超过32个线程被认为是极端的，可能会导致不稳定，禁令或网络问题。谨慎使用。",
     "igdbApiKeyDescription": "IGDB通过开发人员支持的数据库和官方游戏条目提供了更详细的游戏信息。要求您拥有一个Twitch帐户并获得客户ID和秘密。",
     "igdbLearnHowtoGet": "了解如何设置",
     "installGameDependencies": "游戏依赖性",
@@ -936,8 +855,8 @@
     "next": "下一个",
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
-    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
-    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
+    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
+    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
     "privacyPolicy": "隐私政策",

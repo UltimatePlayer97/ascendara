@@ -57,21 +57,11 @@
       "title": "اسمحوا لي أن أعرف كيف تحب ذلك"
     },
     "toasts": {
-      "buildSwitchReady": "بناء مفتاح جاهز",
-      "buildSwitchReadyDesc": "تم تنزيل البناء المحدد. تثبيت الآن لتبديل الإصدارات.",
-      "experimentOutOfDate": "هذا البناء قديم",
-      "experimentOutOfDateDesc": "يوصى بالبقاء في أحدث بناء تجريبي.",
-      "experimentUpdateReady": "بناء جديد متاح",
-      "experimentUpdateReadyDesc": "بناء تجريبي جديد متاح. يمكن لـ Ascendara التحديث تلقائيًا.",
       "installAndRestart": "تثبيت وإعادة التشغيل",
       "justUpdated": "تحديث كاملة",
       "justUpdatedDesc": "لقد قمت للتو بالتحديث إلى {{version}}",
       "outOfDate": "Ascendara بعيدا عن التاريخ",
       "outOfDateDesc": "يرجى تنزيل أحدث إصدار من الموقع الرسمي",
-      "switchToExperimental": "التبديل إلى البناء التجريبي",
-      "switchToExperimentalDesc": "قم بالتبديل إلى البناء التجريبي لاختبار ميزات جديدة وتقديم ملاحظات.",
-      "switchToStable": "التبديل إلى بناء مستقر",
-      "switchToStableDesc": "قم بالتبديل إلى البناء المستقر لـ Ascendara للتجربة الأكثر موثوقية.",
       "updateNow": "تحديث الآن",
       "updateReady": "Ascendara جاهزة للتحديث",
       "updateReadyDesc": "قامت Ascendara بتنزيل التحديث وهي جاهزة للتثبيت وإعادة التشغيل الآن",
@@ -147,7 +137,6 @@
       "downloading": "التنزيل",
       "getExtension": "ليس لديك الامتداد؟ احصل عليه من أجل Chrome أو Firefox",
       "gofileInstructions": {
-        "action": "ما عليك سوى النقر على التنزيل الآن لبدء تنزيل هذه اللعبة.",
         "description": "على عكس مقدمي الخدمات الآخرين الذين يتطلبون التحقق من Captcha ، يسمح GoFile بتنزيلات مباشرة من خلال واجهة برمجة التطبيقات الخاصة بهم.",
         "thanks": "بفضل LTSDW على جيثب"
       },
@@ -194,33 +183,7 @@
       "nextStep": "الخطوة التالية →",
       "noThanks": "ًلا شكرا",
       "startGuide": "دليل البدء",
-      "steps": [
-        {
-          "description": "سيقوم معالج تنزيل Ascendara بإيقاف التنزيل تلقائيًا في متصفحك وابدأه في Ascendara. إذا لم يكن لديك ذلك ، أغلق الدليل وانقر فوق \"لا تمدد؟ احصل عليه من أجل Chrome أو Firefox\" لتنزيله.",
-          "title": "معالج تنزيل Ascendara"
-        },
-        {
-          "description": "بعد تثبيت الامتداد ، انقر فوق أيقونة الامتداد لتمكين المعالج.",
-          "title": "الخطوة 1: تمكين المعالج"
-        },
-        {
-          "description": "يمكن أن يبقى التمديد لأنه لن يرسل سوى مقدمي الخدمات المعروفين إلى Ascendara.",
-          "title": "معالج التنزيل"
-        },
-        {
-          "description": "أكمل Captcha ، وابدأ التنزيل.",
-          "title": "الخطوة 2: ابدأ التنزيل"
-        },
-        {
-          "description": "بمجرد أن يحاول التنزيل البدء ، سترى نافذة منبثقة تطلب فتح Ascendara. تبديل زر السماح دائمًا بالسماح للتمديد بإرسال مقدمي الخدمات المعروفين دائمًا إلى Ascendara.",
-          "title": "الخطوة 3: استخدام الامتداد"
-        },
-        { "description": "انقر فوق الزر لفتح Ascendara.", "title": "الخطوة 4: التنزيل" },
-        {
-          "description": "سيبدأ التنزيل تلقائيًا في Ascendara. إذا لم تقم بإحضار صفحة التنزيل ، فانتقل إليها.",
-          "title": "هذا كل شيء!"
-        }
-      ],
+      "steps": "[{'description': 'The Ascendara Download Handler will automatically stop the download in your browser and start it for you in Ascendara. If you don\\'t have it, close the guide and click the \"Don\\'t have the extension? Get it for Chrome or Firefox\" button to download it.', 'title': 'The Ascendara Download Handler'} ، {'description': 'After installing the extension, click the extension icon to enable the handler.', 'title': 'Step 1: Enable the Handler'} ، {'description': 'The extension can stay on as it will only send known providers to Ascendara.', 'title': 'The Download Handler'} ، {'description': 'Complete the CAPTCHA, and start the download.', 'title': 'Step 2: Start the download'} ، {'description': 'Once the download tries to start, you will see a popup asking to open Ascendara. Toggle the always allow button to allow the extension to always send known providers to Ascendara.', 'title': 'Step 3: Using the Extension'} ، {'description': 'Click the button to Open Ascendara.', 'title': 'Step 4: Downloading'} ، {'description': \"Your download will automatically start in Ascendara. If you're not brought to the download page, navigate to it.\", 'title': \"That's it!\"}]",
       "title": "تنزيل مع Ascendara"
     },
     "noGameInfoAvailable": "الإعداد Ascendara Xtra في التفضيلات لمعرفة مزيد من المعلومات حول هذه اللعبة",
@@ -315,6 +278,7 @@
       "title": "تنزيل على Ascendara",
       "understand": "أفهم"
     },
+    "limitedTo": "يقتصر",
     "noDownloads": "حسنًا ، هذا مريح ...",
     "noDownloadsMessage": "أنت لا تقوم بتنزيل أي شيء الآن ، ابدأ تنزيلًا لتتبع تقدمه هنا.",
     "noFilesError": "تلقي أي خطأ الملفات من التنزيل. على الأرجح تمت إزالة رابط التنزيل من المصدر",
@@ -336,57 +300,6 @@
     "verifyingDescription": "Ascendara يتحقق من ملفات اللعبة. قد يستغرق هذا أيضًا بعض الوقت اعتمادًا على حجم اللعبة.",
     "waiting": "في انتظار أقرانهم",
     "waitingDescription": "تبحث QBitTorrent عن أقرانها للاتصال بتنزيل أجزاء من ملف التورنت من مستخدمين آخرين وتحميلهم بدورهم. قد يتمكن الآخرون من رؤية ما تقوم بتنزيله و/أو تحديد عنوان IP العام."
-  },
-  "earlyPreview": {
-    "actions": "إجراءات سريعة",
-    "alreadyVoted": "لقد صوتت بالفعل لهذه الميزة",
-    "debugInfo": "الوصول إلى سجلات التصحيح للمساعدة في تشخيص أي مشكلات تقنية وتواجهها.",
-    "debugLogError": "فشل في فتح مجلد سجلات التصحيح",
-    "description": "عرض والتصويت الميزات التجريبية المختلفة في المباني المبكرة لـ Ascendare قبل إطلاقها. ملاحظاتك وتصويت الأمور وسوف تساعد في تشكيل Ascendara.",
-    "discordInfo": "انضم إلى مجتمع Discord لطلب ميزات جديدة ومناقشة الأفكار مع المستخدمين الآخرين.",
-    "earlyBuild": "أحدث معاينة بناء",
-    "experimentalFeatures": "ميزات تجريبية",
-    "fetchError": "فشل في تحميل الميزات التجريبية",
-    "getOnExperimental": "من أجل رؤية والتصويت على أحدث الميزات التجريبية ، تحتاج إلى الحصول على بناء تجريبي من Ascendara. إما إعادة تشغيل Ascendara تمامًا لتشغيل تحديث أو تثبيت أحدث بناء تجريبي من صفحة التنزيل.",
-    "helpUsImprove": "تحسين Ascendara",
-    "joinDiscord": "انضم إلى Discord",
-    "noExperimentalFeatures": "لا توجد ميزات تجريبية حتى الآن ...",
-    "noFeatures": "لا توجد ميزات تجريبية متوفرة في الوقت الحالي.",
-    "openDebugFolder": "عرض سجلات التصحيح",
-    "released": "الإصدار الرسمي",
-    "reportInfo": "وجدت خطأ؟ أبلغ عن ذلك مباشرة إلى الخادم وسيتم التحقيق في المشكلة.",
-    "reportIssue": "قضية الإبلاغ",
-    "requestFeature": "طلب ميزة",
-    "status": {
-      "active": {
-        "description": "هذه الميزة نشطة حاليًا في البناء المبكر وجاهزة للاختبار",
-        "title": "نشيط"
-      },
-      "deprecated": {
-        "description": "لا تزال هذه الميزة موجودة ولكن ستتم إزالتها في تحديث مستقبلي",
-        "title": "تم إهماله"
-      },
-      "implemented": {
-        "description": "تم تنفيذ هذه الميزة بنجاح وهي الآن في الإصدار الذي تم إصداره",
-        "title": "مُنفّذ"
-      },
-      "trashed": {
-        "description": "تم التخلص من هذه الميزة ولن يتم تنفيذها",
-        "title": "محطمة"
-      }
-    },
-    "title": "لوحة معلومات معاينة مبكرة",
-    "voteDown": "لديه مشاكل",
-    "voteDownSuccess": "تم تقديم البوت السفلي بنجاح",
-    "voteError": "فشل في تقديم تصويتك",
-    "voteSuccess": "شكرا لتعليقاتك!",
-    "voteUp": "يعمل بشكل رائع",
-    "voteUpSuccess": "تم إرسال التصويت بنجاح",
-    "votedDown": "قلت أن هذه الميزة لديها مشاكل",
-    "votedUp": "قلت أن هذه الميزة تعمل بشكل رائع",
-    "votingClosed": "التصويت مغلق",
-    "votingInProgress": "التصويت معالجة ...",
-    "warning": "هذه الميزات في التطوير المبكر وقد تكون غير مستقرة. أنت تستخدم على مسؤوليتك الخاصة."
   },
   "game": {
     "metadata": {
@@ -688,7 +601,6 @@
     "ascendaraWorkshopDownloaderEnable": "أضف إلى شريط الملاحة",
     "autoCreateShortcuts": "إنشاء اختصارات تلقائيا",
     "autoCreateShortcutsDescription": "قم بإنشاء اختصارات على سطح المكتب تلقائيًا للألعاب التي تعمل بنجاح لأول مرة",
-    "buildSwitchReload": "ستحتاج إلى إعادة تحميل Ascendara من أجل طابور ملف التحديث للبناء التجريبي. هل ترغب في القيام بذلك الآن؟",
     "cannotCheckDependencies": "لا يمكن التحقق من التبعيات على هذا النظام",
     "cannotDisableTorrent": "قم بالتبديل إلى مصدر steamrip قبل تعطيل دعم التورنت",
     "checkConfig": "تحقق من التكوين",
@@ -701,23 +613,21 @@
     "customThreadCountDesc": "قد تؤدي القيم الأعلى إلى تحسين سرعة التنزيل ولكنها تتطلب المزيد من طاقة وحدة المعالجة المركزية والذاكرة. الحد الأقصى: 32 موضوع",
     "darkThemes": "موضوعات مظلمة",
     "defaultDownloadLocation": "موقع التنزيل الافتراضي",
+    "downloadLimit": "تنزيل حد السرعة",
+    "downloadLimitDescription": "تعيين أقصى سرعة للتنزيلات. 0 يعني غير محدود.",
     "downloadLocationWarning": "لا يمكن لـ Ascendara كتابة الملفات إلى الدليل المختار. لم يتم حفظ التغيير.",
-    "downloadPaths": "تنزيل المسارات",
     "downloadThreads": "تنزيل المواضيع",
     "downloadThreadsDescription": "تنزيل المواضيع حدد عدد الاتصالات المتزامنة التي يتم استخدامها عند التنزيل",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (16 threads) - استخدم بحذر",
-      "high": "عالية (8 موضوعات) - أداء أفضل",
-      "low": "منخفض (2 خيوط) - الحد الأدنى من استخدام وحدة المعالجة المركزية",
-      "normal": "(4 مؤشرات ترابط) - موصى بها لمعظم المستخدمين",
-      "veryHigh": "عالية جدا (12 موضوع) - للاتصالات السريعة"
+      "extreme": "Extreme (> 32 Threads) - استخدم بحذر",
+      "high": "High (9-16 Threads) - تنزيلات سريعة",
+      "low": "منخفض (<4 خيوط) - الحد الأدنى من استخدام وحدة المعالجة المركزية",
+      "normal": "عادية (4-8 مؤشرات ترابط) - موصى بها لمعظم المستخدمين",
+      "veryHigh": "عالية جدا (17-32 موضوع) - للاتصالات السريعة جدا"
     },
     "downloaderRunningWarning": "لا يمكنك تغيير هذه الإعدادات أثناء التنزيل قيد التقدم",
-    "earlyPreviewDash": "قم بزيارة لوحة القيادة",
-    "earlyReleasePreview": "معاينة الإصدار المبكر",
-    "earlyReleasePreviewDesc": "قم بتثبيت إصدارات Ascendara بميزات جديدة قبل إصدارها رسميًا. ساعد في تحسين Ascendara عن طريق اختبار القضايا والإبلاغ.",
+    "downloaderSettings": "مدير التنزيل",
     "enableAscendaraTimechine": "تمكين Ascendara timemachine",
-    "enableEarlyReleasePreview": "احصل على تحديثات المعاينة المبكرة",
     "enterGiantBombApiKey": "الصق مفتاح API GiantBomb الخاص بك",
     "enterIgdbApiKey": "الصق مفتاح نشلتك السري",
     "enterTwitchClientId": "الصق معرف عميل Twitch الخاص بك",
@@ -762,7 +672,7 @@
     "giantBombApiKey": "GiantBomb API مفتاح",
     "giantBombDescription": "يوفر GiantBomb معلومات اللعبة من ويكي ألعاب يحركها المجتمع مع أوصاف موجزة. يتطلب مفتاح API.",
     "giantBombLearnHowtoGet": "تعلم كيفية الحصول على مفتاح API",
-    "highThreadWarning": "قد تسبب تعداد الخيط العالي في مشاكل التنزيل. النظر في استخدام 4-8 مؤشرات الترابط لتحسين الموثوقية.",
+    "highThreadWarning": "يعتبر استخدام أكثر من 32 مؤشر ترابط شديدًا وقد يسبب عدم الاستقرار أو الحظر أو مشكلات الشبكة. استخدم بحذر.",
     "igdbApiKeyDescription": "يوفر IGDB معلومات أكثر تفصيلاً مع قاعدة بيانات مدعومة بالمطور وإدخالات اللعبة الرسمية. يتطلب منك الحصول على حساب نشل والحصول على معرف العميل وسرية.",
     "igdbLearnHowtoGet": "تعلم كيفية إعداد هذا",
     "installGameDependencies": "تبعيات اللعبة",
@@ -957,7 +867,7 @@
     "personalizeYourExperience": "تخصيص تجربتك مع موضوع يناسب أسلوبك",
     "pleaseWaitAndRespondToAdminPrompts": "يرجى الانتظار والرد على أي مطالبات مسؤول تظهر. لا تغلق التطبيق.",
     "privacyPolicy": "سياسة الخصوصية",
-    "pythonIsRequired": "المطلوب بيثون",
+    "pythonIsRequired": "مطلوب بيثون",
     "pythonMustBeInstalled": "يجب تثبيت Python على جهاز الكمبيوتر الخاص بك من أجل تشغيل Ascendara على نظام التشغيل هذا",
     "requiredForModernGames": "مطلوب للألعاب الحديثة",
     "restart": "إعادة تشغيل",
@@ -986,7 +896,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "هذا هو المكان الذي سيتم فيه تخزين جميع الألعاب التي تم تنزيلها",
     "welcomeTo": "مرحبا بكم في",
     "welcomeToAscendaraDescription": "الآن لن تقلق بشأن استخراج الملفات أو تثبيتها أو نقلها. قبل أن نبدأ ، يرجى القراءة والموافقة على شروط الخدمة وسياسة الخصوصية.",
-    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله في Ascendara",
+    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله لك في Ascendara",
     "wineIsRequired": "النبيذ مطلوب",
     "wineMustBeInstalled": "يجب تثبيت النبيذ لتشغيل ألعاب Windows على نظامك",
     "youCanAddMoreLater": "يمكنك إضافة المزيد من الدلائل في التفضيلات لاحقًا",
