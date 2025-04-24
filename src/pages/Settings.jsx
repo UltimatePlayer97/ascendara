@@ -930,10 +930,13 @@ function Settings() {
                 )}
 
                 {/* Download Threads Config */}
-                <div className="border-b border-border/50 pb-8">
-                  <h4 className="mb-2 text-lg font-semibold text-foreground">
+                <div className="pb-8">
+                  <Label
+                    htmlFor="threadCount"
+                    className={isDownloaderRunning ? "opacity-50" : ""}
+                  >
                     {t("settings.downloadThreads")}
-                  </h4>
+                  </Label>
                   <p className="mb-4 text-sm font-normal text-muted-foreground">
                     {t("settings.downloadThreadsDescription")}
                   </p>
@@ -1103,9 +1106,12 @@ function Settings() {
 
                 {/* Download Speed Limit Section */}
                 <div className="pt-8">
-                  <h4 className="mb-2 text-lg font-semibold text-foreground">
+                  <Label
+                    htmlFor="downloadLimit"
+                    className={isDownloaderRunning ? "opacity-50" : ""}
+                  >
                     {t("settings.downloadLimit")}
-                  </h4>
+                  </Label>
                   <p className="mb-4 text-sm font-normal text-muted-foreground">
                     {t("settings.downloadLimitDescription")}
                   </p>
@@ -1116,109 +1122,103 @@ function Settings() {
                     t={t}
                   />
                 </div>
-              </div>
-            </Card>
-
-            <Card>
-              <div className="p-6">
-                <h3 className="mb-2 text-xl font-semibold text-primary">
-                  {t("settings.downloadPaths")}
-                </h3>
-                <div className="mb-4">
-                  <Label
-                    htmlFor="defaultDownloadPath"
-                    className={isDownloaderRunning ? "opacity-50" : ""}
-                  >
-                    {t("settings.defaultDownloadLocation")}
-                  </Label>
-                  {!canCreateFiles && (
-                    <div className="mt-1 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                      <ShieldAlert size={16} />
-                      <p className="text-sm font-medium">
-                        {t("settings.downloadLocationWarning")}
-                      </p>
-                    </div>
-                  )}
-                  <div className="mt-2 flex gap-2">
-                    <Input
-                      id="defaultDownloadPath"
-                      disabled={isDownloaderRunning}
-                      value={downloadPath}
-                      readOnly
-                      className="flex-1"
-                    />
-                    <Button
-                      disabled={isDownloaderRunning}
-                      className="shrink-0 text-secondary"
-                      onClick={handleDirectorySelect}
+                <div className="pt-8">
+                  <div className="mb-4">
+                    <Label
+                      htmlFor="defaultDownloadPath"
+                      className={isDownloaderRunning ? "opacity-50" : ""}
                     >
-                      {t("settings.selectDirectory")}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Additional Download Paths Section */}
-                <div className="border-t pt-6">
-                  <div className="mb-2 flex items-center justify-between">
-                    <Label className={isDownloaderRunning ? "opacity-50" : ""}>
-                      {t("settings.additionalLocations")}
+                      {t("settings.defaultDownloadLocation")}
                     </Label>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={isDownloaderRunning}
-                      onClick={async () => {
-                        const path = await window.electron.ipcRenderer.invoke(
-                          "open-directory-dialog"
-                        );
-                        if (path) {
-                          const newPaths = [
-                            ...(settings.additionalDirectories || []),
-                            path,
-                          ];
-                          handleSettingChange("additionalDirectories", newPaths);
-                        }
-                      }}
-                      className="h-8"
-                    >
-                      <Plus size={16} className="mr-1" />
-                      {t("settings.addLocation")}
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {settings.additionalDirectories?.length === 0 ? (
-                      <p className="text-sm italic text-muted-foreground">
-                        {t("settings.noAdditionalLocations")}
-                      </p>
-                    ) : (
-                      settings.additionalDirectories?.map((path, index) => (
-                        <div
-                          key={index}
-                          className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
-                        >
-                          <FolderOpen
-                            size={16}
-                            className="shrink-0 text-muted-foreground"
-                          />
-                          <span className="flex-1 truncate text-sm" title={path}>
-                            {path}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={isDownloaderRunning}
-                            onClick={() => {
-                              const newPaths = [...settings.additionalDirectories];
-                              newPaths.splice(index, 1);
-                              handleSettingChange("additionalDirectories", newPaths);
-                            }}
-                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                          >
-                            <X size={16} />
-                          </Button>
-                        </div>
-                      ))
+                    {!canCreateFiles && (
+                      <div className="mt-1 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                        <ShieldAlert size={16} />
+                        <p className="text-sm font-medium">
+                          {t("settings.downloadLocationWarning")}
+                        </p>
+                      </div>
                     )}
+                    <div className="mt-2 flex gap-2">
+                      <Input
+                        id="defaultDownloadPath"
+                        disabled={isDownloaderRunning}
+                        value={downloadPath}
+                        readOnly
+                        className="flex-1"
+                      />
+                      <Button
+                        disabled={isDownloaderRunning}
+                        className="shrink-0 text-secondary"
+                        onClick={handleDirectorySelect}
+                      >
+                        {t("settings.selectDirectory")}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Additional Download Paths Section */}
+                  <div className="border-t border-border/50 pt-6">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Label className={isDownloaderRunning ? "opacity-50" : ""}>
+                        {t("settings.additionalLocations")}
+                      </Label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={isDownloaderRunning}
+                        onClick={async () => {
+                          const path = await window.electron.ipcRenderer.invoke(
+                            "open-directory-dialog"
+                          );
+                          if (path) {
+                            const newPaths = [
+                              ...(settings.additionalDirectories || []),
+                              path,
+                            ];
+                            handleSettingChange("additionalDirectories", newPaths);
+                          }
+                        }}
+                        className="h-8"
+                      >
+                        <Plus size={16} className="mr-1" />
+                        {t("settings.addLocation")}
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {settings.additionalDirectories?.length === 0 ? (
+                        <p className="text-sm italic text-muted-foreground">
+                          {t("settings.noAdditionalLocations")}
+                        </p>
+                      ) : (
+                        settings.additionalDirectories?.map((path, index) => (
+                          <div
+                            key={index}
+                            className="group flex items-center gap-2 rounded-md bg-accent/30 p-2 hover:bg-accent/50"
+                          >
+                            <FolderOpen
+                              size={16}
+                              className="shrink-0 text-muted-foreground"
+                            />
+                            <span className="flex-1 truncate text-sm" title={path}>
+                              {path}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={isDownloaderRunning}
+                              onClick={() => {
+                                const newPaths = [...settings.additionalDirectories];
+                                newPaths.splice(index, 1);
+                                handleSettingChange("additionalDirectories", newPaths);
+                              }}
+                              className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                              <X size={16} />
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
