@@ -940,15 +940,10 @@ function Settings() {
                   <p className="mb-4 text-sm font-normal text-muted-foreground">
                     {t("settings.downloadThreadsDescription")}
                   </p>
-                  {settings.threadCount > 8 && (
+                  {settings.threadCount > 32 && (
                     <div className="mb-4 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
                       <CircleAlert size={14} />
-                      <p className="text-sm">
-                        {t(
-                          "settings.highThreadWarning",
-                          "High thread counts may cause download issues. Use with caution."
-                        )}
-                      </p>
+                      <p className="text-sm">{t("settings.highThreadWarning")}</p>
                     </div>
                   )}
                   <div className="mt-2 flex w-full justify-center">
@@ -1007,52 +1002,53 @@ function Settings() {
                               className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
                               style={{
                                 background:
-                                  settings.threadCount <= 2
+                                  settings.threadCount < 4
                                     ? "rgba(148, 163, 184, 0.1)"
-                                    : settings.threadCount <= 4
+                                    : settings.threadCount <= 8
                                       ? "rgba(34, 197, 94, 0.1)"
-                                      : settings.threadCount <= 8
+                                      : settings.threadCount <= 16
                                         ? "rgba(59, 130, 246, 0.1)"
-                                        : settings.threadCount <= 12
+                                        : settings.threadCount <= 32
                                           ? "rgba(249, 115, 22, 0.1)"
                                           : "rgba(239, 68, 68, 0.1)",
                                 color:
-                                  settings.threadCount <= 2
+                                  settings.threadCount < 4
                                     ? "rgb(148, 163, 184)"
-                                    : settings.threadCount <= 4
+                                    : settings.threadCount <= 8
                                       ? "rgb(34, 197, 94)"
-                                      : settings.threadCount <= 8
+                                      : settings.threadCount <= 16
                                         ? "rgb(59, 130, 246)"
-                                        : settings.threadCount <= 12
+                                        : settings.threadCount <= 32
                                           ? "rgb(249, 115, 22)"
                                           : "rgb(239, 68, 68)",
                               }}
                             >
-                              {settings.threadCount <= 2 && (
+                              {settings.threadCount < 4 && (
                                 <>
                                   <BatteryLow className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.low")}
                                 </>
                               )}
-                              {settings.threadCount > 2 && settings.threadCount <= 4 && (
+                              {settings.threadCount >= 4 && settings.threadCount <= 8 && (
                                 <>
                                   <Battery className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.normal")}
                                 </>
                               )}
-                              {settings.threadCount > 4 && settings.threadCount <= 8 && (
+                              {settings.threadCount > 8 && settings.threadCount <= 16 && (
                                 <>
                                   <BatteryMedium className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.high")}
                                 </>
                               )}
-                              {settings.threadCount > 8 && settings.threadCount <= 12 && (
-                                <>
-                                  <BatteryFull className="h-3.5 w-3.5" />
-                                  {t("settings.downloadThreadsPresets.veryHigh")}
-                                </>
-                              )}
-                              {settings.threadCount > 12 && (
+                              {settings.threadCount > 16 &&
+                                settings.threadCount <= 32 && (
+                                  <>
+                                    <BatteryFull className="h-3.5 w-3.5" />
+                                    {t("settings.downloadThreadsPresets.veryHigh")}
+                                  </>
+                                )}
+                              {settings.threadCount > 32 && (
                                 <>
                                   <Zap className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.extreme")}
@@ -1065,12 +1061,17 @@ function Settings() {
                       <Button
                         variant="outline"
                         size="icon"
-                        disabled={isDownloaderRunning || settings.threadCount >= 16}
+                        disabled={isDownloaderRunning || settings.threadCount >= 64}
                         onClick={() => {
-                          const newValue = Math.min(
-                            16,
-                            settings.threadCount + (settings.threadCount >= 8 ? 4 : 2)
-                          );
+                          const step =
+                            settings.threadCount >= 32
+                              ? 16
+                              : settings.threadCount >= 16
+                                ? 8
+                                : settings.threadCount >= 8
+                                  ? 4
+                                  : 2;
+                          const newValue = Math.min(64, settings.threadCount + step);
                           handleSettingChange("threadCount", newValue);
                         }}
                         className="transition-transform hover:scale-105"
@@ -1085,13 +1086,13 @@ function Settings() {
                       <Label>{t("settings.customThreadCount")}</Label>
                       <Input
                         type="number"
-                        min="1"
-                        max="32"
+                        min="4"
+                        max="64"
                         value={4}
                         onChange={e => {
                           const value = Math.max(
-                            1,
-                            Math.min(32, parseInt(e.target.value) || 1)
+                            4,
+                            Math.min(64, parseInt(e.target.value) || 4)
                           );
                           handleSettingChange("threadCount", value);
                         }}

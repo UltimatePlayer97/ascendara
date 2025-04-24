@@ -627,11 +627,11 @@
     "downloadThreads": "Download Threads",
     "downloadThreadsDescription": "Download threads determine how many simultaneous connections are used when downloading",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (16 threads) - Use with caution",
-      "high": "High (8 threads) - Better performance",
-      "low": "Low (2 threads) - Minimal CPU usage",
-      "normal": "Normal (4 threads) - Recommended for most users",
-      "veryHigh": "Very High (12 threads) - For fast connections"
+      "extreme": "Extreme (>32 threads) - Use with caution",
+      "high": "High (9-16 threads) - Fast downloads",
+      "low": "Low (<4 threads) - Minimal CPU usage",
+      "normal": "Normal (4-8 threads) - Recommended for most users",
+      "veryHigh": "Very High (17-32 threads) - For very fast connections"
     },
     "downloaderRunningWarning": "You cannot change these settings while a download is in progress",
     "downloaderSettings": "Download Manager",
@@ -680,7 +680,7 @@
     "giantBombApiKey": "GiantBomb API Key",
     "giantBombDescription": "GiantBomb provides game information from a community-driven gaming wiki with brief descriptions. Requires an API key.",
     "giantBombLearnHowtoGet": "Learn how to get API key",
-    "highThreadWarning": "High thread counts may cause download issues. Consider using 4-8 threads for better reliability.",
+    "highThreadWarning": "Using more than 32 threads is considered extreme and may cause instability, bans, or network issues. Use with caution.",
     "igdbApiKeyDescription": "IGDB provides more detailed game information with developer-backed database and official game entries. Requires you to have a Twitch account and get a client ID and secret.",
     "igdbLearnHowtoGet": "Learn how to set this up",
     "installGameDependencies": "Game Dependencies",
