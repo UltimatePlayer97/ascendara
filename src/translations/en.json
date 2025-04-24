@@ -278,6 +278,7 @@
       "title": "Downloading on Ascendara",
       "understand": "I understand"
     },
+    "limitedTo": "Limited to",
     "noDownloads": "Well that's relaxing...",
     "noDownloadsMessage": "You're not downloading anything right now, start a download to track its progress here.",
     "noFilesError": "Received no files error from downloader. Download link most likely was removed from the source",
@@ -633,6 +634,7 @@
       "veryHigh": "Very High (12 threads) - For fast connections"
     },
     "downloaderRunningWarning": "You cannot change these settings while a download is in progress",
+    "downloaderSettings": "Download Manager",
     "enableAscendaraTimechine": "Enable the Ascendara Timemachine",
     "enterGiantBombApiKey": "Paste your GiantBomb API Key",
     "enterIgdbApiKey": "Paste your secret Twitch key",

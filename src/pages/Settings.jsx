@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DownloadLimitSelector from "./DownloadLimitSelector";
 import {
   ChevronLeft,
   ChevronRight,
@@ -912,201 +913,208 @@ function Settings() {
                       />
                     </div>
                   )}
+                </div>
+              </div>
+            </Card>
 
-                  <div>
-                    {isDownloaderRunning && (
-                      <div className="mb-4 mt-2 flex items-center gap-2 rounded-md border border-red-400 bg-red-50 p-2 text-red-600 dark:text-red-500">
-                        <CircleAlert size={14} />
-                        <p className="text-sm">
-                          {t("settings.downloaderRunningWarning")}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="mb-6">
-                      <Label
-                        htmlFor="downloadThreads"
-                        className={isDownloaderRunning ? "opacity-50" : ""}
-                      >
-                        <div className="space-y-0.5">
-                          <Label>{t("settings.downloadThreads")}</Label>
-                          <p className="text-sm font-normal text-muted-foreground">
-                            {t("settings.downloadThreadsDescription")}
-                          </p>
-                        </div>
-
-                        {settings.threadCount > 8 && (
-                          <div className="mt-2 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                            <CircleAlert size={14} />
-                            <p className="text-sm">
-                              {t(
-                                "settings.highThreadWarning",
-                                "High thread counts may cause download issues. Use with caution."
-                              )}
-                            </p>
-                          </div>
-                        )}
-                      </Label>
-                      <div className="flex w-full justify-center">
-                        <motion.div
-                          className="mt-8 flex items-center space-x-4"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            disabled={isDownloaderRunning || settings.threadCount <= 2}
-                            onClick={() => {
-                              const newValue = Math.max(
-                                2,
-                                settings.threadCount - (settings.threadCount > 8 ? 4 : 2)
-                              );
-                              handleSettingChange("threadCount", newValue);
-                            }}
-                            className="transition-transform hover:scale-105"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-
-                          <motion.div
-                            className="relative flex min-w-[200px] flex-col items-center rounded-md border px-6 py-3"
-                            layout
-                          >
-                            <AnimatePresence mode="wait">
-                              <motion.div
-                                key={settings.threadCount || 4}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-center gap-2"
-                              >
-                                <span className="text-xl font-semibold">
-                                  {settings.threadCount || 4}
-                                </span>
-                                <span className="text-sm text-muted-foreground">
-                                  {t("settings.threads")}
-                                </span>
-                              </motion.div>
-                            </AnimatePresence>
-
-                            <AnimatePresence mode="wait">
-                              <motion.div
-                                key={settings.threadCount || 4}
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                transition={{ duration: 0.2, delay: 0.1 }}
-                                className="mt-2"
-                              >
-                                <div
-                                  className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
-                                  style={{
-                                    background:
-                                      settings.threadCount <= 2
-                                        ? "rgba(148, 163, 184, 0.1)"
-                                        : settings.threadCount <= 4
-                                          ? "rgba(34, 197, 94, 0.1)"
-                                          : settings.threadCount <= 8
-                                            ? "rgba(59, 130, 246, 0.1)"
-                                            : settings.threadCount <= 12
-                                              ? "rgba(249, 115, 22, 0.1)"
-                                              : "rgba(239, 68, 68, 0.1)",
-                                    color:
-                                      settings.threadCount <= 2
-                                        ? "rgb(148, 163, 184)"
-                                        : settings.threadCount <= 4
-                                          ? "rgb(34, 197, 94)"
-                                          : settings.threadCount <= 8
-                                            ? "rgb(59, 130, 246)"
-                                            : settings.threadCount <= 12
-                                              ? "rgb(249, 115, 22)"
-                                              : "rgb(239, 68, 68)",
-                                  }}
-                                >
-                                  {settings.threadCount <= 2 && (
-                                    <>
-                                      <BatteryLow className="h-3.5 w-3.5" />
-                                      {t("settings.downloadThreadsPresets.low")}
-                                    </>
-                                  )}
-                                  {settings.threadCount > 2 &&
-                                    settings.threadCount <= 4 && (
-                                      <>
-                                        <Battery className="h-3.5 w-3.5" />
-                                        {t("settings.downloadThreadsPresets.normal")}
-                                      </>
-                                    )}
-                                  {settings.threadCount > 4 &&
-                                    settings.threadCount <= 8 && (
-                                      <>
-                                        <BatteryMedium className="h-3.5 w-3.5" />
-                                        {t("settings.downloadThreadsPresets.high")}
-                                      </>
-                                    )}
-                                  {settings.threadCount > 8 &&
-                                    settings.threadCount <= 12 && (
-                                      <>
-                                        <BatteryFull className="h-3.5 w-3.5" />
-                                        {t("settings.downloadThreadsPresets.veryHigh")}
-                                      </>
-                                    )}
-                                  {settings.threadCount > 12 && (
-                                    <>
-                                      <Zap className="h-3.5 w-3.5" />
-                                      {t("settings.downloadThreadsPresets.extreme")}
-                                    </>
-                                  )}
-                                </div>
-                              </motion.div>
-                            </AnimatePresence>
-                          </motion.div>
-
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            disabled={isDownloaderRunning || settings.threadCount >= 16}
-                            onClick={() => {
-                              const newValue = Math.min(
-                                16,
-                                settings.threadCount + (settings.threadCount >= 8 ? 4 : 2)
-                              );
-                              handleSettingChange("threadCount", newValue);
-                            }}
-                            className="transition-transform hover:scale-105"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </motion.div>
-                      </div>
-
-                      {/* Custom thread count input */}
-                      {settings.threadCount === 0 && (
-                        <div className="mt-4">
-                          <Label>{t("settings.customThreadCount")}</Label>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="32"
-                            value={4}
-                            onChange={e => {
-                              const value = Math.max(
-                                1,
-                                Math.min(32, parseInt(e.target.value) || 1)
-                              );
-                              handleSettingChange("threadCount", value);
-                            }}
-                            className="mt-1"
-                          />
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {t("settings.customThreadCountDesc")}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+            <Card className="mb-6">
+              <div className="space-y-10 p-6">
+                <h3 className="mb-2 text-xl font-semibold text-primary">
+                  {t("settings.downloaderSettings")}
+                </h3>
+                {isDownloaderRunning && (
+                  <div className="mb-6 flex items-center gap-2 rounded-md border border-red-400 bg-red-50 p-2 text-red-600 dark:text-red-500">
+                    <CircleAlert size={14} />
+                    <p className="text-sm">{t("settings.downloaderRunningWarning")}</p>
                   </div>
+                )}
+
+                {/* Download Threads Config */}
+                <div className="border-b border-border/50 pb-8">
+                  <h4 className="mb-2 text-lg font-semibold text-foreground">
+                    {t("settings.downloadThreads")}
+                  </h4>
+                  <p className="mb-4 text-sm font-normal text-muted-foreground">
+                    {t("settings.downloadThreadsDescription")}
+                  </p>
+                  {settings.threadCount > 8 && (
+                    <div className="mb-4 flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                      <CircleAlert size={14} />
+                      <p className="text-sm">
+                        {t(
+                          "settings.highThreadWarning",
+                          "High thread counts may cause download issues. Use with caution."
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-2 flex w-full justify-center">
+                    <motion.div
+                      className="flex items-center space-x-4"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        disabled={isDownloaderRunning || settings.threadCount <= 2}
+                        onClick={() => {
+                          const newValue = Math.max(
+                            2,
+                            settings.threadCount - (settings.threadCount > 8 ? 4 : 2)
+                          );
+                          handleSettingChange("threadCount", newValue);
+                        }}
+                        className="transition-transform hover:scale-105"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <motion.div
+                        className="relative flex min-w-[200px] flex-col items-center rounded-md border px-6 py-3"
+                        layout
+                      >
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={settings.threadCount || 4}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center gap-2"
+                          >
+                            <span className="text-xl font-semibold">
+                              {settings.threadCount || 4}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {t("settings.threads")}
+                            </span>
+                          </motion.div>
+                        </AnimatePresence>
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={settings.threadCount || 4}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.2, delay: 0.1 }}
+                            className="mt-2"
+                          >
+                            <div
+                              className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                              style={{
+                                background:
+                                  settings.threadCount <= 2
+                                    ? "rgba(148, 163, 184, 0.1)"
+                                    : settings.threadCount <= 4
+                                      ? "rgba(34, 197, 94, 0.1)"
+                                      : settings.threadCount <= 8
+                                        ? "rgba(59, 130, 246, 0.1)"
+                                        : settings.threadCount <= 12
+                                          ? "rgba(249, 115, 22, 0.1)"
+                                          : "rgba(239, 68, 68, 0.1)",
+                                color:
+                                  settings.threadCount <= 2
+                                    ? "rgb(148, 163, 184)"
+                                    : settings.threadCount <= 4
+                                      ? "rgb(34, 197, 94)"
+                                      : settings.threadCount <= 8
+                                        ? "rgb(59, 130, 246)"
+                                        : settings.threadCount <= 12
+                                          ? "rgb(249, 115, 22)"
+                                          : "rgb(239, 68, 68)",
+                              }}
+                            >
+                              {settings.threadCount <= 2 && (
+                                <>
+                                  <BatteryLow className="h-3.5 w-3.5" />
+                                  {t("settings.downloadThreadsPresets.low")}
+                                </>
+                              )}
+                              {settings.threadCount > 2 && settings.threadCount <= 4 && (
+                                <>
+                                  <Battery className="h-3.5 w-3.5" />
+                                  {t("settings.downloadThreadsPresets.normal")}
+                                </>
+                              )}
+                              {settings.threadCount > 4 && settings.threadCount <= 8 && (
+                                <>
+                                  <BatteryMedium className="h-3.5 w-3.5" />
+                                  {t("settings.downloadThreadsPresets.high")}
+                                </>
+                              )}
+                              {settings.threadCount > 8 && settings.threadCount <= 12 && (
+                                <>
+                                  <BatteryFull className="h-3.5 w-3.5" />
+                                  {t("settings.downloadThreadsPresets.veryHigh")}
+                                </>
+                              )}
+                              {settings.threadCount > 12 && (
+                                <>
+                                  <Zap className="h-3.5 w-3.5" />
+                                  {t("settings.downloadThreadsPresets.extreme")}
+                                </>
+                              )}
+                            </div>
+                          </motion.div>
+                        </AnimatePresence>
+                      </motion.div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        disabled={isDownloaderRunning || settings.threadCount >= 16}
+                        onClick={() => {
+                          const newValue = Math.min(
+                            16,
+                            settings.threadCount + (settings.threadCount >= 8 ? 4 : 2)
+                          );
+                          handleSettingChange("threadCount", newValue);
+                        }}
+                        className="transition-transform hover:scale-105"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
+                  </div>
+                  {/* Custom thread count input */}
+                  {settings.threadCount === 0 && (
+                    <div className="mt-4">
+                      <Label>{t("settings.customThreadCount")}</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="32"
+                        value={4}
+                        onChange={e => {
+                          const value = Math.max(
+                            1,
+                            Math.min(32, parseInt(e.target.value) || 1)
+                          );
+                          handleSettingChange("threadCount", value);
+                        }}
+                        className="mt-1"
+                      />
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {t("settings.customThreadCountDesc")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Download Speed Limit Section */}
+                <div className="pt-8">
+                  <h4 className="mb-2 text-lg font-semibold text-foreground">
+                    {t("settings.downloadLimit")}
+                  </h4>
+                  <p className="mb-4 text-sm font-normal text-muted-foreground">
+                    {t("settings.downloadLimitDescription")}
+                  </p>
+                  <DownloadLimitSelector
+                    downloadLimit={settings.downloadLimit}
+                    isDownloaderRunning={isDownloaderRunning}
+                    onChange={value => handleSettingChange("downloadLimit", value)}
+                    t={t}
+                  />
                 </div>
               </div>
             </Card>

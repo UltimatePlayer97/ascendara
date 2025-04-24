@@ -25,6 +25,7 @@ import atexit
 import time
 import threading
 from queue import Queue
+import random
 from concurrent.futures import ThreadPoolExecutor
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 import requests
@@ -240,21 +241,24 @@ class DownloadManager:
         self.last_update_time = time.time()
         self.last_downloaded_size = 0
         self.current_speed = 0.0  # Track current speed for smoother updates
+        self.download_speed_limit = 0  # KB/s, 0 means unlimited
 
-        # Read thread count and chunk size from settings
+        # Read thread count, chunk size, and speed limit from settings
         try:
             settings_path = os.path.join(os.getenv('APPDATA'), 'ascendara', 'ascendarasettings.json')
             if os.path.exists(settings_path):
                 with open(settings_path, 'r') as f:
                     settings = json.load(f)
-                    self.num_threads = settings.get('threadCount', 8)  # Increased default threads
-                    # Allow chunk size override from settings
+                    self.num_threads = settings.get('threadCount', 8)
                     if 'downloadChunkSize' in settings:
                         self.max_chunk_size = settings['downloadChunkSize'] * 1024 * 1024
+                    self.download_speed_limit = settings.get('downloadLimit', 0)  # KB/s
             else:
                 self.num_threads = 8
+                self.download_speed_limit = 0
         except Exception:
             self.num_threads = 8
+            self.download_speed_limit = 0
             
     def split_chunks(self, temp_dir):
         # Dynamic chunk sizing based on file size
@@ -284,9 +288,10 @@ class DownloadManager:
         
         retries = 0
         backoff_factor = 1.5  # Less aggressive backoff
-        chunk_buffer_size = 2 * 1024 * 1024  # 2MB buffer size for better throughput
         
-        bytes_this_thread = 0
+        speed_limit = self.download_speed_limit * 1024  # Convert KB/s to bytes/s
+        min_sleep = 0.01
+        window_duration = 0.5  # seconds
         while retries < self.max_retries:
             try:
                 # Use a session with keep-alive and optimized settings
@@ -306,14 +311,21 @@ class DownloadManager:
                     if retries < self.max_retries - 1:  # Try again if not last retry
                         raise ValueError(f"Size mismatch: got {content_length}, expected {expected_size}")
                 
-                # Use buffered writing for better performance
-                with open(chunk.temp_file_path, "wb", buffering=chunk_buffer_size) as f:
-                    for data in response.iter_content(chunk_size=512*1024):  # Smaller chunks for smoother updates
+                # Use larger chunk and buffer sizes if unlimited
+                if speed_limit > 0:
+                    iter_chunk_size = 512*1024
+                    buffer_size = 2 * 1024 * 1024
+                else:
+                    iter_chunk_size = 2 * 1024 * 1024  # 2MB chunks for max speed
+                    buffer_size = 8 * 1024 * 1024  # 8MB buffer for max speed
+                with open(chunk.temp_file_path, "wb", buffering=buffer_size) as f:
+                    window_start = time.time()
+                    window_bytes = 0
+                    for data in response.iter_content(chunk_size=iter_chunk_size):
                         if not data:
                             break
                         f.write(data)
                         chunk.downloaded += len(data)
-                        bytes_this_thread += len(data)
                         with self.lock:
                             self.downloaded_size += len(data)
                             # Update speed calculation more frequently
@@ -321,12 +333,24 @@ class DownloadManager:
                             time_diff = now - self.last_update_time
                             if time_diff >= 0.1:  # Update every 100ms
                                 current_speed = (self.downloaded_size - self.last_downloaded_size) / time_diff
-                                # Smooth speed updates
                                 self.current_speed = self.current_speed * 0.7 + current_speed * 0.3
                                 self.last_downloaded_size = self.downloaded_size
                                 self.last_update_time = now
                         if callback:
                             callback(len(data))
+                        # --- Speed limit enforcement ---
+                        if speed_limit > 0:
+                            window_bytes += len(data)
+                            now = time.time()
+                            elapsed = now - window_start
+                            if elapsed > window_duration:
+                                actual_speed = window_bytes / elapsed
+                                if actual_speed > speed_limit:
+                                    sleep_time = (window_bytes / speed_limit) - elapsed
+                                    if sleep_time > min_sleep:
+                                        time.sleep(sleep_time)
+                                window_start = time.time()
+                                window_bytes = 0
                 
                 # Quick size verification
                 actual_size = os.path.getsize(chunk.temp_file_path)
@@ -444,45 +468,66 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
                     manager = DownloadManager(link, total_size)
                     manager.split_chunks(temp_dir)
 
+                    # --- NEW: Progress update thread ---
+                    import threading
+                    progress_lock = threading.Lock()
+                    progress_stop_event = threading.Event()
+
+                    # Shared progress variables
+                    shared_progress = {
+                        'progress': 0.0,
+                        'current_speed': 0.0,
+                        'downloaded_size': 0,
+                        'time_until_complete': 'Calculating',
+                        'progressDownloadSpeeds': '0.00 KB/s',
+                        'progressCompleted': '0.00',
+                    }
+
                     def update_progress(bytes_downloaded):
                         nonlocal start_time
-                        # Update progress with higher precision for small files
-                        progress = min(100.0, (manager.downloaded_size / total_size) * 100)
-                        game_info["downloadingData"]["progressCompleted"] = f"{progress:.2f}"
-
-                        elapsed_time = time.time() - start_time
-                        download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
-
-                        # Format download speed with appropriate units and precision
-                        # Use the smoothed speed from the manager
-                        current_speed = manager.current_speed
-                        if current_speed < 1024:
-                            speed_str = f"{current_speed:.2f} B/s"
-                        elif current_speed < 1024 * 1024:
-                            speed_str = f"{current_speed / 1024:.2f} KB/s"
-                        else:
-                            speed_str = f"{current_speed / (1024 * 1024):.2f} MB/s"
-                        game_info["downloadingData"]["progressDownloadSpeeds"] = speed_str
-
-                        # Calculate remaining time with improved formatting
-                        remaining_size = total_size - manager.downloaded_size
-                        if download_speed > 0 and remaining_size > 0:
-                            time_until_complete = remaining_size / download_speed
-                            minutes, seconds = divmod(time_until_complete, 60)
-                            hours, minutes = divmod(minutes, 60)
-                            
-                            # Format time including seconds
-                            if hours > 0:
-                                time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                        with progress_lock:
+                            shared_progress['downloaded_size'] = manager.downloaded_size
+                            elapsed_time = time.time() - start_time
+                            download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
+                            shared_progress['current_speed'] = manager.current_speed
+                            shared_progress['progress'] = min(100.0, (manager.downloaded_size / total_size) * 100)
+                            # Format download speed
+                            cs = manager.current_speed
+                            if cs < 1024:
+                                speed_str = f"{cs:.2f} B/s"
+                            elif cs < 1024 * 1024:
+                                speed_str = f"{cs / 1024:.2f} KB/s"
                             else:
-                                time_str = f"{int(minutes)}m {int(seconds)}s"
-                            game_info["downloadingData"]["timeUntilComplete"] = time_str
-                        elif remaining_size <= 0:
-                            game_info["downloadingData"]["timeUntilComplete"] = "0"
-                        else:
-                            game_info["downloadingData"]["timeUntilComplete"] = "Calculating"
+                                speed_str = f"{cs / (1024 * 1024):.2f} MB/s"
+                            shared_progress['progressDownloadSpeeds'] = speed_str
+                            # Time left
+                            remaining_size = total_size - manager.downloaded_size
+                            if download_speed > 0 and remaining_size > 0:
+                                time_until_complete = remaining_size / download_speed
+                                minutes, seconds = divmod(time_until_complete, 60)
+                                hours, minutes = divmod(minutes, 60)
+                                if hours > 0:
+                                    time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                                else:
+                                    time_str = f"{int(minutes)}m {int(seconds)}s"
+                                shared_progress['time_until_complete'] = time_str
+                            elif remaining_size <= 0:
+                                shared_progress['time_until_complete'] = '0'
+                            else:
+                                shared_progress['time_until_complete'] = 'Calculating'
+                            shared_progress['progressCompleted'] = f"{shared_progress['progress']:.2f}"
 
-                        safe_write_json(game_info_path, game_info)
+                    def progress_writer():
+                        while not progress_stop_event.is_set():
+                            with progress_lock:
+                                game_info["downloadingData"]["progressCompleted"] = shared_progress['progressCompleted']
+                                game_info["downloadingData"]["progressDownloadSpeeds"] = shared_progress['progressDownloadSpeeds']
+                                game_info["downloadingData"]["timeUntilComplete"] = shared_progress['time_until_complete']
+                                safe_write_json(game_info_path, game_info)
+                            progress_stop_event.wait(0.5)
+
+                    progress_thread = threading.Thread(target=progress_writer, daemon=True)
+                    progress_thread.start()
 
                     with ThreadPoolExecutor(max_workers=manager.num_threads) as executor:
                         futures = []

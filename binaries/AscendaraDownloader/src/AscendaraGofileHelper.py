@@ -165,6 +165,18 @@ class GofileDownloader:
         self.download_dir = os.path.join(download_dir, sanitize_folder_name(game))
         os.makedirs(self.download_dir, exist_ok=True)
         self.game_info_path = os.path.join(self.download_dir, f"{sanitize_folder_name(game)}.ascendara.json")
+        # Download speed limit (KB/s, 0 means unlimited)
+        self._download_speed_limit = 0
+        try:
+            import platform
+            appdata = os.getenv('APPDATA') if platform.system() == 'Windows' else os.path.expanduser('~/.config')
+            settings_path = os.path.join(appdata, 'ascendara', 'ascendarasettings.json')
+            if os.path.exists(settings_path):
+                with open(settings_path, 'r') as f:
+                    settings = json.load(f)
+                    self._download_speed_limit = settings.get('downloadLimit', 0)  # KB/s
+        except Exception:
+            self._download_speed_limit = 0
         # If updateFlow is True, preserve the JSON file and set updating flag
         if updateFlow and os.path.exists(self.game_info_path):
             with open(self.game_info_path, 'r') as f:
@@ -339,7 +351,8 @@ class GofileDownloader:
 
         return files_info
 
-    def _downloadContent(self, file_info, chunk_size=32768):  
+    def _downloadContent(self, file_info, chunk_size=None):  # chunk_size determined by limit
+
         filepath = os.path.join(self.download_dir, file_info["path"], file_info["filename"])
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
             print(f"{filepath} already exists, skipping.{NEW_LINE}")
@@ -397,6 +410,13 @@ class GofileDownloader:
                         file_key = f"{file_info['path']}/{file_info['filename']}"
                         self._current_file_progress[file_key] = part_size
 
+                        # Use small chunk size and strict limiter if limiting, otherwise large chunk size and no limiter
+                        if self._download_speed_limit and self._download_speed_limit > 0:
+                            chunk_size = 4096
+                        else:
+                            chunk_size = 32768
+                        start_time = time.time()
+                        bytes_downloaded = 0
                         for chunk in response.iter_content(chunk_size=chunk_size):
                             if not chunk:
                                 continue
@@ -404,7 +424,19 @@ class GofileDownloader:
                             f.write(chunk)
                             downloaded += len(chunk)
                             bytes_since_last_update += len(chunk)
+                            bytes_downloaded += len(chunk)
                             current_time = time.time()
+                            
+                            # Only run limiter if limiting
+                            if self._download_speed_limit and self._download_speed_limit > 0:
+                                elapsed = current_time - start_time
+                                if elapsed > 0:
+                                    allowed_bytes = self._download_speed_limit * 1024 * elapsed
+                                    if bytes_downloaded > allowed_bytes:
+                                        sleep_time = (bytes_downloaded - allowed_bytes) / (self._download_speed_limit * 1024)
+                                        if sleep_time > 0:
+                                            time.sleep(sleep_time)
+                            # If no limit is set, run at full speed (do nothing)
                             
                             # Update progress every 0.5 seconds
                             if current_time - last_update >= 0.5:

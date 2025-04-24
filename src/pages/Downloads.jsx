@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 import {
@@ -40,8 +39,6 @@ import {
   CircleCheck,
   Coffee,
   RefreshCw,
-  HardDriveDownload,
-  PackageOpen,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -53,6 +50,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSettings } from "@/context/SettingsContext";
 
 const Downloads = () => {
   useEffect(() => {
@@ -420,6 +418,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
   const [isReporting, setIsReporting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const { t } = useLanguage();
+  const { settings } = useSettings();
 
   useEffect(() => {
     // Check if the animations already exist to avoid duplicates
@@ -837,6 +836,8 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
                     <Download className="h-4 w-4" />
                     <span className="font-medium">
                       {downloadingData.progressDownloadSpeeds}
+                      {settings.downloadLimit > 0 &&
+                        ` (${t("downloads.limitedTo")} ${settings.downloadLimit >= 1024 ? `${Math.round(settings.downloadLimit / 1024)} MB` : `${settings.downloadLimit} KB`}/s)`}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2 rounded-md bg-muted/40 px-3 py-1">
