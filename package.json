@@ -1,6 +1,6 @@
 {
   "name": "ascendara",
-  "version": "8.4.1",
+  "version": "8.4.2",
   "main": "electron/app.js",
   "description": "Skip extracting files, navigating setup processes, or any unnecessary hassles.",
   "scripts": {
