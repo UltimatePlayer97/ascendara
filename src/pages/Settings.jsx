@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import DownloadLimitSelector from "./DownloadLimitSelector";
+import DownloadLimitSelector from "@/components/DownloadLimitSelector";
 import {
   ChevronLeft,
   ChevronRight,
