@@ -4,9 +4,9 @@
 class ImageCacheService {
   constructor() {
     // Core caching
-    this.memoryCache = new Map(); // imgID -> url
+    this.memoryCache = new Map(); // imgID -> { url, quality }
     this.memoryCacheOrder = []; // LRU order
-    this.maxMemoryCacheSize = 100;
+    this.maxMemoryCacheSize = 150; // Increased for better performance
     this.db = null;
     this.isInitialized = false;
     this.initPromise = null;
@@ -15,9 +15,16 @@ class ImageCacheService {
 
     // Request management
     this.activeRequests = new Map();
-    this.maxConcurrentRequests = 8; // Increased for faster image loads
+    this.maxConcurrentRequests = 12; // Increased for parallel loading
     this.retryDelay = 2000;
     this.maxRetries = 2;
+
+    // Preloading and prioritization
+    this.preloadQueue = new Set();
+    this.visibleImages = new Set();
+    this.priorityQueue = [];
+    this.lowPriorityQueue = [];
+    this.processingQueue = false;
 
     // Initialize
     this.initPromise = this.initializeDB();
@@ -111,7 +118,7 @@ class ImageCacheService {
    * Get image URL for given imgID. Uses LRU memory cache, IndexedDB, and deduplication.
    * If the image is requested multiple times concurrently, all requests await the same promise.
    */
-  async getImage(imgID) {
+  async getImage(imgID, options = { priority: "normal", quality: "high" }) {
     if (!imgID) return null;
 
     // Wait for initialization
@@ -119,13 +126,21 @@ class ImageCacheService {
 
     // Check memory cache first (LRU)
     if (this.memoryCache.has(imgID)) {
+      const cached = this.memoryCache.get(imgID);
       // Move to most recently used
       this.memoryCacheOrder = this.memoryCacheOrder.filter(id => id !== imgID);
       this.memoryCacheOrder.push(imgID);
-      // Logging for cache hit
-      console.debug(`[ImageCache] Memory cache HIT for ${imgID}`);
-      // Return cached URL
-      return this.memoryCache.get(imgID);
+
+      // If we have the requested quality or better, return it
+      if (options.quality === "low" || cached.quality === options.quality) {
+        console.debug(`[ImageCache] Memory cache HIT for ${imgID}`);
+        return cached.url;
+      }
+
+      // If we need higher quality, let it fall through to load high quality version
+      if (options.quality === "high" && cached.quality === "low") {
+        console.debug(`[ImageCache] Upgrading quality for ${imgID}`);
+      }
     }
 
     // Try IndexedDB cache if available
@@ -167,21 +182,27 @@ class ImageCacheService {
     }
   }
 
-  _setMemoryCache(imgID, url) {
-    this.memoryCache.set(imgID, url);
+  _setMemoryCache(imgID, url, quality = "high") {
+    this.memoryCache.set(imgID, { url, quality });
     this.memoryCacheOrder = this.memoryCacheOrder.filter(id => id !== imgID);
     this.memoryCacheOrder.push(imgID);
-    if (this.memoryCacheOrder.length > this.maxMemoryCacheSize) {
+
+    // Cleanup if cache is too large
+    while (this.memoryCacheOrder.length > this.maxMemoryCacheSize) {
       const oldest = this.memoryCacheOrder.shift();
       if (oldest) {
-        const oldUrl = this.memoryCache.get(oldest);
-        if (oldUrl) URL.revokeObjectURL(oldUrl);
+        const oldCache = this.memoryCache.get(oldest);
+        if (oldCache?.url) URL.revokeObjectURL(oldCache.url);
         this.memoryCache.delete(oldest);
       }
     }
   }
 
-  async loadImage(imgID, retryCount = 0) {
+  async loadImage(
+    imgID,
+    retryCount = 0,
+    options = { quality: "high", priority: "normal" }
+  ) {
     if (!imgID) return null;
 
     try {
@@ -195,6 +216,11 @@ class ImageCacheService {
         endpoint = "v2/fitgirl/image";
       }
 
+      // Add quality parameter for progressive loading
+      if (options.quality === "low") {
+        endpoint += "/preview";
+      }
+
       const response = await fetch(`https://api.ascendara.app/${endpoint}/${imgID}`, {
         headers: {
           "X-Timestamp": timestamp.toString(),
@@ -205,8 +231,8 @@ class ImageCacheService {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      // Cache the result
-      this._setMemoryCache(imgID, url);
+      // Cache the result with correct quality
+      this._setMemoryCache(imgID, url, options.quality);
       // Save to IndexedDB in the background if available
       if (this.db) {
         this.saveToIndexedDB(imgID, blob).catch(error => {

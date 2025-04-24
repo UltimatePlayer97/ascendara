@@ -14,7 +14,11 @@ const HomeGameCard = memo(({ game, small }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
-  const { cachedImage, loading, error } = useImageLoader(game?.imgID, isVisible);
+  const { cachedImage, loading, error } = useImageLoader(game?.imgID, {
+    quality: isVisible ? "high" : "low",
+    priority: isVisible ? "high" : "low",
+    enabled: true,
+  });
   const { t } = useLanguage();
 
   useEffect(() => {

@@ -5,7 +5,10 @@ import imageCacheService from "@/services/imageCacheService";
 const loadingImages = new Map();
 
 // Shared image loading hook to prevent duplicate loading
-export function useImageLoader(imgID, shouldLoad = true) {
+export function useImageLoader(
+  imgID,
+  options = { quality: "high", priority: "normal", enabled: true }
+) {
   const [state, setState] = useState({
     cachedImage: null,
     loading: false,
@@ -16,7 +19,7 @@ export function useImageLoader(imgID, shouldLoad = true) {
     let mounted = true;
 
     const loadImage = async () => {
-      if (!imgID || !shouldLoad) {
+      if (!imgID || !options.enabled) {
         if (mounted) {
           setState({
             cachedImage: null,
@@ -27,9 +30,10 @@ export function useImageLoader(imgID, shouldLoad = true) {
         return;
       }
 
-      // Check if this image is already being loaded
-      if (loadingImages.has(imgID)) {
-        const existingPromise = loadingImages.get(imgID);
+      // Check if this image is already being loaded with the same quality
+      const loadingKey = `${imgID}-${options.quality}`;
+      if (loadingImages.has(loadingKey)) {
+        const existingPromise = loadingImages.get(loadingKey);
         try {
           const cached = await existingPromise;
           if (mounted) {
@@ -52,20 +56,31 @@ export function useImageLoader(imgID, shouldLoad = true) {
       }
 
       try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
+        setState({ cachedImage: null, loading: true, error: null });
 
-        // Create and store the loading promise
-        const loadPromise = imageCacheService.getImage(imgID);
-        loadingImages.set(imgID, loadPromise);
+        // Create a new loading promise with quality and priority options
+        const loadPromise = imageCacheService.getImage(imgID, options);
+        loadingImages.set(loadingKey, loadPromise);
 
-        const cached = await loadPromise;
-
-        if (mounted) {
-          setState({
-            cachedImage: cached,
-            loading: false,
-            error: cached ? null : "Failed to load image",
-          });
+        try {
+          const cached = await loadPromise;
+          if (mounted) {
+            setState({
+              cachedImage: cached,
+              loading: false,
+              error: null,
+            });
+          }
+        } catch (error) {
+          if (mounted) {
+            setState({
+              cachedImage: null,
+              loading: false,
+              error: error.message || "Failed to load image",
+            });
+          }
+        } finally {
+          loadingImages.delete(loadingKey);
         }
       } catch (error) {
         if (mounted) {
@@ -75,8 +90,6 @@ export function useImageLoader(imgID, shouldLoad = true) {
             error: error.message || "Failed to load image",
           });
         }
-      } finally {
-        loadingImages.delete(imgID);
       }
     };
 
@@ -85,7 +98,7 @@ export function useImageLoader(imgID, shouldLoad = true) {
     return () => {
       mounted = false;
     };
-  }, [imgID, shouldLoad]);
+  }, [imgID, options.enabled, options.quality, options.priority]);
 
   return state;
 }

@@ -19,12 +19,43 @@ import { useImageLoader } from "@/hooks/useImageLoader";
 const GameCard = memo(function GameCard({ game, compact }) {
   const navigate = useNavigate();
   const [showAllTags, setShowAllTags] = useState(false);
-  const { cachedImage, loading, error } = useImageLoader(game?.imgID);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef(null);
+  const { cachedImage, loading, error } = useImageLoader(game?.imgID, {
+    quality: isVisible ? "high" : "low",
+    priority: isVisible ? "high" : "low",
+    enabled: !!game?.imgID,
+  });
   const [isInstalled, setIsInstalled] = useState(false);
   const [needsUpdate, setNeedsUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isMounted = useRef(true);
   const { t } = useLanguage();
+
+  // Setup intersection observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        rootMargin: "50px",
+        threshold: 0.1,
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, []);
 
   if (!game) {
     return null;
@@ -104,11 +135,16 @@ const GameCard = memo(function GameCard({ game, compact }) {
   }
 
   return (
-    <Card className="group flex min-h-[400px] flex-col overflow-hidden border-none bg-card text-card-foreground transition-all duration-300 animate-in fade-in-50 hover:shadow-lg">
+    <Card
+      ref={cardRef}
+      className="group flex min-h-[400px] flex-col overflow-hidden border-none bg-card text-card-foreground transition-all duration-300 animate-in fade-in-50 hover:shadow-lg"
+    >
       <CardContent className="flex-1 p-0">
         <div className="relative">
           <AspectRatio ratio={16 / 9}>
-            {loading && <Skeleton className="absolute inset-0 h-full w-full bg-muted" />}
+            {loading && !cachedImage && (
+              <Skeleton className="absolute inset-0 h-full w-full bg-muted" />
+            )}
             {cachedImage && (
               <img
                 src={cachedImage}
