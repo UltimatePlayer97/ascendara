@@ -89,7 +89,7 @@ export default function DownloadLimitSelector({
             variant={unit === "KB" ? "default" : "outline"}
             size="sm"
             onClick={() => handleUnitSwitch("KB")}
-            className="px-2"
+            className={`px-2 ${unit === "KB" ? "text-secondary" : "text-primary-foreground"}`}
             disabled={isDownloaderRunning}
           >
             KB/s
@@ -98,7 +98,7 @@ export default function DownloadLimitSelector({
             variant={unit === "MB" ? "default" : "outline"}
             size="sm"
             onClick={() => handleUnitSwitch("MB")}
-            className="px-2"
+            className={`px-2 ${unit === "MB" ? "text-secondary" : "text-primary-foreground"}`}
             disabled={isDownloaderRunning}
           >
             MB/s
