@@ -60,6 +60,11 @@ const Downloads = () => {
     };
   }, []);
   const [downloadingGames, setDownloadingGames] = useState([]);
+  // Ref to always access the latest downloadingGames inside polling
+  const downloadingGamesRef = React.useRef(downloadingGames);
+  useEffect(() => {
+    downloadingGamesRef.current = downloadingGames;
+  }, [downloadingGames]);
   const [retryModalOpen, setRetryModalOpen] = useState(false);
   const [retryLink, setRetryLink] = useState("");
   const [selectedGame, setSelectedGame] = useState(null);
@@ -101,6 +106,7 @@ const Downloads = () => {
     }
   };
 
+  // Polling interval for downloading games (every 1 second)
   useEffect(() => {
     const fetchDownloadingGames = async () => {
       try {
@@ -124,48 +130,53 @@ const Downloads = () => {
           localStorage.setItem("hasDownloadedBefore", "true");
         }
 
-        if (JSON.stringify(downloading) !== JSON.stringify(downloadingGames)) {
+        // Shallow compare by IDs and length to minimize unnecessary updates
+        const prevIds = downloadingGames.map(g => g.id).join(",");
+        const newIds = downloading.map(g => g.id).join(",");
+        if (prevIds !== newIds || downloadingGames.length !== downloading.length) {
           setDownloadingGames(downloading);
-
-          let totalSpeedNum = 0;
-          let activeCount = 0;
-
-          downloading.forEach(game => {
-            if (game.downloadingData?.downloading) {
-              activeCount++;
-              const speed = game.downloadingData.progressDownloadSpeeds;
-              if (speed) {
-                totalSpeedNum += normalizeSpeed(speed);
-              }
-            }
-          });
-
-          setActiveDownloads(activeCount);
-          const formattedSpeed = `${totalSpeedNum.toFixed(2)} MB/s`;
-          setTotalSpeed(formattedSpeed);
-
-          // Update speed history
-          setSpeedHistory(prevHistory => {
-            const newHistory = [
-              ...prevHistory.slice(1),
-              {
-                index: prevHistory[prevHistory.length - 1].index + 1,
-                speed: totalSpeedNum,
-              },
-            ];
-            localStorage.setItem("speedHistory", JSON.stringify(newHistory));
-            return newHistory;
-          });
+        } else {
+          // If list is same, still update to reflect internal stage/progress changes
+          setDownloadingGames(downloading);
         }
+
+        let totalSpeedNum = 0;
+        let activeCount = 0;
+        downloading.forEach(game => {
+          if (game.downloadingData?.downloading) {
+            activeCount++;
+            const speed = game.downloadingData.progressDownloadSpeeds;
+            if (speed) {
+              totalSpeedNum += normalizeSpeed(speed);
+            }
+          }
+        });
+        setActiveDownloads(activeCount);
+        const formattedSpeed = `${totalSpeedNum.toFixed(2)} MB/s`;
+        setTotalSpeed(formattedSpeed);
+        // Update speed history
+        setSpeedHistory(prevHistory => {
+          const newHistory = [
+            ...prevHistory.slice(1),
+            {
+              index: prevHistory[prevHistory.length - 1].index + 1,
+              speed: totalSpeedNum,
+            },
+          ];
+          localStorage.setItem("speedHistory", JSON.stringify(newHistory));
+          return newHistory;
+        });
       } catch (error) {
         console.error("Error fetching downloading games:", error);
       }
     };
 
     fetchDownloadingGames();
-    const intervalId = setInterval(fetchDownloadingGames, 2000);
+    // Poll every 1 second for more responsive progress updates
+    const intervalId = setInterval(fetchDownloadingGames, 1000);
+    // Only run this effect on mount/unmount (not on downloadingGames change)
     return () => clearInterval(intervalId);
-  }, [downloadingGames]);
+  }, []);
 
   useEffect(() => {
     if (downloadingGames.length === 0) {
@@ -208,6 +219,10 @@ const Downloads = () => {
         newSet.delete(game.id);
         return newSet;
       });
+      // Optimistically remove the game from the downloads list if deleteContents is true
+      if (deleteContents) {
+        setDownloadingGames(prev => prev.filter(g => g.id !== game.id));
+      }
       setStopModalOpen(false);
       setGameToStop(null);
     }
@@ -265,6 +280,10 @@ const Downloads = () => {
                 onRetry={() => handleRetryDownload(game)}
                 onOpenFolder={() => handleOpenFolder(game)}
                 isStopping={stoppingDownloads.has(game.id)}
+                onDelete={deletedGame => {
+                  // Optimistically remove from UI
+                  setDownloadingGames(prev => prev.filter(g => g.id !== deletedGame.id));
+                }}
               />
             ))}
           </div>
@@ -414,7 +433,7 @@ const Downloads = () => {
   );
 };
 
-const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
+const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelete }) => {
   const [isReporting, setIsReporting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const { t } = useLanguage();
@@ -466,6 +485,8 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping }) => {
     setIsDeleting(true);
     await window.electron.deleteGameDirectory(game.game);
     setIsDeleting(false);
+    // Immediately notify parent to refresh downloads list
+    if (onDelete) onDelete(game);
   };
 
   const { downloadingData } = game;
