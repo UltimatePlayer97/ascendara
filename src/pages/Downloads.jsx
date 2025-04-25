@@ -806,7 +806,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
                       <a
                         onClick={() =>
                           window.electron.openURL(
-                            "https://ascendara.app/docs/troubleshooting/common-issues#connection-reset"
+                            "https://ascendara.app/docs/troubleshooting/common-issues#connection-aborted-when-downloading"
                           )
                         }
                         className="cursor-pointer text-primary hover:underline"
