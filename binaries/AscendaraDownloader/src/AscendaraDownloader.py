@@ -30,7 +30,6 @@ import argparse
 import logging
 import subprocess
 import requests
-import patoolib
 
 # Set up logging to print to the console
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -413,9 +412,8 @@ def read_size(size, decimal_places=2):
     return f"{size:.{decimal_places}f} {units[i]}"
 
 def download_file(link, game, online, dlc, isVr, updateFlow, version, size, download_dir, withNotification=None):
-    import math
-    import time
-    import logging
+    archive_file_path = None
+    archive_ext = None
 
     os.makedirs(download_dir, exist_ok=True)
     sanitized_game = sanitize_folder_name(game)
@@ -445,14 +443,11 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     if withNotification:
         _launch_notification(withNotification, "Download Started", f"Starting download for {game}")
 
-    archive_ext = "rar"
     logging.info(f"Starting download: {link}")
 
     # Get file info and pre-allocate
     session = requests.Session()
     session.mount('https://', SSLContextAdapter())
-    archive_file_path = None
-    total_size = None
     try:
         resp = session.head(link, timeout=(30, 60))
         resp.raise_for_status()
@@ -498,7 +493,8 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             logging.info("Skipping pre-allocation since file size is unknown.")
     except Exception as e:
         handleerror(game_info, game_info_path, e)
-        return
+        return archive_file_path, archive_ext
+
     if total_size:
         game_info['size'] = read_size(total_size)
         safe_write_json(game_info_path, game_info)
@@ -619,7 +615,7 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
                 stop_event.set()
                 progress_thread.join()
                 handleerror(game_info, game_info_path, "A chunk failed after all retries.")
-                return
+                return archive_file_path, archive_ext
 
     stop_event.set()
     progress_thread.join()
