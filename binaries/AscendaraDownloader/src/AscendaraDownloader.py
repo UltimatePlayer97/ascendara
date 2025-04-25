@@ -249,6 +249,7 @@ class DownloadManager:
         self.last_downloaded_size = 0
         self.current_speed = 0.0  # Track current speed for smoother updates
         self.download_speed_limit = 0  # KB/s, 0 means unlimited
+        self.failed_chunks = []
 
         # Strictly use thread count, chunk size, and speed limit from settings
         # Load settings from AppData/Electron/ascendarasettings.json on Windows
@@ -401,6 +402,15 @@ class DownloadManager:
                 wait_time = (backoff_factor ** retries) + (random.random() * 0.1)
                 time.sleep(min(wait_time, 10))  # Cap at 10 seconds
                 
+def read_size(size, decimal_places=2):
+    if size == 0:
+        return "0 B"
+    units = ["B", "KB", "MB", "GB", "TB", "PB"]
+    i = 0
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024.0
+        i += 1
+    return f"{size:.{decimal_places}f} {units[i]}"
 
 def download_file(link, game, online, dlc, isVr, updateFlow, version, size, download_dir, withNotification=None):
     import math
@@ -441,30 +451,80 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     # Get file info and pre-allocate
     session = requests.Session()
     session.mount('https://', SSLContextAdapter())
+    archive_file_path = None
+    total_size = None
     try:
         resp = session.head(link, timeout=(30, 60))
         resp.raise_for_status()
-        total_size = int(resp.headers.get('Content-Length', 0))
-        if total_size == 0:
-            logging.error("Could not determine file size.")
-            raise Exception("Could not determine file size.")
-        logging.info(f"File size: {total_size/1024/1024:.2f} MB")
+        total_size_header = resp.headers.get('Content-Length')
+        if total_size_header is not None and total_size_header.isdigit():
+            total_size = int(total_size_header)
+        else:
+            # Try GET with Range header
+            logging.info("HEAD did not return Content-Length. Trying GET with Range header...")
+            try:
+                resp2 = session.get(link, headers={'Range': 'bytes=0-1'}, stream=True, timeout=(30, 60))
+                content_range = resp2.headers.get('Content-Range')
+                if content_range and '/' in content_range:
+                    total_size_candidate = content_range.split('/')[-1]
+                    if total_size_candidate.isdigit():
+                        total_size = int(total_size_candidate)
+                        logging.info(f"Got file size from Content-Range: {total_size}")
+                    else:
+                        total_size = None
+                else:
+                    total_size = None
+                resp2.close()
+            except Exception:
+                total_size = None
+            if total_size is None:
+                logging.warning("Could not determine file size from headers or Content-Range. Proceeding without pre-allocation or progress tracking.")
         archive_file_path = os.path.join(download_path, os.path.basename(link.split('?')[0]))
         if not os.path.exists(download_path):
             os.makedirs(download_path, exist_ok=True)
-        logging.info("Pre-allocating file...")
-        with open(archive_file_path, 'wb') as f:
-            f.truncate(total_size)
-        logging.info("Pre-allocation complete.")
+        if total_size:
+            logging.info(f"File size: {total_size/1024/1024:.2f} MB")
+            if total_size > 2 * 1024 * 1024 * 1024:
+                logging.warning(f"File is larger than 2GB ({total_size/1024/1024/1024:.2f} GB). Skipping pre-allocation to avoid long delays.")
+                with open(archive_file_path, 'wb') as f:
+                    pass  # Create empty file, skip truncate
+                logging.info("Pre-allocation skipped for large file.")
+            else:
+                logging.info("Pre-allocating file...")
+                with open(archive_file_path, 'wb') as f:
+                    f.truncate(total_size)
+                logging.info("Pre-allocation complete.")
+        else:
+            logging.info("Skipping pre-allocation since file size is unknown.")
     except Exception as e:
         handleerror(game_info, game_info_path, e)
         return
-    manager = DownloadManager(link, total_size)
+    if total_size:
+        game_info['size'] = read_size(total_size)
+        safe_write_json(game_info_path, game_info)
+    # If total_size is None, pass 0 to DownloadManager (or handle accordingly)
+    manager = DownloadManager(link, total_size or 0)
     temp_dir = os.path.join(download_path, "_chunks")
     os.makedirs(temp_dir, exist_ok=True)
-    manager.split_chunks(temp_dir)
-    num_chunks = len(manager.chunks)
-    logging.info(f"DownloadManager: {num_chunks} chunks, {manager.num_threads} threads, {manager.max_chunk_size//(1024*1024)} MB/chunk, speed limit: {manager.download_speed_limit} KB/s")
+    # If file size is unknown, only use one chunk
+    if total_size is None or total_size == 0:
+        manager.num_threads = 1
+        manager.max_chunk_size = None
+        manager.chunks = []
+        # Create a single chunk from 0 to unknown
+        from types import SimpleNamespace
+        chunk = SimpleNamespace(start=0, end=None, url=link, chunk_id=0, temp_file_path=os.path.join(temp_dir, 'chunk_0.tmp'), downloaded=0)
+        manager.chunks.append(chunk)
+        num_chunks = 1
+        chunk_size_str = "unknown chunk size"
+    else:
+        manager.split_chunks(temp_dir)
+        num_chunks = len(manager.chunks)
+        if manager.max_chunk_size is not None:
+            chunk_size_str = f"{manager.max_chunk_size//(1024*1024)} MB/chunk"
+        else:
+            chunk_size_str = "unknown chunk size"
+    logging.info(f"DownloadManager: {num_chunks} chunks, {manager.num_threads} threads, {chunk_size_str}, speed limit: {manager.download_speed_limit} KB/s")
 
     # Progress tracking
     shared_progress = {
@@ -484,7 +544,10 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             elapsed_time = time.time() - start_time
             download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
             shared_progress['current_speed'] = manager.current_speed
-            shared_progress['progress'] = min(100.0, (manager.downloaded_size / total_size) * 100)
+            if total_size:
+                shared_progress['progress'] = min(100.0, (manager.downloaded_size / total_size) * 100)
+            else:
+                shared_progress['progress'] = 0.0
             cs = manager.current_speed
             if cs < 1024:
                 speed_str = f"{cs:.2f} B/s"
@@ -493,26 +556,30 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             else:
                 speed_str = f"{cs / (1024 * 1024):.2f} MB/s"
             shared_progress['progressDownloadSpeeds'] = speed_str
-            remaining_size = total_size - manager.downloaded_size
-            if cs > 0 and remaining_size > 0:
-                time_until_complete = remaining_size / cs
-                minutes, seconds = divmod(time_until_complete, 60)
-                hours, minutes = divmod(minutes, 60)
-                if hours > 0:
-                    time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+            if total_size:
+                remaining_size = total_size - manager.downloaded_size
+                if cs > 0 and remaining_size > 0:
+                    time_until_complete = remaining_size / cs
+                    minutes, seconds = divmod(time_until_complete, 60)
+                    hours, minutes = divmod(minutes, 60)
+                    if hours > 0:
+                        time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                    else:
+                        time_str = f"{int(minutes)}m {int(seconds)}s"
+                    shared_progress['time_until_complete'] = time_str
+                elif remaining_size <= 0:
+                    shared_progress['time_until_complete'] = '0'
                 else:
-                    time_str = f"{int(minutes)}m {int(seconds)}s"
-                shared_progress['time_until_complete'] = time_str
-            elif remaining_size <= 0:
-                shared_progress['time_until_complete'] = '0'
+                    shared_progress['time_until_complete'] = 'calculating...'
+                shared_progress['progressCompleted'] = f"{shared_progress['progress']:.2f}"
             else:
-                shared_progress['time_until_complete'] = 'calculating...'
-            shared_progress['progressCompleted'] = f"{shared_progress['progress']:.2f}"
+                shared_progress['time_until_complete'] = 'unknown'
+                shared_progress['progressCompleted'] = f"{manager.downloaded_size} bytes"
             game_info['downloadingData']['progressCompleted'] = shared_progress['progressCompleted']
             game_info['downloadingData']['progressDownloadSpeeds'] = shared_progress['progressDownloadSpeeds']
             game_info['downloadingData']['timeUntilComplete'] = shared_progress['time_until_complete']
             safe_write_json(game_info_path, game_info)
-            logging.info(f"Progress: {shared_progress['progressCompleted']}% | Speed: {speed_str} | ETA: {shared_progress['time_until_complete']}")
+            logging.info(f"Progress: {shared_progress['progressCompleted']} | Speed: {speed_str} | ETA: {shared_progress['time_until_complete']}")
 
     def progress_writer():
         last_written = (None, None, None)
