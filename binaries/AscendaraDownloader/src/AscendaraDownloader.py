@@ -442,6 +442,8 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     # Get file info and pre-allocate
     session = requests.Session()
     session.mount('https://', SSLContextAdapter())
+    archive_file_path = None
+    total_size = None
     try:
         resp = session.head(link, timeout=(30, 60))
         resp.raise_for_status()
@@ -449,17 +451,40 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
         if total_size_header is not None and total_size_header.isdigit():
             total_size = int(total_size_header)
         else:
-            logging.warning("Could not determine file size from headers. Proceeding without pre-allocation or progress tracking.")
-            total_size = None
+            # Try GET with Range header
+            logging.info("HEAD did not return Content-Length. Trying GET with Range header...")
+            try:
+                resp2 = session.get(link, headers={'Range': 'bytes=0-1'}, stream=True, timeout=(30, 60))
+                content_range = resp2.headers.get('Content-Range')
+                if content_range and '/' in content_range:
+                    total_size_candidate = content_range.split('/')[-1]
+                    if total_size_candidate.isdigit():
+                        total_size = int(total_size_candidate)
+                        logging.info(f"Got file size from Content-Range: {total_size}")
+                    else:
+                        total_size = None
+                else:
+                    total_size = None
+                resp2.close()
+            except Exception:
+                total_size = None
+            if total_size is None:
+                logging.warning("Could not determine file size from headers or Content-Range. Proceeding without pre-allocation or progress tracking.")
         archive_file_path = os.path.join(download_path, os.path.basename(link.split('?')[0]))
         if not os.path.exists(download_path):
             os.makedirs(download_path, exist_ok=True)
         if total_size:
             logging.info(f"File size: {total_size/1024/1024:.2f} MB")
-            logging.info("Pre-allocating file...")
-            with open(archive_file_path, 'wb') as f:
-                f.truncate(total_size)
-            logging.info("Pre-allocation complete.")
+            if total_size > 2 * 1024 * 1024 * 1024:
+                logging.warning(f"File is larger than 2GB ({total_size/1024/1024/1024:.2f} GB). Skipping pre-allocation to avoid long delays.")
+                with open(archive_file_path, 'wb') as f:
+                    pass  # Create empty file, skip truncate
+                logging.info("Pre-allocation skipped for large file.")
+            else:
+                logging.info("Pre-allocating file...")
+                with open(archive_file_path, 'wb') as f:
+                    f.truncate(total_size)
+                logging.info("Pre-allocation complete.")
         else:
             logging.info("Skipping pre-allocation since file size is unknown.")
     except Exception as e:
@@ -468,7 +493,6 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     # If total_size is None, pass 0 to DownloadManager (or handle accordingly)
     manager = DownloadManager(link, total_size or 0)
 
-    manager = DownloadManager(link, total_size)
     temp_dir = os.path.join(download_path, "_chunks")
     os.makedirs(temp_dir, exist_ok=True)
     # If file size is unknown, only use one chunk
