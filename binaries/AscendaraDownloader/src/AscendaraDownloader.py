@@ -444,11 +444,12 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     try:
         resp = session.head(link, timeout=(30, 60))
         resp.raise_for_status()
-        total_size = int(resp.headers.get('Content-Length', 0))
-        if total_size == 0:
-            logging.error("Could not determine file size.")
-            raise Exception("Could not determine file size.")
-        logging.info(f"File size: {total_size/1024/1024:.2f} MB")
+        total_size_header = resp.headers.get('Content-Length')
+        if total_size_header is not None and total_size_header.isdigit():
+            total_size = int(total_size_header)
+        else:
+            logging.warning("Could not determine file size from headers. Proceeding without pre-allocation or progress tracking.")
+            total_size = None
         archive_file_path = os.path.join(download_path, os.path.basename(link.split('?')[0]))
         if not os.path.exists(download_path):
             os.makedirs(download_path, exist_ok=True)
