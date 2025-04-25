@@ -249,6 +249,7 @@ class DownloadManager:
         self.last_downloaded_size = 0
         self.current_speed = 0.0  # Track current speed for smoother updates
         self.download_speed_limit = 0  # KB/s, 0 means unlimited
+        self.failed_chunks = []
 
         # Strictly use thread count, chunk size, and speed limit from settings
         # Load settings from AppData/Electron/ascendarasettings.json on Windows
@@ -453,19 +454,42 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
         archive_file_path = os.path.join(download_path, os.path.basename(link.split('?')[0]))
         if not os.path.exists(download_path):
             os.makedirs(download_path, exist_ok=True)
-        logging.info("Pre-allocating file...")
-        with open(archive_file_path, 'wb') as f:
-            f.truncate(total_size)
-        logging.info("Pre-allocation complete.")
+        if total_size:
+            logging.info(f"File size: {total_size/1024/1024:.2f} MB")
+            logging.info("Pre-allocating file...")
+            with open(archive_file_path, 'wb') as f:
+                f.truncate(total_size)
+            logging.info("Pre-allocation complete.")
+        else:
+            logging.info("Skipping pre-allocation since file size is unknown.")
     except Exception as e:
         handleerror(game_info, game_info_path, e)
         return
+    # If total_size is None, pass 0 to DownloadManager (or handle accordingly)
+    manager = DownloadManager(link, total_size or 0)
+
     manager = DownloadManager(link, total_size)
     temp_dir = os.path.join(download_path, "_chunks")
     os.makedirs(temp_dir, exist_ok=True)
-    manager.split_chunks(temp_dir)
-    num_chunks = len(manager.chunks)
-    logging.info(f"DownloadManager: {num_chunks} chunks, {manager.num_threads} threads, {manager.max_chunk_size//(1024*1024)} MB/chunk, speed limit: {manager.download_speed_limit} KB/s")
+    # If file size is unknown, only use one chunk
+    if total_size is None or total_size == 0:
+        manager.num_threads = 1
+        manager.max_chunk_size = None
+        manager.chunks = []
+        # Create a single chunk from 0 to unknown
+        from types import SimpleNamespace
+        chunk = SimpleNamespace(start=0, end=None, url=link, chunk_id=0, temp_file_path=os.path.join(temp_dir, 'chunk_0.tmp'), downloaded=0)
+        manager.chunks.append(chunk)
+        num_chunks = 1
+        chunk_size_str = "unknown chunk size"
+    else:
+        manager.split_chunks(temp_dir)
+        num_chunks = len(manager.chunks)
+        if manager.max_chunk_size is not None:
+            chunk_size_str = f"{manager.max_chunk_size//(1024*1024)} MB/chunk"
+        else:
+            chunk_size_str = "unknown chunk size"
+    logging.info(f"DownloadManager: {num_chunks} chunks, {manager.num_threads} threads, {chunk_size_str}, speed limit: {manager.download_speed_limit} KB/s")
 
     # Progress tracking
     shared_progress = {
@@ -485,7 +509,10 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             elapsed_time = time.time() - start_time
             download_speed = manager.downloaded_size / elapsed_time if elapsed_time > 0 else 0
             shared_progress['current_speed'] = manager.current_speed
-            shared_progress['progress'] = min(100.0, (manager.downloaded_size / total_size) * 100)
+            if total_size:
+                shared_progress['progress'] = min(100.0, (manager.downloaded_size / total_size) * 100)
+            else:
+                shared_progress['progress'] = 0.0
             cs = manager.current_speed
             if cs < 1024:
                 speed_str = f"{cs:.2f} B/s"
@@ -494,26 +521,30 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             else:
                 speed_str = f"{cs / (1024 * 1024):.2f} MB/s"
             shared_progress['progressDownloadSpeeds'] = speed_str
-            remaining_size = total_size - manager.downloaded_size
-            if cs > 0 and remaining_size > 0:
-                time_until_complete = remaining_size / cs
-                minutes, seconds = divmod(time_until_complete, 60)
-                hours, minutes = divmod(minutes, 60)
-                if hours > 0:
-                    time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+            if total_size:
+                remaining_size = total_size - manager.downloaded_size
+                if cs > 0 and remaining_size > 0:
+                    time_until_complete = remaining_size / cs
+                    minutes, seconds = divmod(time_until_complete, 60)
+                    hours, minutes = divmod(minutes, 60)
+                    if hours > 0:
+                        time_str = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+                    else:
+                        time_str = f"{int(minutes)}m {int(seconds)}s"
+                    shared_progress['time_until_complete'] = time_str
+                elif remaining_size <= 0:
+                    shared_progress['time_until_complete'] = '0'
                 else:
-                    time_str = f"{int(minutes)}m {int(seconds)}s"
-                shared_progress['time_until_complete'] = time_str
-            elif remaining_size <= 0:
-                shared_progress['time_until_complete'] = '0'
+                    shared_progress['time_until_complete'] = 'calculating...'
+                shared_progress['progressCompleted'] = f"{shared_progress['progress']:.2f}"
             else:
-                shared_progress['time_until_complete'] = 'calculating...'
-            shared_progress['progressCompleted'] = f"{shared_progress['progress']:.2f}"
+                shared_progress['time_until_complete'] = 'unknown'
+                shared_progress['progressCompleted'] = f"{manager.downloaded_size} bytes"
             game_info['downloadingData']['progressCompleted'] = shared_progress['progressCompleted']
             game_info['downloadingData']['progressDownloadSpeeds'] = shared_progress['progressDownloadSpeeds']
             game_info['downloadingData']['timeUntilComplete'] = shared_progress['time_until_complete']
             safe_write_json(game_info_path, game_info)
-            logging.info(f"Progress: {shared_progress['progressCompleted']}% | Speed: {speed_str} | ETA: {shared_progress['time_until_complete']}")
+            logging.info(f"Progress: {shared_progress['progressCompleted']} | Speed: {speed_str} | ETA: {shared_progress['time_until_complete']}")
 
     def progress_writer():
         last_written = (None, None, None)
