@@ -32,6 +32,16 @@ import logging
 from datetime import datetime
 import zipfile
 
+def read_size(size, decimal_places=2):
+    if size == 0:
+        return "0 B"
+    units = ["B", "KB", "MB", "GB", "TB", "PB"]
+    i = 0
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024.0
+        i += 1
+    return f"{size:.{decimal_places}f} {units[i]}"
+
 # Set up logging to both console and temp file
 def setup_logging():
     log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -282,7 +292,10 @@ class GofileDownloader:
             if self.updateFlow and self.version:
                 print(f"Updating version to: {self.version}")
                 self.game_info["version"] = self.version
-            
+
+            # Update the size in game_info to the actual downloaded size (human-readable)
+            self.game_info["size"] = read_size(self._total_size)
+
             safe_write_json(self.game_info_path, self.game_info)
             print("Process completed successfully")
             

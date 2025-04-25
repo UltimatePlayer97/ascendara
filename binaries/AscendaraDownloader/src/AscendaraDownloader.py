@@ -402,6 +402,15 @@ class DownloadManager:
                 wait_time = (backoff_factor ** retries) + (random.random() * 0.1)
                 time.sleep(min(wait_time, 10))  # Cap at 10 seconds
                 
+def read_size(size, decimal_places=2):
+    if size == 0:
+        return "0 B"
+    units = ["B", "KB", "MB", "GB", "TB", "PB"]
+    i = 0
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024.0
+        i += 1
+    return f"{size:.{decimal_places}f} {units[i]}"
 
 def download_file(link, game, online, dlc, isVr, updateFlow, version, size, download_dir, withNotification=None):
     import math
@@ -490,9 +499,11 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     except Exception as e:
         handleerror(game_info, game_info_path, e)
         return
+    if total_size:
+        game_info['size'] = read_size(total_size)
+        safe_write_json(game_info_path, game_info)
     # If total_size is None, pass 0 to DownloadManager (or handle accordingly)
     manager = DownloadManager(link, total_size or 0)
-
     temp_dir = os.path.join(download_path, "_chunks")
     os.makedirs(temp_dir, exist_ok=True)
     # If file size is unknown, only use one chunk
