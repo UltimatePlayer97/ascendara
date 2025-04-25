@@ -599,16 +599,25 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
     }
   };
 
+  const predefinedErrorPatterns = [
+    "content_type_error",
+    "no_files_error",
+    "ConnectionResetError(10054",
+    "Max retries exceeded with url",
+    "Caused by SSLError",
+    "[Errno 28] No space left on device",
+  ];
+
+  function isPredefinedError(message) {
+    if (!message) return false;
+    return predefinedErrorPatterns.some(pattern => message.includes(pattern));
+  }
+
   useEffect(() => {
-    if (
-      hasError &&
-      !wasReported &&
-      downloadingData.message !== "content_type_error" &&
-      downloadingData.message !== "no_files_error"
-    ) {
+    if (hasError && !wasReported && !isPredefinedError(downloadingData.message)) {
       handleReport();
     }
-  }, [hasError, wasReported]);
+  }, [hasError, wasReported, downloadingData.message]);
 
   return (
     <Card className="mb-4 w-full transition-all duration-200 hover:shadow-md">
@@ -755,24 +764,24 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
                 <div className="text-destructive font-medium">
                   {t("downloads.downloadError")}
                 </div>
-                {(downloadingData.message === "content_type_error" && (
-                  <p className="text-sm text-muted-foreground">
-                    {t("downloads.contentTypeError")}
-                    <br />
-                    <a
-                      onClick={() =>
-                        window.electron.openURL(
-                          "https://ascendara.app/docs/troubleshooting/common-issues#download-issues"
-                        )
-                      }
-                      className="cursor-pointer text-primary hover:underline"
-                    >
-                      {t("common.learnMore")}{" "}
-                      <ExternalLink className="mb-1 inline-block h-3 w-3" />
-                    </a>
-                  </p>
-                )) ||
-                  (downloadingData.message === "no_files_error" && (
+                {isPredefinedError(downloadingData.message) ? (
+                  downloadingData.message.includes("content_type_error") ? (
+                    <p className="text-sm text-muted-foreground">
+                      {t("downloads.contentTypeError")}
+                      <br />
+                      <a
+                        onClick={() =>
+                          window.electron.openURL(
+                            "https://ascendara.app/docs/troubleshooting/common-issues#download-issues"
+                          )
+                        }
+                        className="cursor-pointer text-primary hover:underline"
+                      >
+                        {t("common.learnMore")}{" "}
+                        <ExternalLink className="mb-1 inline-block h-3 w-3" />
+                      </a>
+                    </p>
+                  ) : downloadingData.message.includes("no_files_error") ? (
                     <p className="text-sm text-muted-foreground">
                       {t("downloads.noFilesError")}
                       <br />
@@ -788,11 +797,43 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
                         <ExternalLink className="mb-1 inline-block h-3 w-3" />
                       </a>
                     </p>
-                  )) || (
+                  ) : downloadingData.message.includes("ConnectionResetError(10054") ||
+                    downloadingData.message.includes("Max retries exceeded with url") ||
+                    downloadingData.message.includes("Caused by SSLError") ? (
+                    <p className="text-sm text-muted-foreground">
+                      {t("downloads.connectionResetError")}
+                      <br />
+                      <a
+                        onClick={() =>
+                          window.electron.openURL(
+                            "https://ascendara.app/docs/troubleshooting/common-issues#connection-reset"
+                          )
+                        }
+                        className="cursor-pointer text-primary hover:underline"
+                      >
+                        {t("common.learnMore")}{" "}
+                        <ExternalLink className="mb-1 inline-block h-3 w-3" />
+                      </a>
+                    </p>
+                  ) : downloadingData.message.includes(
+                      "[Errno 28] No space left on device"
+                    ) ? (
+                    <p className="text-sm text-muted-foreground">
+                      {t(
+                        "downloads.noSpaceLeftError",
+                        "No space left on device. Please free up disk space to continue the download."
+                      )}
+                    </p>
+                  ) : (
                     <p className="text-sm text-muted-foreground">
                       {downloadingData.message}
                     </p>
-                  )}
+                  )
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {downloadingData.message}
+                  </p>
+                )}
                 <div className="flex items-center space-x-2 pt-1">
                   {downloadingData.message !== "content_type_error" &&
                     downloadingData.message !== "no_files_error" && (
