@@ -11,6 +11,7 @@
     <p>
         <a href="https://github.com/tagoWorks/ascendara/issues"><img src="https://img.shields.io/github/issues-raw/tagoWorks/ascendara" alt="Issues"></a>
         <img src="https://img.shields.io/github/last-commit/tagoWorks/ascendara" alt="Last Commit">
+        <img src="https://img.shields.io/github/actions/workflow/status/ascendara/ascendara/build.yml" alt="Build Status">
         <a href="https://github.com/tagoWorks/ascendara/network/members"><img src="https://img.shields.io/github/forks/tagoWorks/ascendara?style=flat&logo=github&logoColor=white" alt="Forks"></a>
         <a href="https://github.com/tagoWorks/ascendara/stargazers"><img src="https://img.shields.io/github/stars/tagoWorks/ascendara?style=social" alt="GitHub Stars"></a>
     </p>
