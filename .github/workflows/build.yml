@@ -1,0 +1,34 @@
+name: Build Ascendara
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Build React app
+        run: |
+          yarn build
+
+      - name: Build Electron app
+        run: |
+          yarn buildwithelectron
