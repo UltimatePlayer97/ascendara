@@ -21,13 +21,16 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: |
-          yarn install
+      - name: Clean electron-builder cache
+        run: rm -rf ~/.cache/electron-builder/appimage
 
-      - name: Build React app
-        run: |
-          yarn build
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: yarn run build
 
       - name: Build Electron app
         run: |
