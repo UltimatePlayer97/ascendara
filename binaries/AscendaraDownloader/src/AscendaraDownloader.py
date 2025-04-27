@@ -30,6 +30,8 @@ import argparse
 import logging
 import subprocess
 import requests
+import patoolib
+import msvcrt
 
 # Set up logging to print to the console
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -133,9 +135,6 @@ def retryfolder(game, online, dlc, version, size, download_dir, newfolder):
     safe_write_json(game_info_path, game_info)
 
 def safe_write_json(filepath, data, max_retries=5):
-    import msvcrt
-    import random
-    import logging
     
     def generate_temp_path(base_path):
         return f"{base_path}.{int(time.time()*1000)}.{random.randint(1000, 9999)}.tmp"
@@ -412,8 +411,9 @@ def read_size(size, decimal_places=2):
     return f"{size:.{decimal_places}f} {units[i]}"
 
 def download_file(link, game, online, dlc, isVr, updateFlow, version, size, download_dir, withNotification=None):
-    archive_file_path = None
-    archive_ext = None
+    import math
+    import time
+    import logging
 
     os.makedirs(download_dir, exist_ok=True)
     sanitized_game = sanitize_folder_name(game)
@@ -443,11 +443,14 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
     if withNotification:
         _launch_notification(withNotification, "Download Started", f"Starting download for {game}")
 
+    archive_ext = "rar"
     logging.info(f"Starting download: {link}")
 
     # Get file info and pre-allocate
     session = requests.Session()
     session.mount('https://', SSLContextAdapter())
+    archive_file_path = None
+    total_size = None
     try:
         resp = session.head(link, timeout=(30, 60))
         resp.raise_for_status()
@@ -493,8 +496,7 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             logging.info("Skipping pre-allocation since file size is unknown.")
     except Exception as e:
         handleerror(game_info, game_info_path, e)
-        return archive_file_path, archive_ext
-
+        return
     if total_size:
         game_info['size'] = read_size(total_size)
         safe_write_json(game_info_path, game_info)
@@ -615,21 +617,53 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
                 stop_event.set()
                 progress_thread.join()
                 handleerror(game_info, game_info_path, "A chunk failed after all retries.")
-                return archive_file_path, archive_ext
+                return
 
     stop_event.set()
     progress_thread.join()
     logging.info("Download completed successfully.")
     game_info['downloadingData']['downloading'] = False
+    game_info['downloadingData']['extracting'] = True
     safe_write_json(game_info_path, game_info)
 
     # Merge chunks into archive_file_path
-    with open(archive_file_path, 'r+b') as out_file:
-        for chunk in sorted(manager.chunks, key=lambda c: c.chunk_id):
-            with open(chunk.temp_file_path, 'rb') as cf:
-                shutil.copyfileobj(cf, out_file)
-            os.remove(chunk.temp_file_path)
-    shutil.rmtree(temp_dir, ignore_errors=True)
+    merge_success = False
+    try:
+        with open(archive_file_path, 'r+b') as out_file:
+            for chunk in sorted(manager.chunks, key=lambda c: c.chunk_id):
+                with open(chunk.temp_file_path, 'rb') as cf:
+                    shutil.copyfileobj(cf, out_file)
+                os.remove(chunk.temp_file_path)
+        merge_success = True
+        logging.info("Chunks merged successfully into archive.")
+    except Exception as e:
+        logging.error(f"Error merging chunks: {e}")
+        handleerror(game_info, game_info_path, f"Error merging chunks: {e}")
+        # Clean up chunk files and temp dir
+        for chunk in manager.chunks:
+            try:
+                if os.path.exists(chunk.temp_file_path):
+                    os.remove(chunk.temp_file_path)
+            except Exception:
+                pass
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir, ignore_errors=True)
+        return archive_file_path, archive_ext
+    finally:
+        # Always clean up temp chunk files and temp dir
+        for chunk in manager.chunks:
+            try:
+                if os.path.exists(chunk.temp_file_path):
+                    os.remove(chunk.temp_file_path)
+            except Exception:
+                pass
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir, ignore_errors=True)
+        logging.info("Cleaned up chunk temp files and temp_dir.")
+
+    if not merge_success:
+        logging.error("Merge did not complete successfully. Exiting.")
+        return archive_file_path, archive_ext
 
     # Extraction logic
     try:
@@ -641,51 +675,136 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
         archive_ext = os.path.splitext(archive_file_path)[1].lower().lstrip('.')
         watching_path = os.path.join(download_path, "filemap.ascendara.json")
         watching_data = {}
+        extracted = False
+        extraction_error = None
 
-        if sys.platform == "win32":
-            if archive_ext == "rar":
-                from unrar import rarfile
-                with rarfile.RarFile(archive_file_path, 'r') as fs:
-                    for rar_info in fs.infolist():
-                        if not rar_info.filename.endswith('.url') and '_CommonRedist' not in rar_info.filename:
-                            extracted_path = os.path.join(download_path, rar_info.filename)
-                            key = f"{os.path.relpath(extracted_path, download_path)}"
-                            watching_data[key] = {"size": rar_info.file_size}
-                    for rar_info in fs.infolist():
-                        if not rar_info.filename.endswith('.url'):
-                            fs.extract(rar_info, download_path)
+        def log_and_collect_error(msg):
+            nonlocal extraction_error
+            logging.error(msg)
+            extraction_error = msg
+
+        try:
+            if sys.platform == "win32" and archive_ext == "rar":
+                try:
+                    from unrar import rarfile
+                    with rarfile.RarFile(archive_file_path, 'r') as fs:
+                        for rar_info in fs.infolist():
+                            if not rar_info.filename.endswith('.url') and '_CommonRedist' not in rar_info.filename:
+                                extracted_path = os.path.join(download_path, rar_info.filename)
+                                key = f"{os.path.relpath(extracted_path, download_path)}"
+                                watching_data[key] = {"size": rar_info.file_size}
+                        for rar_info in fs.infolist():
+                            if not rar_info.filename.endswith('.url'):
+                                fs.extract(rar_info, download_path)
+                    extracted = True
+                except Exception as e:
+                    log_and_collect_error(f"RAR extraction failed: {e}")
             elif archive_ext == "zip":
-                import zipfile
-                with zipfile.ZipFile(archive_file_path, 'r') as zip_ref:
-                    for zip_info in zip_ref.infolist():
-                        if not zip_info.filename.endswith('.url') and '_CommonRedist' not in zip_info.filename:
-                            extracted_path = os.path.join(download_path, zip_info.filename)
-                            key = f"{os.path.relpath(extracted_path, download_path)}"
-                            watching_data[key] = {"size": zip_info.file_size}
-                    for zip_info in zip_ref.infolist():
-                        if not zip_info.filename.endswith('.url'):
-                            zip_ref.extract(zip_info, download_path)
+                try:
+                    import zipfile
+                    with zipfile.ZipFile(archive_file_path, 'r') as zip_ref:
+                        for zip_info in zip_ref.infolist():
+                            if not zip_info.filename.endswith('.url') and '_CommonRedist' not in zip_info.filename:
+                                extracted_path = os.path.join(download_path, zip_info.filename)
+                                key = f"{os.path.relpath(extracted_path, download_path)}"
+                                watching_data[key] = {"size": zip_info.file_size}
+                        for zip_info in zip_ref.infolist():
+                            if not zip_info.filename.endswith('.url'):
+                                zip_ref.extract(zip_info, download_path)
+                    extracted = True
+                except Exception as e:
+                    log_and_collect_error(f"ZIP extraction failed: {e}")
+        except Exception as e:
+            log_and_collect_error(f"Initial extraction attempt failed: {e}")
+
+        if not extracted:
+            try:
+                before_files = set()
+                for dirpath, _, filenames in os.walk(download_path):
+                    for fname in filenames:
+                        if not fname.endswith('.url'):
+                            before_files.add(os.path.join(dirpath, fname))
+                try:
+                    import patoolib
+                    patoolib.extract_archive(archive_file_path, outdir=download_path)
+                except ImportError:
+                    try:
+                        from pyunpack import Archive
+                        Archive(archive_file_path).extractall(download_path)
+                    except Exception as e2:
+                        log_and_collect_error(f"Fallback extraction failed: {e2}")
+                        raise e2
+                for dirpath, _, filenames in os.walk(download_path):
+                    for fname in filenames:
+                        if not fname.endswith('.url') and '_CommonRedist' not in os.path.join(dirpath, fname):
+                            full_path = os.path.join(dirpath, fname)
+                            if full_path not in before_files:
+                                key = f"{os.path.relpath(full_path, download_path)}"
+                                watching_data[key] = {"size": os.path.getsize(full_path)}
+                extracted = True
+            except Exception as e:
+                log_and_collect_error(f"Universal extraction failed: {e}")
+
+        if not extracted:
+            log_and_collect_error(f"Extraction failed or unsupported archive type: {archive_ext}")
+            raise Exception(f"Extraction failed: {extraction_error or 'Unknown error'}")
         else:
-            # For non-Windows, use patoolib and get file info after extraction
-            before_files = set()
-            for dirpath, _, filenames in os.walk(download_path):
-                for fname in filenames:
-                    if not fname.endswith('.url'):
-                        before_files.add(os.path.join(dirpath, fname))
-            import patoolib
-            patoolib.extract_archive(archive_file_path, outdir=download_path)
-            for dirpath, _, filenames in os.walk(download_path):
-                for fname in filenames:
-                    if not fname.endswith('.url') and '_CommonRedist' not in os.path.join(dirpath, fname):
-                        full_path = os.path.join(dirpath, fname)
-                        if full_path not in before_files:
-                            key = f"{os.path.relpath(full_path, download_path)}"
-                            watching_data[key] = {"size": os.path.getsize(full_path)}
+            logging.info(f"Extraction completed for {archive_file_path}")
 
-        # Save watching data
-        safe_write_json(watching_path, watching_data)
+        new_filemap = {}
+        game_dir_name = sanitize_folder_name(game)
+        archive_exts = {'.rar', '.zip', '.7z', '.tar', '.gz', '.bz2', '.xz', '.iso'}
+        for dirpath, _, filenames in os.walk(download_path):
+            rel_dir = os.path.relpath(dirpath, download_path)
+            for fname in filenames:
+                if fname.endswith('.url') or '_CommonRedist' in dirpath:
+                    continue
+                # Exclude archive files from filemap
+                if os.path.splitext(fname)[1].lower() in archive_exts:
+                    continue
+                rel_path = os.path.normpath(os.path.join(rel_dir, fname)) if rel_dir != '.' else fname
+                if rel_path.startswith(game_dir_name + os.sep):
+                    rel_path = rel_path[len(game_dir_name + os.sep):]
+                rel_path = rel_path.replace('\\', '/').replace('\\', '/')
+                new_filemap[rel_path] = {"size": os.path.getsize(os.path.join(dirpath, fname))}
+        safe_write_json(watching_path, new_filemap)
+        watching_data = new_filemap
+        nested_dir = os.path.join(download_path, sanitize_folder_name(game))
+        moved = False
+        # Try exact sanitized match first
+        if os.path.isdir(nested_dir):
+            for item in os.listdir(nested_dir):
+                src = os.path.join(nested_dir, item)
+                dst = os.path.join(download_path, item)
+                if os.path.exists(dst):
+                    if os.path.isdir(dst):
+                        shutil.rmtree(dst, ignore_errors=True)
+                    else:
+                        os.remove(dst)
+                shutil.move(src, dst)
+            shutil.rmtree(nested_dir, ignore_errors=True)
+            logging.info(f"Moved files from nested '{nested_dir}' to '{download_path}'.")
+            moved = True
+        # If not found, try to match by first word of game name
+        if not moved:
+            first_word = game.strip().split()[0].lower()
+            for entry in os.listdir(download_path):
+                entry_path = os.path.join(download_path, entry)
+                if os.path.isdir(entry_path) and entry.lower().startswith(first_word):
+                    for item in os.listdir(entry_path):
+                        src = os.path.join(entry_path, item)
+                        dst = os.path.join(download_path, item)
+                        if os.path.exists(dst):
+                            if os.path.isdir(dst):
+                                shutil.rmtree(dst, ignore_errors=True)
+                            else:
+                                os.remove(dst)
+                        shutil.move(src, dst)
+                    shutil.rmtree(entry_path, ignore_errors=True)
+                    logging.info(f"Moved files from nested '{entry_path}' (matched by first word) to '{download_path}'.")
+                    break
 
-        # Mark verifying state
+
         game_info["downloadingData"]["extracting"] = False
         game_info["downloadingData"]["verifying"] = True
         safe_write_json(game_info_path, game_info)

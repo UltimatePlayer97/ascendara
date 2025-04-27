@@ -650,7 +650,7 @@ class GofileDownloader:
         # Create watching file for tracking extracted files
         watching_path = os.path.join(self.download_dir, "filemap.ascendara.json")
         watching_data = {}
-
+        archive_path = None
         # First extract all archives
         for root, _, files in os.walk(self.download_dir):
             for file in files:
@@ -749,10 +749,73 @@ class GofileDownloader:
                         print(f"Error extracting {archive_path}: {str(e)}")
                         continue
 
-        # Save watching data
+        nested_dir = os.path.join(self.download_dir, sanitize_folder_name(self.game))
+        moved = False
+        if os.path.isdir(nested_dir):
+            for item in os.listdir(nested_dir):
+                src = os.path.join(nested_dir, item)
+                dst = os.path.join(self.download_dir, item)
+                if os.path.exists(dst):
+                    if os.path.isdir(dst):
+                        shutil.rmtree(dst, ignore_errors=True)
+                    else:
+                        os.remove(dst)
+                shutil.move(src, dst)
+            shutil.rmtree(nested_dir, ignore_errors=True)
+            logging.info(f"Moved files from nested '{nested_dir}' to '{self.download_dir}'.")
+            moved = True
+            # Rebuild filemap after flattening
+            watching_data = {}
+            archive_exts = {'.rar', '.zip', '.7z', '.tar', '.gz', '.bz2', '.xz', '.iso'}
+            for dirpath, _, filenames in os.walk(self.download_dir):
+                rel_dir = os.path.relpath(dirpath, self.download_dir)
+                for fname in filenames:
+                    if fname.endswith('.url') or '_CommonRedist' in dirpath:
+                        continue
+                    if os.path.splitext(fname)[1].lower() in archive_exts:
+                        continue
+                    rel_path = os.path.normpath(os.path.join(rel_dir, fname)) if rel_dir != '.' else fname
+                    rel_path = rel_path.replace('\\', '/').replace('\\', '/')
+                    watching_data[rel_path] = {"size": os.path.getsize(os.path.join(dirpath, fname))}
+            safe_write_json(watching_path, watching_data)
+        # If not found, try to match by first word of game name
+        if not moved:
+            first_word = self.game.strip().split()[0].lower()
+            for entry in os.listdir(self.download_dir):
+                entry_path = os.path.join(self.download_dir, entry)
+                if os.path.isdir(entry_path) and entry.lower().startswith(first_word):
+                    for item in os.listdir(entry_path):
+                        src = os.path.join(entry_path, item)
+                        dst = os.path.join(self.download_dir, item)
+                        if os.path.exists(dst):
+                            if os.path.isdir(dst):
+                                shutil.rmtree(dst, ignore_errors=True)
+                            else:
+                                os.remove(dst)
+                        shutil.move(src, dst)
+                    shutil.rmtree(entry_path, ignore_errors=True)
+                    logging.info(f"Moved files from nested '{entry_path}' (matched by first word) to '{self.download_dir}'.")
+                    # Rebuild filemap after flattening
+                    watching_data = {}
+                    archive_exts = {'.rar', '.zip', '.7z', '.tar', '.gz', '.bz2', '.xz', '.iso'}
+                    for dirpath, _, filenames in os.walk(self.download_dir):
+                        rel_dir = os.path.relpath(dirpath, self.download_dir)
+                        for fname in filenames:
+                            if fname.endswith('.url') or '_CommonRedist' in dirpath:
+                                continue
+                            if os.path.splitext(fname)[1].lower() in archive_exts:
+                                continue
+                            rel_path = os.path.normpath(os.path.join(rel_dir, fname)) if rel_dir != '.' else fname
+                            rel_path = rel_path.replace('\\', '/').replace('\\', '/')
+                            watching_data[rel_path] = {"size": os.path.getsize(os.path.join(dirpath, fname))}
+                    safe_write_json(watching_path, watching_data)
+                    break
+        # Remove archive files from watching_data (if not already rebuilt)
+        archive_exts = {'.rar', '.zip', '.7z', '.tar', '.gz', '.bz2', '.xz', '.iso'}
+        watching_data = {k: v for k, v in watching_data.items() if os.path.splitext(k)[1].lower() not in archive_exts}
         safe_write_json(watching_path, watching_data)
 
-        # Set extraction to false and verifying to true
+        # Set extraction to false and verifying to true (after flattening and filemap rebuild)
         self.game_info["downloadingData"]["extracting"] = False
         self.game_info["downloadingData"]["verifying"] = True
         safe_write_json(self.game_info_path, self.game_info)
