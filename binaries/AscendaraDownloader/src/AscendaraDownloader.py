@@ -673,6 +673,7 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
         safe_write_json(game_info_path, game_info)
 
         archive_ext = os.path.splitext(archive_file_path)[1].lower().lstrip('.')
+        logging.info(f"Detected archive extension: '{archive_ext}' for file: {archive_file_path}")
         watching_path = os.path.join(download_path, "filemap.ascendara.json")
         watching_data = {}
         extracted = False
@@ -682,6 +683,11 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
             nonlocal extraction_error
             logging.error(msg)
             extraction_error = msg
+
+        # If extension is empty or not supported, log and raise immediately
+        if not archive_ext:
+            log_and_collect_error(f"Archive file has no extension or unsupported type: '{archive_file_path}'")
+            raise Exception(f"Extraction failed: No archive extension detected for file '{archive_file_path}'")
 
         try:
             if sys.platform == "win32" and archive_ext == "rar":
@@ -717,6 +723,7 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
         except Exception as e:
             log_and_collect_error(f"Initial extraction attempt failed: {e}")
 
+        # Try fallback extractors only if not yet extracted
         if not extracted:
             try:
                 before_files = set()
@@ -731,9 +738,15 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
                     try:
                         from pyunpack import Archive
                         Archive(archive_file_path).extractall(download_path)
+                    except ImportError:
+                        log_and_collect_error(f"Neither patoolib nor pyunpack are installed. Please install at least one to extract '{archive_ext}' archives.")
+                        raise Exception(f"Extraction failed: No extraction backend available for '{archive_ext}'")
                     except Exception as e2:
-                        log_and_collect_error(f"Fallback extraction failed: {e2}")
+                        log_and_collect_error(f"pyunpack fallback extraction failed: {e2}")
                         raise e2
+                except Exception as e1:
+                    log_and_collect_error(f"patoolib extraction failed: {e1}")
+                    raise e1
                 for dirpath, _, filenames in os.walk(download_path):
                     for fname in filenames:
                         if not fname.endswith('.url') and '_CommonRedist' not in os.path.join(dirpath, fname):
@@ -746,8 +759,8 @@ def download_file(link, game, online, dlc, isVr, updateFlow, version, size, down
                 log_and_collect_error(f"Universal extraction failed: {e}")
 
         if not extracted:
-            log_and_collect_error(f"Extraction failed or unsupported archive type: {archive_ext}")
-            raise Exception(f"Extraction failed: {extraction_error or 'Unknown error'}")
+            log_and_collect_error(f"Extraction failed or unsupported archive type: '{archive_ext}'. Extraction error: {extraction_error}")
+            raise Exception(f"Extraction failed for '{archive_file_path}' (type: '{archive_ext}'): {extraction_error or 'Unknown error'}")
         else:
             logging.info(f"Extraction completed for {archive_file_path}")
 

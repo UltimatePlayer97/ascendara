@@ -821,9 +821,9 @@ class GofileDownloader:
         safe_write_json(self.game_info_path, self.game_info)
 
         # Start verification
-        self._verify_extracted_files(watching_path, archive_path)
+        self._verify_extracted_files(watching_path)
 
-    def _verify_extracted_files(self, watching_path, archive_path):
+    def _verify_extracted_files(self, watching_path):
         try:
             with open(watching_path, 'r') as f:
                 watching_data = json.load(f)
