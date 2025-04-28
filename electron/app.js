@@ -24,7 +24,7 @@
  *
  **/
 
-let isDev = false;
+let isDev = true;
 let appVersion = "8.4.5";
 
 const {
@@ -4072,23 +4072,30 @@ ipcMain.handle(
         throw new Error("Game is already running");
       }
 
-      let handlerPath;
+      let executablePath;
+      let handlerScript;
 
+      const isWindows = process.platform === "win32";
       if (isWindows) {
-        handlerPath = path.join(appDirectory, "/resources/AscendaraGameHandler.exe");
+        executablePath = path.join(appDirectory, "/resources/AscendaraGameHandler.exe");
       } else {
-        // For non-Windows, we need to use python3 to execute the script
-        handlerPath = "python3";
-        executable = `${path.join(appDirectory, "..", "/resources/AscendaraGameHandler.py")} ${executable}`;
-        console.log("Executing game with handler:", handlerPath, executable);
+        executablePath = "python3";
+        handlerScript = isDev
+          ? "binaries/AscendaraGameHandler/src/AscendaraGameHandler.py"
+          : path.join(appDirectory, "..", "resources/AscendaraGameHandler.py");
+        console.log("Executing game with handler:", executablePath, [
+          handlerScript,
+          executable,
+          isCustom.toString(),
+        ]);
       }
 
-      if (!fs.existsSync(handlerPath)) {
+      if (isWindows && !fs.existsSync(executablePath)) {
         throw new Error("Game handler not found");
       }
 
       console.log("Launching game:", {
-        handlerPath,
+        executablePath,
         executable,
         isCustom: isCustom.toString(),
         gameDirectory,
@@ -4097,18 +4104,16 @@ ipcMain.handle(
       const spawnArgs = isWindows
         ? [executable, isCustom.toString(), ...(backupOnClose ? ["--ludusavi"] : [])]
         : [
-            "-c",
+            handlerScript,
             executable,
             isCustom.toString(),
             ...(backupOnClose ? ["--ludusavi"] : []),
           ];
 
-      const runGame = spawn(handlerPath, spawnArgs, {
+      const runGame = spawn(executablePath, spawnArgs, {
         detached: false,
         stdio: ["ignore", "pipe", "pipe"],
         windowsHide: true,
-        cwd: gameDirectory,
-        shell: !isWindows, // Use shell on non-Windows platforms
       });
 
       // Log any output for debugging
@@ -4124,11 +4129,6 @@ ipcMain.handle(
 
       // Update game status to running in JSON files
       try {
-        // Update settings.json
-        if (!settings.runningGames) settings.runningGames = {};
-        settings.runningGames[game] = true;
-        fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
-
         // Update games.json
         const gamesPath = path.join(settings.downloadDirectory, "games.json");
         if (fs.existsSync(gamesPath)) {

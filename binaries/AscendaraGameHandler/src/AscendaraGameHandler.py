@@ -34,35 +34,42 @@ CLIENT_ID = '1277379302945718356'
 def _launch_crash_reporter_on_exit(error_code, error_message):
     try:
         crash_reporter_path = os.path.join('./AscendaraCrashReporter.exe')
+        logging.info(f"Attempting to launch crash reporter with error code {error_code}")
         if os.path.exists(crash_reporter_path):
             # Use subprocess.Popen with CREATE_NO_WINDOW flag to hide console
             subprocess.Popen(
                 [crash_reporter_path, "gamehandler", str(error_code), error_message],
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
+            logging.info("Crash reporter launched successfully")
         else:
             logging.error(f"Crash reporter not found at: {crash_reporter_path}")
     except Exception as e:
-        logging.error(f"Failed to launch crash reporter: {e}")
+        logging.error(f"Failed to launch crash reporter: {e}", exc_info=True)
 
 def launch_crash_reporter(error_code, error_message):
     """Register the crash reporter to launch on exit with the given error details"""
     if not hasattr(launch_crash_reporter, "_registered"):
+        logging.info(f"Registering crash reporter with error code {error_code}: {error_message}")
         atexit.register(_launch_crash_reporter_on_exit, error_code, error_message)
         launch_crash_reporter._registered = True
+        logging.debug("Crash reporter registered successfully")
 
 def setup_discord_rpc():
     try:
+        logging.info("Initializing Discord Rich Presence")
         rpc = Presence(CLIENT_ID)
         rpc.connect()
+        logging.info("Successfully connected to Discord RPC")
         return rpc
     except Exception as e:
-        logging.error(f"Failed to connect to Discord RPC: {e}")
+        logging.error(f"Failed to connect to Discord RPC: {e}", exc_info=True)
         return None
 
 def update_discord_presence(rpc, game_name):
     if rpc:
         try:
+            logging.info(f"Updating Discord presence for game: {game_name}")
             rpc.update(
                 details="Playing a Game",
                 state=game_name,
@@ -71,29 +78,38 @@ def update_discord_presence(rpc, game_name):
                 large_text="Ascendara",
                 buttons=[{"label": "Play on Ascendara", "url": "https://ascendara.app/"}]
             )
+            logging.debug("Discord presence updated successfully")
         except Exception as e:
-            logging.error(f"Failed to update Discord presence: {e}")
+            logging.error(f"Failed to update Discord presence: {e}", exc_info=True)
 
 def clear_discord_presence(rpc):
     if rpc:
         try:
+            logging.info("Clearing Discord presence")
             rpc.clear()
             rpc.close()
+            logging.debug("Discord presence cleared and connection closed")
         except Exception as e:
-            logging.error(f"Failed to clear Discord presence: {e}")
+            logging.error(f"Failed to clear Discord presence: {e}", exc_info=True)
 
 def is_process_running(exe_path):
+    exe_name = os.path.basename(exe_path)
+    logging.debug(f"Checking if process is running: {exe_name}")
     for proc in psutil.process_iter(['name']):
         try:
-            if proc.info['name'] == os.path.basename(exe_path):
+            if proc.info['name'] == exe_name:
+                logging.info(f"Process found running: {exe_name}")
                 return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+            logging.debug(f"Process check error for {exe_name}: {e}")
             pass
+    logging.debug(f"Process not found: {exe_name}")
     return False
 
 def update_play_time(file_path, is_custom_game, game_entry=None):
     """Update the playTime field in either the game's JSON file or games.json for custom games"""
     try:
+        logging.debug(f"Updating play time for {'custom' if is_custom_game else 'regular'} game at {file_path}")
         with open(file_path, "r") as f:
             data = json.load(f)
         
@@ -104,17 +120,20 @@ def update_play_time(file_path, is_custom_game, game_entry=None):
                     if "playTime" not in game:
                         game["playTime"] = 0
                     game["playTime"] += 1
+                    logging.info(f"Updated play time for custom game {game_entry.get('name', 'Unknown')}: {game['playTime']} minutes")
                     break
         else:
             # For regular games, update the game-specific json
             if "playTime" not in data:
                 data["playTime"] = 0
             data["playTime"] += 1
+            logging.info(f"Updated play time for game: {data['playTime']} minutes")
         
         with open(file_path, "w") as f:
             json.dump(data, f, indent=4)
+        logging.debug("Play time update saved successfully")
     except Exception as e:
-        logging.error(f"Failed to update play time: {e}")
+        logging.error(f"Failed to update play time: {e}", exc_info=True)
 
 def get_ludusavi_settings():
     try:
@@ -416,19 +435,31 @@ if __name__ == "__main__":
     # Skip the first argument (script name)
     args = sys.argv[1:]
     
+    # Configure logging first
+    log_file = os.path.join(os.path.dirname(__file__), 'gamehandler.log')
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    
+    logging.info("=== Ascendara Game Handler Started ===")
+    logging.info(f"Arguments received: {args}")
+    
     if len(args) < 2:
-        print("Error: Not enough arguments")
-        print("Usage: AscendaraGameHandler.exe [game_path] [is_custom_game] [--shortcut] [--ludusavi]")
+        error_msg = "Error: Not enough arguments\nUsage: AscendaraGameHandler.exe [game_path] [is_custom_game] [--shortcut] [--ludusavi]"
+        logging.error(error_msg)
+        print(error_msg)
         sys.exit(1)
         
     game_path = args[0]
     is_custom_game = args[1] == '1' or args[1].lower() == 'true'
     is_shortcut = "--shortcut" in args
     use_ludusavi = "--ludusavi" in args
-
-    # Configure logging
-    log_file = os.path.join(os.path.dirname(__file__), 'gamehandler.log')
-    logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    
+    logging.info(f"Initializing with: game_path={game_path}, is_custom_game={is_custom_game}, "  
+                 f"is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi}")
 
     try:
         execute(game_path, is_custom_game, is_shortcut, use_ludusavi)
