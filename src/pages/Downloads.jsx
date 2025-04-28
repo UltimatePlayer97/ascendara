@@ -301,9 +301,13 @@ const Downloads = () => {
                     data={speedHistory}
                     margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid
+                      className="text-muted-foreground/20"
+                      strokeDasharray="3 3"
+                    />
                     <XAxis dataKey="index" hide />
                     <YAxis
+                      className="text-secondary"
                       domain={[0, "auto"]}
                       tickFormatter={value => `${value.toFixed(1)}`}
                     />
@@ -311,21 +315,21 @@ const Downloads = () => {
                       formatter={value => [`${value.toFixed(2)} MB/s`, "Speed"]}
                       labelFormatter={() => ""}
                       contentStyle={{
-                        backgroundColor: "hsl(var(--popover))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "var(--radius)",
+                        backgroundColor: "white",
+                        border: "1px solid rgb(229, 231, 235)",
+                        borderRadius: "0.375rem",
                         padding: "8px",
-                        color: "hsl(var(--popover-foreground))",
                         fontSize: "0.875rem",
                       }}
                       labelStyle={{
-                        color: "hsl(var(--popover-foreground))",
+                        color: "rgb(107, 114, 128)",
                       }}
                     />
                     <Line
                       type="monotone"
                       dataKey="speed"
-                      stroke="#2563eb"
+                      className="text-primary"
+                      stroke="currentColor"
                       strokeWidth={2}
                       dot={false}
                       isAnimationActive={false}
