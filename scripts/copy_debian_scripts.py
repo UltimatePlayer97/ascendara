@@ -9,40 +9,37 @@ def copy_scripts_to_debian():
     # Get the binaries directory path
     script_dir = os.path.dirname(os.path.abspath(__file__))
     binaries_dir = os.path.join(os.path.dirname(script_dir), 'binaries')
-    
-    # Get the AscendaraDownloader directory
-    downloader_dir = os.path.join(binaries_dir, 'AscendaraDownloader')
-    src_dir = os.path.join(downloader_dir, 'src')
-    
-    if not os.path.isdir(src_dir):
-        print("Warning: No src directory found in AscendaraDownloader")
-        return
-    
-    # Create or clear debian directory
-    debian_dir = os.path.join(src_dir, 'debian')
-    if os.path.exists(debian_dir):
-        # Remove all files in debian directory
-        for file in os.listdir(debian_dir):
-            file_path = os.path.join(debian_dir, file)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-                print(f"Removed existing file: {file}")
-    else:
-        os.makedirs(debian_dir)
-    
-    # List of scripts to copy
-    scripts = ['AscendaraDownloader.py', 'AscendaraGofileHelper.py']
-    
-    # Copy each script
-    for script in scripts:
-        script_path = os.path.join(src_dir, script)
-        if not os.path.exists(script_path):
-            print(f"Warning: No {script} found in {src_dir}")
+
+    # Loop through each binary subdirectory
+    for binary_name in os.listdir(binaries_dir):
+        binary_dir = os.path.join(binaries_dir, binary_name)
+        if not os.path.isdir(binary_dir):
             continue
-            
-        dest_path = os.path.join(debian_dir, script)
-        shutil.copy2(script_path, dest_path)
-        print(f"Copied {script} to {dest_path}")
+        src_dir = os.path.join(binary_dir, 'src')
+        if not os.path.isdir(src_dir):
+            print(f"Warning: No src directory found in {binary_name}")
+            continue
+
+        debian_dir = os.path.join(src_dir, 'debian')
+        # Create or clear debian directory
+        if os.path.exists(debian_dir):
+            for file in os.listdir(debian_dir):
+                file_path = os.path.join(debian_dir, file)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+                    print(f"Removed existing file: {file} in {debian_dir}")
+        else:
+            os.makedirs(debian_dir)
+
+        # Copy all .py files from src to src/debian
+        for file in os.listdir(src_dir):
+            if file.endswith('.py'):
+                src_file_path = os.path.join(src_dir, file)
+                dest_file_path = os.path.join(debian_dir, file)
+                shutil.copy2(src_file_path, dest_file_path)
+                print(f"Copied {file} from {src_dir} to {debian_dir}")
+
+
 
 if __name__ == '__main__':
     copy_scripts_to_debian()
