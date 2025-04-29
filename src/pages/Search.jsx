@@ -326,38 +326,6 @@ const Search = memo(() => {
       return true;
     });
 
-    // Advanced dev filtering (only in dev)
-    if (window.electron.isDev) {
-      // Filter by provider if set
-      if (filterProvider) {
-        filtered = filtered.filter(game =>
-          Object.keys(game.download_links || {}).includes(filterProvider)
-        );
-      }
-      // Filter to only smallest file size (among filtered)
-      if (filterSmallestSize && filtered.length > 0) {
-        // Parse sizes to MB/GB for comparison
-        const parseSize = s => {
-          if (!s) return Number.POSITIVE_INFINITY;
-          const match = String(s).match(/([\d.]+)\s*(GB|MB|KB)?/i);
-          if (!match) return Number.POSITIVE_INFINITY;
-          let [_, num, unit] = match;
-          num = parseFloat(num);
-          switch ((unit || "").toUpperCase()) {
-            case "GB":
-              return num * 1024;
-            case "MB":
-              return num;
-            case "KB":
-              return num / 1024;
-            default:
-              return num;
-          }
-        };
-        let minSize = Math.min(...filtered.map(g => parseSize(g.size)));
-        filtered = filtered.filter(g => parseSize(g.size) === minSize);
-      }
-    }
     // Skip sorting for FitGirl source
     if (isFitGirl) return filtered;
 
