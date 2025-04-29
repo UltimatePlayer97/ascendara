@@ -75,6 +75,9 @@ const Search = memo(() => {
     const saved = window.localStorage.getItem("showOnline");
     return saved === "true";
   });
+
+  const [filterSmallestSize, setFilterSmallestSize] = useState(false);
+  const [filterProvider, setFilterProvider] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isIndexUpdating, setIsIndexUpdating] = useState(false);
   const gamesPerPage = useWindowSize();
@@ -288,7 +291,7 @@ const Search = memo(() => {
     const isFitGirl = source === "fitgirl";
 
     // Apply all filters in a single pass
-    const filtered = games.filter(game => {
+    let filtered = games.filter(game => {
       // Search filter
       if (debouncedSearchQuery) {
         const gameTitle = game.game;
@@ -323,6 +326,38 @@ const Search = memo(() => {
       return true;
     });
 
+    // Advanced dev filtering (only in dev)
+    if (window.electron.isDev) {
+      // Filter by provider if set
+      if (filterProvider) {
+        filtered = filtered.filter(game =>
+          Object.keys(game.download_links || {}).includes(filterProvider)
+        );
+      }
+      // Filter to only smallest file size (among filtered)
+      if (filterSmallestSize && filtered.length > 0) {
+        // Parse sizes to MB/GB for comparison
+        const parseSize = s => {
+          if (!s) return Number.POSITIVE_INFINITY;
+          const match = String(s).match(/([\d.]+)\s*(GB|MB|KB)?/i);
+          if (!match) return Number.POSITIVE_INFINITY;
+          let [_, num, unit] = match;
+          num = parseFloat(num);
+          switch ((unit || "").toUpperCase()) {
+            case "GB":
+              return num * 1024;
+            case "MB":
+              return num;
+            case "KB":
+              return num / 1024;
+            default:
+              return num;
+          }
+        };
+        let minSize = Math.min(...filtered.map(g => parseSize(g.size)));
+        filtered = filtered.filter(g => parseSize(g.size) === minSize);
+      }
+    }
     // Skip sorting for FitGirl source
     if (isFitGirl) return filtered;
 
@@ -543,6 +578,48 @@ const Search = memo(() => {
                     <SheetTitle>{t("search.filterOptions")}</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6 space-y-4">
+                    {window.electron.isDev() && (
+                      <div className="space-y-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-semibold text-primary">
+                            Advanced Filtering (Dev Only)
+                          </label>
+                          <div className="flex items-center gap-4">
+                            <label className="text-sm">
+                              <input
+                                type="checkbox"
+                                checked={filterSmallestSize || false}
+                                onChange={e => setFilterSmallestSize(e.target.checked)}
+                                className="mr-2 accent-primary"
+                              />
+                              Smallest File Size Only
+                            </label>
+                            <label className="text-sm">
+                              Provider:
+                              <select
+                                className="ml-2 rounded border px-1 py-0.5 text-xs"
+                                value={filterProvider || ""}
+                                onChange={e => setFilterProvider(e.target.value)}
+                              >
+                                <option value="">All Providers</option>
+                                {Array.from(
+                                  new Set(
+                                    games.flatMap(g =>
+                                      Object.keys(g.download_links || {})
+                                    )
+                                  )
+                                ).map(provider => (
+                                  <option key={provider} value={provider}>
+                                    {provider}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-center">
                       <div className="flex w-full items-center gap-2">
                         <Gift className="h-4 w-4 text-primary" />
