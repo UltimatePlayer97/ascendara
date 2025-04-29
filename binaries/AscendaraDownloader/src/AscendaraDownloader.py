@@ -52,6 +52,26 @@ def launch_crash_reporter(error_code, error_message):
         atexit.register(_launch_crash_reporter_on_exit, error_code, error_message)
         launch_crash_reporter._registered = True
 
+def _launch_notification(theme, title, message):
+    try:
+        # Get the directory where the current executable is located
+        exe_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+        notification_helper_path = os.path.join(exe_dir, 'AscendaraNotificationHelper.exe')
+        logging.debug(f"Looking for notification helper at: {notification_helper_path}")
+        
+        if os.path.exists(notification_helper_path):
+            logging.debug(f"Launching notification helper with theme={theme}, title='{title}', message='{message}'")
+            # Use subprocess.Popen with CREATE_NO_WINDOW flag to hide console
+            subprocess.Popen(
+                [notification_helper_path, "--theme", theme, "--title", title, "--message", message],
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            logging.debug("Notification helper process started successfully")
+        else:
+            logging.error(f"Notification helper not found at: {notification_helper_path}")
+    except Exception as e:
+        logging.error(f"Failed to launch notification helper: {e}")
+
 def get_ascendara_log_path():
     if sys.platform == "win32":
         appdata = os.getenv("APPDATA")
@@ -196,6 +216,13 @@ class SmartDLDownloader:
             safe_write_json(self.game_info_path, self.game_info)
             base_name = os.path.basename(url.split('?')[0])
             dest = os.path.join(self.download_dir, base_name)
+            # Notification: Download Started (GoFile style)
+            if withNotification:
+                _launch_notification(
+                    withNotification,
+                    "Download Started",
+                    f"Starting download for {self.game_info['game']}"
+                )
             try:
                 head = requests.head(url, allow_redirects=True, timeout=10)
                 cd = head.headers.get('content-disposition')
@@ -275,6 +302,12 @@ class SmartDLDownloader:
                 time.sleep(0.5)
             if obj.isSuccessful():
                 logging.info(f"[AscendaraDownloader] Download completed successfully.")
+                if withNotification:
+                    _launch_notification(
+                        withNotification,
+                        "Download Complete",
+                        f"Successfully downloaded and extracted {self.game_info['game']}"
+                    )
                 self.game_info["downloadingData"]["downloading"] = False
                 self.game_info["downloadingData"]["progressCompleted"] = "100.00"
                 self.game_info["downloadingData"]["progressDownloadSpeeds"] = "0.00 KB/s"
@@ -310,6 +343,12 @@ class SmartDLDownloader:
                 self._extract_files(dest)
             else:
                 logging.error(f"[AscendaraDownloader] Download failed: {obj.get_errors()}")
+                if withNotification:
+                    _launch_notification(
+                        withNotification,
+                        "Download Error",
+                        f"Error downloading {self.game_info['game']}: {obj.get_errors()}"
+                    )
                 raise Exception(str(obj.get_errors()))
         except Exception as e:
             # Detect SSL version error and set provider_blocked_error
@@ -328,6 +367,13 @@ class SmartDLDownloader:
             else:
                 logging.error(f"[AscendaraDownloader] Error in download method: {e}")
                 handleerror(self.game_info, self.game_info_path, e)
+            # Notification: Download Error (exception)
+            if withNotification:
+                _launch_notification(
+                    withNotification,
+                    "Download Error",
+                    f"Error downloading {self.game_info['game']}: {e}"
+                )
             # Do not re-raise to prevent crash
             return
 
@@ -459,6 +505,13 @@ class SmartDLDownloader:
         self.game_info["downloadingData"]["extracting"] = False
         self.game_info["downloadingData"]["verifying"] = True
         safe_write_json(self.game_info_path, self.game_info)
+        # Notify extraction complete if notification theme is available
+        if hasattr(self, 'withNotification') and self.withNotification:
+            _launch_notification(
+                self.withNotification,
+                "Extraction Complete",
+                f"Extraction complete for {self.game_info['game']}"
+            )
         # Start verification
         self._verify_extracted_files(watching_path)
 
@@ -506,12 +559,16 @@ def main():
     parser.add_argument("version", help="Version of the game")
     parser.add_argument("size", help="Size of the file (ex: 12 GB, 439 MB)")
     parser.add_argument("download_dir", help="Directory to save the downloaded files")
+    parser.add_argument("--withNotification", help="Theme name for notifications (e.g. light, dark, blue)", default=None)
     args = parser.parse_args()
     try:
         downloader = SmartDLDownloader(
             args.game, args.online, args.dlc, args.isVr, args.updateFlow, args.version, args.size, args.download_dir
         )
-        downloader.download(args.url)
+        # Store notification theme on downloader for extraction notification
+        if args.withNotification:
+            downloader.withNotification = args.withNotification
+        downloader.download(args.url, withNotification=args.withNotification)
     except Exception as e:
         # Launch crash reporter on any unhandled exception
         logging.error(f"[AscendaraDownloader] Fatal error: {e}", exc_info=True)
