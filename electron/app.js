@@ -5104,7 +5104,6 @@ ipcMain.handle("get-pending-urls", () => {
   pendingUrls.clear();
   return urls;
 });
-
 // Single instance lock check
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -5125,75 +5124,45 @@ if (!gotTheLock) {
   app.on("second-instance", (event, commandLine, workingDirectory) => {
     console.log("Second instance detected with args:", commandLine);
 
-    // Check for protocol URL
+    // Protocol URL handling for Windows/Linux
     const protocolUrl = commandLine.find(arg => arg.startsWith("ascendara://"));
-
     if (protocolUrl) {
       handleProtocolUrl(protocolUrl);
     }
 
-    // Find all windows
+    // Focus or create main window
     const windows = BrowserWindow.getAllWindows();
 
     if (windows.length > 0) {
       const mainWindow = windows[0];
-
-      // Force show the window regardless of its current state
       mainWindowHidden = false;
-
-      // If the window is hidden, show it
-      if (!mainWindow.isVisible()) {
-        mainWindow.show();
-      }
-
-      // If minimized, restore
-      if (mainWindow.isMinimized()) {
-        console.log("Restoring minimized window");
-        mainWindow.restore();
-      }
-
-      // Force focus by temporarily setting alwaysOnTop
+      if (!mainWindow.isVisible()) mainWindow.show();
+      if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.setAlwaysOnTop(true);
       mainWindow.focus();
-      mainWindow.center(); // Center the window on screen
-      setTimeout(() => {
-        mainWindow.setAlwaysOnTop(false);
-      }, 100);
-
-      // Emit an event to the renderer process to notify it that the window was shown due to a second instance
+      mainWindow.center();
+      setTimeout(() => mainWindow.setAlwaysOnTop(false), 100);
       mainWindow.webContents.send("second-instance-detected");
     } else {
-      // No windows found, create a new one
       console.log("No windows found, creating new window");
       createWindow();
     }
   });
 
-  // Handle protocol URLs
   app.on("open-url", (event, url) => {
+    console.log("open-url event fired with url:", url);
     event.preventDefault();
     handleProtocolUrl(url);
   });
-
-  // Setup on app ready
   app.whenReady().then(() => {
-    // Register protocol handler
+    console.log("app.whenReady fired");
     if (process.platform === "darwin") {
+      console.log("Re-registering protocol handler for macOS");
       app.setAsDefaultProtocolClient("ascendara");
-    } else {
-      protocol.registerHttpProtocol("ascendara", (request, callback) => {
-        handleProtocolUrl(request.url);
-      });
-      // Handle macOS protocol activation
-      app.on("open-url", (event, url) => {
-        event.preventDefault();
-        handleProtocolUrl(url);
-      });
     }
-
-    // Check first instance protocol URL
     const protocolUrl = process.argv.find(arg => arg.startsWith("ascendara://"));
     if (protocolUrl) {
+      console.log("Protocol URL found on launch:", protocolUrl);
       handleProtocolUrl(protocolUrl);
     }
   });
@@ -5201,9 +5170,7 @@ if (!gotTheLock) {
   // Cleanup on app quit
   app.on("window-all-closed", () => {
     pendingUrls.clear();
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
+    if (process.platform !== "darwin") app.quit();
   });
 
   // Handle activation
