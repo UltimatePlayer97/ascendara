@@ -1735,7 +1735,7 @@ const Welcome = ({ welcomeData, onComplete }) => {
                       </h2>
                     </motion.div>
                     <motion.div
-                      className="mb-12 max-w-3xl space-y-6"
+                      className="mb-12 max-w-4xl space-y-6"
                       variants={itemVariants}
                     >
                       <p className="text-xl text-foreground/80">
