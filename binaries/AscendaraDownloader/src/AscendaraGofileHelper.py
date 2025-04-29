@@ -32,6 +32,26 @@ import logging
 from datetime import datetime
 import zipfile
 
+def get_ascendara_log_path():
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA")
+    else:
+        appdata = os.path.expanduser("~/.config")
+    ascendara_dir = os.path.join(appdata, "Ascendara by tagoWorks")
+    os.makedirs(ascendara_dir, exist_ok=True)
+    return os.path.join(ascendara_dir, "downloadmanager.log")
+
+LOG_PATH = get_ascendara_log_path()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [AscendaraGofileHelper] %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_PATH, encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logging.info("[AscendaraGofileHelper] Logging to %s", LOG_PATH)
+
 def read_size(size, decimal_places=2):
     if size == 0:
         return "0 B"
@@ -42,35 +62,6 @@ def read_size(size, decimal_places=2):
         i += 1
     return f"{size:.{decimal_places}f} {units[i]}"
 
-# Set up logging to both console and temp file
-def setup_logging():
-    log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    
-    # Create temp log file with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    temp_log_path = os.path.join(gettempdir(), f'ascendara_gofile_{timestamp}.log')
-    
-    # File handler for temp file
-    file_handler = logging.FileHandler(temp_log_path)
-    file_handler.setFormatter(log_formatter)
-    file_handler.setLevel(logging.DEBUG)
-    
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(log_formatter)
-    console_handler.setLevel(logging.INFO)
-    
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
-    
-    logging.info(f"Detailed logs will be saved to: {temp_log_path}")
-    return temp_log_path
-
-# Initialize logging
-temp_log_file = setup_logging()
 
 NEW_LINE = "\n" if sys.platform != "Windows" else "\r\n"
 IS_DEV = False  # Development mode flag
@@ -241,7 +232,7 @@ class GofileDownloader:
         files_info = self._parseLinksRecursively(content_id, _password)
         
         if not files_info:
-            print(f"No files found for download from {url}. Skipping...")
+            logging.error(f"[AscendaraGofileHelper] No files found for download from {url}. Skipping...")
             handleerror(self.game_info, self.game_info_path, "no_files_error")
             return
 
@@ -267,19 +258,19 @@ class GofileDownloader:
             for item in files_info.values():
                 current_file += 1
                 try:
-                    print(f"\nDownloading file {current_file}/{total_files}: {item.get('name', 'Unknown')}")
+                    logging.info(f"[AscendaraGofileHelper] Downloading file {current_file}/{total_files}: {item.get('name', 'Unknown')}")
                     self._downloadContent(item)
                 except Exception as e:
-                    print(f"Error downloading {item.get('name', 'Unknown')}: {str(e)}")
+                    logging.error(f"[AscendaraGofileHelper] Error downloading {item.get('name', 'Unknown')}: {str(e)}")
                     # Wait a bit before trying the next file
                     time.sleep(2)
                     continue
 
-            print("All files downloaded successfully, starting extraction...")
+            logging.info("[AscendaraGofileHelper] All files downloaded successfully, starting extraction...")
             self._extract_files()
             
             # Handle post-download cleanup and updates
-            print("Download and extraction completed, finalizing...")
+            logging.info("[AscendaraGofileHelper] Download and extraction completed, finalizing...")
             self.game_info["downloadingData"]["downloading"] = False
             self.game_info["downloadingData"]["extracting"] = False
             self.game_info["downloadingData"]["verifying"] = False
@@ -290,14 +281,14 @@ class GofileDownloader:
             
             # Update version in JSON if this is an update flow
             if self.updateFlow and self.version:
-                print(f"Updating version to: {self.version}")
+                logging.info(f"[AscendaraGofileHelper] Updating version to: {self.version}")
                 self.game_info["version"] = self.version
 
             # Update the size in game_info to the actual downloaded size (human-readable)
             self.game_info["size"] = read_size(self._total_size)
 
             safe_write_json(self.game_info_path, self.game_info)
-            print("Process completed successfully")
+            logging.info("[AscendaraGofileHelper] Process completed successfully")
             
             if withNotification:
                 _launch_notification(
@@ -307,7 +298,7 @@ class GofileDownloader:
                 )
                 
         except Exception as e:
-            print(f"Error during download process: {str(e)}")
+            logging.error(f"[AscendaraGofileHelper] Error during download process: {str(e)}")
             logging.error(f"Error during download process: {str(e)}")
             handleerror(self.game_info, self.game_info_path, str(e))
             if withNotification:
@@ -334,7 +325,7 @@ class GofileDownloader:
         response = requests.get(url, headers=headers).json()
 
         if response["status"] != "ok":
-            print(f"Failed to get a link as response from the {url}.{NEW_LINE}")
+            logging.error(f"[AscendaraGofileHelper] Failed to get a link as response from the {url}.")
             return {}
 
         data = response["data"]
@@ -368,7 +359,7 @@ class GofileDownloader:
 
         filepath = os.path.join(self.download_dir, file_info["path"], file_info["filename"])
         if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-            print(f"{filepath} already exists, skipping.{NEW_LINE}")
+            logging.info(f"{filepath} already exists, skipping.")
             return
 
         tmp_file = f"{filepath}.part"
@@ -401,16 +392,16 @@ class GofileDownloader:
                     if ((response.status_code in (403, 404, 405, 500)) or
                         (part_size == 0 and response.status_code != 200) or
                         (part_size > 0 and response.status_code != 206)):
-                        print(f"Couldn't download the file from {url}. Status code: {response.status_code}{NEW_LINE}")
+                        logging.warning(f"[AscendaraGofileHelper] Couldn't download the file from {url}. Status code: {response.status_code}")
                         if retry < self._max_retries - 1:
-                            print(f"Retrying download ({retry + 2}/{self._max_retries})...{NEW_LINE}")
+                            logging.info(f"[AscendaraGofileHelper] Retrying download ({retry + 2}/{self._max_retries})...")
                             time.sleep(2 ** retry)  # Exponential backoff
                             continue
                         return
 
                     total_size = int(response.headers.get("Content-Length", 0)) + part_size
                     if not total_size:
-                        print(f"Couldn't find the file size from {url}.{NEW_LINE}")
+                        logging.warning(f"[AscendaraGofileHelper] Couldn't find the file size from {url}.")
                         return
 
                     mode = 'ab' if part_size > 0 else 'wb'
@@ -523,9 +514,9 @@ class GofileDownloader:
                     self._update_progress(file_info["filename"], final_progress, 0, 0, done=True)
                     return
             except (requests.exceptions.RequestException, IOError) as e:
-                print(f"Error downloading {url}: {str(e)}{NEW_LINE}")
+                logging.error(f"[AscendaraGofileHelper] Error downloading {url}: {str(e)}")
                 if retry < self._max_retries - 1:
-                    print(f"Retrying download ({retry + 2}/{self._max_retries})...{NEW_LINE}")
+                    logging.info(f"[AscendaraGofileHelper] Retrying download ({retry + 2}/{self._max_retries})...")
                     time.sleep(2 ** retry)  # Exponential backoff
                     continue
                 if os.path.exists(tmp_file):
@@ -658,7 +649,7 @@ class GofileDownloader:
                     archive_path = os.path.join(root, file)
                     # Always extract to the game directory instead of the archive's directory
                     extract_dir = self.download_dir
-                    print(f"Extracting {archive_path}")
+                    logging.info(f"[AscendaraGofileHelper] Extracting {archive_path}")
                     
                     try:
                         # check os
@@ -739,14 +730,14 @@ class GofileDownloader:
                                                     shutil.move(src_path, dst_path)
                                                     key = os.path.relpath(dst_path, self.download_dir)
                                                     watching_data[key] = {"size": os.path.getsize(dst_path)}
-                                                    print(f"Extracted: {key}")
+                                                    logging.info(f"[AscendaraGofileHelper] Extracted: {key}")
                                                 except (OSError, IOError) as e:
                                                     logging.error(f"Error moving file {src_path}: {str(e)}")
                             except Exception as e:
                                 logging.error(f"Error during extraction on non-Windows system: {str(e)}")
                                 raise
                     except Exception as e:
-                        print(f"Error extracting {archive_path}: {str(e)}")
+                        logging.error(f"[AscendaraGofileHelper] Error extracting {archive_path}: {str(e)}")
                         continue
 
         nested_dir = os.path.join(self.download_dir, sanitize_folder_name(self.game))
@@ -762,7 +753,7 @@ class GofileDownloader:
                         os.remove(dst)
                 shutil.move(src, dst)
             shutil.rmtree(nested_dir, ignore_errors=True)
-            logging.info(f"Moved files from nested '{nested_dir}' to '{self.download_dir}'.")
+            logging.info(f"[AscendaraGofileHelper] Moved files from nested '{nested_dir}' to '{self.download_dir}'.")
             moved = True
             # Rebuild filemap after flattening
             watching_data = {}
@@ -778,6 +769,16 @@ class GofileDownloader:
                     rel_path = rel_path.replace('\\', '/').replace('\\', '/')
                     watching_data[rel_path] = {"size": os.path.getsize(os.path.join(dirpath, fname))}
             safe_write_json(watching_path, watching_data)
+        # Remove all .url files after extraction
+        for dirpath, _, filenames in os.walk(self.download_dir):
+            for fname in filenames:
+                if fname.endswith('.url'):
+                    file_path = os.path.join(dirpath, fname)
+                    try:
+                        os.remove(file_path)
+                        logging.info(f"[AscendaraGofileHelper] Deleted .url file: {file_path}")
+                    except Exception as e:
+                        logging.warning(f"[AscendaraGofileHelper] Could not delete .url file: {file_path}: {e}")
         # If not found, try to match by first word of game name
         if not moved:
             first_word = self.game.strip().split()[0].lower()
@@ -794,7 +795,7 @@ class GofileDownloader:
                                 os.remove(dst)
                         shutil.move(src, dst)
                     shutil.rmtree(entry_path, ignore_errors=True)
-                    logging.info(f"Moved files from nested '{entry_path}' (matched by first word) to '{self.download_dir}'.")
+                    logging.info(f"[AscendaraGofileHelper] Moved files from nested '{entry_path}' (matched by first word) to '{self.download_dir}'.")
                     # Rebuild filemap after flattening
                     watching_data = {}
                     archive_exts = {'.rar', '.zip', '.7z', '.tar', '.gz', '.bz2', '.xz', '.iso'}
@@ -832,13 +833,13 @@ class GofileDownloader:
             for root, dirs, files in os.walk(self.download_dir):
                 if "_CommonRedist" in dirs:
                     common_redist_path = os.path.join(root, "_CommonRedist")
-                    print(f"Found _CommonRedist directory at {common_redist_path}, deleting...")
+                    logging.info(f"[AscendaraGofileHelper] Found _CommonRedist directory at {common_redist_path}, deleting...")
                     try:
                         import shutil
                         shutil.rmtree(common_redist_path)
-                        print(f"Successfully deleted {common_redist_path}")
+                        logging.info(f"[AscendaraGofileHelper] Successfully deleted {common_redist_path}")
                     except Exception as e:
-                        print(f"Error deleting _CommonRedist directory: {str(e)}")
+                        logging.error(f"[AscendaraGofileHelper] Error deleting _CommonRedist directory: {str(e)}")
 
             verify_errors = []
             filtered_watching_data = {}
@@ -871,7 +872,7 @@ class GofileDownloader:
                     })
 
             if verify_errors:
-                print(f"Found {len(verify_errors)} verification errors")
+                logging.warning(f"[AscendaraGofileHelper] Found {len(verify_errors)} verification errors")
                 self.game_info["downloadingData"]["verifyError"] = verify_errors
                 error_count = len(verify_errors)
                 _launch_notification(
@@ -880,11 +881,11 @@ class GofileDownloader:
                     f"{error_count} {'file' if error_count == 1 else 'files'} failed to verify"
                 )
             else:
-                print("All extracted files verified successfully")  
+                logging.info("[AscendaraGofileHelper] All extracted files verified successfully")
                 try:
                     os.remove(archive_path)
                 except Exception as e:
-                    print(f"Error removing original archive: {str(e)}")
+                    logging.error(f"[AscendaraGofileHelper] Error removing original archive: {str(e)}")
                 if "verifyError" in self.game_info["downloadingData"]:
                     del self.game_info["downloadingData"]["verifyError"]
 
