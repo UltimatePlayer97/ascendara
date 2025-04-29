@@ -262,13 +262,19 @@ class SmartDLDownloader:
             max_speed = 0
             threads = None
             try:
+                settings_path = None
                 if sys.platform == 'win32':
                     appdata = os.environ.get('APPDATA')
                     if appdata:
                         candidate = os.path.join(appdata, 'Electron', 'ascendarasettings.json')
                         if os.path.exists(candidate):
                             settings_path = candidate
-                if os.path.exists(settings_path):
+                elif sys.platform == 'darwin':
+                    user_data_dir = os.path.expanduser('~/Library/Application Support/ascendara')
+                    candidate = os.path.join(user_data_dir, 'ascendarasettings.json')
+                    if os.path.exists(candidate):
+                        settings_path = candidate
+                if settings_path and os.path.exists(settings_path):
                     with open(settings_path, 'r', encoding='utf-8') as f:
                         settings = json.load(f)
                         try:
