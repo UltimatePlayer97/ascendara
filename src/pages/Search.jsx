@@ -578,48 +578,6 @@ const Search = memo(() => {
                     <SheetTitle>{t("search.filterOptions")}</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6 space-y-4">
-                    {window.electron.isDev() && (
-                      <div className="space-y-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-semibold text-primary">
-                            Advanced Filtering (Dev Only)
-                          </label>
-                          <div className="flex items-center gap-4">
-                            <label className="text-sm">
-                              <input
-                                type="checkbox"
-                                checked={filterSmallestSize || false}
-                                onChange={e => setFilterSmallestSize(e.target.checked)}
-                                className="mr-2 accent-primary"
-                              />
-                              Smallest File Size Only
-                            </label>
-                            <label className="text-sm">
-                              Provider:
-                              <select
-                                className="ml-2 rounded border px-1 py-0.5 text-xs"
-                                value={filterProvider || ""}
-                                onChange={e => setFilterProvider(e.target.value)}
-                              >
-                                <option value="">All Providers</option>
-                                {Array.from(
-                                  new Set(
-                                    games.flatMap(g =>
-                                      Object.keys(g.download_links || {})
-                                    )
-                                  )
-                                ).map(provider => (
-                                  <option key={provider} value={provider}>
-                                    {provider}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     <div className="flex items-center">
                       <div className="flex w-full items-center gap-2">
                         <Gift className="h-4 w-4 text-primary" />
