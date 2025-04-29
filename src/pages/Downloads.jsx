@@ -606,9 +606,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
   const predefinedErrorPatterns = [
     "content_type_error",
     "no_files_error",
-    "ConnectionResetError(10054",
-    "Max retries exceeded with url",
-    "Caused by SSLError",
+    "provider_blocked_error",
     "[Errno 28] No space left on device",
   ];
 
@@ -801,9 +799,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
                         <ExternalLink className="mb-1 inline-block h-3 w-3" />
                       </a>
                     </p>
-                  ) : downloadingData.message.includes("ConnectionResetError(10054") ||
-                    downloadingData.message.includes("Max retries exceeded with url") ||
-                    downloadingData.message.includes("Caused by SSLError") ? (
+                  ) : downloadingData.message.includes("provider_blocked_error") ? (
                     <p className="text-sm text-muted-foreground">
                       {t("downloads.connectionResetError")}
                       <br />
