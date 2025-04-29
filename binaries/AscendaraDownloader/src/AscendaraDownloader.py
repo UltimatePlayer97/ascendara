@@ -435,7 +435,16 @@ class SmartDLDownloader:
         # Remove archive files from watching_data
         watching_data = {k: v for k, v in watching_data.items() if os.path.splitext(k)[1].lower() not in archive_exts}
         safe_write_json(watching_path, watching_data)
+        # Remove all .url files after extraction
         for root, dirs, files in os.walk(self.download_dir, topdown=False):
+            for fname in files:
+                if fname.endswith('.url'):
+                    file_path = os.path.join(root, fname)
+                    try:
+                        os.remove(file_path)
+                        logging.info(f"[AscendaraDownloader] Deleted .url file: {file_path}")
+                    except Exception as e:
+                        logging.warning(f"[AscendaraDownloader] Could not delete .url file: {file_path}: {e}")
             # Remove _CommonRedist folders
             for d in dirs:
                 if d.lower() == '_commonredist':
