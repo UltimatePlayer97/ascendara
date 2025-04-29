@@ -248,7 +248,7 @@
       "torrentSent": "Torrent envoyé à QbitTorrent"
     },
     "update": {
-      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements séparés, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
+      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements distincts, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
       "title": "Prêt à mettre à jour {{game}}?"
     }
   },
@@ -620,11 +620,11 @@
     "downloadThreads": "Télécharger les fils",
     "downloadThreadsDescription": "Télécharger les threads Déterminer combien de connexions simultanées sont utilisées lors du téléchargement",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (> 32 threads) - Utiliser avec prudence",
-      "high": "High (9-16 Threads) - Téléchargements rapides",
-      "low": "Faible (<4 threads) - utilisation minimale du processeur",
-      "normal": "Normal (4-8 Threads) - Recommandé pour la plupart des utilisateurs",
-      "veryHigh": "Très haut (17-32 threads) - pour des connexions très rapides"
+      "extreme": "Extreme (> 48 threads) - Utiliser avec prudence",
+      "high": "High (25-32 Threads) - Téléchargements rapides",
+      "low": "Faible (<8 threads) - utilisation minimale du processeur",
+      "normal": "Normal (8-24 threads) - Recommandé pour la plupart des utilisateurs",
+      "veryHigh": "Très haut (33-48 threads) - pour des connexions très rapides"
     },
     "downloaderRunningWarning": "Vous ne pouvez pas modifier ces paramètres pendant qu'un téléchargement est en cours",
     "downloaderSettings": "Télécharger le gestionnaire",
@@ -893,7 +893,7 @@
     "stayUpToDate": "Gardez Ascendara à jour",
     "takeTour": "Faire la tournée",
     "termsOfService": "Conditions de service",
-    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements des fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
+    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements de fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Maintenant, vous n'aurez plus à vous soucier de l'extraction, de l'installation ou du déplacement de fichiers. Avant de commencer, veuillez lire et accepter les conditions d'utilisation et la politique de confidentialité.",

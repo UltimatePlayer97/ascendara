@@ -620,11 +620,11 @@
     "downloadThreads": "Baixar tópicos",
     "downloadThreadsDescription": "O download dos tópicos determinar quantas conexões simultâneas são usadas ao baixar",
     "downloadThreadsPresets": {
-      "extreme": "Extremo (> 32 threads) - use com cuidado",
-      "high": "High (9-16 tópicos) - Downloads rápidos",
-      "low": "Baixo (<4 threads) - uso mínimo da CPU",
-      "normal": "Normal (4-8 threads) - Recomendado para a maioria dos usuários",
-      "veryHigh": "Muito alto (17-32 threads) - para conexões muito rápidas"
+      "extreme": "Extremo (> 48 threads) - use com cuidado",
+      "high": "High (25-32 tópicos) - Downloads rápidos",
+      "low": "Baixo (<8 threads) - uso mínimo da CPU",
+      "normal": "Normal (8-24 threads) - Recomendado para a maioria dos usuários",
+      "veryHigh": "Muito alto (33-48 threads) - para conexões muito rápidas"
     },
     "downloaderRunningWarning": "Você não pode alterar essas configurações enquanto um download está em andamento",
     "downloaderSettings": "Download Manager",

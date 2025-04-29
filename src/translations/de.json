@@ -620,11 +620,11 @@
     "downloadThreads": "Threads herunterladen",
     "downloadThreadsDescription": "Laden Sie Threads herunter, wie viele gleichzeitige Verbindungen beim Herunterladen verwendet werden",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (> 32 Threads) - Verwendung mit Vorsicht verwenden",
-      "high": "Hoch (9-16 Threads) - schnelle Downloads",
-      "low": "Niedrig (<4 Threads) - Minimale CPU -Verwendung",
-      "normal": "Normal (4-8 Threads) - Für die meisten Benutzer empfohlen",
-      "veryHigh": "Sehr hoch (17-32 Threads) - für sehr schnelle Verbindungen"
+      "extreme": "Extreme (> 48 Threads) - Verwendung mit Vorsicht verwenden",
+      "high": "Hoch (25-32 Threads) - schnelle Downloads",
+      "low": "Niedrig (<8 Threads) - Minimale CPU -Verwendung",
+      "normal": "Normal (8-24 Threads) - Für die meisten Benutzer empfohlen",
+      "veryHigh": "Sehr hoch (33-48 Threads) - für sehr schnelle Verbindungen"
     },
     "downloaderRunningWarning": "Sie können diese Einstellungen nicht ändern, während ein Download in Arbeit ist",
     "downloaderSettings": "Download Manager",

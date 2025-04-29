@@ -620,11 +620,11 @@
     "downloadThreads": "Scarica thread",
     "downloadThreadsDescription": "Download thread Determina quante connessioni simultanee vengono utilizzate durante il download",
     "downloadThreadsPresets": {
-      "extreme": "Extreme (> 32 thread) - Usa con cautela",
-      "high": "Alti (thread 9-16) - Download veloci",
-      "low": "Basso (<4 thread) - Utilizzo della CPU minimo",
-      "normal": "Normale (4-8 thread) - consigliato per la maggior parte degli utenti",
-      "veryHigh": "Molto alto (17-32 thread) - per connessioni molto veloci"
+      "extreme": "Extreme (> 48 thread) - Usa con cautela",
+      "high": "High (25-32 thread) - Download veloci",
+      "low": "Basso (<8 thread) - Utilizzo della CPU minimo",
+      "normal": "Normale (filo 8-24) - consigliato per la maggior parte degli utenti",
+      "veryHigh": "Molto alto (33-48 thread) - per connessioni molto veloci"
     },
     "downloaderRunningWarning": "Non è possibile modificare queste impostazioni mentre è in corso un download",
     "downloaderSettings": "Download Manager",
@@ -893,7 +893,7 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Ora non dovrai preoccuparti di estrarre, installare o spostare i file. Prima di iniziare, si prega di leggere e accettare i termini di servizio e l'informativa sulla privacy.",

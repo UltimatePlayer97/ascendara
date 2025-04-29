@@ -620,11 +620,11 @@
     "downloadThreads": "Descargar hilos",
     "downloadThreadsDescription": "Descargar hilos Determine cuántas conexiones simultáneas se usan al descargar",
     "downloadThreadsPresets": {
-      "extreme": "Extremo (> 32 hilos): use con precaución",
-      "high": "High (9-16 hilos) - Descargas rápidas",
-      "low": "Bajo (<4 hilos) - Uso mínimo de CPU",
-      "normal": "Normal (4-8 hilos) - Recomendado para la mayoría de los usuarios",
-      "veryHigh": "Muy alto (17-32 hilos) - para conexiones muy rápidas"
+      "extreme": "Extreme (> 48 hilos): use con precaución",
+      "high": "Alto (25-32 hilos) - Descargas rápidas",
+      "low": "Bajo (<8 hilos) - Uso mínimo de CPU",
+      "normal": "Normal (8-24 hilos) - Recomendado para la mayoría de los usuarios",
+      "veryHigh": "Muy alto (33-48 hilos) - para conexiones muy rápidas"
     },
     "downloaderRunningWarning": "No puede cambiar esta configuración mientras se está en progreso",
     "downloaderSettings": "Descargar gerente",
@@ -771,7 +771,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es por diversión! Nunca se subirá nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {

@@ -613,11 +613,11 @@
     "downloadThreads": "下载线程",
     "downloadThreadsDescription": "下载线程确定下载时使用了多少个同时连接",
     "downloadThreadsPresets": {
-      "extreme": "极端（> 32个线程） - 谨慎使用",
-      "high": "高（9-16个线程） - 快速下载",
-      "low": "低（<4个线程） - 最小CPU使用率",
-      "normal": "普通（4-8个线程） - 建议大多数用户",
-      "veryHigh": "非常高（17-32个线程） - 对于非常快速的连接"
+      "extreme": "极端（> 48个线程） - 谨慎使用",
+      "high": "高（25-32个线程） - 快速下载",
+      "low": "低（<8个线程） - 最小CPU使用率",
+      "normal": "普通（8-24个线程） - 建议大多数用户",
+      "veryHigh": "非常高（33-48线） - 对于非常快速的连接"
     },
     "downloaderRunningWarning": "下载正在进行时，您无法更改这些设置",
     "downloaderSettings": "下载管理器",
