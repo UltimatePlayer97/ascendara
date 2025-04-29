@@ -971,10 +971,12 @@ function Settings() {
                         }}
                         className="transition-transform hover:scale-105"
                       >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft
+                          className={`h-4 w-4 ${isDownloaderRunning ? "opacity-50" : ""}`}
+                        />
                       </Button>
                       <motion.div
-                        className="relative flex min-w-[200px] flex-col items-center rounded-md border px-6 py-3"
+                        className={`relative flex min-w-[200px] flex-col items-center rounded-md border px-6 py-3 ${isDownloaderRunning ? "opacity-50" : ""}`}
                         layout
                       >
                         <AnimatePresence mode="wait">
@@ -1083,7 +1085,9 @@ function Settings() {
                         }}
                         className="transition-transform hover:scale-105"
                       >
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight
+                          className={`h-4 w-4 ${isDownloaderRunning ? "opacity-50" : ""}`}
+                        />
                       </Button>
                     </motion.div>
                   </div>
@@ -1194,7 +1198,9 @@ function Settings() {
                     </div>
                     <div className="space-y-2">
                       {settings.additionalDirectories?.length === 0 ? (
-                        <p className="text-sm italic text-muted-foreground">
+                        <p
+                          className={`text-sm italic text-muted-foreground ${isDownloaderRunning ? "opacity-50" : ""}`}
+                        >
                           {t("settings.noAdditionalLocations")}
                         </p>
                       ) : (
@@ -1205,9 +1211,12 @@ function Settings() {
                           >
                             <FolderOpen
                               size={16}
-                              className="shrink-0 text-muted-foreground"
+                              className={`shrink-0 text-muted-foreground ${isDownloaderRunning ? "opacity-50" : ""}`}
                             />
-                            <span className="flex-1 truncate text-sm" title={path}>
+                            <span
+                              className={`flex-1 truncate text-sm ${isDownloaderRunning ? "opacity-50" : ""}`}
+                              title={path}
+                            >
                               {path}
                             </span>
                             <Button
@@ -1219,7 +1228,7 @@ function Settings() {
                                 newPaths.splice(index, 1);
                                 handleSettingChange("additionalDirectories", newPaths);
                               }}
-                              className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                              className={`h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 ${isDownloaderRunning ? "opacity-50" : ""}`}
                             >
                               <X size={16} />
                             </Button>
