@@ -555,15 +555,15 @@ class GofileDownloader:
             elif eta_seconds < 3600:
                 minutes = int(eta_seconds / 60)
                 seconds = int(eta_seconds % 60)
-                eta = f"{minutes}m {seconds}s"
+                eta = f"{minutes}m, {seconds}s"
             elif eta_seconds < 86400:
                 hours = int(eta_seconds / 3600)
                 minutes = int((eta_seconds % 3600) / 60)
-                eta = f"{hours}h {minutes}m"
+                eta = f"{hours}h, {minutes}m"
             else:
                 days = int(eta_seconds / 86400)
                 hours = int((eta_seconds % 86400) / 3600)
-                eta = f"{days}d {hours}h"
+                eta = f"{days}d, {hours}h"
             
             self.game_info["downloadingData"]["timeUntilComplete"] = eta
             
