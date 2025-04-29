@@ -958,10 +958,15 @@ function Settings() {
                         size="icon"
                         disabled={isDownloaderRunning || settings.threadCount <= 2}
                         onClick={() => {
-                          const newValue = Math.max(
-                            2,
-                            settings.threadCount - (settings.threadCount > 8 ? 4 : 2)
-                          );
+                          const step =
+                            settings.threadCount >= 32
+                              ? 16
+                              : settings.threadCount >= 16
+                                ? 8
+                                : settings.threadCount >= 8
+                                  ? 4
+                                  : 2;
+                          const newValue = Math.max(2, settings.threadCount - step);
                           handleSettingChange("threadCount", newValue);
                         }}
                         className="transition-transform hover:scale-105"
@@ -1002,53 +1007,55 @@ function Settings() {
                               className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
                               style={{
                                 background:
-                                  settings.threadCount < 4
-                                    ? "rgba(148, 163, 184, 0.1)"
-                                    : settings.threadCount <= 8
-                                      ? "rgba(34, 197, 94, 0.1)"
-                                      : settings.threadCount <= 16
-                                        ? "rgba(59, 130, 246, 0.1)"
-                                        : settings.threadCount <= 32
-                                          ? "rgba(249, 115, 22, 0.1)"
-                                          : "rgba(239, 68, 68, 0.1)",
+                                  settings.threadCount < 8
+                                    ? "rgba(148, 163, 184, 0.1)" // Low
+                                    : settings.threadCount <= 24
+                                      ? "rgba(34, 197, 94, 0.1)" // Normal
+                                      : settings.threadCount <= 32
+                                        ? "rgba(59, 130, 246, 0.1)" // High
+                                        : settings.threadCount <= 48
+                                          ? "rgba(249, 115, 22, 0.1)" // Very High
+                                          : "rgba(239, 68, 68, 0.1)", // Extreme
                                 color:
-                                  settings.threadCount < 4
-                                    ? "rgb(148, 163, 184)"
-                                    : settings.threadCount <= 8
-                                      ? "rgb(34, 197, 94)"
-                                      : settings.threadCount <= 16
-                                        ? "rgb(59, 130, 246)"
-                                        : settings.threadCount <= 32
-                                          ? "rgb(249, 115, 22)"
-                                          : "rgb(239, 68, 68)",
+                                  settings.threadCount < 8
+                                    ? "rgb(148, 163, 184)" // Low
+                                    : settings.threadCount <= 24
+                                      ? "rgb(34, 197, 94)" // Normal
+                                      : settings.threadCount <= 32
+                                        ? "rgb(59, 130, 246)" // High
+                                        : settings.threadCount <= 48
+                                          ? "rgb(249, 115, 22)" // Very High
+                                          : "rgb(239, 68, 68)", // Extreme
                               }}
                             >
-                              {settings.threadCount < 4 && (
+                              {settings.threadCount < 8 && (
                                 <>
                                   <BatteryLow className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.low")}
                                 </>
                               )}
-                              {settings.threadCount >= 4 && settings.threadCount <= 8 && (
-                                <>
-                                  <Battery className="h-3.5 w-3.5" />
-                                  {t("settings.downloadThreadsPresets.normal")}
-                                </>
-                              )}
-                              {settings.threadCount > 8 && settings.threadCount <= 16 && (
-                                <>
-                                  <BatteryMedium className="h-3.5 w-3.5" />
-                                  {t("settings.downloadThreadsPresets.high")}
-                                </>
-                              )}
-                              {settings.threadCount > 16 &&
+                              {settings.threadCount >= 8 &&
+                                settings.threadCount <= 24 && (
+                                  <>
+                                    <Battery className="h-3.5 w-3.5" />
+                                    {t("settings.downloadThreadsPresets.normal")}
+                                  </>
+                                )}
+                              {settings.threadCount > 24 &&
                                 settings.threadCount <= 32 && (
+                                  <>
+                                    <BatteryMedium className="h-3.5 w-3.5" />
+                                    {t("settings.downloadThreadsPresets.high")}
+                                  </>
+                                )}
+                              {settings.threadCount > 32 &&
+                                settings.threadCount <= 48 && (
                                   <>
                                     <BatteryFull className="h-3.5 w-3.5" />
                                     {t("settings.downloadThreadsPresets.veryHigh")}
                                   </>
                                 )}
-                              {settings.threadCount > 32 && (
+                              {settings.threadCount > 48 && (
                                 <>
                                   <Zap className="h-3.5 w-3.5" />
                                   {t("settings.downloadThreadsPresets.extreme")}
