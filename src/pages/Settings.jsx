@@ -941,23 +941,25 @@ function Settings() {
                     <p className="text-sm">{t("settings.downloaderRunningWarning")}</p>
                   </div>
                 )}
-                <div className="flex items-center justify-between">
-                  <Label>
-                    {t("settings.excludeFolders")}{" "}
-                    <SquareTerminal className="mb-0.5 inline h-4 w-4 text-muted-foreground" />
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("settings.excludeFoldersDescription")}
-                  </p>
-                  {exclusionLoading ? (
-                    <Loader className="h-6 w-6 animate-spin text-muted-foreground" />
-                  ) : (
-                    <Switch
-                      checked={settings.excludeFolders}
-                      onCheckedChange={handleExclusionToggle}
-                    />
-                  )}
-                </div>
+                {isOnWindows ? (
+                  <div className="mb-6 flex items-center justify-between">
+                    <Label>
+                      {t("settings.excludeFolders")}{" "}
+                      <SquareTerminal className="mb-0.5 inline h-4 w-4 text-muted-foreground" />
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t("settings.excludeFoldersDescription")}
+                    </p>
+                    {exclusionLoading ? (
+                      <Loader className="h-6 w-6 animate-spin text-muted-foreground" />
+                    ) : (
+                      <Switch
+                        checked={settings.excludeFolders}
+                        onCheckedChange={handleExclusionToggle}
+                      />
+                    )}
+                  </div>
+                ) : null}
                 {/* Download Threads Config */}
                 <div className="pb-8">
                   <Label
