@@ -6,15 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DownloadLimitSelector from "@/components/DownloadLimitSelector";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Zap,
-  Battery,
-  BatteryMedium,
-  BatteryLow,
-  BatteryFull,
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -52,12 +43,17 @@ import {
   ClockAlert,
   FlaskConical,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Battery,
+  BatteryMedium,
+  BatteryLow,
+  BatteryFull,
+  SquareTerminal,
   ChevronDown,
   Package,
   AlertTriangle,
-  HammerIcon,
-  Eye,
-  LayoutDashboard,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
@@ -225,9 +221,26 @@ function Settings() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDev, setIsDev] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [exclusionLoading, setExclusionLoading] = useState(false);
 
   // Use a ref to track if this is the first mount
   const isFirstMount = useRef(true);
+
+  const handleExclusionToggle = async () => {
+    const newValue = !settings.excludeFolders;
+    setExclusionLoading(true);
+    try {
+      const result = await window.electron.folderExclusion();
+      if (result && result.success) {
+        handleSettingChange("excludeFolders", newValue);
+      } else {
+        toast.error("Failed to update exclusions.");
+      }
+    } catch (e) {
+      toast.error("Error updating exclusions.");
+    }
+    setExclusionLoading(false);
+  };
 
   useEffect(() => {
     if (settings.twitchSecret) {
@@ -928,7 +941,23 @@ function Settings() {
                     <p className="text-sm">{t("settings.downloaderRunningWarning")}</p>
                   </div>
                 )}
-
+                <div className="flex items-center justify-between">
+                  <Label>
+                    {t("settings.excludeFolders")}{" "}
+                    <SquareTerminal className="mb-0.5 inline h-4 w-4 text-muted-foreground" />
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.excludeFoldersDescription")}
+                  </p>
+                  {exclusionLoading ? (
+                    <Loader className="h-6 w-6 animate-spin text-muted-foreground" />
+                  ) : (
+                    <Switch
+                      checked={settings.excludeFolders}
+                      onCheckedChange={handleExclusionToggle}
+                    />
+                  )}
+                </div>
                 {/* Download Threads Config */}
                 <div className="pb-8">
                   <Label

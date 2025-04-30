@@ -635,6 +635,8 @@
     "enterGiantBombApiKey": "Paste your GiantBomb API Key",
     "enterIgdbApiKey": "Paste your secret Twitch key",
     "enterTwitchClientId": "Paste your Twitch client ID",
+    "excludeFolders": "Exclude Folders",
+    "excludeFoldersDescription": "Exclude all game folders from Windows Defender. Requires administrator privileges.",
     "experimental": "Experimental Feature",
     "extraLanguagesPanel": {
       "additionalLangListDesc": "Choose from an additional 93 languages. These languages will be translated on your computer.",

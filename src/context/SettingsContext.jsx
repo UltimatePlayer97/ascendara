@@ -29,6 +29,7 @@ export function SettingsProvider({ children }) {
     theme: "purple",
     threadCount: 4,
     downloadLimit: 0,
+    excludeFolders: false,
     sideScrollBar: false,
     crackDirectory: "",
     twitchSecret: "",

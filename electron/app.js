@@ -710,6 +710,7 @@ class SettingsManager {
       threadCount: 4,
       downloadLimit: 0,
       sideScrollBar: false,
+      excludeFolders: false,
       crackDirectory: "",
       twitchSecret: "",
       twitchClientId: "",
