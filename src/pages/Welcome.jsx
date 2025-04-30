@@ -25,6 +25,8 @@ import {
   SquareArrowRight,
   FolderDown,
   FolderDownIcon,
+  Unplug,
+  Wine,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -257,6 +259,8 @@ const Welcome = ({ welcomeData, onComplete }) => {
     threadCount: 4,
   });
   const [currentLangIndex, setCurrentLangIndex] = useState(0);
+  const [privacyLinkVisited, setPrivacyLinkVisited] = useState(false);
+  const [termsLinkVisited, setTermsLinkVisited] = useState(false);
 
   const features = useMemo(
     () => [
@@ -1005,7 +1009,7 @@ const Welcome = ({ welcomeData, onComplete }) => {
                 </h1>
               </motion.div>
               <motion.p
-                className="mb-12 max-w-3xl text-xl text-foreground/80"
+                className="mb-12 max-w-4xl text-xl text-foreground/80"
                 variants={itemVariants}
               >
                 {t("welcome.welcomeToAscendaraDescription")}
@@ -1013,34 +1017,22 @@ const Welcome = ({ welcomeData, onComplete }) => {
 
               <motion.div className="mb-12 max-w-xl space-y-6" variants={itemVariants}>
                 <div>
-                  <div className="flex items-center space-x-3 rounded-lg p-4 transition-colors hover:bg-card/50">
-                    <Checkbox
-                      id="privacy"
-                      checked={privacyChecked}
-                      onCheckedChange={setPrivacyChecked}
-                      className="data-[state=checked]:text-primary-foreground data-[state=checked]:bg-primary"
-                    />
-                    <div className="text-base">
-                      <Label htmlFor="privacy" className="inline cursor-pointer">
-                        {t("welcome.iHaveReadAndAgreeTo")}{" "}
-                      </Label>
-                      <button
-                        type="button"
-                        onClick={e => {
-                          e.preventDefault();
-                          window.electron.openURL("https://ascendara.app/privacy");
-                        }}
-                        className="inline text-primary hover:underline"
-                      >
-                        {t("welcome.privacyPolicy")}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3 rounded-lg p-4 transition-colors hover:bg-card/50">
+                  <div
+                    className="flex cursor-pointer items-center space-x-3 rounded-lg p-4 transition-colors hover:bg-card/50"
+                    onClick={e => {
+                      if (e.target.closest("button")) return;
+                      if (!termsLinkVisited) {
+                        window.electron.openURL("https://ascendara.app/terms");
+                        setTermsLinkVisited(true);
+                        return;
+                      }
+                      setTermsChecked(!termsChecked);
+                    }}
+                  >
                     <Checkbox
                       id="terms"
                       checked={termsChecked}
+                      disabled={!termsLinkVisited}
                       onCheckedChange={setTermsChecked}
                       className="data-[state=checked]:text-primary-foreground data-[state=checked]:bg-primary"
                     />
@@ -1052,11 +1044,49 @@ const Welcome = ({ welcomeData, onComplete }) => {
                         type="button"
                         onClick={e => {
                           e.preventDefault();
+                          setTermsLinkVisited(true);
                           window.electron.openURL("https://ascendara.app/terms");
                         }}
                         className="inline text-primary hover:underline"
                       >
                         {t("welcome.termsOfService")}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className="flex cursor-pointer items-center space-x-3 rounded-lg p-4 transition-colors hover:bg-card/50"
+                    onClick={e => {
+                      if (e.target.closest("button")) return;
+                      if (!privacyLinkVisited) {
+                        window.electron.openURL("https://ascendara.app/privacy");
+                        setPrivacyLinkVisited(true);
+                        return;
+                      }
+                      setPrivacyChecked(!privacyChecked);
+                    }}
+                  >
+                    <Checkbox
+                      id="privacy"
+                      checked={privacyChecked}
+                      disabled={!privacyLinkVisited}
+                      onCheckedChange={setPrivacyChecked}
+                      className="data-[state=checked]:text-primary-foreground data-[state=checked]:bg-primary"
+                    />
+                    <div className="text-base">
+                      <Label htmlFor="privacy" className="inline cursor-pointer">
+                        {t("welcome.iHaveReadAndAgreeTo")}{" "}
+                      </Label>
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.preventDefault();
+                          setPrivacyLinkVisited(true);
+                          window.electron.openURL("https://ascendara.app/privacy");
+                        }}
+                        className="inline text-primary hover:underline"
+                      >
+                        {t("welcome.privacyPolicy")}
                       </button>
                     </div>
                   </div>
@@ -1457,7 +1487,7 @@ const Welcome = ({ welcomeData, onComplete }) => {
                 className="max-w-2xl text-sm text-muted-foreground"
                 variants={itemVariants}
               >
-                {t("welcome.ascendaraNeverCollectsPersonalInfo")} &nbsp;
+                {t("welcome.ascendaraNeverCollectsPersonalInfo")}&nbsp;
                 <span
                   className="cursor-pointer text-primary hover:underline"
                   onClick={() =>
@@ -1535,7 +1565,7 @@ const Welcome = ({ welcomeData, onComplete }) => {
                 <div className="flex flex-col rounded-xl border border-border bg-card/30 p-6">
                   <div className="mb-4 flex items-center space-x-3">
                     <div className="rounded-lg bg-muted p-2">
-                      <Shield className="h-6 w-6 text-muted-foreground" />
+                      <Unplug className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-semibold text-muted-foreground">
                       {t("welcome.manualUpdates")}
@@ -1731,7 +1761,8 @@ const Welcome = ({ welcomeData, onComplete }) => {
                       variants={itemVariants}
                     >
                       <h2 className="text-4xl font-bold text-primary">
-                        {t("welcome.wineIsRequired")}
+                        {t("welcome.wineIsRequired")}{" "}
+                        <Wine size={32} className="mb-1 inline" />
                       </h2>
                     </motion.div>
                     <motion.div
