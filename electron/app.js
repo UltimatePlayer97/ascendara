@@ -47,7 +47,7 @@ const os = require("os");
 const ip = require("ip");
 const crypto = require("crypto");
 const { machineIdSync } = require("node-machine-id");
-const { spawn, execSync } = require("child_process");
+const { spawn, execSync, exec } = require("child_process");
 require("dotenv").config();
 
 let has_launched = false;
@@ -2691,10 +2691,6 @@ ipcMain.handle("install-wine", async () => {
   }
 
   try {
-    console.log("Importing required modules...");
-    const { exec } = require("child_process");
-    const { BrowserWindow } = require("electron");
-
     const installWindow = new BrowserWindow({
       width: 500,
       height: 300,
