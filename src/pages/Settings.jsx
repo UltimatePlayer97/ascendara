@@ -953,12 +953,23 @@ function Settings() {
                               <SquareTerminal className="mb-0.5 inline h-4 w-4 cursor-help text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent className="text-secondary">
-                              {t("settings.excludeFoldersTooltip")}
+                              {t("settings.excludeFoldersTooltip")}.{" "}
+                              <a
+                                className="cursor-pointer text-secondary hover:underline"
+                                onClick={() =>
+                                  window.electron.openURL(
+                                    "https://ascendara.app/docs/features/overview#protecting-directories-from-windows-defender"
+                                  )
+                                }
+                              >
+                                {t("common.learnMore")}
+                                <ExternalLink className="mb-1 ml-1 inline-block h-3 w-3" />
+                              </a>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="pr-2 text-sm text-muted-foreground">
                         {t("settings.excludeFoldersDescription")}
                       </p>
                     </div>
