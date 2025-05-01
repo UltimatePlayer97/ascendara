@@ -3854,6 +3854,48 @@ ipcMain.handle("import-steam-games", async (event, directory) => {
   }
 });
 
+ipcMain.handle("download-soundtrack", async (event, soundtracklink, game = "none") => {
+  try {
+    // Get desktop path
+    const desktopDir = path.join(os.homedir(), "Desktop");
+    // Use game name as subfolder if provided
+    let targetDir = desktopDir;
+    if (game && game !== "none") {
+      // Sanitize game name for filesystem
+      const safeGame = game.replace(/[<>:"/\\|?*]+/g, "").trim();
+      targetDir = path.join(desktopDir, safeGame);
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
+    }
+    // Extract and decode filename from URL
+    let fileName = path.basename(soundtracklink.split("?")[0]);
+    fileName = decodeURIComponent(fileName);
+    const filePath = path.join(targetDir, fileName);
+
+    const response = await axios({
+      method: "get",
+      url: soundtracklink,
+      responseType: "stream",
+    });
+
+    await new Promise((resolve, reject) => {
+      const file = fs.createWriteStream(filePath);
+      response.data.pipe(file);
+      file.on("finish", () => {
+        file.close(resolve);
+      });
+      file.on("error", err => {
+        fs.unlink(filePath, () => reject(err));
+      });
+    });
+    return { success: true, filePath };
+  } catch (error) {
+    console.error("Error downloading soundtrack:", error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle("folder-exclusion", async (event, boolean) => {
   try {
     console.log("[folder-exclusion] Called with:", boolean ? "ENABLE" : "DISABLE");

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ChevronLeft,
@@ -29,11 +29,14 @@ import {
   ThumbsUp,
   HandHelping,
   X,
+  Copy,
+  Music2,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
+import { useAudioPlayer } from "@/services/audioPlayerService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -57,6 +60,7 @@ import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
 import igdbService from "@/services/gameInfoService";
 import GameRate from "@/components/GameRate";
+import { getGameSoundtrack } from "@/services/khinsiderService";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -226,6 +230,8 @@ export default function GameScreen() {
   const [showOnlineFixWarning, setShowOnlineFixWarning] = useState(false);
   const [showSteamNotRunningWarning, setShowSteamNotRunningWarning] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [soundtrack, setSoundtrack] = useState([]);
+  const [loadingSoundtrack, setLoadingSoundtrack] = useState(true);
   const [hasRated, setHasRated] = useState(true);
   const [showRateDialog, setShowRateDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -234,6 +240,7 @@ export default function GameScreen() {
   const [igdbData, setIgdbData] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const { setTrack, play } = useAudioPlayer();
 
   useEffect(() => {
     const init = async () => {
@@ -331,6 +338,26 @@ export default function GameScreen() {
   useEffect(() => {
     localStorage.setItem("game-favorites", JSON.stringify(favorites));
   }, [favorites]);
+
+  // Fetch Khinsider soundtrack on mount
+  useEffect(() => {
+    if (!game) return;
+    const gameName = game.game || game.name;
+    const storageKey = `khinsider-soundtrack-${gameName}`;
+    const cached = localStorage.getItem(storageKey);
+    if (cached) {
+      setSoundtrack(JSON.parse(cached));
+      setLoadingSoundtrack(false);
+    } else {
+      setLoadingSoundtrack(true);
+      getGameSoundtrack(gameName)
+        .then(tracks => {
+          setSoundtrack(tracks);
+          localStorage.setItem(storageKey, JSON.stringify(tracks));
+        })
+        .finally(() => setLoadingSoundtrack(false));
+    }
+  }, [game]);
 
   // Load game image
   useEffect(() => {
@@ -914,6 +941,10 @@ export default function GameScreen() {
                     {t("gameScreen.details")}
                   </TabsTrigger>
                 )}
+                <TabsTrigger value="soundtrack">
+                  <Music2 className="mr-2 h-4 w-4" />
+                  {t("gameScreen.soundtrack")}
+                </TabsTrigger>
               </TabsList>
 
               {!hasRated && (
@@ -958,6 +989,191 @@ export default function GameScreen() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Soundtrack tab */}
+              <TabsContent value="soundtrack" className="space-y-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="mb-6 flex items-center justify-between">
+                      <div>
+                        <div>
+                          <h2 className="text-2xl font-bold">
+                            {game.game} {t("gameScreen.soundtrack")}
+                          </h2>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {t("gameScreen.aboutSoundtracks")}
+                          </p>{" "}
+                          <a
+                            onClick={() =>
+                              window.electron.openURL(
+                                "https://ascendara.app/docs/features/game-backups"
+                              )
+                            }
+                            className="text-sm text-secondary hover:underline"
+                          >
+                            Khinsider
+                          </a>
+                        </div>
+
+                        {soundtrack.length > 0 && (
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {soundtrack.length} {t("gameScreen.tracks")}
+                          </p>
+                        )}
+                      </div>
+                      {soundtrack.length > 0 && (
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={async () => {
+                            toast.success(t("gameScreen.downloadingAllTracks"));
+                            const results = await Promise.all(
+                              soundtrack.map(track =>
+                                window.electron.downloadSoundtrack(track.url, game.game)
+                              )
+                            );
+                            if (results.every(res => res?.success)) {
+                              toast.success(t("gameScreen.allDownloadsComplete"));
+                            } else {
+                              toast.error(t("gameScreen.someDownloadsFailed"));
+                            }
+                          }}
+                        >
+                          <Download className="h-4 w-4" />
+                          {t("gameScreen.downloadAll")}
+                        </Button>
+                      )}
+                    </div>
+
+                    {loadingSoundtrack ? (
+                      <div className="flex flex-col items-center justify-center space-y-4 py-12">
+                        <div className="relative">
+                          <Loader className="h-10 w-10 animate-spin" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <PlayCircleIcon className="h-5 w-5" />
+                          </div>
+                        </div>
+                        <p className="animate-pulse text-sm text-muted-foreground">
+                          {t("gameScreen.loadingSoundtrack")}
+                        </p>
+                      </div>
+                    ) : soundtrack.length > 0 ? (
+                      <div className="relative overflow-hidden rounded-lg border bg-card">
+                        <div className="sticky top-0 z-10 border-b bg-background/95 px-6 py-3 shadow-sm backdrop-blur-md transition-shadow duration-200">
+                          <div className="grid grid-cols-[auto,1fr,auto] gap-6 text-xs font-medium uppercase tracking-wider text-muted-foreground/70">
+                            <div className="w-14 text-center">#</div>
+                            <div>{t("gameScreen.trackTitle")}</div>
+                          </div>
+                        </div>
+
+                        <div className="divide-y divide-border/50">
+                          {soundtrack.map((track, index) => (
+                            <div
+                              key={index}
+                              className="group relative grid grid-cols-[auto,1fr,auto] items-center gap-6 overflow-hidden px-6 py-3 transition-colors hover:bg-accent/50"
+                            >
+                              {/* Track number */}
+                              <div className="w-14 select-none text-center text-sm font-medium tabular-nums text-muted-foreground/70">
+                                <span className="transition-opacity duration-200 group-hover:opacity-0">
+                                  {String(index + 1).padStart(2, "0")}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute left-6 top-1/2 h-8 w-14 -translate-y-1/2 opacity-0 transition-all duration-200 group-hover:opacity-100"
+                                  onClick={() => {
+                                    console.log("[Soundtrack Play] Track object:", track);
+                                    console.log(
+                                      "[Soundtrack Play] Track URL:",
+                                      track.url
+                                    );
+                                    // Use the direct URL for audio playback
+                                    const playableTrack = {
+                                      ...track,
+                                      url: track.url.replace(
+                                        "/api/khinsider",
+                                        "https://downloads.khinsider.com"
+                                      ),
+                                    };
+                                    console.log(
+                                      "[Soundtrack Play] PlayableTrack object:",
+                                      playableTrack
+                                    );
+                                    setTrack(playableTrack);
+                                    play();
+                                  }}
+                                  title={t("gameScreen.playTrack")}
+                                >
+                                  <Play className="h-4 w-4" />
+                                </Button>
+                              </div>
+
+                              {/* Track title */}
+                              <div className="flex min-w-0 items-center">
+                                <div className="truncate py-1">
+                                  <p className="truncate text-sm font-medium">
+                                    {track.title}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex items-center justify-end gap-0.5 sm:gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                                  onClick={() => {
+                                    toast.success(t("gameScreen.downloadStarted"));
+                                    window.electron
+                                      .downloadSoundtrack(track.url, game.game)
+                                      .then(res => {
+                                        if (res?.success) {
+                                          toast.success(t("gameScreen.downloadComplete"));
+                                        } else {
+                                          toast.error(t("gameScreen.downloadFailed"));
+                                        }
+                                      });
+                                  }}
+                                  title={t("gameScreen.downloadTrack")}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(track.title);
+                                    toast.success(t("gameScreen.trackNameCopied"));
+                                  }}
+                                  title={t("gameScreen.copyTrackName")}
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
+                        <div className="rounded-full bg-muted p-4">
+                          <PlayCircleIcon className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="font-medium">
+                            {t("gameScreen.noSoundtrackFound")}
+                          </p>
+                          <p className="max-w-sm text-sm text-muted-foreground">
+                            {t("gameScreen.noSoundtrackDescription")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               {/* Overview tab */}
               <TabsContent value="overview" className="space-y-6">
@@ -1182,20 +1398,6 @@ export default function GameScreen() {
                     )}
                   </CardContent>
                 </Card>
-
-                {/* Storyline if available */}
-                {igdbData?.storyline && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <h2 className="text-xl font-bold">{t("gameScreen.storyline")}</h2>
-                        <p className="leading-relaxed text-muted-foreground">
-                          {igdbData.storyline}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
               </TabsContent>
             </Tabs>
           </div>

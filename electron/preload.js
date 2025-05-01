@@ -99,6 +99,8 @@ contextBridge.exposeInMainWorld("electron", {
   openGameDirectory: (game, isCustom) =>
     ipcRenderer.invoke("open-game-directory", game, isCustom),
   openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),
+  downloadSoundtrack: (track, game) =>
+    ipcRenderer.invoke("download-soundtrack", track, game),
   folderExclusion: () => ipcRenderer.invoke("folder-exclusion"),
   getInstalledTools: () => ipcRenderer.invoke("get-installed-tools"),
   installTool: tool => ipcRenderer.invoke("install-tool", tool),

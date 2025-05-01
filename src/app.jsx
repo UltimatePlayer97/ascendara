@@ -1,6 +1,7 @@
 import ContextMenu from "@/components/ContextMenu";
 import Layout from "@/components/Layout";
 import MenuBar from "@/components/MenuBar";
+import MiniPlayer from "@/components/MiniPlayer";
 import SupportDialog from "@/components/SupportDialog";
 import PlatformWarningDialog from "@/components/PlatformWarningDialog";
 import BrokenVersionDialog from "@/components/BrokenVersionDialog";
@@ -762,6 +763,7 @@ function ToasterWithTheme() {
 
 function App() {
   const { t } = useTranslation();
+  const [playerExpanded, setPlayerExpanded] = useState(false);
 
   useEffect(() => {
     const checkUpdates = async () => {
@@ -867,6 +869,10 @@ function App() {
               <AnimatePresence mode="wait">
                 <AppRoutes />
               </AnimatePresence>
+              <MiniPlayer
+                expanded={playerExpanded}
+                onToggleExpand={() => setPlayerExpanded(!playerExpanded)}
+              />
             </Router>
           </SettingsProvider>
         </LanguageProvider>

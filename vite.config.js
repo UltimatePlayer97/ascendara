@@ -41,6 +41,27 @@ export default defineConfig({
           });
         },
       },
+      "/api/khinsider": {
+        target: "https://downloads.khinsider.com",
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/api\/khinsider/, ""),
+        configure: (proxy, _options) => {
+          proxy.on("error", (err, _req, _res) => {
+            console.log("Khinsider proxy error", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, _res) => {
+            console.log("Khinsider: Sending Request to the Target:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req, _res) => {
+            console.log(
+              "Khinsider: Received Response from the Target:",
+              proxyRes.statusCode,
+              req.url
+            );
+          });
+        },
+      },
       "/api/giantbomb": {
         target: "https://www.giantbomb.com/api",
         changeOrigin: true,
