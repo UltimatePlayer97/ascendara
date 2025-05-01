@@ -33,6 +33,14 @@ Ascendara simplifies your pirating experience by providing a seamless way to dow
 - 🚀 **Seamless Downloads**  
   Lightning-fast 2 click download for games that support it. No browser needed at all.
 
+- 🎵 **Soundtracks**
+
+  Listen to, and download tracks from the games soundtrack tab.
+
+- 🔌 **Game Info**
+
+  View game info, including the game's story, soundtrack, and more with Ascendara Xtra.
+
 - 🌐 **Browser Integration**  
   Seamlessly integrate with your browser for one-click game downloads and management.
 
@@ -163,6 +171,40 @@ These languages come with the app by default:
 </details>
 
 </details>
+
+## Current 3rd Party Integrations
+
+<p align="center">
+  <img src="./readme/connections.png" width="40%" alt="Integrations Overview"/>
+</p>
+
+<!-- Integration Descriptions -->
+<table align="center">
+  <tr>
+    <th>Integration</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><strong>GiantBomb</strong></td>
+    <td>Community-driven game metadata provider, used as a fallback when official data is unavailable.</td>
+  </tr>
+  <tr>
+    <td><strong>IGDB</strong></td>
+    <td>The primary and more official source for game information, covers, and metadata.</td>
+  </tr>
+  <tr>
+    <td><strong>Ludusavi</strong></td>
+    <td>Backup and restore for game save data.</td>
+  </tr>
+  <tr>
+    <td><strong>SteamCMD</strong></td>
+    <td>Used by Ascendara's Workshop Downloader page to download workshop items.</td>
+  </tr>
+  <tr>
+    <td><strong>KHInsider</strong></td>
+    <td>Game soundtrack library for listening and downloading tracks from.</td>
+  </tr>
+</table>
 
 ## 🖼️ Preview
 
