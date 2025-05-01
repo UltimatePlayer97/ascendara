@@ -107,6 +107,7 @@ contextBridge.exposeInMainWorld("electron", {
   isSteamCMDInstalled: () => ipcRenderer.invoke("is-steamcmd-installed"),
   installSteamCMD: () => ipcRenderer.invoke("install-steamcmd"),
   getDownloadDirectory: () => ipcRenderer.invoke("get-download-directory"),
+  folderExclusion: boolean => ipcRenderer.invoke("folder-exclusion", boolean),
   getDriveSpace: path => ipcRenderer.invoke("get-drive-space", path),
   switchBuild: buildType => ipcRenderer.invoke("switch-build", buildType),
   getLocalCrackUsername: () => ipcRenderer.invoke("get-local-crack-username"),

@@ -3854,6 +3854,91 @@ ipcMain.handle("import-steam-games", async (event, directory) => {
   }
 });
 
+ipcMain.handle("folder-exclusion", async (event, boolean) => {
+  try {
+    console.log("[folder-exclusion] Called with:", boolean ? "ENABLE" : "DISABLE");
+    // First, check if Defender is active by running Get-MpPreference (no admin)
+    const checkDefender = await new Promise(resolve => {
+      exec(
+        'powershell -Command "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"',
+        (error, stdout, stderr) => {
+          if (error) {
+            // Look for Defender-disabled error signature
+            if (
+              (stderr && stderr.includes("Operation failed with the following error")) ||
+              (stderr && stderr.includes("HRESULT 0x800106ba"))
+            ) {
+              console.warn(
+                "[folder-exclusion] Defender not active or another AV in use."
+              );
+              resolve({ defenderActive: false, error: stderr || error.message });
+            } else {
+              resolve({ defenderActive: false, error: stderr || error.message });
+            }
+          } else {
+            resolve({ defenderActive: true, exclusions: stdout });
+          }
+        }
+      );
+    });
+    if (!checkDefender.defenderActive) {
+      return {
+        success: false,
+        error:
+          "Windows Defender is not active or another antivirus is in use. Exclusions cannot be managed.",
+      };
+    }
+    const settings = settingsManager.getSettings();
+    const downloadDir = settings.downloadDirectory;
+    const additionalDirs = Array.isArray(settings.additionalDirectories)
+      ? settings.additionalDirectories
+      : [];
+    console.log("[folder-exclusion] downloadDir:", downloadDir);
+    console.log("[folder-exclusion] additionalDirs:", additionalDirs);
+    if (!downloadDir && additionalDirs.length === 0) {
+      console.warn("[folder-exclusion] No directories configured for exclusion.");
+      return { success: false, error: "No directories configured for exclusion." };
+    }
+
+    // Build PowerShell commands for each directory
+    const commandType = boolean ? "Add-MpPreference" : "Remove-MpPreference";
+    let psCommands = [];
+    if (downloadDir) {
+      psCommands.push(`${commandType} -ExclusionPath "${downloadDir}"`);
+    }
+    for (const dir of additionalDirs) {
+      if (dir) {
+        psCommands.push(`${commandType} -ExclusionPath "${dir}"`);
+      }
+    }
+    if (psCommands.length === 0) {
+      console.warn("[folder-exclusion] No valid directories for exclusion.");
+      return { success: false, error: "No valid directories for exclusion." };
+    }
+    // Join commands with semicolon
+    const joinedCommands = psCommands.join("; ");
+    // Use Start-Process to run as admin, single quotes for -ArgumentList
+    const fullPS = `Start-Process powershell -Verb runAs -ArgumentList '${joinedCommands}'`;
+    console.log("[folder-exclusion] PowerShell command:", fullPS);
+
+    return await new Promise(resolve => {
+      exec(`powershell -Command "${fullPS}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error("[folder-exclusion] PowerShell error:", error);
+          console.error("[folder-exclusion] stderr:", stderr);
+          resolve({ success: false, error: stderr || error.message });
+        } else {
+          console.log("[folder-exclusion] PowerShell success. stdout:", stdout);
+          resolve({ success: true });
+        }
+      });
+    });
+  } catch (err) {
+    console.error("[folder-exclusion] Exception:", err);
+    return { success: false, error: err.message };
+  }
+});
+
 // Update a custom game's cover image
 ipcMain.handle("update-game-cover", async (event, game, imgID) => {
   const settings = settingsManager.getSettings();

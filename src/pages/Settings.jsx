@@ -9,6 +9,7 @@ import DownloadLimitSelector from "@/components/DownloadLimitSelector";
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -230,11 +231,11 @@ function Settings() {
     const newValue = !settings.excludeFolders;
     setExclusionLoading(true);
     try {
-      const result = await window.electron.folderExclusion();
+      const result = await window.electron.folderExclusion(newValue);
       if (result && result.success) {
         handleSettingChange("excludeFolders", newValue);
       } else {
-        toast.error("Failed to update exclusions.");
+        toast.error(result.error);
       }
     } catch (e) {
       toast.error("Error updating exclusions.");
@@ -750,7 +751,7 @@ function Settings() {
           <div className="space-y-6 lg:col-span-8">
             {/* General Settings Card */}
             <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold text-primary">
+              <h2 className="mb-2 text-xl font-semibold text-primary">
                 {t("settings.general")}
               </h2>
               <div className="space-y-6">
@@ -931,7 +932,7 @@ function Settings() {
             </Card>
 
             <Card className="mb-6">
-              <div className="space-y-10 p-6">
+              <div className="space-y-3 p-6">
                 <h3 className="mb-2 text-xl font-semibold text-primary">
                   {t("settings.downloaderSettings")}
                 </h3>
@@ -943,13 +944,24 @@ function Settings() {
                 )}
                 {isOnWindows ? (
                   <div className="mb-6 flex items-center justify-between">
-                    <Label>
-                      {t("settings.excludeFolders")}{" "}
-                      <SquareTerminal className="mb-0.5 inline h-4 w-4 text-muted-foreground" />
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t("settings.excludeFoldersDescription")}
-                    </p>
+                    <div className="space-y-0.5">
+                      <Label>
+                        {t("settings.excludeFolders")}{" "}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <SquareTerminal className="mb-0.5 inline h-4 w-4 cursor-help text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="text-secondary">
+                              {t("settings.excludeFoldersTooltip")}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.excludeFoldersDescription")}
+                      </p>
+                    </div>
                     {exclusionLoading ? (
                       <Loader className="h-6 w-6 animate-spin text-muted-foreground" />
                     ) : (
