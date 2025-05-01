@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "vite --mode development",
     "build": "vite build",
-    "build-react": "yarn build && electron-builder --config.extraMetadata.main=electron/app.js",
+    "build-react": "vite build && electron-builder --config.extraMetadata.main=electron/app.js",
     "electron": "electron ./electron/app.js",
     "start": "concurrently \"vite\" \"wait-on tcp:5173 && electron ./electron/app.js\"",
     "dist": "python3 ./scripts/build_ascendara.py",
