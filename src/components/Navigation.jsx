@@ -201,6 +201,10 @@ const Navigation = memo(({ items }) => {
           break;
         }
         case "5": {
+          navigate("/profile");
+          break;
+        }
+        case "6": {
           navigate("/settings");
           break;
         }
