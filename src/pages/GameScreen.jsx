@@ -628,19 +628,19 @@ export default function GameScreen() {
               </h1>
               {game.online && (
                 <Gamepad2
-                  className="h-5 w-5 text-primary"
+                  className="mb-2 h-5 w-5 text-primary"
                   title={t("library.iconLegend.onlineFix")}
                 />
               )}
               {game.dlc && (
                 <Gift
-                  className="h-5 w-5 text-primary"
+                  className="mb-2 h-5 w-5 text-primary"
                   title={t("library.iconLegend.allDlcs")}
                 />
               )}
               {game.isVr && (
                 <svg
-                  className="p-0.5 text-primary"
+                  className="mb-2 p-0.5 text-primary"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
