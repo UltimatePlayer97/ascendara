@@ -1000,26 +1000,22 @@ export default function GameScreen() {
                           <h2 className="text-2xl font-bold">
                             {game.game} {t("gameScreen.soundtrack")}
                           </h2>
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {t("gameScreen.aboutSoundtracks")}
-                          </p>{" "}
-                          <a
-                            onClick={() =>
-                              window.electron.openURL(
-                                "https://ascendara.app/docs/features/game-backups"
-                              )
-                            }
-                            className="text-sm text-secondary hover:underline"
-                          >
-                            Khinsider
-                          </a>
+                          {soundtrack.length > 0 && (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              {soundtrack.length} {t("gameScreen.aboutSoundtracks")}{" "}
+                              <a
+                                onClick={() =>
+                                  window.electron.openURL(
+                                    "https://downloads.khinsider.com/"
+                                  )
+                                }
+                                className="inline cursor-pointer text-sm text-primary hover:underline"
+                              >
+                                Khinsider
+                              </a>
+                            </p>
+                          )}
                         </div>
-
-                        {soundtrack.length > 0 && (
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {soundtrack.length} {t("gameScreen.tracks")}
-                          </p>
-                        )}
                       </div>
                       {soundtrack.length > 0 && (
                         <Button
@@ -1046,14 +1042,11 @@ export default function GameScreen() {
                     </div>
 
                     {loadingSoundtrack ? (
-                      <div className="flex flex-col items-center justify-center space-y-4 py-12">
-                        <div className="relative">
-                          <Loader className="h-10 w-10 animate-spin" />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <PlayCircleIcon className="h-5 w-5" />
-                          </div>
+                      <div className="flex flex-col items-center justify-center space-y-6 py-12">
+                        <div className="relative flex flex-col items-center">
+                          <Music2 className="h-8 w-8 animate-pulse text-primary/60 drop-shadow-lg" />
                         </div>
-                        <p className="animate-pulse text-sm text-muted-foreground">
+                        <p className="animate-pulse text-base font-semibold text-primary/70">
                           {t("gameScreen.loadingSoundtrack")}
                         </p>
                       </div>
