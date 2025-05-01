@@ -31,6 +31,7 @@ import {
   X,
   Copy,
   Music2,
+  HeadphoneOff,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -231,7 +232,8 @@ export default function GameScreen() {
   const [showSteamNotRunningWarning, setShowSteamNotRunningWarning] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [soundtrack, setSoundtrack] = useState([]);
-  const [loadingSoundtrack, setLoadingSoundtrack] = useState(true);
+  const [loadingSoundtrack, setLoadingSoundtrack] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const [hasRated, setHasRated] = useState(true);
   const [showRateDialog, setShowRateDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -747,7 +749,7 @@ export default function GameScreen() {
                         <div className="text-center text-sm font-medium text-primary">
                           <span className="flex items-center justify-center gap-2">
                             <Loader className="h-4 w-4 animate-spin" />
-                            {t("library.deletingGame")}
+                            {t("library.deleting")}
                           </span>
                         </div>
                       </div>
@@ -1013,6 +1015,7 @@ export default function GameScreen() {
                               >
                                 Khinsider
                               </a>
+                              .
                             </p>
                           )}
                         </div>
@@ -1060,99 +1063,142 @@ export default function GameScreen() {
                         </div>
 
                         <div className="divide-y divide-border/50">
-                          {soundtrack.map((track, index) => (
-                            <div
-                              key={index}
-                              className="group relative grid grid-cols-[auto,1fr,auto] items-center gap-6 overflow-hidden px-6 py-3 transition-colors hover:bg-accent/50"
-                            >
-                              {/* Track number */}
-                              <div className="w-14 select-none text-center text-sm font-medium tabular-nums text-muted-foreground/70">
-                                <span className="transition-opacity duration-200 group-hover:opacity-0">
-                                  {String(index + 1).padStart(2, "0")}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="absolute left-6 top-1/2 h-8 w-14 -translate-y-1/2 opacity-0 transition-all duration-200 group-hover:opacity-100"
-                                  onClick={() => {
-                                    console.log("[Soundtrack Play] Track object:", track);
-                                    console.log(
-                                      "[Soundtrack Play] Track URL:",
-                                      track.url
-                                    );
-                                    // Use the direct URL for audio playback
-                                    const playableTrack = {
-                                      ...track,
-                                      url: track.url.replace(
-                                        "/api/khinsider",
-                                        "https://downloads.khinsider.com"
-                                      ),
-                                    };
-                                    console.log(
-                                      "[Soundtrack Play] PlayableTrack object:",
-                                      playableTrack
-                                    );
-                                    setTrack(playableTrack);
-                                    play();
-                                  }}
-                                  title={t("gameScreen.playTrack")}
-                                >
-                                  <Play className="h-4 w-4" />
-                                </Button>
-                              </div>
+                          {soundtrack
+                            .slice(currentPage * 12, (currentPage + 1) * 12)
+                            .map((track, index) => (
+                              <div
+                                key={index}
+                                className="group relative grid grid-cols-[auto,1fr,auto] items-center gap-6 overflow-hidden px-6 py-3 transition-colors hover:bg-accent/50"
+                              >
+                                {/* Track number */}
+                                <div className="w-14 select-none text-center text-sm font-medium tabular-nums text-muted-foreground/70">
+                                  <span className="transition-opacity duration-200 group-hover:opacity-0">
+                                    {String(currentPage * 12 + index + 1).padStart(
+                                      2,
+                                      "0"
+                                    )}
+                                  </span>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute left-6 top-1/2 h-8 w-14 -translate-y-1/2 opacity-0 transition-all duration-200 group-hover:opacity-100"
+                                    onClick={() => {
+                                      console.log(
+                                        "[Soundtrack Play] Track object:",
+                                        track
+                                      );
+                                      console.log(
+                                        "[Soundtrack Play] Track URL:",
+                                        track.url
+                                      );
+                                      // Use the direct URL for audio playback
+                                      const playableTrack = {
+                                        ...track,
+                                        url: track.url.replace(
+                                          "/api/khinsider",
+                                          "https://downloads.khinsider.com"
+                                        ),
+                                      };
+                                      console.log(
+                                        "[Soundtrack Play] PlayableTrack object:",
+                                        playableTrack
+                                      );
+                                      setTrack(playableTrack);
+                                      play();
+                                    }}
+                                    title={t("gameScreen.playTrack")}
+                                  >
+                                    <Play className="h-4 w-4" />
+                                  </Button>
+                                </div>
 
-                              {/* Track title */}
-                              <div className="flex min-w-0 items-center">
-                                <div className="truncate py-1">
-                                  <p className="truncate text-sm font-medium">
-                                    {track.title}
-                                  </p>
+                                {/* Track title */}
+                                <div className="flex min-w-0 items-center">
+                                  <div className="truncate py-1">
+                                    <p className="truncate text-sm font-medium">
+                                      {track.title}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex items-center justify-end gap-0.5 sm:gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                                    onClick={() => {
+                                      toast.success(t("gameScreen.downloadStarted"));
+                                      window.electron
+                                        .downloadSoundtrack(track.url, game.game)
+                                        .then(res => {
+                                          if (res?.success) {
+                                            toast.success(
+                                              t("gameScreen.downloadComplete")
+                                            );
+                                          } else {
+                                            toast.error(t("gameScreen.downloadFailed"));
+                                          }
+                                        });
+                                    }}
+                                    title={t("gameScreen.downloadTrack")}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(track.title);
+                                      toast.success(t("gameScreen.trackNameCopied"));
+                                    }}
+                                    title={t("gameScreen.copyTrackName")}
+                                  >
+                                    <Copy className="h-4 w-4" />
+                                  </Button>
                                 </div>
                               </div>
-
-                              {/* Actions */}
-                              <div className="flex items-center justify-end gap-0.5 sm:gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
-                                  onClick={() => {
-                                    toast.success(t("gameScreen.downloadStarted"));
-                                    window.electron
-                                      .downloadSoundtrack(track.url, game.game)
-                                      .then(res => {
-                                        if (res?.success) {
-                                          toast.success(t("gameScreen.downloadComplete"));
-                                        } else {
-                                          toast.error(t("gameScreen.downloadFailed"));
-                                        }
-                                      });
-                                  }}
-                                  title={t("gameScreen.downloadTrack")}
-                                >
-                                  <Download className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(track.title);
-                                    toast.success(t("gameScreen.trackNameCopied"));
-                                  }}
-                                  title={t("gameScreen.copyTrackName")}
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
+                        </div>
+                        <div className="flex items-center justify-between border-t px-6 py-4">
+                          <div className="text-sm text-muted-foreground">
+                            {t("gameScreen.showingTracks", {
+                              from: currentPage * 12 + 1,
+                              to: Math.min((currentPage + 1) * 12, soundtrack.length),
+                              total: soundtrack.length,
+                            })}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                              disabled={currentPage === 0}
+                            >
+                              {t("common.prev")}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setCurrentPage(p =>
+                                  Math.min(Math.ceil(soundtrack.length / 12) - 1, p + 1)
+                                )
+                              }
+                              disabled={
+                                currentPage >= Math.ceil(soundtrack.length / 12) - 1
+                              }
+                            >
+                              {t("common.next")}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
                         <div className="rounded-full bg-muted p-4">
-                          <PlayCircleIcon className="h-12 w-12 text-muted-foreground" />
+                          <HeadphoneOff className="h-12 w-12 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
                           <p className="font-medium">
