@@ -30,31 +30,30 @@ Ascendara simplifies your pirating experience by providing a seamless way to dow
 
 ## ✨ Features
 
-- 🚀 **Seamless Downloads**  
+- 🚀 **Seamless Downloads**
   Lightning-fast 2 click download for games that support it. No browser needed at all.
 
-- 🎵 **Soundtracks**
+- 🎵 **Crisp Soundtracks**
+  Listen to and download high quality tracks from the games soundtrack tab.
 
-  Listen to, and download tracks from the games soundtrack tab.
-
-- 🔌 **Game Info**
-
+- 🔌 **Game Information**
   View game info, including the game's story, soundtrack, and more with Ascendara Xtra.
 
-- 🌐 **Browser Integration**  
+- 🌐 **Browser Integration**
   Seamlessly integrate with your browser for one-click game downloads and management.
 
-- 🎨 **Theme Customization**  
+- 🎨 **Theme Customization**
   Beautiful, appealing themes to choose from for a truly unique experience.
 
-- 🕑 **Ascendara Timemachine**  
+- 🕑 **Ascendara Timemachine**
   Access and download previous versions of games with the Ascendara Timemachine.
 
-- 👤 **Your own username**  
+- 👤 **Your own username**
   Personalize your username for online game cracks that support it.
 
-- 🌍 **105 Languages Support**  
- Full interface support for 105 different languages, making Ascendara accessible worldwide.
+- 🌍 **105 Languages Support**
+  Full interface support for 105 different languages, making Ascendara accessible worldwide.
+
 <details>
 <summary>See the 12 base languages</summary>
 
