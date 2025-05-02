@@ -790,19 +790,19 @@
   },
   "tour": {
     "downloads": {
-      "content": "Track your active downloads, see progress, and manage download speeds all in one place.",
+      "content": "This is your Downloads area. You can track your current downloads, check progress, and manage the downloads here.",
       "title": "Downloads"
     },
     "final": {
-      "content": "Thank you for downloading Ascendara! If you encounter any issues, right click anywhere on the app and select \"Report Issue\".",
+      "content": "If you encounter any issues or want to submit feedback, right click anywhere on the app and select \"Report Issue\".",
       "title": "Welcome to Ascendara"
     },
     "gameLibrary": {
-      "content": "Your downloaded games will appear here. Launch, manage and organize your collection from this tab.",
+      "content": "Here is your Game Library. All your downloaded or imported games will show up here, ready to launch, organize, and enjoy.",
       "title": "Game Library"
     },
     "navigationBar": {
-      "content": "This is your navigation bar, it is where you can access all main features.",
+      "content": "This is where you will switch between pages on Ascendara. You can also use the control key plus a number 1-5 to switch between pages.",
       "title": "Navigation Bar"
     },
     "profile": {
@@ -810,7 +810,7 @@
       "title": "Profile"
     },
     "resizing": {
-      "content": "Too big or too small? You can resize the navigation bar by dragging these corners!",
+      "content": "Need more space? You can resize the navigation bar by dragging the corners to make things fit just right.",
       "title": "Resizing Navigation"
     },
     "searchDownload": {
@@ -818,15 +818,15 @@
       "title": "Search & Download"
     },
     "serverStatus": {
-      "content": "This green dot indicates that all systems are operational. Click it anytime to check detailed server status.",
+      "content": "This hopefully green dot means everything is running smoothly. Click it anytime to see more details about all Ascendara server statuses.",
       "title": "Server Status"
     },
     "settings": {
-      "content": "Customize Ascendara to your liking. Change themes, download locations, and more from the settings page.",
-      "title": "Settings"
+      "content": "Make Ascendara yours — adjust themes, choose your download folder, add download folders, and fine-tune other preferences here. There are also some useful features you can toggle on and off, check back after the tour to see what you may want.",
+      "title": "Your Preferences"
     },
-    "title": "Ascendara Guide",
-    "welcome": "Welcome! Let's take a quick tour of Ascendara's interface."
+    "title": "Welcome to Ascendara",
+    "welcome": "Let's take a quick tour to get you comfortable with Ascendara and show you some tricks."
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "All required dependencies have been successfully installed. Welcome to Ascendara.",
