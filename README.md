@@ -31,27 +31,35 @@ Ascendara simplifies your pirating experience by providing a seamless way to dow
 ## ✨ Features
 
 - 🚀 **Seamless Downloads**
+
   Lightning-fast 2 click download for games that support it. No browser needed at all.
 
 - 🎵 **Crisp Soundtracks**
+
   Listen to and download high quality tracks from the games soundtrack tab.
 
 - 🔌 **Game Information**
+
   View game info, including the game's story, soundtrack, and more with Ascendara Xtra.
 
 - 🌐 **Browser Integration**
+
   Seamlessly integrate with your browser for one-click game downloads and management.
 
 - 🎨 **Theme Customization**
+
   Beautiful, appealing themes to choose from for a truly unique experience.
 
 - 🕑 **Ascendara Timemachine**
+
   Access and download previous versions of games with the Ascendara Timemachine.
 
 - 👤 **Your own username**
+
   Personalize your username for online game cracks that support it.
 
 - 🌍 **105 Languages Support**
+
   Full interface support for 105 different languages, making Ascendara accessible worldwide.
 
 <details>
@@ -174,7 +182,7 @@ These languages come with the app by default:
 ## Current 3rd Party Integrations
 
 <p align="center">
-  <img src="./readme/connections.png" width="40%" alt="Integrations Overview"/>
+  <img src="./readme/connections.png" width="60%" alt="Integrations Overview"/>
 </p>
 
 <!-- Integration Descriptions -->
@@ -206,13 +214,6 @@ These languages come with the app by default:
 </table>
 
 ## 🖼️ Preview
-
-### Download Latest Version
-
-🚀 [Download the Ascendara Installer](https://ascendara.app/)
-
-<details>
-<summary>📸 Screenshots</summary>
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
   <div style="margin: 1%; width: 24%;">
@@ -249,7 +250,17 @@ These languages come with the app by default:
   </div>
 </div>
 
-</details>
+## 📦 The Ascendara Installer
+
+This installer simply downloads the full setup package from GitHub and goes through the installation.
+The latest version of Ascendara will always be installed through the tool, but you can download specific
+versions directly from the [releases page](https://github.com/Ascendara/ascendara/releases). It is [open source](https://github.com/Ascendara/installer),
+and its file size is smaller than the app's NSIS installer for convenience—making it quicker to download
+and easier to distribute.
+
+| File                                                                     | SHA-256                                                          | VirusTotal Results                                                                                                      |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [AscendaraInstaller.exe](cdn.ascendara.app/files/AscendaraInstaller.exe) | 6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f | [4/69 Detections](https://www.virustotal.com/gui/file/6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f) |
 
 ## 🤝 Contributing
 
