@@ -8,6 +8,7 @@ import BrokenVersionDialog from "@/components/BrokenVersionDialog";
 import PageTransition from "@/components/PageTransition";
 import UpdateOverlay from "@/components/UpdateOverlay";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { TourProvider } from "@/context/TourContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { analytics } from "@/services/analyticsService";
@@ -862,18 +863,20 @@ function App() {
       <ThemeProvider>
         <LanguageProvider>
           <SettingsProvider>
-            <Router>
-              <ToasterWithTheme />
-              <ContextMenu />
-              <ScrollToTop />
-              <AnimatePresence mode="wait">
-                <AppRoutes />
-              </AnimatePresence>
-              <MiniPlayer
-                expanded={playerExpanded}
-                onToggleExpand={() => setPlayerExpanded(!playerExpanded)}
-              />
-            </Router>
+            <TourProvider>
+              <Router>
+                <ToasterWithTheme />
+                <ContextMenu />
+                <ScrollToTop />
+                <AnimatePresence mode="wait">
+                  <AppRoutes />
+                </AnimatePresence>
+                <MiniPlayer
+                  expanded={playerExpanded}
+                  onToggleExpand={() => setPlayerExpanded(!playerExpanded)}
+                />
+              </Router>
+            </TourProvider>
           </SettingsProvider>
         </LanguageProvider>
       </ThemeProvider>

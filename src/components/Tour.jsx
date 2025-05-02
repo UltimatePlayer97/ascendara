@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTour } from "@/context/TourContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Rocket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -73,6 +74,17 @@ const getSteps = t => [
 ];
 
 function Tour({ onClose }) {
+  const { isTourActive, setTourActive } = useTour();
+
+  // Prevent double-mount: if already active, render nothing
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    if (isTourActive) return;
+    setTourActive(true);
+    setHasMounted(true);
+    return () => setTourActive(false);
+  }, []);
+  if (!hasMounted && isTourActive) return null;
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlightPosition, setSpotlightPosition] = useState({
