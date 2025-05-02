@@ -358,15 +358,14 @@
     "rateNow": "Taux",
     "rateThisGame": "Laisser une note?",
     "screenshots": "Captures d'écran",
+    "showingTracks": "Affichage des pistes {{from}} à {{to}} de {{total}}",
     "someDownloadsFailed": "Certains téléchargements ont échoué.",
     "soundtrack": "Bande sonore",
     "startSteam": "Démarrer la vapeur",
     "startingSteam": "Démarrage de la vapeur ...",
-    "storyline": "Scénario",
     "summary": "Résumé",
     "trackNameCopied": "Nom de la piste copié!",
     "trackTitle": "Titre de piste",
-    "tracks": "traces",
     "viewAll": "Afficher tous"
   },
   "home": {
@@ -786,19 +785,19 @@
   },
   "tour": {
     "downloads": {
-      "content": "Suivez vos téléchargements actifs, voir Progress et gérer les vitesses de téléchargement en un seul endroit.",
+      "content": "Ceci est votre zone de téléchargement. Vous pouvez suivre vos téléchargements actuels, vérifier les progrès et gérer les téléchargements ici.",
       "title": "Téléchargements"
     },
     "final": {
-      "content": "Merci d'avoir téléchargé Ascendara! Si vous rencontrez des problèmes, cliquez avec le bouton droit n'importe où sur l'application et sélectionnez \"Report Issue\".",
+      "content": "Si vous rencontrez des problèmes ou si vous souhaitez soumettre des commentaires, cliquez avec le bouton droit n'importe où sur l'application et sélectionnez \"Report Issue\".",
       "title": "Bienvenue à Ascendara"
     },
     "gameLibrary": {
-      "content": "Vos jeux téléchargés apparaîtront ici. Lancez, gérez et organisez votre collection à partir de cet onglet.",
+      "content": "Voici votre bibliothèque de jeux. Tous vos jeux téléchargés ou importés apparaîtront ici, prêts à lancer, à organiser et à apprécier.",
       "title": "Bibliothèque de jeux"
     },
     "navigationBar": {
-      "content": "Ceci est votre barre de navigation, c'est là que vous pouvez accéder à toutes les principales fonctionnalités.",
+      "content": "C'est là que vous basculerez entre les pages sur Ascendara. Vous pouvez également utiliser la touche de contrôle plus un nombre 1-5 pour basculer entre les pages.",
       "title": "Barre de navigation"
     },
     "profile": {
@@ -806,7 +805,7 @@
       "title": "Profil"
     },
     "resizing": {
-      "content": "Trop grand ou trop petit? Vous pouvez redimensionner la barre de navigation en faisant glisser ces coins!",
+      "content": "Besoin de plus d'espace? Vous pouvez redimensionner la barre de navigation en faisant glisser les coins pour que les choses correspondent parfaitement.",
       "title": "Redimensionnement de la navigation"
     },
     "searchDownload": {
@@ -814,15 +813,15 @@
       "title": "Recherche et téléchargement"
     },
     "serverStatus": {
-      "content": "Ce point vert indique que tous les systèmes sont opérationnels. Cliquez à tout moment pour vérifier l'état détaillé du serveur.",
+      "content": "Espérons que le point vert signifie que tout fonctionne bien. Cliquez sur à tout moment pour voir plus de détails sur tous les statuts du serveur Ascendara.",
       "title": "Statut de serveur"
     },
     "settings": {
-      "content": "Personnalisez Ascendara à votre goût. Modifier les thèmes, les emplacements de téléchargement et plus à partir de la page Paramètres.",
-      "title": "Paramètres"
+      "content": "Faites de la vôtre Ascendara - ajustez les thèmes, choisissez votre dossier de téléchargement, ajoutez des dossiers de téléchargement et affinez les autres préférences ici. Il existe également des fonctionnalités utiles sur lesquelles vous pouvez activer et désactiver, revenez après la tournée pour voir ce que vous pourriez vouloir.",
+      "title": "Vos préférences"
     },
-    "title": "Guide Ascencerara",
-    "welcome": "Accueillir! Faisons une visite rapide de l'interface d'Ascendara."
+    "title": "Bienvenue à Ascendara",
+    "welcome": "Faisons une visite rapide pour vous mettre à l'aise avec Ascendara et vous montrer quelques astuces."
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "Toutes les dépendances requises ont été installées avec succès. Bienvenue à Ascendara.",

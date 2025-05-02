@@ -358,15 +358,14 @@
     "rateNow": "速度",
     "rateThisGame": "留下评分？",
     "screenshots": "屏幕截图",
+    "showingTracks": "将曲目{{from}}显示为{{total}}的{{to}}",
     "someDownloadsFailed": "有些下载失败。",
     "soundtrack": "配乐",
     "startSteam": "开始蒸汽",
     "startingSteam": "开始蒸汽...",
-    "storyline": "故事情节",
     "summary": "概括",
     "trackNameCopied": "曲目名称复制了！",
     "trackTitle": "曲目标题",
-    "tracks": "轨道",
     "viewAll": "查看全部"
   },
   "home": {
@@ -779,19 +778,19 @@
   },
   "tour": {
     "downloads": {
-      "content": "跟踪您的主动下载，查看进度并管理下载速度全部在一个地方。",
+      "content": "这是您的下载区域。您可以在此处跟踪当前下载，检查进度并管理下载。",
       "title": "下载"
     },
     "final": {
-      "content": "感谢您下载Ascendara！如果遇到任何问题，请右键单击应用程序上的任何地方，然后选择“报告问题”。",
+      "content": "如果您遇到任何问题或想提交反馈，请右键单击应用程序上的任何地方，然后选择“报告问题”。",
       "title": "欢迎来到Ascendara"
     },
     "gameLibrary": {
-      "content": "您的下载游戏将出现在这里。从此选项卡启动，管理和组织您的收藏。",
+      "content": "这是您的游戏库。您所有下载或进口的游戏都将在这里出现，准备启动，组织和享受。",
       "title": "游戏库"
     },
     "navigationBar": {
-      "content": "这是您的导航栏，您可以在这里访问所有主要功能。",
+      "content": "在这里，您将在Ascendara上的页面之间切换。您还可以使用控制键加上1-5的数字来在页面之间切换。",
       "title": "导航栏"
     },
     "profile": {
@@ -799,7 +798,7 @@
       "title": "轮廓"
     },
     "resizing": {
-      "content": "太大还是太小？您可以通过拖动这些角来调整导航栏！",
+      "content": "需要更多空间吗？您可以通过拖动拐角使事物合适来调整导航栏大小。",
       "title": "调整导航大小"
     },
     "searchDownload": {
@@ -807,15 +806,15 @@
       "title": "搜索和下载"
     },
     "serverStatus": {
-      "content": "这个绿色点表明所有系统都是运行的。随时单击它检查详细的服务器状态。",
+      "content": "希望绿色点意味着一切都在顺利运行。随时单击它，以查看有关所有Ascendara服务器状态的更多详细信息。",
       "title": "服务器状态"
     },
     "settings": {
-      "content": "将Ascendara自定义为您的喜好。从“设置”页面更改主题，下载位置等等。",
-      "title": "设置"
+      "content": "使Ascendara Yours  - 调整主题，选择您的下载文件夹，添加下载文件夹，并在此处微调其他首选项。您还可以切换一些有用的功能，在游览后回来查看您可能想要的东西。",
+      "title": "您的喜好"
     },
-    "title": "Ascendara指南",
-    "welcome": "欢迎！让我们快速参观Ascendara的界面。"
+    "title": "欢迎来到Ascendara",
+    "welcome": "让我们快速巡回演出，让您对Ascendara感到满意，并向您展示一些技巧。"
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "所有必需的依赖项都已成功安装。欢迎来到Ascendara。",

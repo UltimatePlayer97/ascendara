@@ -358,15 +358,14 @@
     "rateNow": "Avaliar",
     "rateThisGame": "Deixar uma classificação?",
     "screenshots": "Capturas de tela",
+    "showingTracks": "Mostrando faixas {{from}} para {{to}} de {{total}}",
     "someDownloadsFailed": "Alguns downloads falharam.",
     "soundtrack": "Trilha sonora",
     "startSteam": "Comece a vapor",
     "startingSteam": "Começando o vapor ...",
-    "storyline": "História",
     "summary": "Resumo",
     "trackNameCopied": "Nome da faixa copiado!",
     "trackTitle": "Título da faixa",
-    "tracks": "faixas",
     "viewAll": "Ver tudo"
   },
   "home": {
@@ -786,19 +785,19 @@
   },
   "tour": {
     "downloads": {
-      "content": "Rastreie seus downloads ativos, consulte Progresso e gerencie velocidades de download em um só lugar.",
+      "content": "Esta é a sua área de downloads. Você pode rastrear seus downloads atuais, verificar o progresso e gerenciar os downloads aqui.",
       "title": "Downloads"
     },
     "final": {
-      "content": "Obrigado por baixar ascendara! Se você encontrar algum problema, clique com o botão direito do mouse em qualquer lugar do aplicativo e selecione \"Relatório Issue\".",
+      "content": "Se você encontrar algum problema ou deseja enviar feedback, clique com o botão direito do mouse em qualquer lugar do aplicativo e selecione \"Relatório Issue\".",
       "title": "Bem -vindo a Ascendara"
     },
     "gameLibrary": {
-      "content": "Seus jogos baixados aparecerão aqui. Inicie, gerencie e organize sua coleção a partir desta guia.",
+      "content": "Aqui está a sua biblioteca de jogos. Todos os seus jogos baixados ou importados aparecerão aqui, prontos para lançar, organizar e aproveitar.",
       "title": "Biblioteca de jogos"
     },
     "navigationBar": {
-      "content": "Esta é a sua barra de navegação, é onde você pode acessar todos os recursos principais.",
+      "content": "É aqui que você alterna entre as páginas em Ascendara. Você também pode usar a tecla de controle mais um número 1-5 para alternar entre as páginas.",
       "title": "Barra de navegação"
     },
     "profile": {
@@ -806,7 +805,7 @@
       "title": "Perfil"
     },
     "resizing": {
-      "content": "Muito grande ou muito pequeno? Você pode redimensionar a barra de navegação arrastando esses cantos!",
+      "content": "Precisa de mais espaço? Você pode redimensionar a barra de navegação arrastando os cantos para fazer as coisas se encaixarem.",
       "title": "Redimensionamento de navegação"
     },
     "searchDownload": {
@@ -814,15 +813,15 @@
       "title": "Pesquise e download"
     },
     "serverStatus": {
-      "content": "Este ponto verde indica que todos os sistemas estão operacionais. Clique nele a qualquer momento para verificar o status detalhado do servidor.",
+      "content": "Este ponto verde, esperançosamente, significa que tudo está funcionando sem problemas. Clique nele a qualquer momento para ver mais detalhes sobre todos os status do servidor Ascendara.",
       "title": "Status do servidor"
     },
     "settings": {
-      "content": "Personalize ascendara ao seu gosto. Altere os temas, baixe locais e mais na página Configurações.",
-      "title": "Configurações"
+      "content": "Faça ascendara o seu-ajuste os temas, escolha sua pasta de download, adicione pastas de download e ajuste outras preferências aqui. Existem também alguns recursos úteis que você pode ativar e desligar, volte após o passeio para ver o que você deseja.",
+      "title": "Suas preferências"
     },
-    "title": "Guia de Ascendara",
-    "welcome": "Bem-vindo! Vamos fazer um rápido tour pela interface de Ascendara."
+    "title": "Bem -vindo a Ascendara",
+    "welcome": "Vamos fazer um passeio rápido para você se sentir confortável com Ascendara e mostrar alguns truques."
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "Todas as dependências necessárias foram instaladas com sucesso. Bem -vindo a Ascendara.",

@@ -358,15 +358,14 @@
     "rateNow": "Rate",
     "rateThisGame": "Bewertung hinterlassen?",
     "screenshots": "Screenshots",
+    "showingTracks": "Spuren {{from}} bis {{to}} von {{total}} angezeigt",
     "someDownloadsFailed": "Einige Downloads sind fehlgeschlagen.",
     "soundtrack": "Soundtrack",
     "startSteam": "Dampf starten",
     "startingSteam": "Dampf beginnen ...",
-    "storyline": "Handlung",
     "summary": "Zusammenfassung",
     "trackNameCopied": "Track -Name kopiert!",
     "trackTitle": "Titel Titel",
-    "tracks": "Tracks",
     "viewAll": "Alle anzeigen"
   },
   "home": {
@@ -786,19 +785,19 @@
   },
   "tour": {
     "downloads": {
-      "content": "Verfolgen Sie Ihre aktiven Downloads, sehen Sie den Fortschritt und verwalten Sie Download -Geschwindigkeiten an einem Ort.",
+      "content": "Dies ist Ihr Download -Bereich. Sie können Ihre aktuellen Downloads verfolgen, den Fortschritt überprüfen und die Downloads hier verwalten.",
       "title": "Downloads"
     },
     "final": {
-      "content": "Vielen Dank für das Herunterladen von Ascendara! Wenn Sie auf Probleme stoßen, klicken Sie mit der rechten Maustaste in der App überall in die App und wählen Sie \"Berichtsproblem\".",
+      "content": "Wenn Sie auf Probleme stoßen oder Feedback einreichen möchten, klicken Sie mit der rechten Maustaste in die App und wählen Sie \"Berichtsproblem\".",
       "title": "Willkommen in Ascendara"
     },
     "gameLibrary": {
-      "content": "Ihre heruntergeladenen Spiele werden hier erscheinen. Starten, verwalten und organisieren Sie Ihre Sammlung von dieser Registerkarte.",
+      "content": "Hier ist Ihre Spielbibliothek. Alle Ihre heruntergeladenen oder importierten Spiele werden hier angezeigt und sind bereit, zu starten, zu organisieren und zu genießen.",
       "title": "Spielbibliothek"
     },
     "navigationBar": {
-      "content": "Dies ist Ihre Navigationsleiste. Hier können Sie auf alle Hauptfunktionen zugreifen.",
+      "content": "Hier wechseln Sie zwischen Seiten auf Ascendara. Sie können auch den Steuerungsschlüssel plus eine Nummer 1-5 verwenden, um zwischen den Seiten zu wechseln.",
       "title": "Navigationsleiste"
     },
     "profile": {
@@ -806,7 +805,7 @@
       "title": "Profil"
     },
     "resizing": {
-      "content": "Zu groß oder zu klein? Sie können die Größe der Navigationsleiste ändern, indem Sie diese Ecken ziehen!",
+      "content": "Benötigen Sie mehr Platz? Sie können die Größe der Navigationsleiste ändern, indem Sie die Ecken ziehen, damit die Dinge genau richtig passen.",
       "title": "Größenänderung der Navigation"
     },
     "searchDownload": {
@@ -814,15 +813,15 @@
       "title": "Suche & Download"
     },
     "serverStatus": {
-      "content": "Dieser grüne Punkt zeigt an, dass alle Systeme betriebsbereit sind. Klicken Sie jederzeit darauf, um den detaillierten Serverstatus zu überprüfen.",
+      "content": "Dieser hoffentlich grüne Punkt bedeutet, dass alles reibungslos läuft. Klicken Sie jederzeit darauf, um weitere Details zu allen Ascendara -Serverstatus anzuzeigen.",
       "title": "Serverstatus"
     },
     "settings": {
-      "content": "Passen Sie Ascendara nach Ihren Wünschen an. Ändern Sie Themen, laden Sie Standorte und mehr von der Einstellungsseite herunter.",
-      "title": "Einstellungen"
+      "content": "Machen Sie Ascendara zu Ihren-Passen Sie Themen an, wählen Sie Ihren Download-Ordner, fügen Sie hier Download-Ordner hinzu und fein anderer Einstellungen. Es gibt auch einige nützliche Funktionen, die Sie ein- und ausschalten können, und schauen Sie nach der Tour erneut nach, um zu sehen, was Sie möchten.",
+      "title": "Ihre Vorlieben"
     },
-    "title": "Ascendara Guide",
-    "welcome": "Willkommen! Machen wir eine kurze Tour durch die Schnittstelle von Ascendara."
+    "title": "Willkommen in Ascendara",
+    "welcome": "Machen wir eine kurze Tour, um Sie mit Ascendara wohl zu machen und Ihnen einige Tricks zu zeigen."
   },
   "welcome": {
     "allRequiredDependenciesHaveBeenInstalledDesc": "Alle erforderlichen Abhängigkeiten wurden erfolgreich installiert. Willkommen in Ascendara.",
