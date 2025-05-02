@@ -260,7 +260,7 @@ and easier to distribute.
 
 | File                                                                     | SHA-256                                                          | VirusTotal Results                                                                                                      |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| [AscendaraInstaller.exe](cdn.ascendara.app/files/AscendaraInstaller.exe) | 6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f | [4/69 Detections](https://www.virustotal.com/gui/file/6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f) |
+| [AscendaraInstaller.exe](https://cdn.ascendara.app/files/AscendaraInstaller.exe) | 6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f | [4/69 Detections](https://www.virustotal.com/gui/file/6a7c5bc0dcac7b793156d012741c1d2be1b0a595d820d7182ac4eae4de06ef0f) |
 
 ## 🤝 Contributing
 
