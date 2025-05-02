@@ -3,7 +3,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-const BASE_URL = "/api/khinsider";
+const BASE_URL = isDev ? "/api/khinsider" : "https://downloads.khinsider.com";
 
 /**
  * Search for albums by keyword (returns array of {id, name})
