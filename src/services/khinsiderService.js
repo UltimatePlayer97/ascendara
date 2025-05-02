@@ -3,6 +3,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+const isDev = import.meta.env.DEV;
 const BASE_URL = isDev ? "/api/khinsider" : "https://downloads.khinsider.com";
 
 /**
