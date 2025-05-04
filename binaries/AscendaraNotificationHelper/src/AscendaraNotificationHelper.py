@@ -12,36 +12,50 @@
 
 import sys
 import os
-import argparse
+from PyQt6.QtCore import Qt, QTimer, QEasingCurve, QPropertyAnimation, QRect, QSize, QPoint
+from PyQt6.QtGui import QColor, QPainter, QPainterPath, QIcon, QPixmap
+import subprocess
+import atexit
 import logging
+import argparse
 from typing import Literal
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QPushButton, 
     QVBoxLayout, QHBoxLayout, QGraphicsOpacityEffect, QGraphicsDropShadowEffect
 )
-from PyQt6.QtCore import Qt, QTimer, QEasingCurve, QPropertyAnimation, QRect, QSize, QPoint
-from PyQt6.QtGui import QColor, QPainter, QPainterPath, QIcon, QPixmap
-import subprocess
-import atexit
 
-# Set up logging
+
+def get_ascendara_log_path():
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA")
+    else:
+        appdata = os.path.expanduser("~/.config")
+    ascendara_dir = os.path.join(appdata, "Ascendara by tagoWorks")
+    os.makedirs(ascendara_dir, exist_ok=True)
+    return os.path.join(ascendara_dir, "notificationhelper.log")
+
+LOG_PATH = get_ascendara_log_path()
+
+# Remove all handlers associated with the root logger object (for reloads)
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
+        logging.FileHandler(LOG_PATH, encoding="utf-8", mode="a"),
         logging.StreamHandler(sys.stdout)
     ]
 )
+logging.info(f"[AscendaraNotificationHelper] Logging to {LOG_PATH}")
+
 logger = logging.getLogger(__name__)
 
-def get_resource_path(relative_path):
-    """Get absolute path to resource, works for dev and for PyInstaller"""
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath("./src")
-    return os.path.join(base_path, relative_path)
+def log_uncaught_exceptions(exctype, value, tb):
+    logger.critical("Uncaught exception:", exc_info=(exctype, value, tb))
+
+sys.excepthook = log_uncaught_exceptions
 
 # Pre-compute theme colors as QColor objects
 THEME_COLORS = {
@@ -143,12 +157,18 @@ def launch_crash_reporter(error_code, error_message):
         launch_crash_reporter._registered = True
 
 class NotificationWindow(QWidget):
-    def __init__(self, theme: Literal["light", "dark", "blue", "purple", "emerald", "rose", "cyberpunk", "sunset", "forest", "midnight", "amber", "ocean"], title: str, message: str):
+    def __init__(self, theme: Literal["light", "dark", "blue", "purple", "emerald", "rose", "cyberpunk", "sunset", "forest", "midnight", "amber", "ocean"], title: str, message: str, is_achievement: bool = False, icon: str = None, appid: str = None, game: str = None, achievement: str = None, description: str = None):
         super().__init__()
-        logger.info(f"Initializing notification with theme: {theme}")
+        logger.info(f"Initializing notification with theme: {theme}, is_achievement: {is_achievement}")
         self.theme = theme if theme in THEME_COLORS else "dark"
         self.title = title
         self.message = message
+        self.is_achievement = is_achievement
+        self.icon = icon
+        self.appid = appid
+        self.game = game
+        self.achievement = achievement
+        self.description = description
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Tool | Qt.WindowType.WindowStaysOnTopHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
@@ -156,11 +176,14 @@ class NotificationWindow(QWidget):
         self.fg_color = THEME_COLORS[self.theme]["fg"]
         self.border_color = THEME_COLORS[self.theme]["border"]
         self.shadow_color = THEME_COLORS[self.theme]["shadow"]
-        self._setup_ui()
+        if self.is_achievement:
+            self._setup_achievement_ui()
+        else:
+            self._setup_ui()
         self._apply_shadow()
         self._set_position()
         self._animate_in()
-        QTimer.singleShot(4000, self.close_notification)
+        QTimer.singleShot(5000, self.close_notification)
 
     def _setup_ui(self):
         self.setMinimumWidth(320)
@@ -182,10 +205,12 @@ class NotificationWindow(QWidget):
         message_label.setWordWrap(True)
         layout.addWidget(message_label)
 
-        # Action buttons (Open and Dismiss)
-        button_layout = QHBoxLayout()
-        button_layout.setSpacing(10)
-        button_layout.addStretch()
+        # Action buttons (Open and Dismiss) positioned bottom right with padding
+        button_container = QWidget()
+        button_container_layout = QHBoxLayout(button_container)
+        button_container_layout.setContentsMargins(0, 0, 8, 0)  # Right padding
+        button_container_layout.setSpacing(10)
+        button_container_layout.addStretch()
 
         open_button = QPushButton("Open")
         open_button.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -195,7 +220,7 @@ class NotificationWindow(QWidget):
             f"QPushButton:hover {{ background: {self.border_color.name()}; color: {self.fg_color.name()}; }}"
         )
         open_button.clicked.connect(self._handle_open)
-        button_layout.addWidget(open_button)
+        button_container_layout.addWidget(open_button)
 
         dismiss_button = QPushButton("Dismiss")
         dismiss_button.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -205,24 +230,87 @@ class NotificationWindow(QWidget):
             f"QPushButton:hover {{ background: {self.fg_color.name()}; color: {self.bg_color.name()}; }}"
         )
         dismiss_button.clicked.connect(self.close_notification)
-        button_layout.addWidget(dismiss_button)
+        button_container_layout.addWidget(dismiss_button)
 
-        layout.addLayout(button_layout)
+        # Add vertical stretch before the button row to push to bottom
+        layout.addStretch()
+        layout.addWidget(button_container, alignment=Qt.AlignmentFlag.AlignRight)
 
-        # Footer (optional: can be removed if you want no branding at all)
         footer = QWidget()
         footer_layout = QHBoxLayout(footer)
         footer_layout.setContentsMargins(0, 0, 0, 0)
         footer_layout.addStretch()
-        # Uncomment next two lines if you want a subtle 'Ascendara' label in the corner
-        # ascendara_label = QLabel("Ascendara")
-        # ascendara_label.setStyleSheet(f"color: {self.border_color.name()}; font-family: 'Segoe UI'; font-size: 11px; font-style: italic; opacity: 0.7;")
-        # footer_layout.addWidget(ascendara_label)
+        layout.addWidget(footer)
+
+    def _setup_achievement_ui(self):
+        self.setMinimumWidth(360)
+        self.setMaximumWidth(420)
+        self.setMinimumHeight(120)
+        self.setMaximumHeight(170)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(22, 18, 22, 18)
+        layout.setSpacing(14)
+
+        layout.addSpacing(4)
+
+        # Top: Icon and Achievement Info
+        top_layout = QHBoxLayout()
+        top_layout.setSpacing(14)
+
+        # Icon
+        icon_label = QLabel()
+        icon_label.setFixedSize(48, 48)
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        if self.icon:
+            try:
+                pixmap = QPixmap()
+                if self.icon.startswith('http'):
+                    import requests
+                    from io import BytesIO
+                    response = requests.get(self.icon, timeout=2)
+                    if response.status_code == 200:
+                        pixmap.loadFromData(response.content)
+                else:
+                    pixmap.load(self.icon)
+                if not pixmap.isNull():
+                    icon_label.setPixmap(pixmap.scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                else:
+                    icon_label.setText("")
+            except Exception as e:
+                logger.warning(f"Failed to load achievement icon: {e}")
+                icon_label.setText("")
+        else:
+            icon_label.setText("")
+        icon_label.setStyleSheet(f"border-radius: 14px; background: {self.border_color.name()}; text-align: center; qproperty-alignment: 'AlignCenter';")
+        top_layout.addWidget(icon_label, alignment=Qt.AlignmentFlag.AlignVCenter)
+
+        # Achievement Info
+        info_layout = QVBoxLayout()
+        info_layout.setSpacing(6)
+        # Game name as the large title
+        game_label = QLabel(self.game or "")
+        game_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 21px; font-weight: bold; font-family: 'Segoe UI'; margin-bottom: 6px; text-shadow: 1px 1px 6px rgba(0,0,0,0.18);")
+        info_layout.addWidget(game_label)
+
+        # Achievement name as the more prominent description
+        ach_label = QLabel(self.achievement or "Achievement Unlocked!")
+        ach_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 17px; font-family: 'Segoe UI Semibold', 'Segoe UI', Arial, sans-serif; margin-bottom: 0px; letter-spacing: 0.2px; text-shadow: 1px 1px 6px rgba(0,0,0,0.22);")
+        ach_label.setWordWrap(True)
+        info_layout.addWidget(ach_label)
+
+        top_layout.addLayout(info_layout)
+        layout.addLayout(top_layout)
+
+        layout.addSpacing(10)
+        footer = QWidget()
+        footer_layout = QHBoxLayout(footer)
+        footer_layout.setContentsMargins(0, 0, 0, 0)
+        footer_layout.addStretch()
         layout.addWidget(footer)
 
     def _handle_open(self):
         import subprocess
-        exe_path = get_resource_path("../Ascendara.exe")
+        exe_path = os.path.join(os.path.dirname("../Ascendara.exe"))
         try:
             subprocess.Popen([exe_path], shell=False)
             logger.info(f"Launched: {exe_path}")
@@ -240,20 +328,19 @@ class NotificationWindow(QWidget):
 
     def _set_position(self):
         screen = QApplication.primaryScreen()
-        geometry = screen.geometry()
+        geometry = screen.availableGeometry()  # Use availableGeometry for taskbar safety
         dpr = screen.devicePixelRatio() if hasattr(screen, 'devicePixelRatio') else 1.0
-        width, height = int(380 * dpr), int(110 * dpr)
-        margin_x, margin_y = int(32 * dpr), int(32 * dpr)
-        self.setGeometry(
-            geometry.width() - width - margin_x,
-            geometry.height() - height - margin_y,
-            width,
-            height
-        )
-        logger.debug(f"Window positioned at: {geometry.width() - width - margin_x}, {geometry.height() - height - margin_y}")
+        if self.is_achievement:
+            width, height = int(420 * dpr), int(170 * dpr)
+        else:
+            width, height = int(380 * dpr), int(160 * dpr)
+        margin_x, margin_y = int(24 * dpr), int(24 * dpr)
+        x = geometry.x() + geometry.width() - width - margin_x
+        y = geometry.y() + geometry.height() - height - margin_y
+        self.setGeometry(x, y, width, height)
+        logger.debug(f"Window positioned at: {x}, {y}")
 
     def _animate_in(self):
-        # Animate in (fade and slide)
         self.opacity_effect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(self.opacity_effect)
         self.opacity_effect.setOpacity(0.0)
@@ -270,38 +357,9 @@ class NotificationWindow(QWidget):
         self.slide_in_animation.setEndValue(self.pos() - QPoint(0, 40))
         self.slide_in_animation.setEasingCurve(QEasingCurve.Type.OutCubic)
         self.slide_in_animation.start()
-
-        # Schedule fade out
         QTimer.singleShot(4000, self.close_notification)
-
-        # Show window
         self.show()
         logger.debug("Window shown")
-
-    def _set_icon(self, label):
-        global _icon_pixmap
-        if _icon_pixmap is None:
-            icon_path = get_resource_path("ascendara.ico")
-            if os.path.exists(icon_path):
-                pixmap = QPixmap(icon_path)
-                if not pixmap.isNull():
-                    _icon_pixmap = pixmap.scaled(
-                        24, 24,
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation
-                    )
-                    logger.debug("Icon loaded and cached")
-                else:
-                    logger.error("Failed to load icon pixmap")
-                    self._set_fallback_icon(label)
-                    return
-            else:
-                logger.warning(f"Icon not found at: {icon_path}, using fallback")
-                self._set_fallback_icon(label)
-                return
-
-        label.setPixmap(_icon_pixmap)
-        self.setWindowIcon(QIcon(_icon_pixmap))
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -375,13 +433,39 @@ def main():
     parser.add_argument('--theme', type=str, default='dark', help='Theme to use for the notification')
     parser.add_argument('--title', type=str, default='Notification', help='Title of the notification')
     parser.add_argument('--message', type=str, default='This is a notification', help='Message to display')
+    parser.add_argument('--is-achievement', action='store_true', help='Is this an achievement notification?')
+    parser.add_argument('--icon', type=str, default=None, help='Icon URL for the notification')
+    parser.add_argument('--appid', type=str, default=None, help='AppID of the game')
+    parser.add_argument('--game', type=str, default=None, help='Name of the game')
+    parser.add_argument('--achievement', type=str, default=None, help='Name of the achievement')
+    parser.add_argument('--description', type=str, default=None, help='Description of the achievement')
     args = parser.parse_args()
     
     logger.info(f"Starting notification helper with args: {args}")
     
     try:
         app = QApplication(sys.argv)
-        window = NotificationWindow(args.theme, args.title, args.message)
+        if args.is_achievement:
+            # For achievements, use game as title and message as achievement name
+            window = NotificationWindow(
+                args.theme,
+                args.game or "Achievement Unlocked!",
+                args.message or "",
+                is_achievement=True,
+                icon=args.icon,
+                appid=args.appid,
+                game=args.game,  # Game name for display
+                achievement=args.message,  # Achievement name for display
+                description=None
+            )
+        else:
+            # For standard notifications, only use theme, title, message
+            window = NotificationWindow(
+                args.theme,
+                args.title,
+                args.message,
+                is_achievement=False
+            )
         sys.exit(app.exec())
     except Exception as e:
         logger.error("Exception occurred:")

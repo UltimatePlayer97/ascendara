@@ -240,6 +240,7 @@ const updateDiscordRPCToLibrary = () => {
       console.error("Error updating Discord RPC:", error);
     });
 };
+let watcherProcess;
 
 // Handle app ready event
 app.whenReady().then(() => {
@@ -278,6 +279,46 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+  const watcherPath = path.join(__dirname, "services", "achievements", "watchdog.js");
+
+  watcherProcess = spawn(process.execPath, [watcherPath], {
+    stdio: ["ignore", "pipe", "pipe"], // <-- Capture stdout and stderr
+    detached: true,
+    env: {
+      ...process.env,
+      ASCENDARA_STEAM_WEB_API_KEY: process.env.ASCENDARA_STEAM_WEB_API_KEY,
+    },
+    windowsHide: true,
+  });
+
+  // Forward stdout
+  watcherProcess.stdout.on("data", data => {
+    console.log(`[WATCHER] ${data.toString().trim()}`);
+  });
+
+  // Forward stderr
+  watcherProcess.stderr.on("data", data => {
+    console.error(`[WATCHER ERROR] ${data.toString().trim()}`);
+  });
+
+  watcherProcess.unref();
+
+  // Ensure watcher process is killed on app exit
+  const killWatcher = () => {
+    if (watcherProcess && !watcherProcess.killed) {
+      try {
+        process.kill(watcherProcess.pid, "SIGTERM");
+      } catch (e) {
+        // Fallback: watcherProcess.kill() if needed
+        watcherProcess.kill();
+      }
+      watcherProcess = null;
+    }
+  };
+
+  app.on("before-quit", killWatcher);
+  app.on("will-quit", killWatcher);
+  // If you handle 'window-all-closed', add killWatcher there as well
 });
 
 const toolExecutables = {

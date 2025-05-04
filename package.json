@@ -105,6 +105,14 @@
     "tailwindcss-animate": "^1.0.7",
     "unzipper": "^0.12.1",
     "winreg": "^1.2.5",
+    "single-instance": "0.0.1",
+    "moment": "^2.29.1",
+    "node-watch": "^0.6.4",
+    "win-tasklist": "^1.1.0",
+    "crc": "^3.8.0",
+    "find-up": "^4.1.0",
+    "lodash.omit": "^4.5.0",
+    "regodit": "^1.1.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -133,8 +141,12 @@
     "files": [
       "build/**/*",
       "electron/**/*",
-      "package.json",
-      ".env"
+      "electron/services/achievements/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "electron/services/achievements/**/*"
     ],
     "extraResources": [
       {
