@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import { sanitizeText } from "@/lib/utils";
 import { useImageLoader } from "@/hooks/useImageLoader";
+import { analytics } from "@/services/analyticsService";
 
 const GameCard = memo(function GameCard({ game, compact }) {
   const navigate = useNavigate();
@@ -98,6 +99,13 @@ const GameCard = memo(function GameCard({ game, compact }) {
   const handleDownload = useCallback(() => {
     if (isInstalled && !needsUpdate) return;
     setIsLoading(true);
+    let buttonType = "download";
+    if (needsUpdate) buttonType = "update";
+    else if (isInstalled) buttonType = "install";
+    analytics.trackGameButtonClick(game.game, buttonType, {
+      isInstalled,
+      needsUpdate,
+    });
     const downloadLinks = game.download_links || {};
     setTimeout(() => {
       navigate("/download", {

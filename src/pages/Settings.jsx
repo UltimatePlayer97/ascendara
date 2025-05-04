@@ -58,6 +58,7 @@ import {
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
+import { analytics } from "@/services/analyticsService";
 import { getAvailableLanguages, handleLanguageChange } from "@/services/languageService";
 import {
   AlertDialog,
@@ -680,6 +681,7 @@ function Settings() {
     } else {
       handleSettingChange("torrentEnabled", false);
       window.dispatchEvent(new CustomEvent("torrentSettingChanged", { detail: false }));
+      analytics.trackFeatureUsage("torrenting_EXPERIMENTAL", { enabled: false });
     }
   };
 
@@ -692,6 +694,7 @@ function Settings() {
       setShowTorrentWarning(false);
       handleSettingChange("torrentEnabled", true);
       window.dispatchEvent(new CustomEvent("torrentSettingChanged", { detail: true }));
+      analytics.trackFeatureUsage("torrenting_EXPERIMENTAL", { enabled: true });
     }
   };
   const handleToggleLudusavi = async () => {
@@ -1315,7 +1318,9 @@ function Settings() {
                         />
                         <Button
                           className="text-secondary"
-                          onClick={handleDirectoryChangeBackups}
+                          onClick={e => {
+                            handleDirectoryChangeBackups(e);
+                          }}
                         >
                           {t("settings.selectDirectory")}
                         </Button>
@@ -1349,7 +1354,10 @@ function Settings() {
                       </div>
                       <Switch
                         checked={settings.ludusavi.enabled}
-                        onCheckedChange={handleToggleLudusavi}
+                        onCheckedChange={value => {
+                          handleToggleLudusavi(value);
+                          analytics.trackFeatureUsage("gameBackups", { enabled: value });
+                        }}
                         disabled={!isOnWindows || !settings.ludusavi.backupLocation}
                       />
                     </div>
@@ -2007,12 +2015,12 @@ function Settings() {
                     </div>
                     <Switch
                       checked={settings.showOldDownloadLinks}
-                      onCheckedChange={() =>
-                        handleSettingChange(
-                          "showOldDownloadLinks",
-                          !settings.showOldDownloadLinks
-                        )
-                      }
+                      onCheckedChange={value => {
+                        handleSettingChange("showOldDownloadLinks", value);
+                        analytics.trackFeatureUsage("ascendaraTimechine", {
+                          enabled: value,
+                        });
+                      }}
                       disabled={settings.gameSource === "fitgirl"}
                     />
                   </div>
@@ -2064,12 +2072,13 @@ function Settings() {
                             <Switch
                               checked={settings.viewWorkshopPage}
                               disabled={!isOnWindows}
-                              onCheckedChange={() =>
-                                handleSettingChange(
-                                  "viewWorkshopPage",
-                                  !settings.viewWorkshopPage
-                                )
-                              }
+                              onCheckedChange={value => {
+                                handleSettingChange("viewWorkshopPage", value);
+                                analytics.trackFeatureUsage(
+                                  "ascendaraWorkshopDownloader",
+                                  { enabled: value }
+                                );
+                              }}
                             />
                           </div>
                         </TooltipTrigger>

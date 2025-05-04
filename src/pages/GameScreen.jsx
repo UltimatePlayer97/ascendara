@@ -39,6 +39,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
 import { useAudioPlayer } from "@/services/audioPlayerService";
 import { Button } from "@/components/ui/button";
+import { analytics } from "@/services/analyticsService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
@@ -503,6 +504,10 @@ export default function GameScreen() {
         dlc: game.dlc,
       });
 
+      analytics.trackGameButtonClick(game.game, "play", {
+        isLaunching,
+        isRunning,
+      });
       setIsLaunching(false);
     } catch (error) {
       console.error("Error launching game:", error);
