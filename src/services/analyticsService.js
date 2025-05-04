@@ -17,8 +17,11 @@ export const analytics = {
   flushEvents: () => {
     console.debug("[Analytics] Flushing events");
   },
-  trackFeatureUsage: (featureName, actionType, metadata = {}) => {
-    console.debug("[Analytics] Feature usage:", { featureName, actionType, metadata });
+  trackGameButtonClick: (gameName, buttonType, extra = {}) => {
+    console.debug("[Analytics] Game button click:", { gameName, buttonType, ...extra });
+  },
+  trackFeatureUsage: (featureName, details = {}) => {
+    console.debug("[Analytics] Feature usage:", { featureName, ...details });
   },
   trackTourProgress: (stepNumber, stepName, completed = false) => {
     console.debug("[Analytics] Tour progress:", { stepNumber, stepName, completed });
@@ -26,7 +29,16 @@ export const analytics = {
   updateSettings: async () => {
     console.debug("[Analytics] Settings updated");
   },
+  initSession: async () => {
+    console.debug("[Analytics] Session initialized");
+    return "dummy-session-id";
+  },
+  getLiveStats: async () => {
+    console.debug("[Analytics] Get live stats");
+    return { unique_users: 0, live_instances: 0, error: false };
+  }
 };
+
 if (typeof window !== "undefined" && window.electron) {
   window.electron.onSettingsChanged(async () => {
     await analytics.updateSettings();
