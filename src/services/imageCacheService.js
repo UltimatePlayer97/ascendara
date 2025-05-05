@@ -5,8 +5,8 @@ class ImageCacheService {
   constructor() {
     // Core caching
     this.memoryCache = new Map(); // imgID -> { url, quality }
-    this.memoryCacheOrder = []; // LRU order
-    this.maxMemoryCacheSize = 150; // Increased for better performance
+    this.memoryCacheOrder = [];
+    this.maxMemoryCacheSize = 150;
     this.db = null;
     this.isInitialized = false;
     this.initPromise = null;
@@ -15,7 +15,7 @@ class ImageCacheService {
 
     // Request management
     this.activeRequests = new Map();
-    this.maxConcurrentRequests = 12; // Increased for parallel loading
+    this.maxConcurrentRequests = 12;
     this.retryDelay = 2000;
     this.maxRetries = 2;
 
@@ -25,6 +25,10 @@ class ImageCacheService {
     this.priorityQueue = [];
     this.lowPriorityQueue = [];
     this.processingQueue = false;
+
+    // 404 error tracking
+    this.recent404Count = 0;
+    this.max404BeforeClear = 4;
 
     // Initialize
     this.initPromise = this.initializeDB();
@@ -228,7 +232,22 @@ class ImageCacheService {
           "Cache-Control": "no-store",
         },
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          this.recent404Count++;
+          console.warn(
+            `[ImageCache] 404 for image ${imgID} (consecutive: ${this.recent404Count})`
+          );
+          if (this.recent404Count >= this.max404BeforeClear) {
+            await this.clearCache();
+            this.recent404Count = 0;
+            console.warn(
+              `[ImageCache] Cleared cache due to ${this.max404BeforeClear} consecutive 404s`
+            );
+          }
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       // Cache the result with correct quality
@@ -239,6 +258,8 @@ class ImageCacheService {
           console.warn(`[ImageCache] Failed to save image ${imgID} to IndexedDB:`, error);
         });
       }
+      // Reset 404 counter on success
+      if (this.recent404Count > 0) this.recent404Count = 0;
       return url;
     } catch (error) {
       if (retryCount < this.maxRetries) {
@@ -320,7 +341,8 @@ class ImageCacheService {
   async clearCache() {
     // Clear memory cache
     this.memoryCache.clear();
-
+    // Reset 404 counter on cache clear
+    this.recent404Count = 0;
     // Clear IndexedDB if available
     if (this.db) {
       try {
