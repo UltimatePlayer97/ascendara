@@ -68,7 +68,10 @@ export const useAudioPlayer = create((set, get) => ({
     });
 
     audio.addEventListener("error", e => {
-      console.error("Audio playback error:", e);
+      // If audio ended or was killed, this isn't an error
+      if (get().isPlaying) {
+        console.error("Audio playback error:", e);
+      }
       set({ isPlaying: false });
     });
 
@@ -161,6 +164,23 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     useAudioPlayer.getState().cleanup();
   });
+}
+
+// Instantly kill audio and miniplayer
+// This sets a global flag `miniplayerKilled` for UI to react if needed
+let miniplayerKilled = false;
+
+export function killAudioAndMiniplayer() {
+  useAudioPlayer.getState().cleanup();
+  miniplayerKilled = true;
+}
+
+export function wasMiniplayerKilled() {
+  return miniplayerKilled;
+}
+
+export function resetMiniplayerKilled() {
+  miniplayerKilled = false;
 }
 
 export const formatTime = seconds => {

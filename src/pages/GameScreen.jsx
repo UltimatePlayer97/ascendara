@@ -37,7 +37,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
-import { useAudioPlayer } from "@/services/audioPlayerService";
+import { useAudioPlayer, killAudioAndMiniplayer } from "@/services/audioPlayerService";
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analyticsService";
 import { Card, CardContent } from "@/components/ui/card";
@@ -485,6 +485,7 @@ export default function GameScreen() {
 
       console.log("Launching game: ", gameName);
       // Launch the game
+      killAudioAndMiniplayer();
       await window.electron.playGame(gameName, game.isCustom, game.backups ?? false);
 
       // Get and cache the game image before saving to recently played

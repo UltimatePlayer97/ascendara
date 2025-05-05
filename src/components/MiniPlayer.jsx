@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useAudioPlayer, formatTime } from "@/services/audioPlayerService";
+import {
+  useAudioPlayer,
+  formatTime,
+  wasMiniplayerKilled,
+  resetMiniplayerKilled,
+} from "@/services/audioPlayerService";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +28,8 @@ import {
 
 import { Music2 } from "lucide-react";
 
+import { useState } from "react";
+
 export default function MiniPlayer({ expanded, onToggleExpand }) {
   const { t } = useTranslation();
   const {
@@ -37,8 +44,24 @@ export default function MiniPlayer({ expanded, onToggleExpand }) {
     setVolume,
     cleanup,
   } = useAudioPlayer();
+  const [visible, setVisible] = useState(true);
 
-  if (!currentTrack) return null;
+  // Hide miniplayer if killAudioAndMiniplayer is called
+  useEffect(() => {
+    if (wasMiniplayerKilled()) {
+      setVisible(false);
+      resetMiniplayerKilled();
+    }
+  });
+
+  // Restore miniplayer if a new track is set
+  useEffect(() => {
+    if (currentTrack && !visible) {
+      setVisible(true);
+    }
+  }, [currentTrack, visible]);
+
+  if (!currentTrack || !visible) return null;
 
   return (
     <div
