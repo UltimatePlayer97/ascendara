@@ -441,6 +441,21 @@ module.exports.parse = async filePath => {
               0,
           };
 
+          // Always set UnlockTime to current time if achieved
+          if (result.Achieved) {
+            result.UnlockTime = Math.floor(Date.now() / 1000);
+          }
+
+          // Normalize UnlockTime to always be a UNIX timestamp in seconds
+          if (result.UnlockTime && result.UnlockTime > 1000000000000) {
+            // Value is likely in milliseconds, convert to seconds
+            result.UnlockTime = Math.floor(result.UnlockTime / 1000);
+          }
+          if (result.UnlockTime && result.UnlockTime < 946684800) {
+            // If less than Jan 1, 2000, treat as invalid
+            result.UnlockTime = 0;
+          }
+
           if (
             !result.Achieved &&
             result.MaxProgress != 0 &&
