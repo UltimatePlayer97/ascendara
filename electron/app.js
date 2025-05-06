@@ -1100,6 +1100,70 @@ ipcMain.handle("ludusavi", async (event, action, game, backupName) => {
   }
 });
 
+ipcMain.handle("read-game-achievements", async (event, game, isCustom = false) => {
+  const settings = settingsManager.getSettings();
+  if (!settings.downloadDirectory || !settings.additionalDirectories) {
+    console.error("Download directories not properly configured");
+    return null;
+  }
+
+  const allDirectories = [settings.downloadDirectory, ...settings.additionalDirectories];
+
+  if (!isCustom) {
+    // Search for achievements.ascendara.json in game directories
+    for (const directory of allDirectories) {
+      const gameDirectory = path.join(directory, game);
+      const achievementsPath = path.join(gameDirectory, "achievements.ascendara.json");
+      if (fs.existsSync(achievementsPath)) {
+        try {
+          const data = fs.readFileSync(achievementsPath, "utf8");
+          return JSON.parse(data);
+        } catch (error) {
+          console.error("Error reading achievements file:", error);
+          return null;
+        }
+      }
+    }
+    console.error(`Achievements file not found for ${game}`);
+    return null;
+  } else {
+    try {
+      // For custom games, check games.json in main download directory
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+
+      if (gameInfo) {
+        if (gameInfo.achievementWater) {
+          return gameInfo.achievementWater;
+        }
+        // Fallback: try to read achievements.ascendara.json from executable directory
+        if (gameInfo.executable) {
+          const executableDir = path.dirname(gameInfo.executable);
+          const achievementsPath = path.join(
+            executableDir,
+            "achievements.ascendara.json"
+          );
+          if (fs.existsSync(achievementsPath)) {
+            try {
+              const data = fs.readFileSync(achievementsPath, "utf8");
+              return JSON.parse(data);
+            } catch (error) {
+              console.error("Error reading achievements file:", error);
+              return null;
+            }
+          }
+        }
+      } else {
+        console.error(`Game not found in games.json: ${game}`);
+      }
+    } catch (error) {
+      console.error("Error reading games.json:", error);
+    }
+    return null;
+  }
+});
+
 // Show test notification
 ipcMain.handle("show-test-notification", async () => {
   try {

@@ -36,6 +36,7 @@ import {
   Award,
   LetterText,
   BookX,
+  LockIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -247,6 +248,50 @@ export default function GameScreen() {
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const { setTrack, play } = useAudioPlayer();
+
+  // Achievements state
+  const [achievements, setAchievements] = useState(null);
+  const [achievementsLoading, setAchievementsLoading] = useState(true);
+
+  // Achievements pagination state
+  const [achievementsPage, setAchievementsPage] = useState(0);
+  const perPage = 12; // 3 rows x 4 columns
+  const totalPages =
+    achievements && achievements.achievements
+      ? Math.ceil(achievements.achievements.length / perPage)
+      : 1;
+  const paginatedAchievements =
+    achievements && achievements.achievements
+      ? achievements.achievements.slice(
+          achievementsPage * perPage,
+          (achievementsPage + 1) * perPage
+        )
+      : [];
+  useEffect(() => {
+    setAchievementsPage(0);
+  }, [achievements]);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      if (!game) {
+        setAchievements(null);
+        setAchievementsLoading(false);
+        return;
+      }
+      setAchievementsLoading(true);
+      try {
+        const result = await window.electron.readGameAchievements(
+          game.game || game.name,
+          game.isCustom
+        );
+        setAchievements(result);
+      } catch (e) {
+        setAchievements(null);
+      }
+      setAchievementsLoading(false);
+    };
+    fetchAchievements();
+  }, [game]);
 
   useEffect(() => {
     const init = async () => {
@@ -1424,18 +1469,143 @@ export default function GameScreen() {
 
               {/* Achievements tab */}
               <TabsContent value="achievements" className="space-y-6">
-                <Card>
-                  <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
-                    <div className="rounded-full bg-muted p-4">
-                      <Award className="h-12 w-12 text-muted-foreground" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="font-medium">{t("gameScreen.noAchievementsFound")}</p>
-                      <p className="max-w-sm text-sm text-muted-foreground">
-                        {t("gameScreen.noAchievementsDescription")}
-                      </p>
-                    </div>
-                  </div>
+                <Card className="overflow-visible">
+                  <CardContent className="p-6">
+                    {achievementsLoading ? (
+                      <div className="flex flex-col items-center justify-center space-y-6 py-12">
+                        <div className="relative flex flex-col items-center">
+                          <Award className="h-10 w-10 animate-pulse text-primary/70 drop-shadow-lg" />
+                        </div>
+                        <p className="animate-pulse text-lg font-semibold text-primary/80">
+                          {t("gameScreen.loadingAchievements")}
+                        </p>
+                      </div>
+                    ) : achievements &&
+                      achievements.achievements &&
+                      achievements.achievements.length > 0 ? (
+                      <>
+                        {/* Achievements summary header */}
+                        <div className="mb-8 flex flex-col items-center gap-2 sm:flex-row sm:justify-between sm:gap-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-primary-foreground text-2xl font-bold">
+                              {t("gameScreen.achievements")}
+                            </span>
+                          </div>
+                          <div className="mt-4 flex items-center gap-3 sm:mt-0">
+                            <span className="text-lg font-semibold text-primary">
+                              {achievements.achievements.filter(a => a.achieved).length}
+                            </span>
+                            <span className="font-medium text-muted-foreground">
+                              /{achievements.achievements.length}{" "}
+                              {t("gameScreen.achievementsUnlocked")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                          {paginatedAchievements.map((ach, idx) => {
+                            const unlocked = ach.achieved;
+                            return (
+                              <div
+                                key={ach.achID || idx + achievementsPage * perPage}
+                                className={`relative flex flex-col items-center rounded-xl border bg-gradient-to-br shadow-lg transition-all duration-200 ${unlocked ? "from-yellow-50/80 via-green-50/90 to-green-100/80 dark:from-yellow-900/40 dark:via-green-900/30 dark:to-green-800/40" : "from-gray-100/80 via-muted/90 to-muted/80 dark:from-gray-900/40 dark:via-muted/30 dark:to-muted/60"} group min-h-[220px] p-5 hover:scale-[1.03] hover:shadow-2xl`}
+                                tabIndex={0}
+                                aria-label={ach.message}
+                              >
+                                <div className="relative mb-3">
+                                  <img
+                                    src={ach.icon}
+                                    alt={ach.message}
+                                    className={`h-16 w-16 rounded-lg border-2 ${unlocked ? "border-yellow-400 dark:border-yellow-300" : "border-muted"} bg-card shadow-lg`}
+                                    style={{
+                                      filter: unlocked
+                                        ? "none"
+                                        : "grayscale(0.85) brightness(0.85)",
+                                    }}
+                                  />
+                                  {!unlocked && (
+                                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
+                                      <LockIcon className="h-8 w-8 text-white/80" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div
+                                  className={`mb-1 text-center text-lg font-semibold ${unlocked ? "text-primary" : "text-muted-foreground"}`}
+                                >
+                                  {ach.message}
+                                </div>
+                                <div className="mb-2 min-h-[32px] text-center text-xs text-muted-foreground">
+                                  {ach.description}
+                                </div>
+                                <div className="text-center text-xs">
+                                  {unlocked ? (
+                                    <span
+                                      className="font-medium text-green-600 dark:text-green-400"
+                                      title={
+                                        ach.unlockTime
+                                          ? new Date(
+                                              Number(ach.unlockTime) * 1000
+                                            ).toLocaleString()
+                                          : undefined
+                                      }
+                                    >
+                                      {t("gameScreen.achievementUnlocked")}
+                                      {ach.unlockTime
+                                        ? ` ${new Date(Number(ach.unlockTime) * 1000).toLocaleString()}`
+                                        : ""}
+                                    </span>
+                                  ) : (
+                                    <span className="font-medium text-gray-400 dark:text-gray-500">
+                                      {t("gameScreen.achievementLocked")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Pagination controls */}
+                        {totalPages > 1 && (
+                          <div className="mt-8 flex items-center justify-center gap-4">
+                            <button
+                              className="rounded-full border px-4 py-2 text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={() => setAchievementsPage(p => Math.max(0, p - 1))}
+                              disabled={achievementsPage === 0}
+                              aria-label="Previous page"
+                            >
+                              {t("common.prev")}
+                            </button>
+                            <span className="text-sm text-muted-foreground">
+                              {t("common.page")} {achievementsPage + 1} / {totalPages}
+                            </span>
+                            <button
+                              className="rounded-full border px-4 py-2 text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={() =>
+                                setAchievementsPage(p => Math.min(totalPages - 1, p + 1))
+                              }
+                              disabled={achievementsPage === totalPages - 1}
+                              aria-label="Next page"
+                            >
+                              {t("common.next")}
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
+                        <div className="rounded-full bg-muted p-4">
+                          <Award className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="font-medium">
+                            {t("gameScreen.noAchievementsFound")}
+                          </p>
+                          <p className="max-w-sm text-sm text-muted-foreground">
+                            {t("gameScreen.noAchievementsDescription")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>

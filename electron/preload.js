@@ -172,6 +172,8 @@ contextBridge.exposeInMainWorld("electron", {
   // Miscellaneous
   createTimestamp: () => ipcRenderer.invoke("create-timestamp"),
   checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
+  readGameAchievements: (game, isCustom) =>
+    ipcRenderer.invoke("read-game-achievements", game, isCustom),
   updateLaunchCount: () => ipcRenderer.invoke("update-launch-count"),
   reload: () => ipcRenderer.invoke("reload"),
   getLaunchCount: () => ipcRenderer.invoke("get-launch-count"),
