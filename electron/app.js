@@ -1,30 +1,16 @@
-/**
- *       =====================================
- *                    Ascendara
- *    The best way to test games before you buy them.
- *       =====================================
+/*
+ *  Ascendara Entry Point
  *
- * This is the main process file for Ascendara, built with Electron.
- * It handles core functionality including:
+ *  All functions are defined and handled here, then exposed
+ *  to the renderer process in the preload.js file.
  *
- * - Application lifecycle management
- * - Game installation and launching
- * - Discord Rich Presence integration
- * - Auto-updates and version management
- * - IPC (Inter-Process Communication) between main and renderer processes
- * - File system operations and game directory management
- * - Error handling and crash reporting
- * - Protocol handling for custom URL schemes
- *
- *  Start development by first setting the isDev variable to true, then run `yarn start`.
- *  Build the app from source to an executable by setting isDev to false and running `yarn dist`.
- *  Note: This will run the build_ascendara.py script to build the the index files, then build the app.
+ *  Start the app in development mode by running `yarn start`.
+ *  Build the app from source to an executable by running `yarn dist`.
+ *  Note: This will run the build_ascendara.py script to build the index files, then build the app.
  *
  *  Learn more about developing Ascendara at https://ascendara.app/docs/developer/overview
- *
- **/
+ */
 
-let isDev = false;
 let appVersion = "8.5.6";
 
 const {
@@ -60,6 +46,7 @@ let installedTools = [];
 let isBrokenVersion = false;
 let rpcIsConnected = false;
 let hasAdmin = false;
+let isDev = !app.isPackaged;
 let isWindows = os.platform().startsWith("win");
 let rpc;
 let config;
@@ -282,7 +269,7 @@ app.whenReady().then(() => {
   const watcherPath = path.join(__dirname, "services", "achievements", "watchdog.js");
 
   watcherProcess = spawn(process.execPath, [watcherPath], {
-    stdio: ["ignore", "pipe", "pipe"], // <-- Capture stdout and stderr
+    stdio: ["ignore", "pipe", "pipe"],
     detached: true,
     env: {
       ...process.env,
@@ -291,25 +278,20 @@ app.whenReady().then(() => {
     windowsHide: true,
   });
 
-  // Forward stdout
   watcherProcess.stdout.on("data", data => {
     console.log(`[WATCHER] ${data.toString().trim()}`);
   });
 
-  // Forward stderr
   watcherProcess.stderr.on("data", data => {
     console.error(`[WATCHER ERROR] ${data.toString().trim()}`);
   });
 
   watcherProcess.unref();
-
-  // Ensure watcher process is killed on app exit
   const killWatcher = () => {
     if (watcherProcess && !watcherProcess.killed) {
       try {
         process.kill(watcherProcess.pid, "SIGTERM");
       } catch (e) {
-        // Fallback: watcherProcess.kill() if needed
         watcherProcess.kill();
       }
       watcherProcess = null;
@@ -318,7 +300,6 @@ app.whenReady().then(() => {
 
   app.on("before-quit", killWatcher);
   app.on("will-quit", killWatcher);
-  // If you handle 'window-all-closed', add killWatcher there as well
 });
 
 const toolExecutables = {
@@ -6068,19 +6049,4 @@ function printDevModeIntro(appVersion, nodeEnv, isDev = true) {
   console.log(`${colors.yellow}  📚 DOCUMENTATION${colors.reset}`);
   console.log("    • Docs: https://ascendara.app/docs");
   console.log("");
-
-  // Warning if not in dev mode (at the bottom)
-  if (!isDev) {
-    console.log("");
-    console.log(
-      `${colors.yellow}${colors.bright}  ⚠️  WARNING: NOT RUNNING IN DEVELOPER MODE ⚠️${colors.reset}`
-    );
-    console.log(
-      `${colors.yellow}${colors.bright}  The app will not load correctly unless isDev is set to true.${colors.reset}`
-    );
-    console.log(
-      `${colors.yellow}${colors.bright}  Please restart the application in developer mode.${colors.reset}`
-    );
-    console.log("");
-  }
 }
