@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import UsernameDialog from "@/components/UsernameDialog";
 import { Button } from "@/components/ui/button";

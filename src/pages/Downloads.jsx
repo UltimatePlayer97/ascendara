@@ -5,8 +5,6 @@ import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
 import {
-  BarChart,
-  Bar,
   LineChart,
   Line,
   XAxis,
@@ -14,9 +12,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 import {
   DropdownMenu,

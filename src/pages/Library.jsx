@@ -34,7 +34,6 @@ import {
   SortAscIcon,
   ArrowUpAZ,
   ArrowDownAZ,
-  Pencil,
   ImageUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

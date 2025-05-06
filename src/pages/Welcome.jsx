@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,10 +20,8 @@ import {
   Globe2,
   ExternalLink,
   ArrowRight,
-  ArrowDown,
   PlusCircle,
   SquareArrowRight,
-  FolderDown,
   FolderDownIcon,
   Unplug,
   Wine,

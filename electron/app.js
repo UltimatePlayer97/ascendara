@@ -19,7 +19,6 @@ const {
   ipcMain,
   dialog,
   shell,
-  protocol,
   screen,
   Notification,
 } = require("electron");

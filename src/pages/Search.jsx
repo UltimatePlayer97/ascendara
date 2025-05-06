@@ -12,7 +12,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/context/LanguageContext";
-import { useSettings } from "@/context/SettingsContext";
 import GameCard from "@/components/GameCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import {

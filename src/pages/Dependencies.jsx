@@ -3,15 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  CircleCheck,
-  AlertCircle,
-  CircleAlert,
-  ArrowLeft,
-  Loader,
-  XCircle,
-  X,
-} from "lucide-react";
+import { CircleCheck, AlertCircle, CircleAlert, Loader, XCircle, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
