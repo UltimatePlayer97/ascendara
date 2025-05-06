@@ -55,6 +55,10 @@ import {
   ChevronDown,
   Package,
   AlertTriangle,
+  Car,
+  MonitorDot,
+  CircleCheck,
+  MinusCircle,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { useNavigate } from "react-router-dom";
@@ -191,6 +195,34 @@ function createDebouncedFunction(func, wait) {
   return debouncedFn;
 }
 
+const ALL_SIDECARS = [
+  {
+    id: "ludusavi",
+    name: "Ludusavi Backup",
+    description: "Backup and restore saves",
+  },
+  {
+    id: "watchdog",
+    name: "Achievement Watcher",
+    description: "Track and view game achievements",
+  },
+  {
+    id: "steamcmd",
+    name: "SteamCMD Tool",
+    description: "Download Steam Workshop items",
+  },
+  {
+    id: "torrent",
+    name: "Torrent Handler",
+    description: "Download and manage torrents",
+  },
+  {
+    id: "translator",
+    name: "Language Translator",
+    description: "Translate app UI Text",
+  },
+];
+
 function Settings() {
   const { theme, setTheme } = useTheme();
   const { language, changeLanguage, t } = useLanguage();
@@ -224,6 +256,8 @@ function Settings() {
   const [isDev, setIsDev] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [exclusionLoading, setExclusionLoading] = useState(false);
+  const [installedTools, setInstalledTools] = useState([]);
+  const [steamcmdStatus, setSteamcmdStatus] = useState("not_installed");
 
   // Use a ref to track if this is the first mount
   const isFirstMount = useRef(true);
@@ -259,6 +293,37 @@ function Settings() {
       setIsExperiment(isExperiment);
     };
     checkExperiment();
+  }, []);
+
+  useEffect(() => {
+    async function fetchInstalledTools() {
+      try {
+        const tools = await window.electron.getInstalledTools();
+        console.log("Installed tools:", tools);
+        let installed = tools;
+        let steamcmdStatus = "not_installed";
+        try {
+          const steamcmdResult = await window.electron.isSteamCMDInstalled();
+          if (steamcmdResult === true) {
+            if (!installed.includes("steamcmd")) {
+              installed = [...installed, "steamcmd"];
+            }
+            steamcmdStatus = "installed";
+          } else if (
+            typeof steamcmdResult === "object" &&
+            steamcmdResult.message === "not_on_windows"
+          ) {
+            steamcmdStatus = "not_on_windows";
+          }
+        } catch {}
+        setInstalledTools(installed);
+        setSteamcmdStatus(steamcmdStatus);
+      } catch (e) {
+        setInstalledTools([]);
+        setSteamcmdStatus("not_installed");
+      }
+    }
+    fetchInstalledTools();
   }, []);
 
   // Check if we're on Windows
@@ -710,6 +775,23 @@ function Settings() {
       }
     }
   };
+
+  const sidecars = ALL_SIDECARS.map(sc => {
+    if (sc.id === "steamcmd") {
+      return {
+        ...sc,
+        installed: steamcmdStatus === "installed",
+        running: false,
+        notOnWindows: steamcmdStatus === "not_on_windows",
+      };
+    }
+    return {
+      ...sc,
+      installed: installedTools.includes(sc.id),
+      running: false,
+      notOnWindows: !isOnWindows,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -1627,6 +1709,7 @@ function Settings() {
                       <ExternalLink className="ml-1 inline-block h-3 w-3" />
                     </a>
                   </div>
+                  x
                   <div className="space-y-3 pt-2">
                     <div className="space-y-1">
                       <Label htmlFor="giantbomb-key">
@@ -2094,6 +2177,75 @@ function Settings() {
                   </div>
                 </div>
               </div>
+            </Card>
+
+            <Card className="p-6">
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-primary">
+                <Car className="h-5 w-5 text-primary" />
+                {t("settings.sideCars")}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t("settings.sideCarsDescription")}
+              </p>
+              <ul className="divide-y divide-border">
+                {sidecars.map(sidecar => (
+                  <li key={sidecar.id} className="py-1">
+                    <div className="flex items-center gap-4 px-2 py-2 transition-colors duration-150 hover:rounded-lg hover:bg-muted/50">
+                      {/* Status Icon */}
+                      <div>
+                        {sidecar.notOnWindows ? (
+                          <MinusCircle
+                            className="h-5 w-5 text-yellow-500"
+                            title="Not on Windows"
+                          />
+                        ) : sidecar.running ? (
+                          <MonitorDot
+                            className="h-5 w-5 text-green-600"
+                            title="Running"
+                          />
+                        ) : sidecar.installed ? (
+                          <CircleCheck
+                            className="h-5 w-5 text-blue-600"
+                            title="Installed"
+                          />
+                        ) : (
+                          <MinusCircle
+                            className="h-5 w-5 text-gray-400"
+                            title="Not Available"
+                          />
+                        )}
+                      </div>
+                      {/* Name and Description */}
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-medium">{sidecar.name}</div>
+                        <div className="truncate text-xs text-muted-foreground">
+                          {sidecar.description}
+                        </div>
+                      </div>
+                      {/* Status Label */}
+                      <div>
+                        {sidecar.notOnWindows ? (
+                          <span className="text-xs font-semibold text-yellow-600">
+                            Not on Windows
+                          </span>
+                        ) : sidecar.running ? (
+                          <span className="text-xs font-semibold text-green-600">
+                            Running
+                          </span>
+                        ) : sidecar.installed ? (
+                          <span className="text-xs font-semibold text-blue-600">
+                            Installed
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold text-gray-400">
+                            Available
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </Card>
 
             {/* Language Settings Card */}

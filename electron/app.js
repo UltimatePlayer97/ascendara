@@ -421,16 +421,20 @@ ipcMain.handle("install-tool", async (event, tool) => {
 
 // Check if steamCMD is installed from timestamp file
 ipcMain.handle("is-steamcmd-installed", async () => {
-  try {
-    if (!fs.existsSync(TIMESTAMP_FILE)) {
+  if (isWindows) {
+    try {
+      if (!fs.existsSync(TIMESTAMP_FILE)) {
+        return false;
+      }
+      const timestampData = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
+      const data = JSON.parse(timestampData);
+      return data.steamCMD === true;
+    } catch (error) {
+      console.error("Error checking steamCMD installation:", error);
       return false;
     }
-    const timestampData = await fs.promises.readFile(TIMESTAMP_FILE, "utf8");
-    const data = JSON.parse(timestampData);
-    return data.steamCMD === true;
-  } catch (error) {
-    console.error("Error checking steamCMD installation:", error);
-    return false;
+  } else {
+    return { message: `not_on_windows` };
   }
 });
 
