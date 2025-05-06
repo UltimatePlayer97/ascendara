@@ -32,6 +32,10 @@ import {
   Copy,
   Music2,
   HeadphoneOff,
+  Trophy,
+  Award,
+  LetterText,
+  BookX,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -44,6 +48,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getGameSoundtrack } from "@/services/khinsiderService";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -58,11 +63,9 @@ import VerifyingGameDialog from "@/components/VerifyingGameDialog";
 import recentGamesService from "@/services/recentGamesService";
 import GamesBackupDialog from "@/components/GamesBackupDialog";
 import imageCacheService from "@/services/imageCacheService";
-import GameScreenshots from "@/components/GameScreenshots";
 import GameMetadata from "@/components/GameMetadata";
 import igdbService from "@/services/gameInfoService";
 import GameRate from "@/components/GameRate";
-import { getGameSoundtrack } from "@/services/khinsiderService";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -937,22 +940,20 @@ export default function GameScreen() {
                   <Info className="mr-2 h-4 w-4" />
                   {t("gameScreen.overview")}
                 </TabsTrigger>
-                {screenshots.length > 0 && (
-                  <TabsTrigger value="media">
-                    <Monitor className="mr-2 h-4 w-4" />
-                    {t("gameScreen.media")}
-                  </TabsTrigger>
-                )}
-                {igdbData && (
-                  <TabsTrigger value="details">
-                    <Star className="mr-2 h-4 w-4" />
-                    {t("gameScreen.details")}
-                  </TabsTrigger>
-                )}
                 <TabsTrigger value="soundtrack">
                   <Music2 className="mr-2 h-4 w-4" />
                   {t("gameScreen.soundtrack")}
                 </TabsTrigger>
+                <TabsTrigger value="achievements">
+                  <Trophy className="mr-2 h-4 w-4" />
+                  {t("gameScreen.achievements")}
+                </TabsTrigger>
+                {igdbData && (
+                  <TabsTrigger value="details">
+                    <LetterText className="mr-2 h-4 w-4" />
+                    {t("gameScreen.details")}
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               {!hasRated && (
@@ -1377,33 +1378,6 @@ export default function GameScreen() {
                 </Card>
               </TabsContent>
 
-              {/* Media tab */}
-              <TabsContent value="media" className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="mb-4 text-xl font-bold">
-                      {t("gameScreen.screenshots")}
-                    </h2>
-
-                    {screenshots.length > 0 ? (
-                      <GameScreenshots screenshots={screenshots} />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <div className="mb-4 rounded-full bg-muted p-3">
-                          <Monitor className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                        <h3 className="text-lg font-medium">
-                          {t("gameScreen.noScreenshotsAvailable")}
-                        </h3>
-                        <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                          {t("gameScreen.noScreenshotsDescription")}
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
               {/* Details tab */}
               <TabsContent value="details" className="space-y-6">
                 <Card>
@@ -1411,21 +1385,24 @@ export default function GameScreen() {
                     {igdbData ? (
                       <GameMetadata gameInfo={igdbData} />
                     ) : (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <div className="mb-4 rounded-full bg-muted p-3">
-                          <Star className="h-6 w-6 text-muted-foreground" />
+                      <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
+                        <div className="flex flex-col items-center justify-center space-y-2 text-center">
+                          <div className="rounded-full bg-muted p-4">
+                            <BookX className="h-12 w-12 text-muted-foreground" />
+                          </div>
+                          <div className="space-y-2">
+                            <p className="font-medium">
+                              {t("gameScreen.noDetailsAvailable")}
+                            </p>
+                            <p className="max-w-sm text-sm text-muted-foreground">
+                              {t("gameScreen.noDetailsDescription")}
+                            </p>
+                          </div>
                         </div>
-                        <h3 className="text-lg font-medium">
-                          {t("gameScreen.noDetailsAvailable")}
-                        </h3>
-                        <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                          {t("gameScreen.noDetailsDescription")}
-                        </p>
-
                         {!igdbData && !igdbLoading && (
                           <Button
                             variant="outline"
-                            className="mt-4 gap-2"
+                            className="gap-2"
                             onClick={() => navigate("/settings")}
                           >
                             <Settings2 className="h-4 w-4" />
@@ -1442,6 +1419,23 @@ export default function GameScreen() {
                       </div>
                     )}
                   </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Achievements tab */}
+              <TabsContent value="achievements" className="space-y-6">
+                <Card>
+                  <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
+                    <div className="rounded-full bg-muted p-4">
+                      <Award className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-medium">{t("gameScreen.noAchievementsFound")}</p>
+                      <p className="max-w-sm text-sm text-muted-foreground">
+                        {t("gameScreen.noAchievementsDescription")}
+                      </p>
+                    </div>
+                  </div>
                 </Card>
               </TabsContent>
             </Tabs>

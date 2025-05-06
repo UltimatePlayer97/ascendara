@@ -12,7 +12,7 @@ const track = require("./track.js");
 const { spawn } = require("child_process");
 let config;
 try {
-  config = require("./config.prod.js");
+  config = require("./../../config.prod.js");
 } catch (e) {
   config = {};
 }
@@ -20,26 +20,39 @@ try {
 // Get config from ENV or IPC
 const STEAM_WEB_API_KEY =
   process.env.REACT_APP_ASCENDARA_STEAM_WEB_API_KEY || config.ASCENDARA_STEAM_WEB_API_KEY;
+console.log("STEAM_WEB_API_KEY:", STEAM_WEB_API_KEY);
 const steamLangDefs = require("./steam.json");
+
+async function getSettings() {
+  try {
+    const appData = process.env.APPDATA;
+    const settingsPath = path.join(appData, "Electron", "ascendarasettings.json");
+    const data = await fs.readFile(settingsPath, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading settings file:", error);
+    return {};
+  }
+}
 
 async function getSteamApiLang() {
   // Get settings from preload/renderer
-  let settings;
   try {
-    settings = await window.electron.getSettings();
+    const settings = await getSettings();
+    console.log("Settings:", settings);
+    const userLang = settings?.language || "en";
+    // Map to steam.json api code
+    const match = steamLangDefs.find(
+      lang =>
+        lang.iso?.toLowerCase().startsWith(userLang.toLowerCase()) ||
+        lang.webapi?.toLowerCase().startsWith(userLang.toLowerCase()) ||
+        lang.api?.toLowerCase() === userLang.toLowerCase()
+    );
+    return match ? match.api : "english";
   } catch {
     // fallback: default to English
     return "english";
   }
-  const userLang = settings?.language || "en";
-  // Map to steam.json api code
-  const match = steamLangDefs.find(
-    lang =>
-      lang.iso?.toLowerCase().startsWith(userLang.toLowerCase()) ||
-      lang.webapi?.toLowerCase().startsWith(userLang.toLowerCase()) ||
-      lang.api?.toLowerCase() === userLang.toLowerCase()
-  );
-  return match ? match.api : "english";
 }
 // sendNotification now accepts an object with notification details
 let sendNotification = opts => {
@@ -315,6 +328,15 @@ var app = {
                           });
                         }
                         await track.save(appID, cache);
+                        // Update achievements.ascendara.json for the running game
+                        try {
+                          await updateAchievementsJsonForRunningGame(game, cache);
+                        } catch (err) {
+                          console.error(
+                            "Failed to update achievements.ascendara.json:",
+                            err
+                          );
+                        }
                       } catch (err) {
                         console.error("Failed to send notification:", err);
                       }
@@ -374,6 +396,152 @@ var app = {
     }
   },
 };
+
+// Helper to update achievements.ascendara.json for the running game
+async function updateAchievementsJsonForRunningGame(game, achievedCache) {
+  // 1. Get settings
+  const settings = await getSettings();
+  const downloadDir = settings.downloadDirectory;
+  if (!downloadDir) throw new Error("downloadDirectory not set in settings");
+
+  const fsPath = require("path");
+  const fsPromises = require("fs").promises;
+
+  // 2. List subfolders in downloadDir
+  const gameFolders = await fsPromises.readdir(downloadDir, { withFileTypes: true });
+  let found = null;
+  // Check standard Ascendara-installed games
+  for (const dirent of gameFolders) {
+    if (!dirent.isDirectory()) continue;
+    const gameFolderPath = fsPath.join(downloadDir, dirent.name);
+    // Look for {gamename}.ascendara.json in this folder
+    const jsonPath = fsPath.join(gameFolderPath, `${dirent.name}.ascendara.json`);
+    try {
+      const data = await fsPromises.readFile(jsonPath, "utf8");
+      const parsed = JSON.parse(data);
+      if (parsed.isRunning === true) {
+        found = { folder: gameFolderPath, json: parsed, jsonPath };
+        break;
+      }
+    } catch (e) {
+      // ignore missing or invalid files
+    }
+  }
+  // If not found, check games.json for custom games
+  if (!found) {
+    const gamesJsonPath = fsPath.join(downloadDir, "games.json");
+    try {
+      const gamesData = await fsPromises.readFile(gamesJsonPath, "utf8");
+      const gamesObj = JSON.parse(gamesData);
+      if (Array.isArray(gamesObj.games)) {
+        for (const g of gamesObj.games) {
+          if (
+            g.isRunning === true &&
+            typeof g.executable === "string" &&
+            g.executable.length > 0
+          ) {
+            // Get folder from executable path
+            const folder = fsPath.dirname(g.executable);
+            found = { folder, json: g, jsonPath: gamesJsonPath };
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      // ignore if games.json doesn't exist or is invalid
+    }
+  }
+  if (!found) {
+    throw new Error(
+      "No running game folder found with isRunning: true (checked both Ascendara-installed and custom games)"
+    );
+  }
+  // 3. Build achievements data in the new format
+  const allAchievements = Array.isArray(game.achievement?.list)
+    ? game.achievement.list
+    : [];
+  const achievedMap = {};
+  if (Array.isArray(achievedCache)) {
+    for (const a of achievedCache) {
+      achievedMap[a.name] = a;
+    }
+  }
+  const achievementsJson = allAchievements.map(a => {
+    const achieved = achievedMap[a.name];
+    return {
+      message: a.displayName,
+      achieved: achieved ? !!achieved.Achieved : false,
+      unlockTime:
+        achieved && achieved.Achieved && achieved.UnlockTime
+          ? String(achieved.UnlockTime)
+          : null,
+      achID: a.name,
+      icon: a.icon || null,
+      description: a.description || "",
+    };
+  });
+  // 4. Write achievements data
+  const now = new Date().toISOString();
+  if (found.jsonPath && found.jsonPath.endsWith("games.json")) {
+    // Custom game: update achievementWater key in games.json
+    try {
+      const gamesData = await fsPromises.readFile(found.jsonPath, "utf8");
+      const gamesObj = JSON.parse(gamesData);
+      if (Array.isArray(gamesObj.games)) {
+        // Find the correct game object by executable path (robust, normalized)
+        function normalizePath(p) {
+          return String(p || "")
+            .replace(/\\/g, "/")
+            .trim()
+            .toLowerCase();
+        }
+        const targetExe = normalizePath(
+          found.json && found.json.executable
+            ? found.json.executable
+            : game.binaryPath || game.executable || game.binary
+        );
+        const matchIdx = gamesObj.games.findIndex(
+          g => normalizePath(g.executable) === targetExe
+        );
+        if (matchIdx !== -1) {
+          gamesObj.games[matchIdx].achievementWater = {
+            achievements: achievementsJson,
+            lastUpdated: now,
+          };
+          await fsPromises.writeFile(
+            found.jsonPath,
+            JSON.stringify(gamesObj, null, 2),
+            "utf8"
+          );
+        } else {
+          // Log available executables for debugging
+          const available = gamesObj.games.map(g => g.executable);
+          console.error(
+            "Could not find matching game in games.json to update achievements. Tried to match:",
+            targetExe,
+            "Available:",
+            available
+          );
+          throw new Error(
+            "Could not find matching game in games.json to update achievements"
+          );
+        }
+      } else {
+        throw new Error("games.json does not contain a games array");
+      }
+    } catch (e) {
+      throw new Error("Failed to update achievementWater in games.json: " + e);
+    }
+  } else {
+    // Standard game: write to achievements.ascendara.json as before
+    const outPath = fsPath.join(found.folder, "achievements.ascendara.json");
+    await fsPromises.writeFile(
+      outPath,
+      JSON.stringify({ achievements: achievementsJson, lastUpdated: now }, null, 2),
+      "utf8"
+    );
+  }
+}
 
 console.log("About to acquire single-instance lock (block 1)...");
 instance.lock().then(() => {

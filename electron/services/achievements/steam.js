@@ -186,15 +186,17 @@ async function findInAppList(appID) {
     if (!app) throw "ERR_NAME_NOT_FOUND";
     return app.name;
   } catch {
-    const url = "http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json";
-
+    // Ensure cache directory exists before writing
+    await fs.mkdir(cache, { recursive: true });
+    const url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/?format=json";
+    console.log("Fetching appList.json from Steam Web API...");
     const data = await fetchJson(url);
-
-    let list = data.applist.apps;
-    list.sort((a, b) => b.appid - a.appid); //recent first
-
+    // Defensive: support both v1 and v2 formats
+    let list = data.applist?.apps || data.applist?.apps || [];
+    if (!Array.isArray(list)) throw "Invalid app list format from Steam API";
+    list.sort((a, b) => b.appid - a.appid); // recent first
     await fs.writeFile(filepath, JSON.stringify(list, null, 2));
-
+    console.log("appList.json cached at", filepath);
     const app = list.find(app => app.appid === appID);
     if (!app) throw "ERR_NAME_NOT_FOUND";
     return app.name;

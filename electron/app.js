@@ -266,40 +266,27 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
-  const watcherPath = path.join(__dirname, "services", "achievements", "watchdog.js");
 
-  watcherProcess = spawn(process.execPath, [watcherPath], {
-    stdio: ["ignore", "pipe", "pipe"],
-    detached: true,
-    env: {
-      ...process.env,
-      ASCENDARA_STEAM_WEB_API_KEY: process.env.ASCENDARA_STEAM_WEB_API_KEY,
-    },
-    windowsHide: true,
-  });
+  if (isWindows) {
+    const watcherPath = path.join(__dirname, "services", "achievements", "watchdog.js");
 
-  watcherProcess.stdout.on("data", data => {
-    console.log(`[WATCHER] ${data.toString().trim()}`);
-  });
+    watcherProcess = spawn(process.execPath, [watcherPath], {
+      stdio: ["ignore", "pipe", "pipe"],
+      env: {
+        ...process.env,
+        ASCENDARA_STEAM_WEB_API_KEY: process.env.ASCENDARA_STEAM_WEB_API_KEY,
+      },
+      windowsHide: true,
+    });
 
-  watcherProcess.stderr.on("data", data => {
-    console.error(`[WATCHER ERROR] ${data.toString().trim()}`);
-  });
+    watcherProcess.stdout.on("data", data => {
+      console.log(`[WATCHER] ${data.toString().trim()}`);
+    });
 
-  watcherProcess.unref();
-  const killWatcher = () => {
-    if (watcherProcess && !watcherProcess.killed) {
-      try {
-        process.kill(watcherProcess.pid, "SIGTERM");
-      } catch (e) {
-        watcherProcess.kill();
-      }
-      watcherProcess = null;
-    }
-  };
-
-  app.on("before-quit", killWatcher);
-  app.on("will-quit", killWatcher);
+    watcherProcess.stderr.on("data", data => {
+      console.error(`[WATCHER ERROR] ${data.toString().trim()}`);
+    });
+  }
 });
 
 const toolExecutables = {
