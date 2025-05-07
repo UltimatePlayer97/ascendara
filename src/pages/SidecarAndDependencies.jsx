@@ -13,12 +13,11 @@ import {
   Car,
   MonitorDot,
   MinusCircle,
-  SquareCode,
   BadgeCheck,
   Link2,
   MonitorCheck,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Card } from "@/components/ui/card";
 
 const ALL_SIDECARS = [
   {
@@ -37,7 +35,7 @@ const ALL_SIDECARS = [
     name: "Achievement Watcher",
     description: "Track and view game achievements",
     source:
-      "https://github.com/Ascendara/ascendara/tree/main/electron/services/achievements",
+      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraAchievementWatcher/src",
   },
   {
     id: "ludusavi",
