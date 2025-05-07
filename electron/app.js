@@ -67,6 +67,8 @@ try {
 
 const APIKEY = process.env.REACT_APP_AUTHORIZATION || config.AUTHORIZATION;
 const analyticsAPI = process.env.REACT_APP_ASCENDARA_API_KEY || config.ASCENDARA_API_KEY;
+const steamWebApiKey =
+  process.env.REACT_APP_STEAM_WEB_API_KEY || config.ASCENDARA_STEAM_WEB_API_KEY;
 const imageKey = process.env.REACT_APP_IMAGE_KEY || config.IMAGE_KEY;
 const clientId = process.env.REACT_APP_DISCKEY || config.DISCKEY;
 
@@ -129,12 +131,6 @@ function setWatchdogRunningFalse() {
     console.error("Failed to update watchdogRunning in timestamp file:", e);
   }
 }
-
-// Ensure logs are written before app exits
-app.on("before-quit", () => {
-  logStream.end();
-  destroyDiscordRPC();
-});
 
 function destroyDiscordRPC() {
   if (rpc) {
@@ -289,13 +285,15 @@ app.whenReady().then(() => {
   });
 
   if (isWindows) {
-    const watcherPath = path.join(__dirname, "services", "achievements", "watchdog.js");
+    const watcherExePath = isDev
+      ? "./binaries/AscendaraAchievementWatcher/dist/AscendaraAchievementWatcher.exe"
+      : path.join(process.resourcesPath, "AscendaraAchievementWatcher.exe");
 
-    watcherProcess = spawn(process.execPath, [watcherPath], {
+    watcherProcess = spawn(watcherExePath, [], {
       stdio: ["ignore", "pipe", "pipe"],
       env: {
         ...process.env,
-        ASCENDARA_STEAM_WEB_API_KEY: process.env.ASCENDARA_STEAM_WEB_API_KEY,
+        ASCENDARA_STEAM_WEB_API_KEY: steamWebApiKey,
       },
       windowsHide: true,
     });
@@ -315,6 +313,28 @@ const toolExecutables = {
   translator: "AscendaraLanguageTranslation.exe",
   ludusavi: "ludusavi.exe",
 };
+
+const terminateWatcher = () => {
+  if (watcherProcess && !watcherProcess.killed) {
+    // On Windows, use taskkill to ensure all child processes are killed
+    if (process.platform === "win32") {
+      const { exec } = require("child_process");
+      exec(`taskkill /pid ${watcherProcess.pid} /T /F`);
+    } else {
+      watcherProcess.kill("SIGTERM");
+    }
+  }
+};
+
+app.on("before-quit", () => {
+  logStream.end();
+  destroyDiscordRPC();
+  terminateWatcher();
+});
+app.on("will-quit", terminateWatcher);
+process.on("exit", terminateWatcher);
+process.on("SIGINT", terminateWatcher);
+process.on("SIGTERM", terminateWatcher);
 
 function checkInstalledTools() {
   try {

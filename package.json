@@ -141,12 +141,8 @@
     "files": [
       "build/**/*",
       "electron/**/*",
-      "electron/services/achievements/**/*",
       "node_modules/**/*",
       "package.json"
-    ],
-    "asarUnpack": [
-      "electron/services/achievements/**/*"
     ],
     "extraResources": [
       {
@@ -171,6 +167,10 @@
       },
       {
         "from": "binaries/AscendaraNotificationHelper/dist/AscendaraNotificationHelper.exe",
+        "to": "."
+      },
+      {
+        "from": "binaries/AscendaraAchievementWatcher/dist/AscendaraAchievementWatcher.exe",
         "to": "."
       },
       {

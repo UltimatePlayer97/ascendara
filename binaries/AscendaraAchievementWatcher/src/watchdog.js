@@ -8,23 +8,14 @@ const moment = require("moment");
 const fs = require("fs").promises;
 const monitor = require("./monitor.js");
 const steam = require("./steam.js");
+const steamLangDefs = require("./steam.json");
 const track = require("./track.js");
 const { spawn } = require("child_process");
-let config;
-try {
-  config = require("./../../config.prod.js");
-} catch (e) {
-  config = {};
-}
 
 // Get config from ENV or IPC
-const STEAM_WEB_API_KEY =
-  process.env.REACT_APP_ASCENDARA_STEAM_WEB_API_KEY || config.ASCENDARA_STEAM_WEB_API_KEY;
-console.log("STEAM_WEB_API_KEY:", STEAM_WEB_API_KEY);
-const steamLangDefs = require("./steam.json");
-
-let watchdogRunning = false;
 const timestampFilePath = path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
+const STEAM_WEB_API_KEY = process.env.ASCENDARA_STEAM_WEB_API_KEY;
+let watchdogRunning = false;
 
 async function updateWatchdogStatus(running) {
   watchdogRunning = running;
@@ -61,7 +52,6 @@ async function getSteamApiLang() {
   // Get settings from preload/renderer
   try {
     const settings = await getSettings();
-    console.log("Settings:", settings);
     const userLang = settings?.language || "en";
     // Map to steam.json api code
     const match = steamLangDefs.find(
@@ -76,18 +66,14 @@ async function getSteamApiLang() {
     return "english";
   }
 }
-// sendNotification now accepts an object with notification details
 let sendNotification = opts => {
   try {
-    // Use process.resourcesPath if available, otherwise fallback to __dirname
     const exePath = path.join(
-      process.resourcesPath || __dirname,
+      path.dirname(process.execPath),
       "AscendaraNotificationHelper.exe"
     );
-    // Build argument list
     let args = [];
     args.push("--is-achievement");
-    // Use theme from opts, otherwise fallback to settings.theme
     let theme = opts.theme;
     if (!theme && typeof settings === "object" && settings.theme) {
       theme = settings.theme;
@@ -112,9 +98,13 @@ let sendNotification = opts => {
       }
       // Do not exit or throw, just log
     });
-  } catch (e) {
-    console.error("Failed to spawn notification:", e);
-    // Do not exit or throw, just log
+  } catch (err) {
+    // Log error, but don't crash app in dev
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Notification helper not available:", err.message);
+    } else {
+      throw err;
+    }
   }
 };
 
