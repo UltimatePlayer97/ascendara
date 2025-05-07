@@ -735,7 +735,7 @@
     "quickLaunch": "Quick Launch",
     "quickLaunchDescription": "Keep Ascendara running in the background after you close it in order to speed up future launches",
     "reinstallDependencies": "Reinstall Dependencies",
-    "reinstallDependenciesDesc": "If a game isn't running correctly, you can try reinstalling all the crucial libraries it needs to run",
+    "reinstallDependenciesDesc": "These are the game dependencies most games require to run. Reinstalling them will fix most issues with games not running.",
     "reinstallError": "Error reinstalling dependencies",
     "reinstallSuccess": "Dependencies reinstalled successfully",
     "reload": "Reload Now",

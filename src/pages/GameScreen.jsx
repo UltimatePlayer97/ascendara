@@ -24,11 +24,8 @@ import {
   ExternalLink,
   Settings2,
   Download,
-  PlayCircleIcon,
   FileSearch,
   ThumbsUp,
-  HandHelping,
-  X,
   Copy,
   Music2,
   HeadphoneOff,
@@ -1491,8 +1488,8 @@ export default function GameScreen() {
                               {t("gameScreen.achievements")}
                             </span>
                           </div>
-                          <div className="mt-4 flex items-center gap-3 sm:mt-0">
-                            <span className="text-lg font-semibold text-primary">
+                          <div>
+                            <span className="mr-1 text-xl font-semibold text-primary">
                               {achievements.achievements.filter(a => a.achieved).length}
                             </span>
                             <span className="font-medium text-muted-foreground">
@@ -1539,7 +1536,7 @@ export default function GameScreen() {
                                 <div className="text-center text-xs">
                                   {unlocked ? (
                                     <span
-                                      className="font-medium text-green-600 dark:text-green-400"
+                                      className="font-medium text-primary"
                                       title={
                                         ach.unlockTime
                                           ? new Date(

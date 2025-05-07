@@ -412,8 +412,8 @@ const SidecarAndDependencies = () => {
                     badge = null;
                   } else if (sidecar.running) {
                     badge = (
-                      <span className="flex items-center gap-1 rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                        <MonitorCheck className="mb-0.5 inline h-4 w-4 animate-pulse text-green-600" />
+                      <span className="flex animate-pulse items-center gap-1 rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                        <MonitorCheck className="mb-0.5 inline h-4 w-4 text-green-600" />
                         {t("settings.sidecar.running")}
                       </span>
                     );
