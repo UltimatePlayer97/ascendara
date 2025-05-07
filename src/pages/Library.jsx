@@ -1100,6 +1100,11 @@ const InstalledGameCard = memo(
                 alt={game.game}
                 className="h-full w-full border-b border-border object-cover transition-transform duration-300 group-hover:scale-105"
               />
+              {typeof game.launchCount === "undefined" && !game.isCustom && (
+                <span className="pointer-events-none absolute left-2 top-2 z-20 select-none rounded bg-secondary px-2 py-0.5 text-xs font-bold text-white">
+                  {t("library.newBadge")}
+                </span>
+              )}
               {/* Floating action bar for buttons */}
               <div className="absolute bottom-3 right-3 z-10 flex gap-2 rounded-lg bg-black/60 p-2 opacity-90 shadow-md transition-opacity hover:opacity-100">
                 <Button
