@@ -198,42 +198,6 @@ function createDebouncedFunction(func, wait) {
   return debouncedFn;
 }
 
-const ALL_SIDECARS = [
-  {
-    id: "watchdog",
-    name: "Achievement Watcher",
-    description: "Track and view game achievements",
-    source:
-      "https://github.com/Ascendara/ascendara/tree/main/electron/services/achievements",
-  },
-  {
-    id: "ludusavi",
-    name: "Ludusavi Backup",
-    description: "Backup and restore saves",
-    source: "https://github.com/mtkennerly/ludusavi",
-  },
-  {
-    id: "steamcmd",
-    name: "SteamCMD Tool",
-    description: "Download Steam Workshop items",
-    source: "https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD",
-  },
-  {
-    id: "torrent",
-    name: "Torrent Handler",
-    description: "Download and manage torrents",
-    source:
-      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraTorrentHandler/src",
-  },
-  {
-    id: "translator",
-    name: "Language Translator",
-    description: "Translate app UI Text",
-    source:
-      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraLanguageTranslation/src",
-  },
-];
-
 function Settings() {
   const { theme, setTheme } = useTheme();
   const { language, changeLanguage, t } = useLanguage();
@@ -260,15 +224,12 @@ function Settings() {
   const [showReloadDialog, setShowReloadDialog] = useState(false);
   const [reloadMessage, setReloadMessage] = useState("");
   const [pendingSourceChange, setPendingSourceChange] = useState(null);
-  const [dependencyStatus, setDependencyStatus] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
   const [isExperiment, setIsExperiment] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDev, setIsDev] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [exclusionLoading, setExclusionLoading] = useState(false);
-  const [installedTools, setInstalledTools] = useState([]);
-  const [steamcmdStatus, setSteamcmdStatus] = useState("not_installed");
 
   // Use a ref to track if this is the first mount
   const isFirstMount = useRef(true);
@@ -602,84 +563,6 @@ function Settings() {
     }
   };
 
-  // Check dependency status on mount and after reinstall
-  const checkDependencies = useCallback(async () => {
-    console.log("Checking dependencies...", { isOnWindows });
-    try {
-      // Skip if we don't know platform yet or not on Windows
-      if (isOnWindows === null || !isOnWindows) {
-        console.log("Not checking dependencies - not on Windows or platform unknown");
-        return;
-      }
-      console.log("Requesting game dependencies status...");
-      const status = await window.electron.checkGameDependencies();
-      console.log("Received dependency status:", status);
-      setDependencyStatus(Array.isArray(status) ? status : []); // Ensure we always set an array
-    } catch (error) {
-      console.error("Failed to check dependencies:", error);
-      setDependencyStatus([]); // Set empty array on error to avoid infinite loading
-    }
-  }, [isOnWindows]);
-
-  useEffect(() => {
-    // Only run check when we know the platform and it's Windows
-    if (isOnWindows === null) {
-      return; // Wait until we know the platform
-    }
-    if (isOnWindows) {
-      checkDependencies();
-    } else {
-      setDependencyStatus([]); // Set empty array for non-Windows
-    }
-  }, [isOnWindows, checkDependencies]);
-
-  // Get dependency status indicator
-  const getDependencyStatusInfo = useMemo(() => {
-    if (isOnWindows === null) {
-      return {
-        text: t("settings.checkingDependencies"),
-        color: "text-muted-foreground",
-      };
-    }
-
-    if (!isOnWindows) {
-      return {
-        text: t("settings.cannotCheckDependencies"),
-        color: "text-muted-foreground",
-      };
-    }
-
-    if (!dependencyStatus) {
-      return {
-        text: t("settings.checkingDependencies"),
-        color: "text-muted-foreground",
-      };
-    }
-
-    const installedCount = dependencyStatus.filter(dep => dep.installed).length;
-    const totalCount = dependencyStatus.length;
-
-    if (installedCount === totalCount) {
-      return {
-        text: t("settings.allDependenciesInstalled"),
-        color: "text-green-500",
-      };
-    } else if (installedCount === 0) {
-      return {
-        text: t("settings.noDependenciesInstalled"),
-        color: "text-red-500",
-      };
-    } else {
-      return {
-        text: t("settings.someDependenciesMissing", {
-          installed: installedCount,
-          total: totalCount,
-        }),
-        color: "text-yellow-500",
-      };
-    }
-  }, [dependencyStatus, t]);
-
   useEffect(() => {
     const loadLanguages = async () => {
       const languages = await getAvailableLanguages();
@@ -755,23 +638,6 @@ function Settings() {
       }
     }
   };
-
-  const sidecars = ALL_SIDECARS.map(sc => {
-    if (sc.id === "steamcmd") {
-      return {
-        ...sc,
-        installed: steamcmdStatus === "installed",
-        running: false,
-        notOnWindows: steamcmdStatus === "not_on_windows",
-      };
-    }
-    return {
-      ...sc,
-      installed: installedTools.includes(sc.id),
-      running: false,
-      notOnWindows: !isOnWindows,
-    };
-  });
 
   return (
     <div className="min-h-screen bg-background">
