@@ -34,7 +34,6 @@ const WorkshopDownloader = () => {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const [step, setStep] = useState(1);
-  const [wallpaperFolder, setWallpaperFolder] = useState("");
   const [wallpaperUrl, setWallpaperUrl] = useState("");
   const [isSetup, setIsSetup] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -301,7 +300,7 @@ const WorkshopDownloader = () => {
             <h2 className="text-2xl font-bold">
               {t("workshopDownloader.installSteamCMD")}
             </h2>
-            <p className="max-w-md text-muted-foreground">
+            <p className="max-w-xl text-muted-foreground">
               {t("workshopDownloader.installSteamCMDDescription")}
             </p>
             <Button
