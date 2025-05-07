@@ -2026,24 +2026,25 @@ function Settings() {
             </Card>
 
             {/* Components Card */}
-            <Card className="p-6">
-              <div className="mb-2 flex items-center gap-2">
-                <CpuIcon className="mb-2 h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold text-primary">
-                  {t("settings.components")}
-                </h2>
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                {t("settings.componentsDescription")}
-              </p>
-              <Button
-                onClick={() => navigate("/sidecaranddependencies")}
-                disabled={!isOnWindows}
-                className="flex w-full items-center gap-2 text-secondary"
-              >
-                {t("settings.viewComponentsPage")}
-              </Button>
-            </Card>
+            {isOnWindows && (
+              <Card className="p-6">
+                <div className="mb-2 flex items-center gap-2">
+                  <CpuIcon className="mb-2 h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-semibold text-primary">
+                    {t("settings.components")}
+                  </h2>
+                </div>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {t("settings.componentsDescription")}
+                </p>
+                <Button
+                  onClick={() => navigate("/sidecaranddependencies")}
+                  className="flex w-full items-center gap-2 text-secondary"
+                >
+                  {t("settings.viewComponentsPage")}
+                </Button>
+              </Card>
+            )}
 
             {/* Language Settings Card */}
             <Card className="p-6">
