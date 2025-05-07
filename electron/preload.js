@@ -104,6 +104,7 @@ contextBridge.exposeInMainWorld("electron", {
   folderExclusion: () => ipcRenderer.invoke("folder-exclusion"),
   getInstalledTools: () => ipcRenderer.invoke("get-installed-tools"),
   installTool: tool => ipcRenderer.invoke("install-tool", tool),
+  isWatchdogRunning: () => ipcRenderer.invoke("is-watchdog-running"),
   canCreateFiles: directory => ipcRenderer.invoke("can-create-files", directory),
   openFileDialog: (exePath = null) => ipcRenderer.invoke("open-file-dialog", exePath),
   isSteamCMDInstalled: () => ipcRenderer.invoke("is-steamcmd-installed"),

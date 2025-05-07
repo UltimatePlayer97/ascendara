@@ -23,6 +23,28 @@ const STEAM_WEB_API_KEY =
 console.log("STEAM_WEB_API_KEY:", STEAM_WEB_API_KEY);
 const steamLangDefs = require("./steam.json");
 
+let watchdogRunning = false;
+const timestampFilePath = path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
+
+async function updateWatchdogStatus(running) {
+  watchdogRunning = running;
+  let payload = {};
+  try {
+    // Try to read the existing file and parse it
+    const data = await fs.readFile(timestampFilePath, "utf8");
+    payload = JSON.parse(data);
+  } catch (e) {
+    // If file doesn't exist or is invalid, start with empty object
+    payload = {};
+  }
+  payload.watchdogRunning = running;
+  try {
+    await fs.writeFile(timestampFilePath, JSON.stringify(payload, null, 2), "utf8");
+  } catch (e) {
+    console.error("Failed to write watchdog status:", e);
+  }
+}
+
 async function getSettings() {
   try {
     const appData = process.env.APPDATA;
@@ -133,6 +155,7 @@ var app = {
     } catch (err) {
       console.log(err);
       instance.unlock();
+      await updateWatchdogStatus(false);
       process.exit();
     }
   },
@@ -546,8 +569,10 @@ async function updateAchievementsJsonForRunningGame(game, achievedCache) {
 console.log("About to acquire single-instance lock (block 1)...");
 instance.lock().then(() => {
   console.log("Single-instance lock acquired (block 1). Starting app...");
+  updateWatchdogStatus(true);
   app.start().catch(err => {
     console.error("app.start() failed (block 1):", err);
+    updateWatchdogStatus(false);
   });
 });
 

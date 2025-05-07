@@ -111,6 +111,25 @@ console.warn = (...args) => {
   originalConsole.warn(...args);
 };
 
+function setWatchdogRunningFalse() {
+  try {
+    if (fs.existsSync(TIMESTAMP_FILE)) {
+      const data = fs.readFileSync(TIMESTAMP_FILE, "utf8");
+      let payload = {};
+      try {
+        payload = JSON.parse(data);
+      } catch {
+        payload = {};
+      }
+      payload.watchdogRunning = false;
+      fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(payload, null, 2), "utf8");
+    }
+  } catch (e) {
+    // Log but do not block quit
+    console.error("Failed to update watchdogRunning in timestamp file:", e);
+  }
+}
+
 // Ensure logs are written before app exits
 app.on("before-quit", () => {
   logStream.end();
@@ -234,6 +253,9 @@ app.whenReady().then(() => {
     printDevModeIntro(appVersion, process.env.NODE_ENV || "development", isDev);
   }
   //  checkAdmin();
+  if (isWindows) {
+    setWatchdogRunningFalse();
+  }
   createWindow();
   initializeDiscordRPC();
   axios
@@ -327,6 +349,24 @@ function checkInstalledTools() {
 }
 
 checkInstalledTools();
+
+ipcMain.handle("is-watchdog-running", async event => {
+  try {
+    if (fs.existsSync(TIMESTAMP_FILE)) {
+      const data = fs.readFileSync(TIMESTAMP_FILE, "utf8");
+      try {
+        const payload = JSON.parse(data);
+        return payload.watchdogRunning || false;
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error("Error checking watchdog status:", e);
+    return false;
+  }
+});
 
 ipcMain.handle("get-installed-tools", async event => {
   if (isWindows && !isDev) {
