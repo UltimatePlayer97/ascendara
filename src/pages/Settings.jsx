@@ -59,9 +59,12 @@ import {
   MonitorDot,
   CircleCheck,
   MinusCircle,
+  Code,
+  SquareCode,
+  CpuIcon,
 } from "lucide-react";
 import gameService from "@/services/gameService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { analytics } from "@/services/analyticsService";
 import { getAvailableLanguages, handleLanguageChange } from "@/services/languageService";
 import {
@@ -197,29 +200,37 @@ function createDebouncedFunction(func, wait) {
 
 const ALL_SIDECARS = [
   {
-    id: "ludusavi",
-    name: "Ludusavi Backup",
-    description: "Backup and restore saves",
-  },
-  {
     id: "watchdog",
     name: "Achievement Watcher",
     description: "Track and view game achievements",
+    source:
+      "https://github.com/Ascendara/ascendara/tree/main/electron/services/achievements",
+  },
+  {
+    id: "ludusavi",
+    name: "Ludusavi Backup",
+    description: "Backup and restore saves",
+    source: "https://github.com/mtkennerly/ludusavi",
   },
   {
     id: "steamcmd",
     name: "SteamCMD Tool",
     description: "Download Steam Workshop items",
+    source: "https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD",
   },
   {
     id: "torrent",
     name: "Torrent Handler",
     description: "Download and manage torrents",
+    source:
+      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraTorrentHandler/src",
   },
   {
     id: "translator",
     name: "Language Translator",
     description: "Translate app UI Text",
+    source:
+      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraLanguageTranslation/src",
   },
 ];
 
@@ -293,37 +304,6 @@ function Settings() {
       setIsExperiment(isExperiment);
     };
     checkExperiment();
-  }, []);
-
-  useEffect(() => {
-    async function fetchInstalledTools() {
-      try {
-        const tools = await window.electron.getInstalledTools();
-        console.log("Installed tools:", tools);
-        let installed = tools;
-        let steamcmdStatus = "not_installed";
-        try {
-          const steamcmdResult = await window.electron.isSteamCMDInstalled();
-          if (steamcmdResult === true) {
-            if (!installed.includes("steamcmd")) {
-              installed = [...installed, "steamcmd"];
-            }
-            steamcmdStatus = "installed";
-          } else if (
-            typeof steamcmdResult === "object" &&
-            steamcmdResult.message === "not_on_windows"
-          ) {
-            steamcmdStatus = "not_on_windows";
-          }
-        } catch {}
-        setInstalledTools(installed);
-        setSteamcmdStatus(steamcmdStatus);
-      } catch (e) {
-        setInstalledTools([]);
-        setSteamcmdStatus("not_installed");
-      }
-    }
-    fetchInstalledTools();
   }, []);
 
   // Check if we're on Windows
@@ -2179,73 +2159,24 @@ function Settings() {
               </div>
             </Card>
 
+            {/* Components Card */}
             <Card className="p-6">
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-primary">
-                <Car className="h-5 w-5 text-primary" />
-                {t("settings.sideCars")}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t("settings.sideCarsDescription")}
+              <div className="mb-2 flex items-center gap-2">
+                <CpuIcon className="mb-2 h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold text-primary">
+                  {t("settings.components")}
+                </h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                {t("settings.componentsDescription")}
               </p>
-              <ul className="divide-y divide-border">
-                {sidecars.map(sidecar => (
-                  <li key={sidecar.id} className="py-1">
-                    <div className="flex items-center gap-4 px-2 py-2 transition-colors duration-150 hover:rounded-lg hover:bg-muted/50">
-                      {/* Status Icon */}
-                      <div>
-                        {sidecar.notOnWindows ? (
-                          <MinusCircle
-                            className="h-5 w-5 text-yellow-500"
-                            title="Not on Windows"
-                          />
-                        ) : sidecar.running ? (
-                          <MonitorDot
-                            className="h-5 w-5 text-green-600"
-                            title="Running"
-                          />
-                        ) : sidecar.installed ? (
-                          <CircleCheck
-                            className="h-5 w-5 text-blue-600"
-                            title="Installed"
-                          />
-                        ) : (
-                          <MinusCircle
-                            className="h-5 w-5 text-gray-400"
-                            title="Not Available"
-                          />
-                        )}
-                      </div>
-                      {/* Name and Description */}
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium">{sidecar.name}</div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {sidecar.description}
-                        </div>
-                      </div>
-                      {/* Status Label */}
-                      <div>
-                        {sidecar.notOnWindows ? (
-                          <span className="text-xs font-semibold text-yellow-600">
-                            Not on Windows
-                          </span>
-                        ) : sidecar.running ? (
-                          <span className="text-xs font-semibold text-green-600">
-                            Running
-                          </span>
-                        ) : sidecar.installed ? (
-                          <span className="text-xs font-semibold text-blue-600">
-                            Installed
-                          </span>
-                        ) : (
-                          <span className="text-xs font-semibold text-gray-400">
-                            Available
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <Button
+                onClick={() => navigate("/sidecaranddependencies")}
+                disabled={!isOnWindows}
+                className="flex w-full items-center gap-2 text-secondary"
+              >
+                {t("settings.viewComponentsPage")}
+              </Button>
             </Card>
 
             {/* Language Settings Card */}
@@ -2301,35 +2232,6 @@ function Settings() {
                   <p className="text-sm text-muted-foreground">
                     {t("settings.languageSetNote")}
                   </p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Install Game Dependencies Card */}
-            <Card className="p-6">
-              <div className="mb-2 flex items-center gap-2">
-                <ShieldAlert className="mb-2 h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold text-primary">
-                  {t("settings.installGameDependencies")}
-                </h2>
-              </div>
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm ${getDependencyStatusInfo.color}`}>
-                      {getDependencyStatusInfo.text}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("settings.reinstallDependenciesDesc")}.
-                  </p>
-                  <Button
-                    onClick={() => navigate("/dependencies")}
-                    disabled={!isOnWindows}
-                    className="flex w-full items-center gap-2 text-secondary"
-                  >
-                    {t("settings.manageDependencies")}
-                  </Button>
                 </div>
               </div>
             </Card>

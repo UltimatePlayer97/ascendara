@@ -28,12 +28,12 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { Toaster, toast } from "sonner";
-import Dependencies from "./pages/Dependencies";
 import DownloadPage from "./pages/Download";
 import Downloads from "./pages/Downloads";
 import ExtraLanguages from "./pages/ExtraLanguages";
 import Home from "./pages/Home";
 import WorkshopDownloader from "./pages/WorkshopDownloader";
+import SidecarAndDependencies from "./pages/SidecarAndDependencies";
 import GameScreen from "./pages/GameScreen";
 import Profile from "./pages/Profile";
 import Library from "./pages/Library";
@@ -580,6 +580,16 @@ const AppRoutes = () => {
               }
             />
             <Route
+              path="sidecaranddependencies"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="sidecaranddependencies">
+                    <SidecarAndDependencies />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
               path="profile"
               element={
                 <AnimatePresence mode="wait">
@@ -595,16 +605,6 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="workshopdownloader">
                     <WorkshopDownloader />
-                  </PageTransition>
-                </AnimatePresence>
-              }
-            />
-            <Route
-              path="dependencies"
-              element={
-                <AnimatePresence mode="wait">
-                  <PageTransition key="dependencies">
-                    <Dependencies />
                   </PageTransition>
                 </AnimatePresence>
               }
