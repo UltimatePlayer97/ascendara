@@ -1101,7 +1101,7 @@ const InstalledGameCard = memo(
                 className="h-full w-full border-b border-border object-cover transition-transform duration-300 group-hover:scale-105"
               />
               {typeof game.launchCount === "undefined" && !game.isCustom && (
-                <span className="pointer-events-none absolute left-2 top-2 z-20 select-none rounded bg-secondary px-2 py-0.5 text-xs font-bold text-white">
+                <span className="pointer-events-none absolute left-2 top-2 z-20 select-none rounded bg-secondary px-2 py-0.5 text-xs font-bold text-primary">
                   {t("library.newBadge")}
                 </span>
               )}
