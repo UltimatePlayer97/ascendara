@@ -90,7 +90,10 @@ const Library = () => {
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortOrder, setSortOrder] = useState(() => {
+    const saved = localStorage.getItem("library-sortOrder");
+    return saved || "asc";
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filters, setFilters] = useState({
     favorites: false,
@@ -173,6 +176,11 @@ const Library = () => {
         ? aName.localeCompare(bName)
         : bName.localeCompare(aName);
     });
+
+  // Save sortOrder to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("library-sortOrder", sortOrder);
+  }, [sortOrder]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredGames.length / PAGE_SIZE);
