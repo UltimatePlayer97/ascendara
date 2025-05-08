@@ -211,10 +211,16 @@ These languages come with the app by default:
     <td><strong>KHInsider</strong></td>
     <td>Game soundtrack library for listening and downloading tracks from.</td>
   </tr>
+  <tr>
+    <td><strong>Achievement Watcher</strong></td>
+    <td>Achievement tracking and viewing with Achievement Watcher by xan105.</td>
+  </tr>
 </table>
 
-## 🖼️ Preview
+## 🖼️ Preview App Pages
 
+<details>
+<summary>Dropdown all pages</summary>
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
   <div style="margin: 1%; width: 24%;">
     <h3 style="text-align: center;">Home Page</h3>
@@ -249,6 +255,7 @@ These languages come with the app by default:
     <img src="./readme/profile.png" width="100%"/>
   </div>
 </div>
+</details>
 
 ## 📦 The Ascendara Installer
 
