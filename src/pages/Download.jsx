@@ -62,47 +62,21 @@ import TimemachineDialog from "@/components/TimemachineDialog";
 import igdbService from "@/services/gameInfoService";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
 import GameScreenshots from "@/components/GameScreenshots";
+import {
+  fetchProviderPatterns,
+  getProviderPattern,
+} from "@/services/providerPatternService";
 
-const isValidURL = (url, provider) => {
+// Async validation using API patterns
+const isValidURL = async (url, provider, patterns) => {
   const trimmedUrl = url.trim();
   if (trimmedUrl === "") {
     return true;
   }
-
-  let pattern;
-
-  switch (provider.toLowerCase()) {
-    case "megadb":
-      pattern =
-        /^(https?:\/\/)[^\/?#]+(?::(\d+))?(\/[^?#]+)+\/[^\/?#]+\.(?:zip|rar|7z)$/i;
-      break;
-    case "datanodes":
-      pattern =
-        /^https:\/\/node\d+\.datanodes\.to(?::\d+)?\/d\/[a-zA-Z0-9]+(?:\/[\w\-.]+)?(?:\.(zip|rar|7z))?$/i;
-      break;
-    case "qiwi":
-      pattern = /^https:\/\/(spyderrock\.com\/[a-zA-Z0-9]+-[\w\s.-]+\.rar)$/i;
-      break;
-    case "buzzheavier":
-      pattern = /^https:\/\/buzzheavier\.com\/dl\/[A-Za-z0-9_-]+(?:\?.*)?$/i;
-      break;
-    case "gofile":
-      pattern =
-        /^https:\/\/store\d*\.gofile\.io\/download\/web\/[a-f0-9-]+\/[\w\s\.-]+\.(?:zip|rar|7z)$/i;
-      break;
-    default:
-      return false;
-  }
-
-  const match = pattern.test(trimmedUrl);
-  if (!match) {
-    return false;
-  }
-
-  const domainRegex = new RegExp(provider, "i");
-  const containsProviderName = domainRegex.test(trimmedUrl);
-
-  return containsProviderName;
+  if (!patterns) return false;
+  const pattern = getProviderPattern(provider, patterns);
+  if (!pattern) return false;
+  return pattern.test(trimmedUrl);
 };
 
 const VERIFIED_PROVIDERS = ["megadb", "gofile", "datanodes", "buzzheavier", "qiwi"];
@@ -115,11 +89,21 @@ export default function DownloadPage() {
   const { state } = useLocation();
   const location = useLocation();
   const navigate = useNavigate();
+  const [providerPatterns, setProviderPatterns] = useState(null);
   const [gameData, setGameData] = useState(state?.gameData);
   const [isUpdating, setIsUpdating] = useState(state?.gameData?.isUpdating || false);
   const { t } = useLanguage();
   const { settings, setSettings } = useSettings();
   const igdbConfig = useIgdbConfig();
+
+  useEffect(() => {
+    fetchProviderPatterns()
+      .then(setProviderPatterns)
+      .catch(err => {
+        console.error("Failed to fetch provider patterns", err);
+        setProviderPatterns(null);
+      });
+  }, []);
 
   // Fetch IGDB data
   const fetchIgdbData = async gameName => {
@@ -208,6 +192,24 @@ export default function DownloadPage() {
   const [selectedProvider, setSelectedProvider] = useState("");
   const [inputLink, setInputLink] = useState("");
   const [isStartingDownload, setIsStartingDownload] = useState(false);
+
+  // When provider changes, re-validate the input link
+  useEffect(() => {
+    const validate = async () => {
+      if (!inputLink.trim()) {
+        setIsValidLink(true);
+        return;
+      }
+      if (providerPatterns) {
+        const valid = await isValidURL(inputLink, selectedProvider, providerPatterns);
+        setIsValidLink(valid);
+      } else {
+        setIsValidLink(false);
+      }
+    };
+    validate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProvider, providerPatterns]);
   const [useAscendara, setUseAscendara] = useState(false);
   const [isDev, setIsDev] = useState(false);
   const [showNoDownloadPath, setShowNoDownloadPath] = useState(false);
@@ -697,7 +699,7 @@ export default function DownloadPage() {
       console.error("Error getting settings:", error);
     }
   };
-  const handleInputChange = e => {
+  const handleInputChange = async e => {
     const newLink = e.target.value;
     setInputLink(newLink);
 
@@ -709,15 +711,23 @@ export default function DownloadPage() {
     // Try to detect provider from URL if none selected
     if (!selectedProvider) {
       for (const provider of VERIFIED_PROVIDERS) {
-        if (isValidURL(newLink, provider)) {
-          setSelectedProvider(provider);
-          setIsValidLink(true);
-          return;
+        if (providerPatterns) {
+          const valid = await isValidURL(newLink, provider, providerPatterns);
+          if (valid) {
+            setSelectedProvider(provider);
+            setIsValidLink(true);
+            return;
+          }
         }
       }
     }
 
-    setIsValidLink(isValidURL(newLink, selectedProvider));
+    if (providerPatterns) {
+      const valid = await isValidURL(newLink, selectedProvider, providerPatterns);
+      setIsValidLink(valid);
+    } else {
+      setIsValidLink(false);
+    }
   };
 
   useEffect(() => {
