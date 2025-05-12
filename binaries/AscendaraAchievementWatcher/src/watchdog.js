@@ -68,10 +68,13 @@ async function getSteamApiLang() {
 }
 let sendNotification = opts => {
   try {
-    const exePath = path.join(
-      path.dirname(process.execPath),
-      "AscendaraNotificationHelper.exe"
-    );
+    const exePath =
+      process.env.NODE_ENV === "development"
+        ? path.join(path.dirname(process.execPath), "AscendaraNotificationHelper.exe")
+        : path.join(
+            path.dirname(process.execPath),
+            "../../AscendaraNotificationHelper/dist/AscendaraNotificationHelper.exe"
+          );
     let args = [];
     args.push("--is-achievement");
     let theme = opts.theme;
@@ -99,12 +102,7 @@ let sendNotification = opts => {
       // Do not exit or throw, just log
     });
   } catch (err) {
-    // Log error, but don't crash app in dev
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("Notification helper not available:", err.message);
-    } else {
-      throw err;
-    }
+    console.error("Failed to spawn notification helper:", err);
   }
 };
 
@@ -206,11 +204,21 @@ var app = {
 
           let appID;
           try {
-            appID = options.appid
-              ? options.appid
-              : filePath.dir
-                  .replace(/(\\stats$)|(\\SteamEmu$)|(\\SteamEmu\\UserStats$)/g, "")
+            if (options.appid) {
+              appID = options.appid;
+            } else {
+              // Try to extract appID for OnlineFix: .../OnlineFix/<AppID>/Stats/Achievements.ini
+              const parts = filePath.dir.split(path.sep);
+              const onlineFixIdx = parts.findIndex(p => p.toLowerCase() === "onlinefix");
+              if (onlineFixIdx !== -1 && parts.length > onlineFixIdx + 1) {
+                appID = parts[onlineFixIdx + 1];
+              } else {
+                // Fallback to original logic for other emus
+                appID = filePath.dir
+                  .replace(/(\\stats$)|(\\SteamEmu$)|(\\SteamEmu\\UserStats$)/gi, "")
                   .match(/([0-9]+$)/g)[0];
+              }
+            }
             console.log(`Detected appID: ${appID}`);
           } catch (err) {
             console.log(`Failed to extract appID from path: ${filePath.dir}`);
