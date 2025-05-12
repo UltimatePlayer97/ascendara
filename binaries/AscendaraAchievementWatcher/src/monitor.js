@@ -10,12 +10,12 @@ const ini = require("ini");
 const files = {
   achievement: [
     "achievements.ini",
+    "Achievements.ini",
     "achievements.json",
     "achiev.ini",
     "stats.ini",
     "Achievements.Bin",
     "achieve.dat",
-    "Achievements.ini",
     "stats.bin",
   ],
   steamEmu: [
@@ -63,13 +63,21 @@ module.exports.getFolders = async userDir_file => {
       },
     },
     {
+      dir: path.join(process.env["Public"], "Documents/OnlineFix"),
+      options: {
+        recursive: true,
+        filter: /([0-9]+)\\Stats/,
+        file: [files.achievement[0], files.achievement[1]],
+      },
+    },
+    {
       dir: path.join(process.env["PROGRAMDATA"], "Steam"),
       options: {
         disableCheckIfProcessIsRunning: true,
         disableCheckTimestamp: true,
         recursive: true,
         filter: /([0-9]+)\\stats/,
-        file: [files.achievement[0]],
+        file: [files.achievement[0], files.achievement[1]],
       },
       //3DM doesn't need override (disableCheckIfProcessIsRunning,disableCheckTimestamp) ...
     },
