@@ -243,24 +243,33 @@ class NotificationWindow(QWidget):
         layout.addWidget(footer)
 
     def _setup_achievement_ui(self):
-        self.setMinimumWidth(360)
-        self.setMaximumWidth(420)
-        self.setMinimumHeight(120)
-        self.setMaximumHeight(170)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(22, 18, 22, 18)
-        layout.setSpacing(14)
+        self.setMinimumWidth(380)
+        self.setMaximumWidth(400)
+        self.setMinimumHeight(88)
+        self.setMaximumHeight(120)
+        # Card layout with accent bar visually merged
+        card_layout = QHBoxLayout(self)
+        card_layout.setContentsMargins(0, 0, 0, 0)
+        card_layout.setSpacing(0)
 
-        layout.addSpacing(4)
+        # Accent bar (gold), flush with card and shares border radius
+        accent = QWidget()
+        accent.setFixedWidth(8)
+        accent.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFD700, stop:1 #B8860B); border-top-left-radius: 16px; border-bottom-left-radius: 16px;")
+        card_layout.addWidget(accent)
 
-        # Top: Icon and Achievement Info
-        top_layout = QHBoxLayout()
-        top_layout.setSpacing(14)
+        # Main content area (rounded on right, flush left)
+        content = QWidget()
+        content_layout = QHBoxLayout(content)
+        content_layout.setContentsMargins(10, 8, 16, 8)
+        content_layout.setSpacing(10)
+        content.setStyleSheet("border-top-right-radius: 16px; border-bottom-right-radius: 16px; background: #10182b;")
 
-        # Icon
+        # Icon (rounded, shadow, tight)
         icon_label = QLabel()
-        icon_label.setFixedSize(48, 48)
+        icon_label.setFixedSize(44, 44)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_label.setStyleSheet("border-radius: 8px; background: #232a3b; box-shadow: 0px 2px 8px rgba(0,0,0,0.10);")
         if self.icon:
             try:
                 pixmap = QPixmap()
@@ -273,40 +282,52 @@ class NotificationWindow(QWidget):
                 else:
                     pixmap.load(self.icon)
                 if not pixmap.isNull():
-                    icon_label.setPixmap(pixmap.scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                    icon_label.setPixmap(pixmap.scaled(44, 44, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
                 else:
-                    icon_label.setText("")
+                    icon_label.setText("🏆")
+                    icon_label.setStyleSheet("font-size: 28px; border-radius: 8px; background: #FFD700; color: #232a3b; text-align: center;")
             except Exception as e:
                 logger.warning(f"Failed to load achievement icon: {e}")
-                icon_label.setText("")
+                icon_label.setText("🏆")
+                icon_label.setStyleSheet("font-size: 28px; border-radius: 8px; background: #FFD700; color: #232a3b; text-align: center;")
         else:
-            icon_label.setText("")
-        icon_label.setStyleSheet(f"border-radius: 14px; background: {self.border_color.name()}; text-align: center; qproperty-alignment: 'AlignCenter';")
-        top_layout.addWidget(icon_label, alignment=Qt.AlignmentFlag.AlignVCenter)
+            icon_label.setText("🏆")
+            icon_label.setStyleSheet("font-size: 28px; border-radius: 8px; background: #FFD700; color: #232a3b; text-align: center;")
+        content_layout.addWidget(icon_label, alignment=Qt.AlignmentFlag.AlignVCenter)
 
-        # Achievement Info
-        info_layout = QVBoxLayout()
-        info_layout.setSpacing(6)
-        # Game name as the large title
+        # Info Column (tight, centered)
+        info_col = QVBoxLayout()
+        info_col.setSpacing(0)
+        info_col.setContentsMargins(0, 0, 0, 0)
+
+        # Trophy header (bold, gold, larger)
+        unlocked_header = QLabel("🏆 Achievement Unlocked!")
+        unlocked_header.setStyleSheet("color: #FFD700; font-size: 18px; font-weight: 900; font-family: 'Segoe UI', Arial, sans-serif; margin-bottom: 0px; letter-spacing: 0.5px;")
+        unlocked_header.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        info_col.addWidget(unlocked_header)
+
+        # Game name (bold, larger)
         game_label = QLabel(self.game or "")
-        game_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 21px; font-weight: bold; font-family: 'Segoe UI'; margin-bottom: 6px; text-shadow: 1px 1px 6px rgba(0,0,0,0.18);")
-        info_layout.addWidget(game_label)
+        game_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 17px; font-weight: bold; font-family: 'Segoe UI'; margin-bottom: 0px; text-shadow: 1px 1px 6px rgba(0,0,0,0.13);")
+        info_col.addWidget(game_label)
 
-        # Achievement name as the more prominent description
-        ach_label = QLabel(self.achievement or "Achievement Unlocked!")
-        ach_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 17px; font-family: 'Segoe UI Semibold', 'Segoe UI', Arial, sans-serif; margin-bottom: 0px; letter-spacing: 0.2px; text-shadow: 1px 1px 6px rgba(0,0,0,0.22);")
+        # Achievement name (larger, light)
+        achievement_text = self.achievement or "Achievement Unlocked!"
+        ach_label = QLabel(achievement_text)
+        ach_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 14px; font-family: 'Segoe UI', Arial, sans-serif; font-weight: 400; margin-bottom: 0px; letter-spacing: 0.2px; text-shadow: 1px 1px 6px rgba(0,0,0,0.09);")
         ach_label.setWordWrap(True)
-        info_layout.addWidget(ach_label)
+        info_col.addWidget(ach_label)
 
-        top_layout.addLayout(info_layout)
-        layout.addLayout(top_layout)
+        # If no achievement details, show a friendly message
+        if not self.achievement or self.achievement.strip() == "":
+            empty_label = QLabel("You just unlocked a new achievement!")
+            empty_label.setStyleSheet(f"color: {self.fg_color.name()}; font-size: 13px; font-family: 'Segoe UI'; margin-top: 0px;")
+            info_col.addWidget(empty_label)
 
-        layout.addSpacing(10)
-        footer = QWidget()
-        footer_layout = QHBoxLayout(footer)
-        footer_layout.setContentsMargins(0, 0, 0, 0)
-        footer_layout.addStretch()
-        layout.addWidget(footer)
+        info_col.addStretch()
+        content_layout.addLayout(info_col)
+        content.setLayout(content_layout)
+        card_layout.addWidget(content)
 
     def _handle_open(self):
         import subprocess
@@ -330,11 +351,10 @@ class NotificationWindow(QWidget):
         screen = QApplication.primaryScreen()
         geometry = screen.availableGeometry()  # Use availableGeometry for taskbar safety
         dpr = screen.devicePixelRatio() if hasattr(screen, 'devicePixelRatio') else 1.0
-        if self.is_achievement:
-            width, height = int(420 * dpr), int(170 * dpr)
-        else:
-            width, height = int(380 * dpr), int(160 * dpr)
-        margin_x, margin_y = int(24 * dpr), int(24 * dpr)
+        # Use actual widget size for precise placement
+        self.adjustSize()
+        width, height = self.width(), self.height()
+        margin_x, margin_y = int(18 * dpr), int(18 * dpr)
         x = geometry.x() + geometry.width() - width - margin_x
         y = geometry.y() + geometry.height() - height - margin_y
         self.setGeometry(x, y, width, height)
