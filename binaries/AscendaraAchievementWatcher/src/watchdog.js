@@ -10,6 +10,7 @@ const monitor = require("./monitor.js");
 const steam = require("./steam.js");
 const steamLangDefs = require("./steam.json");
 const track = require("./track.js");
+const { getSettings } = require("./userConfig.js");
 const { spawn } = require("child_process");
 
 // Get config from ENV or IPC
@@ -36,18 +37,6 @@ async function updateWatchdogStatus(running) {
   }
 }
 
-async function getSettings() {
-  try {
-    const appData = process.env.APPDATA;
-    const settingsPath = path.join(appData, "Electron", "ascendarasettings.json");
-    const data = await fs.readFile(settingsPath, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading settings file:", error);
-    return {};
-  }
-}
-
 async function getSteamApiLang() {
   // Get settings from preload/renderer
   try {
@@ -66,7 +55,7 @@ async function getSteamApiLang() {
     return "english";
   }
 }
-let sendNotification = opts => {
+let sendNotification = async opts => {
   try {
     const exePath =
       process.env.NODE_ENV === "development"
@@ -77,6 +66,7 @@ let sendNotification = opts => {
           );
     let args = [];
     args.push("--is-achievement");
+    let settings = await getSettings();
     let theme = opts.theme;
     if (!theme && typeof settings === "object" && settings.theme) {
       theme = settings.theme;

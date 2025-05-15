@@ -6,6 +6,7 @@ const omit = require("lodash.omit");
 const fs = require("fs").promises;
 const sse = require("./sse.js");
 const ini = require("ini");
+const { getSettings } = require("./userConfig.js");
 
 const files = {
   achievement: [
@@ -107,6 +108,17 @@ module.exports.getFolders = async userDir_file => {
     }
 
     let list = JSON.parse(await fs.readFile(userDir_file, "utf8"));
+    const settings = await getSettings();
+    if (settings && Array.isArray(settings.watchingFolders)) {
+      for (const userDir of settings.watchingFolders) {
+        if (!steamEmu.some(entry => entry.dir === userDir)) {
+          steamEmu.push({
+            dir: userDir,
+            options: { recursive: true, filter: /.*/, file: files.achievement },
+          });
+        }
+      }
+    }
     for (let dir of list) {
       if (dir.notify == true) {
         try {
