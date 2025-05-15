@@ -329,13 +329,9 @@ const AppRoutes = () => {
 
   useEffect(() => {
     const checkPlatform = async () => {
-      const hasLaunched = await window.electron.hasLaunched();
-      console.log("Has launched:", hasLaunched);
-      if (!hasLaunched) {
-        const isWindows = await window.electron.isOnWindows();
-        if (!isWindows) {
-          setShowPlatformWarning(true);
-        }
+      const isWindows = await window.electron.isOnWindows();
+      if (!isWindows) {
+        setShowPlatformWarning(true);
       }
     };
     checkPlatform();
