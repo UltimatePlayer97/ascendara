@@ -115,17 +115,7 @@ console.warn = (...args) => {
 
 function setWatchdogRunningFalse() {
   try {
-    if (fs.existsSync(TIMESTAMP_FILE)) {
-      const data = fs.readFileSync(TIMESTAMP_FILE, "utf8");
-      let payload = {};
-      try {
-        payload = JSON.parse(data);
-      } catch {
-        payload = {};
-      }
-      payload.watchdogRunning = false;
-      fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(payload, null, 2), "utf8");
-    }
+    updateTimestampFile({ watchdogRunning: false });
   } catch (e) {
     // Log but do not block quit
     console.error("Failed to update watchdogRunning in timestamp file:", e);
@@ -455,22 +445,9 @@ ipcMain.handle("install-tool", async (event, tool) => {
     // Update installed tools list
     installedTools.push(tool);
 
-    // Read existing timestamp data
-    let existingData = {};
-    try {
-      if (fs.existsSync(TIMESTAMP_FILE)) {
-        existingData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
-      }
-    } catch (error) {
-      console.error("Error reading timestamp file:", error);
-    }
-
-    const timestampData = {
-      ...existingData,
+    updateTimestampFile({
       installedTools,
-    };
-
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
+    });
 
     return { success: true, message: `${tool} installed successfully` };
   } catch (error) {
@@ -565,22 +542,9 @@ ipcMain.handle("install-steamcmd", async () => {
       });
     });
 
-    // Merge new data with existing data
-    let existingData = {};
-    try {
-      if (fs.existsSync(TIMESTAMP_FILE)) {
-        existingData = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
-      }
-    } catch (error) {
-      console.error("Error reading timestamp file:", error);
-    }
-
-    const timestampData = {
-      ...existingData,
+    updateTimestampFile({
       steamCMD: true,
-    };
-
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
+    });
 
     return { success: true, message: "SteamCMD installed and initialized successfully" };
   } catch (error) {
@@ -1507,12 +1471,9 @@ async function downloadUpdateInBackground() {
 
   try {
     // Set downloadingUpdate to true in timestamp
-    let timestamp = {};
-    if (fs.existsSync(TIMESTAMP_FILE)) {
-      timestamp = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
-    }
-    timestamp.downloadingUpdate = true;
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestamp, null, 2));
+    updateTimestampFile({
+      downloadingUpdate: true,
+    });
 
     // Custom headers for app identification
     const headers = {
@@ -1568,8 +1529,9 @@ async function downloadUpdateInBackground() {
     updateDownloadInProgress = false;
 
     // Set downloadingUpdate to false in timestamp
-    timestamp.downloadingUpdate = false;
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestamp, null, 2));
+    updateTimestampFile({
+      downloadingUpdate: false,
+    });
 
     // Notify that update is ready
     BrowserWindow.getAllWindows().forEach(window => {
@@ -2351,7 +2313,7 @@ ipcMain.handle(
         game: sanitizedGame,
         timestamp: new Date().toISOString(),
       });
-      await fs.promises.writeFile(TIMESTAMP_FILE, JSON.stringify(timestampData, null, 2));
+      await updateTimestampFile(timestampData);
       console.log(`Updated timestamp file successfully`);
 
       console.log(`Spawning download process`);
@@ -2607,18 +2569,36 @@ ipcMain.handle("has-launched", () => {
   return result;
 });
 
-ipcMain.handle("update-launch-count", () => {
+// Utility to safely update the timestamp file by merging new data
+function updateTimestampFile(updates) {
+  let timestamp = {};
   try {
-    let timestamp = {};
-
     if (fs.existsSync(TIMESTAMP_FILE)) {
       timestamp = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
     }
+  } catch (err) {
+    console.error("Failed to read timestamp file for merging:", err);
+    timestamp = {};
+  }
+  const merged = { ...timestamp, ...updates };
+  try {
+    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(merged, null, 2));
+  } catch (err) {
+    console.error("Failed to write timestamp file:", err);
+  }
+  return merged;
+}
 
-    timestamp.launchCount = (timestamp.launchCount || 0) + 1;
-    fs.writeFileSync(TIMESTAMP_FILE, JSON.stringify(timestamp, null, 2));
-
-    return timestamp.launchCount;
+ipcMain.handle("update-launch-count", () => {
+  console.log("Updating launch count...");
+  try {
+    let timestamp = {};
+    if (fs.existsSync(TIMESTAMP_FILE)) {
+      timestamp = JSON.parse(fs.readFileSync(TIMESTAMP_FILE, "utf8"));
+    }
+    const launchCount = (timestamp.launchCount || 0) + 1;
+    const merged = updateTimestampFile({ launchCount });
+    return merged.launchCount;
   } catch (error) {
     console.error("Error updating launch count:", error);
     return 1;
