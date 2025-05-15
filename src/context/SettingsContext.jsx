@@ -12,6 +12,7 @@ export function SettingsProvider({ children }) {
   const [settings, setSettingsState] = useState({
     downloadDirectory: "",
     additionalDirectories: [],
+    watchingFolders: [],
     showOldDownloadLinks: false,
     seeInappropriateContent: false,
     earlyReleasePreview: false,

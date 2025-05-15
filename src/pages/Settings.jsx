@@ -62,6 +62,7 @@ import {
   Code,
   SquareCode,
   CpuIcon,
+  CornerDownRight,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import { Link, useNavigate } from "react-router-dom";
@@ -1428,6 +1429,134 @@ function Settings() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </Card>
+
+            {/* Achievement Watcher Directories Card */}
+            <Card className="p-6">
+              <h3 className="mb-2 text-xl font-semibold text-primary">
+                {t("settings.achievementWatcher.title") ||
+                  "Achievement Watcher Directories"}
+              </h3>
+              <p className="mb-4 text-sm text-muted-foreground">
+                {t("settings.achievementWatcher.description") ||
+                  "Configure which directories are monitored for achievement tracking. Add folders where your games are installed to enable achievement tracking for those games."}
+              </p>
+              {/* Default Directories Section */}
+              <div className="mb-6">
+                <div className="mb-1 flex items-center gap-2">
+                  <FolderOpen className="text-primary-foreground h-4 w-4" />
+                  <span className="text-primary-foreground font-medium">
+                    {t("settings.achievementWatcher.defaultDirs") ||
+                      "Default directories always tracked:"}
+                  </span>
+                </div>
+                <ul className="ml-6 space-y-1 text-xs text-muted-foreground">
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Public/Documents/Steam/CODEX</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>AppData/Roaming/Steam/CODEX</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>AppData/Roaming/Goldberg SteamEmu Saves</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>AppData/Roaming/EMPRESS</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Public/Documents/EMPRESS</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Public/Documents/OnlineFix</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>ProgramData/Steam</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>LocalAppData/SKIDROW</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>AppData/Roaming/SmartSteamEmu</span>
+                  </li>
+                </ul>
+                <div className="mt-2 text-xs italic text-muted-foreground">
+                  {t("settings.achievementWatcher.defaultDirsNote") ||
+                    "These directories and files are always tracked by default and cannot be removed."}
+                </div>
+              </div>
+              <div className="space-y-3">
+                {/* List user-added directories */}
+                {settings.watchingFolders && settings.watchingFolders.length > 0 ? (
+                  <ul className="mb-3 space-y-2">
+                    {settings.watchingFolders.map((dir, idx) => (
+                      <li key={dir} className="flex items-center gap-2">
+                        <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                        <span className="flex-1 truncate" title={dir}>
+                          {dir}
+                        </span>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-muted-foreground"
+                          aria-label={
+                            t("settings.achievementWatcher.removeDir") ||
+                            "Remove directory"
+                          }
+                          onClick={() => {
+                            setSettings(prev => ({
+                              ...prev,
+                              watchingFolders: prev.watchingFolders.filter(
+                                (d, i) => i !== idx
+                              ),
+                            }));
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="mb-3 text-sm text-muted-foreground">
+                    {t("settings.achievementWatcher.noDirs") ||
+                      "No directories added yet."}
+                  </div>
+                )}
+                {/* Add new directory */}
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={async () => {
+                    const directory = await window.electron.openDirectoryDialog();
+                    if (directory) {
+                      const currentFolders = settings.watchingFolders || [];
+                      if (currentFolders.includes(directory)) {
+                        toast.error(
+                          t("settings.achievementWatcher.duplicateDir") ||
+                            "This directory is already being watched."
+                        );
+                        return;
+                      }
+                      setSettings(prev => ({
+                        ...prev,
+                        watchingFolders: [...currentFolders, directory],
+                      }));
+                    }
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("settings.achievementWatcher.addDir") || "Add Directory"}
+                </Button>
               </div>
             </Card>
 
