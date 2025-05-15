@@ -4,6 +4,7 @@ import MenuBar from "@/components/MenuBar";
 import MiniPlayer from "@/components/MiniPlayer";
 import SupportDialog from "@/components/SupportDialog";
 import PlatformWarningDialog from "@/components/PlatformWarningDialog";
+import WatcherWarnDialog from "@/components/WatcherWarnDialog";
 import BrokenVersionDialog from "@/components/BrokenVersionDialog";
 import PageTransition from "@/components/PageTransition";
 import UpdateOverlay from "@/components/UpdateOverlay";
@@ -145,6 +146,7 @@ const AppRoutes = () => {
   };
 
   const [welcomeData, setWelcomeData] = useState(null);
+  const [showWatcherWarn, setShowWatcherWarn] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -275,6 +277,14 @@ const AppRoutes = () => {
         const hasLaunched = await checkAndSetWelcomeStatus();
 
         if (hasLaunched) {
+          const isWatchdogActive = await window.electron.isWatchdogRunning();
+          if (!isWatchdogActive) {
+            await ensureMinLoadingTime();
+            setIsLoading(false);
+            setShowWatcherWarn(true);
+            return;
+          }
+
           await ensureMinLoadingTime();
           setIsLoading(false);
         }
@@ -636,6 +646,7 @@ const AppRoutes = () => {
       {isBrokenVersion && (
         <BrokenVersionDialog onClose={() => setIsBrokenVersion(false)} />
       )}
+      <WatcherWarnDialog open={showWatcherWarn} onOpenChange={setShowWatcherWarn} />
     </>
   );
 };

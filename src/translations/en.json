@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara downloaded the update and is ready to install and restart now",
       "viewChangelog": "View Changelog"
     },
-    "torrentWarning": "TORRENTING IS ENABLED - USE VPN"
+    "torrentWarning": "TORRENTING IS ENABLED - USE VPN",
+    "watchdog": {
+      "error": {
+        "help": "Please uninstall Achievement Watcher from your system, then restart Ascendara. Both applications cannot run together as they use the same achievement tracking system.",
+        "message": "Ascendara's achievement tracking service is not running. This is commonly caused by having Achievement Watcher installed, which conflicts with Ascendara's built-in achievement system.",
+        "title": "Achievement Service Not Running"
+      }
+    }
   },
   "common": {
     "back": "Back",
