@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendaraはアップデートをダウンロードし、今すぐインストールして再起動する準備ができています",
       "viewChangelog": "changelogを表示します"
     },
-    "torrentWarning": "Torrentingが有効になっています -  VPNを使用します"
+    "torrentWarning": "Torrentingが有効になっています -  VPNを使用します",
+    "watchdog": {
+      "error": {
+        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションが一緒に実行できません。",
+        "message": "Ascendaraの功績追跡サービスは実行されていません。これは一般に、Achievement Watcherをインストールすることによって引き起こされます。",
+        "title": "実行中の達成サービス"
+      }
+    }
   },
   "common": {
     "back": "戻る",
@@ -616,6 +623,14 @@
     "visit-status-page": "ステータスページにアクセスしてください"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "ディレクトリを追加します",
+      "defaultDirs": "デフォルトの監視ディレクトリ",
+      "defaultDirsNote": "これらのディレクトリは、常に成果を監視されています。以下にディレクトリを追加できます。",
+      "description": "これらは、成果のために監視されるフォルダーです。見つかった成果はすべてライブラリに追加されます。 Achievement WatcherはXan105のオリジナルに基づいており、Ascendara用に変更されています。",
+      "noDirs": "ディレクトリは選択されていません",
+      "title": "功績ウォッチャー"
+    },
     "addLocation": "ダウンロードディレクトリを追加します",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtraを使用すると、ゲーム情報プロバイダーをセットアップでき、すべてのゲームに関する追加情報を読むことができます。",

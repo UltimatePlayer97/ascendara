@@ -53,7 +53,7 @@
       "donate": "Soutenir le développement",
       "feedback": "Donner des commentaires",
       "message": "Je sais que je n'ai dit pas d'annonces mais est-ce vraiment une annonce? Vous commencez à utiliser Ascendara et j'aimerais que vous le notiez ou me donnez des commentaires. Vous ne reverrez plus jamais ce message.",
-      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore mieux.",
+      "note": "J'ai passé tellement de temps à créer Ascendara comme projet passionné. Chaque fonctionnalité, chaque ligne de code est fabriquée avec soin. Votre soutien signifie tout pour moi et m'aide à continuer à rendre Ascendara encore meilleur.",
       "title": "Faites-moi savoir comment vous l'aimez"
     },
     "toasts": {
@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara a téléchargé la mise à jour et est prêt à installer et à redémarrer maintenant",
       "viewChangelog": "Voir Changelog"
     },
-    "torrentWarning": "Le torrent est activé - Utilisez VPN"
+    "torrentWarning": "Le torrent est activé - Utilisez VPN",
+    "watchdog": {
+      "error": {
+        "help": "Veuillez désinstaller l'observateur de réussite de votre système, puis redémarrez Ascendara. Les deux applications ne peuvent pas s'exécuter ensemble car elles utilisent le même système de suivi de réussite.",
+        "message": "Le service de suivi des réalisations d'Ascendara n'est pas en cours d'exécution. Ceci est généralement causé par l'installation de Wather Watcher, qui entre en conflit avec le système de réussite intégré d'Ascencera.",
+        "title": "Le service de réussite ne fonctionne pas"
+      }
+    }
   },
   "common": {
     "back": "Dos",
@@ -616,6 +623,14 @@
     "visit-status-page": "Visiter la page de statut"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "Ajouter le répertoire",
+      "defaultDirs": "Répertoires de regard par défaut",
+      "defaultDirsNote": "Ces répertoires sont toujours surveillés pour les réalisations. Vous pouvez ajouter plus de répertoires ci-dessous.",
+      "description": "Ce sont les dossiers qui seront surveillés pour les réalisations. Toutes les réalisations trouvées seront ajoutées à votre bibliothèque. L'observateur de réussite est basé sur l'original par XAN105 et a été modifié pour Ascendara.",
+      "noDirs": "Aucun répertoire sélectionné",
+      "title": "Watcher Achievement Watcher"
+    },
     "addLocation": "Ajouter le répertoire de téléchargement",
     "additionalGameInfo": "Ascendara xtra",
     "additionalGameInfoDescription": "Ascendara Xtra vous permet de configurer un fournisseur d'informations de jeu, vous permettant de lire des informations supplémentaires sur tous les jeux.",
@@ -866,7 +881,7 @@
     "continue": "Continuer",
     "continueWithoutSharing": "Continuer sans partager",
     "darkThemes": "Thèmes sombres",
-    "dependenciesDesc": "Si vous jouez sur un nouveau PC ou que vous avez récemment installé Windows, Ascendara peut vous aider à installer ces composants essentiels pour assurer la meilleure expérience",
+    "dependenciesDesc": "Si vous jouez sur un nouveau PC ou avez récemment installé Windows, Ascendara peut vous aider à installer ces composants essentiels pour assurer la meilleure expérience",
     "downloadGamesFaster": "Télécharger les jeux plus rapidement",
     "enableAutoUpdates": "Activer les mises à jour automatique",
     "errorInstallingDependencies": "Erreur d'installation des dépendances",
@@ -937,7 +952,7 @@
     "stayUpToDate": "Gardez Ascendara à jour",
     "takeTour": "Faire la tournée",
     "termsOfService": "Conditions de service",
-    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements de fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
+    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements des fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Vous êtes presque prêt à commencer à utiliser Ascendara. Nous allons passer par le processus d'intégration ensemble pour faire trié certains paramètres de base, mais veuillez d'abord lire les conditions d'utilisation et la politique de confidentialité.",

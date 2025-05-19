@@ -23,7 +23,7 @@
       "troubleshooting": "Versuchen Sie diese Schritte, um das Problem zu lösen:"
     },
     "downloading-update": "Update herunterladen ...",
-    "experiment": "Experimentell",
+    "experiment": "EXPERIMENTAL",
     "loading": {
       "ascendaraWillRestart": "Ascendara wird automatisch neu starten",
       "installingUpdate": "Update installieren"
@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara hat das Update heruntergeladen und ist jetzt bereit, jetzt zu installieren und neu zu starten",
       "viewChangelog": "ChangeLog anzeigen"
     },
-    "torrentWarning": "Torrenting ist aktiviert - Verwenden Sie VPN"
+    "torrentWarning": "Torrenting ist aktiviert - Verwenden Sie VPN",
+    "watchdog": {
+      "error": {
+        "help": "Bitte deinstallieren Sie den Leistungsbeobachter aus Ihrem System und starten Sie dann Ascendara neu. Beide Anwendungen können nicht zusammen ausgeführt werden, da sie das gleiche Leistungsverfolgungssystem verwenden.",
+        "message": "Der Leistungsverfolgungsdienst von Ascendara läuft nicht. Dies wird üblicherweise durch die Installation von Achievement-Beobachter verursacht, was mit dem integrierten Leistungssystem von Ascendara in Konflikt steht.",
+        "title": "Leistungsdienst nicht ausgeführt"
+      }
+    }
   },
   "common": {
     "back": "Zurück",
@@ -616,6 +623,14 @@
     "visit-status-page": "Besuchen Sie die Statusseite"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "Verzeichnis hinzufügen",
+      "defaultDirs": "Standardbeobachtungsverzeichnisse",
+      "defaultDirsNote": "Diese Verzeichnisse werden immer auf Erfolge beobachtet. Sie können unten weitere Verzeichnisse hinzufügen.",
+      "description": "Dies sind die Ordner, die auf Erfolge beobachtet werden. Alle gefundenen Erfolge werden Ihrer Bibliothek hinzugefügt. Der Leistungsbeobachter basiert auf dem Original von XAN105 und wurde für Ascendara modifiziert.",
+      "noDirs": "Keine Verzeichnisse ausgewählt",
+      "title": "Leistungsbeobachter"
+    },
     "addLocation": "Download -Verzeichnis hinzufügen",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Mit Ascendara Xtra können Sie einen Spielinformationsanbieter einrichten und zusätzliche Informationen zu allen Spielen lesen.",

@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara ha scaricato l'aggiornamento ed è pronta per l'installazione e il riavvio ora",
       "viewChangelog": "Visualizza Changelog"
     },
-    "torrentWarning": "Torrenting è abilitato: usa VPN"
+    "torrentWarning": "Torrenting è abilitato: usa VPN",
+    "watchdog": {
+      "error": {
+        "help": "Si prega di disinstallare i risultati del tuo sistema, quindi riavvia Ascendara. Entrambe le applicazioni non possono funzionare insieme in quanto utilizzano lo stesso sistema di tracciamento dei risultati.",
+        "message": "Il servizio di tracciamento dei risultati di Ascendara non è in esecuzione. Ciò è comunemente causato dall'installazione di Achievement Watcher, che è in conflitto con il sistema di consegne integrato di Ascendara.",
+        "title": "Servizio di successo non in esecuzione"
+      }
+    }
   },
   "common": {
     "back": "Indietro",
@@ -616,6 +623,14 @@
     "visit-status-page": "Visita la pagina di stato"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "Aggiungi directory",
+      "defaultDirs": "Directory di visione predefinita",
+      "defaultDirsNote": "Queste directory sono sempre osservate per i risultati. Puoi aggiungere più directory di seguito.",
+      "description": "Queste sono le cartelle che saranno osservate per i risultati. Eventuali risultati trovati verranno aggiunti alla tua biblioteca. The Hachiesment Watcher si basa sull'originale di XAN105 ed è stato modificato per Ascendara.",
+      "noDirs": "Nessuna directory selezionata",
+      "title": "Achievement Watcher"
+    },
     "addLocation": "Aggiungi la directory di download",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra consente di impostare un fornitore di informazioni di gioco, permettendo di leggere ulteriori informazioni su tutti i giochi.",
@@ -940,8 +955,8 @@
     "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
-    "welcomeToAscendaraDescription": "Sei quasi pronto per iniziare a usare Ascendara. Passeremo insieme il processo di onboarding per ordinare alcune impostazioni di base, ma prima si prega di leggere i termini di servizio e politica sulla privacy.",
-    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverrà in Ascendara",
+    "welcomeToAscendaraDescription": "Sei quasi pronto per iniziare a usare Ascendara. Passeremo attraverso il processo di onboarding per ordinare alcune impostazioni di base, ma prima si prega di leggere i termini di servizio e politica sulla privacy.",
+    "whenYouClickADownloadLink": "Quando si avvia un download da un provider noto, l'estensione interromperà automaticamente il download nel browser e lo avverterà in Ascendara",
     "wineIsRequired": "Gioca con il vino",
     "wineMustBeInstalled": "È necessario installare e configurare il vino, il DXVK e altri strumenti sul computer per eseguire giochi di finestre. Non preoccuparti però, Ascendara può installare e configurarlo tutto solo per te",
     "youCanAddMoreLater": "Puoi aggiungere più directory nelle preferenze in seguito",

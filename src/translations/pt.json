@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara baixou a atualização e está pronto para instalar e reiniciar agora",
       "viewChangelog": "Ver Changelog"
     },
-    "torrentWarning": "Torrenting está ativado - use VPN"
+    "torrentWarning": "Torrenting está ativado - use VPN",
+    "watchdog": {
+      "error": {
+        "help": "Desinstale o vigilante do seu sistema e reinicie Ascendara. Ambos os aplicativos não podem ser executados juntos, pois usam o mesmo sistema de rastreamento de conquistas.",
+        "message": "O serviço de rastreamento de conquistas de Ascendara não está em execução. Isso é comumente causado por ter o Watcher Achievement instalado, que conflita com o sistema de desempenho interno de Ascendara.",
+        "title": "Serviço de conquista que não está funcionando"
+      }
+    }
   },
   "common": {
     "back": "Voltar",
@@ -391,7 +398,7 @@
       "autoBackupDisabled": "Auto-backup desativado",
       "autoBackupDisabledDesc": "Auto-backup desativado para {{game}}",
       "autoBackupEnabled": "Auto-backup ativado",
-      "autoBackupEnabledDesc": "Backup automático ativado para {{game}}",
+      "autoBackupEnabledDesc": "Auto-backup ativado para {{game}}",
       "autoBackupOnGameClose": "Auto-backup no jogo Fechar",
       "backingUpDescription": "Backup Up Salvar Dados para {{game}} ...",
       "backupFailed": "O backup falhou",
@@ -616,6 +623,14 @@
     "visit-status-page": "Visite a página de status"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "Adicionar diretório",
+      "defaultDirs": "Padrão de assistir diretórios",
+      "defaultDirsNote": "Esses diretórios são sempre vigiados por realizações. Você pode adicionar mais diretórios abaixo.",
+      "description": "Estas são as pastas que serão observadas para conquistas. Quaisquer realizações encontradas serão adicionadas à sua biblioteca. O vigilante da conquista é baseado no original pelo XAN105 e foi modificado para Ascendara.",
+      "noDirs": "Nenhum diretório selecionado",
+      "title": "Observador de conquistas"
+    },
     "addLocation": "Adicionar diretório de download",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara Xtra permite configurar um provedor de informações de jogo, permitindo ler informações adicionais sobre todos os jogos.",
@@ -792,7 +807,7 @@
       "usernameError": "Falhou em salvar o nome de usuário"
     },
     "viewComponentsPage": "Veja a página de componentes",
-    "warningDescription": "Ascendara é projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
+    "warningDescription": "Ascendara foi projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
     "warningSupportDevelopers": "Os desenvolvedores de jogos investem tempo, recursos e criatividade significativos na criação das experiências que todos gostamos. Sua compra suporta diretamente a capacidade deles de continuar fazendo ótimos jogos e sustenta a indústria de jogos.",
     "warningSupportDevelopersCallToAction": "Apoie os desenvolvedores comprando jogos que você gosta.",
     "warningTitle": "Olá, por favor, leia isso!"

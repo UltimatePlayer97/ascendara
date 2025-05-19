@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara descargó la actualización y está listo para instalar y reiniciar ahora",
       "viewChangelog": "Ver ChangeLog"
     },
-    "torrentWarning": "Torrenting está habilitado: use VPN"
+    "torrentWarning": "Torrenting está habilitado: use VPN",
+    "watchdog": {
+      "error": {
+        "help": "Desinstale el observador de logro de su sistema, luego reinicie Ascendara. Ambas aplicaciones no pueden ejecutarse juntas, ya que usan el mismo sistema de seguimiento de logros.",
+        "message": "El servicio de seguimiento de logros de Ascendara no se está ejecutando. Esto se causa comúnmente por tener un observador de logro instalado, lo que entra en conflicto con el sistema de logros incorporado de Ascendara.",
+        "title": "Servicio de logro que no se ejecuta"
+      }
+    }
   },
   "common": {
     "back": "Atrás",
@@ -616,6 +623,14 @@
     "visit-status-page": "Visitar la página de estado"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "Agregar directorio",
+      "defaultDirs": "Directorios de observación predeterminados",
+      "defaultDirsNote": "Estos directorios siempre se observan los logros. Puede agregar más directorios a continuación.",
+      "description": "Estas son las carpetas que se observarán para obtener logros. Cualquier logro encontrado se agregará a su biblioteca. El Achievement Watcher se basa en el original por XAN105 y ha sido modificado para Ascendara.",
+      "noDirs": "No se seleccionan directorios",
+      "title": "Observador de logro"
+    },
     "addLocation": "Agregar directorio de descarga",
     "additionalGameInfo": "Ascendara xtra",
     "additionalGameInfoDescription": "Ascendara XTRA te permite configurar un proveedor de información del juego, permitiéndote leer información adicional sobre todos los juegos.",
@@ -815,7 +830,7 @@
       "title": "Barra de navegación"
     },
     "profile": {
-      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es por diversión! Nunca se subirá nada a ningún servidor.",
+      "content": "Este es tu perfil de Ascendara. Puedes nivelar tener un alto tiempo de juego y jugar, ¡todo es para divertirte! Nunca se subirá nada a ningún servidor.",
       "title": "Perfil"
     },
     "resizing": {
@@ -937,7 +952,7 @@
     "stayUpToDate": "Mantenga a Ascendara al día",
     "takeTour": "Hacer el recorrido",
     "termsOfService": "Términos de servicio",
-    "theExtensionBlocksKnownProviders": "La extensión escucha descargas de proveedores conocidos y los detiene antes de comenzar en su navegador, luego enviándolas a Ascendara para descargar",
+    "theExtensionBlocksKnownProviders": "La extensión escucha las descargas de proveedores conocidos y los detiene antes de que comiencen en su navegador, luego enviándolo a Ascendara para descargar",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Aquí es donde se almacenarán todos sus juegos descargados",
     "welcomeTo": "Bienvenido",
     "welcomeToAscendaraDescription": "Estás casi listo para comenzar a usar Ascendara. Revisaremos el proceso de incorporación juntos para ordenar algunas configuraciones básicas, pero primero lea los términos de servicio y política de privacidad.",

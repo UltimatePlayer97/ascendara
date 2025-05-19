@@ -67,7 +67,14 @@
       "updateReadyDesc": "Ascendara下载了更新，准备安装和重新启动",
       "viewChangelog": "查看ChangElog"
     },
-    "torrentWarning": "启用了洪流 - 使用VPN"
+    "torrentWarning": "启用了洪流 - 使用VPN",
+    "watchdog": {
+      "error": {
+        "help": "请从系统中卸载成就观察者，然后重新启动Ascendara。两种应用程序都无法一起使用相同的成就跟踪系统。",
+        "message": "Ascendara的成就跟踪服务没有运行。这通常是由于安装成就观察者而引起的，这与Ascendara的内置成就系统发生冲突。",
+        "title": "成就服务不运行"
+      }
+    }
   },
   "common": {
     "back": "后退",
@@ -392,7 +399,7 @@
       "autoBackupDisabledDesc": "禁用{{game}}的自动背包",
       "autoBackupEnabled": "启用自动后卫",
       "autoBackupEnabledDesc": "启用{{game}}的自动背包",
-      "autoBackupOnGameClose": "游戏结束",
+      "autoBackupOnGameClose": "游戏关闭的自动背包",
       "backingUpDescription": "备份{{game}} ...",
       "backupFailed": "备份失败",
       "backupNow": "现在备份{{game}}",
@@ -609,6 +616,14 @@
     "visit-status-page": "访问状态页面"
   },
   "settings": {
+    "achievementWatcher": {
+      "addDir": "添加目录",
+      "defaultDirs": "默认观看目录",
+      "defaultDirsNote": "这些目录总是被关注取得成就。您可以在下面添加更多目录。",
+      "description": "这些是将要查看成就的文件夹。所找到的任何成就都将添加到您的库中。成就观看者基于XAN105的原始作品，已针对Ascendara进行了修改。",
+      "noDirs": "未选择目录",
+      "title": "成就观察者"
+    },
     "addLocation": "添加下载目录",
     "additionalGameInfo": "Ascendara Xtra",
     "additionalGameInfoDescription": "Ascendara XTRA允许您设置游戏信息提供商，让您阅读有关所有游戏的其他信息。",
@@ -900,7 +915,7 @@
     "next": "下一个",
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
-    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
+    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
     "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
