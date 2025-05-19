@@ -8,7 +8,7 @@ const fs = require("fs").promises;
 async function getSettings() {
   try {
     const appData = process.env.APPDATA;
-    const settingsPath = path.join(appData, "Electron", "ascendarasettings.json");
+    const settingsPath = path.join(appData, "ascendara", "ascendarasettings.json");
     const data = await fs.readFile(settingsPath, "utf8");
     return JSON.parse(data);
   } catch (error) {
