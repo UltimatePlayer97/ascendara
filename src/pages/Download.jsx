@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSettings } from "@/context/SettingsContext";
-import { sanitizeText } from "@/lib/utils";
+import { sanitizeText, formatLatestUpdate } from "@/lib/utils";
 import imageCacheService from "@/services/imageCacheService";
 import {
   BadgeCheckIcon,
@@ -1225,6 +1225,9 @@ export default function DownloadPage() {
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
                 {t("download.size")}: {gameData.size}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {t("download.latestUpdate")}: {formatLatestUpdate(gameData.latest_update)}
               </p>
             </div>
           </div>

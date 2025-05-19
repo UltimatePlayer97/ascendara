@@ -180,6 +180,7 @@
     "igdbLoading": "Loading game information...",
     "igdbRating": "This game is rated {{rating}} apples. Apple ratings are different than Star ratings on Ascendara, and are more of a general rating of the game.",
     "infoMaybeInaccurate": "Game information may be inaccurate.",
+    "latestUpdate": "Last Updated",
     "linkCopied": "Link copied to clipboard",
     "newUserGuide": {
       "close": "Close",

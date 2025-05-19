@@ -2,7 +2,15 @@ import React, { useState, memo, useCallback, useEffect, useMemo, useRef } from "
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Gift, Gamepad2, Zap, Loader, ArrowUpFromLine, ArrowDown } from "lucide-react";
+import {
+  Gift,
+  Gamepad2,
+  Zap,
+  Loader,
+  ArrowUpFromLine,
+  ArrowDown,
+  Calendar,
+} from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
@@ -13,7 +21,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
-import { sanitizeText } from "@/lib/utils";
+import { sanitizeText, formatLatestUpdate } from "@/lib/utils";
 import { useImageLoader } from "@/hooks/useImageLoader";
 import { analytics } from "@/services/analyticsService";
 
@@ -271,6 +279,14 @@ const GameCard = memo(function GameCard({ game, compact }) {
               </p>
             )}
           </div>
+          {game.latest_update && (
+            <div className="mt-1 flex items-center gap-2 text-sm text-primary/80">
+              <Calendar className="h-4 w-4 opacity-80" />
+              <span className="font-medium md:text-xs">
+                {formatLatestUpdate(game.latest_update)}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4">
