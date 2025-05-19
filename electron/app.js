@@ -1630,6 +1630,34 @@ ipcMain.handle("enable-game-auto-backups", async (event, game, isCustom) => {
   }
 });
 
+ipcMain.handle("is-game-auto-backups-enabled", async (event, game, isCustom) => {
+  const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    const settings = JSON.parse(data);
+    if (!settings.downloadDirectory) {
+      throw new Error("Download directory not set");
+    }
+
+    if (isCustom) {
+      const gamesFilePath = path.join(settings.downloadDirectory, "games.json");
+      const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+      const gameInfo = gamesData.games.find(g => g.game === game);
+      if (!gameInfo) throw new Error("Custom game not found");
+      return !!gameInfo.backups;
+    } else {
+      const gameDirectory = path.join(settings.downloadDirectory, game);
+      const gameInfoPath = path.join(gameDirectory, `${game}.ascendara.json`);
+      const gameInfoData = fs.readFileSync(gameInfoPath, "utf8");
+      const gameInfo = JSON.parse(gameInfoData);
+      return !!gameInfo.backups;
+    }
+  } catch (error) {
+    console.error("Error checking if game auto backups enabled:", error);
+    return false;
+  }
+});
+
 ipcMain.handle("disable-game-auto-backups", async (event, game, isCustom) => {
   const filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
   try {

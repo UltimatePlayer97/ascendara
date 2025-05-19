@@ -53,8 +53,19 @@ const GamesBackupDialog = ({ game, open, onOpenChange }) => {
       setRestoreFailed(false);
       setBackupSuccess(false);
       setRestoreSuccess(false);
+      (async () => {
+        try {
+          const enabled = await window.electron.isGameAutoBackupsEnabled(
+            game.game || game.name,
+            game.isCustom
+          );
+          setAutoBackupEnabled(!!enabled);
+        } catch (e) {
+          setAutoBackupEnabled(false);
+        }
+      })();
     }
-  }, [open]);
+  }, [open, game]);
 
   const handleToggleAutoBackup = async newBackupState => {
     try {

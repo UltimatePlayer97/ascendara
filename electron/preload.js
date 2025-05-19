@@ -60,6 +60,8 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("enable-game-auto-backups", game, isCustom),
   disableGameAutoBackups: (game, isCustom) =>
     ipcRenderer.invoke("disable-game-auto-backups", game, isCustom),
+  isGameAutoBackupsEnabled: (game, isCustom) =>
+    ipcRenderer.invoke("is-game-auto-backups-enabled", game, isCustom),
   ludusavi: (action, game) => ipcRenderer.invoke("ludusavi", action, game),
   createGameShortcut: game => ipcRenderer.invoke("create-game-shortcut", game),
   isSteamRunning: () => ipcRenderer.invoke("is-steam-running"),
