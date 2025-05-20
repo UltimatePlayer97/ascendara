@@ -2824,494 +2824,128 @@ ipcMain.handle("install-dependencies", async event => {
 });
 
 ipcMain.handle("install-wine", async () => {
-  console.log("Starting Wine and Winetricks installation process...");
-
   if (process.platform === "win32") {
-    console.log("Windows detected, skipping Wine/Winetricks installation");
     return {
       success: false,
       message: "Windows installation not supported in this handler",
     };
   }
 
-  try {
-    const installWindow = new BrowserWindow({
-      width: 500,
-      height: 300,
-      frame: false,
-      transparent: true,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-      },
-    });
+  const installWindow = new BrowserWindow({
+    width: 500,
+    height: 300,
+    frame: false,
+    transparent: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-              background: rgba(30, 30, 30, 0.95);
-              color: white;
-              border-radius: 12px;
-              padding: 24px;
-              height: 100vh;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              gap: 16px;
-            }
-            .spinner {
-              width: 40px; height: 40px;
-              border: 3px solid rgba(255, 255, 255, 0.1);
-              border-top: 3px solid #3498db;
-              border-radius: 50%;
-              animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-            h2 { font-size: 24px; font-weight: 500; margin: 0; }
-            .status {
-              font-size: 14px; text-align: center; max-width: 360px;
-              color: rgba(255, 255, 255, 0.8); line-height: 1.4;
-            }
-            .progress-container { width: 100%; max-width: 360px; }
-            .progress-bar {
-              width: 100%; height: 6px; background: rgba(255,255,255,0.1);
-              border-radius: 3px; overflow: hidden;
-            }
-            .progress {
-              width: 0%; height: 100%; background: #3498db;
-              border-radius: 3px; transition: width 0.3s ease;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="spinner"></div>
-          <h2>Installing Wine & Winetricks</h2>
-          <div class="status">Checking system requirements...</div>
-          <div class="progress-container">
-            <div class="progress-bar">
-              <div class="progress"></div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-    installWindow.loadURL(
-      `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
+  installWindow.loadURL(
+    "data:text/html;charset=utf-8," +
+      encodeURIComponent(`
+    <!DOCTYPE html><html><head><style>
+      body { font-family: sans-serif; background: rgba(30,30,30,0.95); color: white; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+      .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .status { font-size: 14px; text-align: center; max-width: 360px; color: rgba(255,255,255,0.8); }
+      .progress-container { width: 100%; max-width: 360px; }
+      .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+      .progress { height: 100%; background: #3498db; border-radius: 3px; transition: width 0.3s ease; width: 0%; }
+    </style></head><body>
+      <div class="spinner"></div>
+      <h2>Installing Wine & Winetricks</h2>
+      <div class="status">Initializing...</div>
+      <div class="progress-container"><div class="progress-bar"><div class="progress"></div></div></div>
+    </body></html>`)
+  );
+
+  const updateStatus = msg =>
+    installWindow.webContents.executeJavaScript(
+      `document.querySelector('.status').textContent = ${JSON.stringify(msg)};`
     );
 
-    const updateStatus = message => {
-      installWindow.webContents.executeJavaScript(`
-        document.querySelector('.status').textContent = ${JSON.stringify(message)};
-      `);
-    };
+  const updateProgress = percent =>
+    installWindow.webContents.executeJavaScript(
+      `document.querySelector('.progress').style.width = '${percent}%';`
+    );
 
-    const updateProgress = percent => {
-      installWindow.webContents.executeJavaScript(`
-        document.querySelector('.progress').style.width = '${percent}%';
-      `);
-    };
+  try {
+    const runCommand = (cmd, onProgress, pStart = 0, pEnd = 100) =>
+      new Promise((resolve, reject) => {
+        const proc = exec(cmd, err => (err ? reject(err) : resolve()));
+        let currentProgress = pStart;
+        proc.stdout.on("data", data => {
+          currentProgress = Math.min(currentProgress + 1, pEnd);
+          updateProgress(currentProgress);
+          onProgress?.(data.toString().trim());
+        });
+        proc.stderr.on("data", data => onProgress?.(data.toString().trim()));
+      });
 
-    // --- Homebrew (macOS only) ---
     if (process.platform === "darwin") {
-      updateStatus("Checking Homebrew...");
+      updateStatus("Checking for Homebrew...");
       updateProgress(5);
-      await new Promise((resolve, reject) => {
-        exec("which brew", async error => {
-          if (error) {
-            updateStatus("Installing Homebrew...");
-            updateProgress(10);
-            const brewInstallCommand =
-              '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
-            const brewProcess = exec(brewInstallCommand, brewError => {
-              if (brewError) {
-                updateStatus(`Error installing Homebrew: ${brewError.message}`);
-                setTimeout(() => {
-                  installWindow.close();
-                  reject(brewError);
-                }, 3000);
-              } else {
-                resolve();
-              }
-            });
-            brewProcess.stdout.on("data", data => {
-              updateStatus(data.toString().trim());
-              updateProgress(15);
-            });
-            brewProcess.stderr.on("data", data => {
-              updateStatus(data.toString().trim());
-            });
-          } else {
-            resolve();
-          }
-        });
-      });
-    }
-
-    // --- Wine & Winetricks ---
-    updateStatus("Installing Wine & Winetricks...");
-    updateProgress(20);
-
-    if (process.platform === "darwin") {
-      await new Promise((resolve, reject) => {
-        const fetchProcess = exec("brew fetch --cask wine-stable", error => {
-          if (error) reject(error);
-          else resolve();
-        });
-        fetchProcess.stdout.on("data", data =>
-          updateStatus("Downloading Wine installer...")
+      const hasBrew = await new Promise(resolve =>
+        exec("which brew", err => resolve(!err))
+      );
+      if (!hasBrew) {
+        updateStatus("Installing Homebrew...");
+        await runCommand(
+          '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+          updateStatus,
+          5,
+          10
         );
-        fetchProcess.stderr.on("data", data => updateStatus(data.toString().trim()));
-      });
-    }
-
-    const command =
-      process.platform === "darwin"
-        ? "brew install --cask --no-quarantine wine-stable && brew install winetricks"
-        : "sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y wine64 wine32 winetricks";
-    await new Promise((resolve, reject) => {
-      let progress = process.platform === "darwin" ? 25 : 0;
-      const childProcess = exec(command, error => {
-        if (error) {
-          updateStatus(`Error: ${error.message}`);
-          setTimeout(() => {
-            installWindow.close();
-            reject(error);
-          }, 3000);
-        } else {
-          updateStatus("Wine and Winetricks installed successfully!");
-          updateProgress(30);
-          resolve();
-        }
-      });
-      childProcess.stdout.on("data", data => {
-        progress = Math.min(progress + 2, 30);
-        updateProgress(progress);
-        updateStatus(data.toString().trim());
-      });
-      childProcess.stderr.on("data", data => updateStatus(data.toString().trim()));
-    });
-
-    if (process.platform === "darwin") {
-      updateStatus("Checking Vulkan support (MoltenVK)...");
-      updateProgress(32);
-
-      let vulkaninfoExists = false;
-      await new Promise(resolve => {
-        exec("which vulkaninfo", (error, stdout) => {
-          vulkaninfoExists = !error && stdout.trim().length > 0;
-          resolve();
-        });
-      });
-
-      if (!vulkaninfoExists) {
-        updateStatus("Installing Vulkan tools (MoltenVK, vulkaninfo)...");
-        updateProgress(36);
-        await new Promise((resolve, reject) => {
-          const installVulkan = exec("brew install vulkan-tools", error => {
-            if (error) {
-              updateStatus(`Error installing vulkan-tools: ${error.message}`);
-              setTimeout(() => {
-                installWindow.close();
-                reject(error);
-              }, 3000);
-            } else {
-              resolve();
-            }
-          });
-          installVulkan.stdout.on("data", data => updateStatus(data.toString().trim()));
-          installVulkan.stderr.on("data", data => updateStatus(data.toString().trim()));
-        });
       }
 
-      // Run vulkaninfo and show result
-      updateStatus("Verifying Vulkan support...");
-      updateProgress(38);
-      await new Promise(resolve => {
-        exec("vulkaninfo | grep 'Vulkan Instance Version'", (error, stdout, stderr) => {
-          if (!error && stdout) {
-            updateStatus("Vulkan (MoltenVK) is available: " + stdout.trim());
-          } else {
-            updateStatus(
-              "Warning: Vulkan is not available. DXVK will not work until Vulkan/MoltenVK is functional."
-            );
-          }
-          setTimeout(resolve, 2000);
-        });
-      });
-    }
+      updateStatus("Installing Wine and Winetricks...");
+      await runCommand(
+        "brew install --cask --no-quarantine wine-stable && brew install winetricks",
+        updateStatus,
+        10,
+        30
+      );
 
-    // --- WineBottler Download with Progress ---
-    if (process.platform === "darwin") {
-      updateStatus("Downloading WineBottler (this may take a while)...");
-      updateProgress(40);
-      const winebottlerUrl =
-        "https://winebottler.kronenberg.org/combo/builds/WineBottlerCombo_4.0.1.1.dmg";
-      const tmpDir = os.tmpdir();
-      const winebottlerDmgPath = path.join(tmpDir, "WineBottlerCombo_4.0.1.1.dmg");
+      updateStatus("Checking for Vulkan (MoltenVK)...");
+      const hasVulkan = await new Promise(resolve =>
+        exec("which vulkaninfo", err => resolve(!err))
+      );
+      if (!hasVulkan) {
+        updateStatus("Installing Vulkan tools...");
+        await runCommand("brew install vulkan-tools", updateStatus, 30, 40);
+      }
 
-      if (!fs.existsSync(winebottlerDmgPath)) {
-        const writer = fs.createWriteStream(winebottlerDmgPath);
-        const response = await axios({
-          url: winebottlerUrl,
-          method: "GET",
-          responseType: "stream",
-          timeout: 120000,
-        });
-
-        const totalLength = parseInt(response.headers["content-length"], 10);
-        let downloaded = 0;
-        response.data.on("data", chunk => {
-          downloaded += chunk.length;
-          const percent = Math.min(44 + Math.floor((downloaded / totalLength) * 12), 56); // 44-56% for download
-          updateProgress(percent);
+      updateStatus("Verifying Vulkan...");
+      await new Promise(resolve =>
+        exec("vulkaninfo | grep 'Vulkan Instance Version'", (err, stdout) => {
           updateStatus(
-            `Downloading WineBottler: ${(downloaded / (1024 * 1024)).toFixed(1)}MB / ${(totalLength / (1024 * 1024)).toFixed(1)}MB`
+            err
+              ? "Vulkan not detected. DXVK may not work."
+              : "Vulkan detected: " + stdout.trim()
           );
-        });
-
-        response.data.pipe(writer);
-
-        await new Promise((resolve, reject) => {
-          writer.on("finish", resolve);
-          writer.on("error", reject);
-        });
-
-        // Ensure the file is fully written before proceeding
-        if (fs.existsSync(winebottlerDmgPath)) {
-          const stats = fs.statSync(winebottlerDmgPath);
-          console.log("WineBottler DMG size after download:", stats.size, "bytes");
-          if (stats.size < 100 * 1024 * 1024) {
-            // less than 100MB is suspicious
-            fs.unlinkSync(winebottlerDmgPath); // Remove the broken file
-            throw new Error("Downloaded WineBottler DMG is too small or corrupted.");
-          }
-        } else {
-          throw new Error(
-            "WineBottler DMG download failed: file not found after download."
-          );
-        }
-      } else {
-        const stats = fs.statSync(winebottlerDmgPath);
-        console.log("WineBottler DMG already exists, size:", stats.size, "bytes");
-      }
-
-      updateStatus("Mounting WineBottler DMG...");
-      updateProgress(58);
-      await new Promise((resolve, reject) => {
-        exec(
-          `hdiutil attach -nobrowse "${winebottlerDmgPath}"`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(
-                "Error mounting WineBottler DMG:",
-                error,
-                "\nSTDOUT:",
-                stdout,
-                "\nSTDERR:",
-                stderr
-              );
-              updateStatus(`Error mounting WineBottler DMG: ${error.message}`);
-              setTimeout(() => {
-                installWindow.close();
-                reject(error);
-              }, 3000);
-            } else {
-              resolve();
-            }
-          }
-        );
-      });
-
-      updateStatus("Copying WineBottler and Wine to /Applications...");
-      updateProgress(60);
-      await new Promise((resolve, reject) => {
-        exec(
-          'cp -R "/Volumes/WineBottler Combo/WineBottler.app" "/Applications/" && cp -R "/Volumes/WineBottler Combo/Wine.app" "/Applications/"',
-          (error, stdout, stderr) => {
-            if (error) {
-              updateStatus(`Error copying WineBottler: ${error.message}`);
-              setTimeout(() => {
-                installWindow.close();
-                reject(error);
-              }, 3000);
-            } else {
-              resolve();
-            }
-          }
-        );
-      });
-
-      updateStatus("Ejecting WineBottler DMG...");
-      updateProgress(62);
-      await new Promise((resolve, reject) => {
-        exec('hdiutil detach "/Volumes/WineBottler Combo"', (error, stdout, stderr) => {
-          if (error) {
-            updateStatus(`Error ejecting WineBottler DMG: ${error.message}`);
-            setTimeout(() => {
-              installWindow.close();
-              reject(error);
-            }, 3000);
-          } else {
-            resolve();
-          }
-        });
-      });
-
-      updateStatus("WineBottler installed successfully!");
-      updateProgress(65);
+          setTimeout(resolve, 2000);
+        })
+      );
+    } else if (process.platform === "linux") {
+      updateStatus("Installing Wine & Winetricks...");
+      await runCommand(
+        "sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y wine64 wine32 winetricks",
+        updateStatus,
+        5,
+        30
+      );
     }
 
-    // --- DXVK ---
-    updateStatus("Setting up DXVK...");
-    updateProgress(70);
-
-    const dxvkSetupUrl =
-      "https://gist.githubusercontent.com/doitsujin/1652e0e3382f0e0ff611e70142684d01/raw/4b80903eb4a8c1033750175de4ebe64685725a3e/setup_dxvk.sh";
-    const dxvkReleaseUrl =
-      "https://github.com/doitsujin/dxvk/releases/download/v2.6.1/dxvk-2.6.1.tar.gz";
-    const dxvkDir = path.join(os.tmpdir(), "dxvk-tmp");
-    const dxvkSetupPath = path.join(dxvkDir, "setup_dxvk.sh");
-    const dxvkTarPath = path.join(dxvkDir, "dxvk.tar.gz");
-
-    if (!fs.existsSync(dxvkDir)) fs.mkdirSync(dxvkDir, { recursive: true });
-
-    async function downloadFile(url, dest) {
-      const writer = fs.createWriteStream(dest);
-      const response = await axios({
-        url,
-        method: "GET",
-        responseType: "stream",
-        timeout: 60000,
-      });
-      response.data.pipe(writer);
-      return new Promise((resolve, reject) => {
-        writer.on("finish", resolve);
-        writer.on("error", reject);
-      });
-    }
-
-    try {
-      updateStatus("Downloading DXVK setup script...");
-      updateProgress(72);
-      await downloadFile(dxvkSetupUrl, dxvkSetupPath);
-      fs.chmodSync(dxvkSetupPath, 0o755);
-
-      updateStatus("Downloading DXVK binaries...");
-      updateProgress(74);
-      await downloadFile(dxvkReleaseUrl, dxvkTarPath);
-
-      updateStatus("Extracting DXVK...");
-      updateProgress(76);
-      await new Promise((resolve, reject) => {
-        const extract = exec(`tar -xzf "${dxvkTarPath}" -C "${dxvkDir}"`, error => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve();
-          }
-        });
-        setTimeout(() => {
-          extract.kill();
-          reject(new Error("Extraction timed out"));
-        }, 30000);
-      });
-
-      // Find extracted DXVK directory
-      const dxvkExtractedDir = fs
-        .readdirSync(dxvkDir)
-        .map(name => path.join(dxvkDir, name))
-        .find(p => fs.lstatSync(p).isDirectory() && /dxvk/i.test(p));
-
-      if (!dxvkExtractedDir) {
-        throw new Error("Failed to find extracted DXVK directory");
-      }
-
-      updateStatus("Installing DXVK into Wine prefix...");
-      updateProgress(78);
-      const winePrefix = process.env.WINEPREFIX || path.join(os.homedir(), ".wine");
-      await new Promise((resolve, reject) => {
-        const installProc = exec(
-          `"${dxvkSetupPath}" "${dxvkExtractedDir}" install`,
-          { env: { ...process.env, WINEPREFIX: winePrefix } },
-          error => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve();
-            }
-          }
-        );
-        setTimeout(() => {
-          installProc.kill();
-          reject(new Error("DXVK install script timed out"));
-        }, 60000);
-      });
-
-      // --- Verify/copy DXVK DLLs ---
-      updateStatus("Verifying DXVK DLLs...");
-      updateProgress(80);
-      const dxvkDlls = ["dxgi.dll", "d3d11.dll", "d3d10core.dll", "d3d9.dll"];
-      const dxvkSourceDir64 = path.join(dxvkExtractedDir, "x64");
-      const dxvkSourceDir32 = path.join(dxvkExtractedDir, "x32");
-      const system32Dir = path.join(winePrefix, "drive_c/windows/system32");
-      const syswow64Dir = path.join(winePrefix, "drive_c/windows/syswow64");
-
-      for (const dll of dxvkDlls) {
-        // 64-bit DLLs
-        const dest64 = path.join(system32Dir, dll);
-        const src64 = path.join(dxvkSourceDir64, dll);
-        if (!fs.existsSync(dest64) && fs.existsSync(src64)) {
-          fs.copyFileSync(src64, dest64);
-          console.log(`Copied ${dll} to system32`);
-        }
-        // 32-bit DLLs
-        const dest32 = path.join(syswow64Dir, dll);
-        const src32 = path.join(dxvkSourceDir32, dll);
-        if (!fs.existsSync(dest32) && fs.existsSync(src32)) {
-          fs.copyFileSync(src32, dest32);
-          console.log(`Copied ${dll} to syswow64`);
-        }
-      }
-
-      updateStatus("DXVK installed successfully!");
-      updateProgress(85);
-
-      // --- Set DLL overrides for DXVK ---
-      updateStatus("Configuring Wine DLL overrides for DXVK...");
-      updateProgress(90);
-      for (const dll of ["dxgi", "d3d11", "d3d10core", "d3d9"]) {
-        await new Promise(resolve => {
-          exec(
-            `wine reg add "HKCU\\Software\\Wine\\DllOverrides" /v ${dll} /d native,builtin /f`,
-            { env: { ...process.env, WINEPREFIX: winePrefix } },
-            () => resolve()
-          );
-        });
-      }
-      updateStatus("Wine DLL overrides configured!");
-      updateProgress(100);
-      setTimeout(() => installWindow.close(), 2000);
-
-      return {
-        success: true,
-        message: "Wine, Winetricks, and DXVK installed successfully",
-      };
-    } catch (dxvkError) {
-      updateStatus(`DXVK setup failed: ${dxvkError.message}`);
-      setTimeout(() => installWindow.close(), 4000);
-      return { success: false, message: dxvkError.message };
-    }
-  } catch (error) {
-    return { success: false, message: error.message };
+    updateProgress(100);
+    updateStatus("Installation complete!");
+    setTimeout(() => installWindow.close(), 2500);
+    return { success: true, message: "Wine and dependencies installed successfully" };
+  } catch (err) {
+    updateStatus("Installation failed: " + err.message);
+    setTimeout(() => installWindow.close(), 3000);
+    return { success: false, message: err.message };
   }
 });
 
