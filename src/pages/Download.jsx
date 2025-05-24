@@ -1223,9 +1223,11 @@ export default function DownloadPage() {
                   </TooltipProvider>
                 )}
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("download.size")}: {gameData.size}
-              </p>
+              {gameData.size && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("download.size")}: {gameData.size}
+                </p>
+              )}
               <p className="mt-2 text-sm text-muted-foreground">
                 {t("download.latestUpdate")}: {formatLatestUpdate(gameData.latest_update)}
               </p>
