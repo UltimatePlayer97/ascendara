@@ -1684,7 +1684,6 @@ function Settings() {
                       <ExternalLink className="ml-1 inline-block h-3 w-3" />
                     </a>
                   </div>
-                  x
                   <div className="space-y-3 pt-2">
                     <div className="space-y-1">
                       <Label htmlFor="giantbomb-key">
