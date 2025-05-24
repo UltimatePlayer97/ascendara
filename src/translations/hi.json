@@ -180,6 +180,7 @@
     "igdbLoading": "लोडिंग गेम की जानकारी ...",
     "igdbRating": "इस गेम को {{rating}} सेब रेट किया गया है। Apple रेटिंग Ascendara पर स्टार रेटिंग से अलग हैं, और खेल की एक सामान्य रेटिंग से अधिक हैं।",
     "infoMaybeInaccurate": "खेल की जानकारी गलत हो सकती है।",
+    "latestUpdate": "आखरी अपडेट",
     "linkCopied": "लिंक क्लिपबोर्ड के लिए कॉपी किया गया",
     "newUserGuide": {
       "close": "बंद करना",
@@ -732,7 +733,7 @@
     "noAdditionalLocations": "अभी तक कोई अतिरिक्त स्थान नहीं ...",
     "noLudusaviTool": "लुडुसावी सिदकर की आवश्यकता है",
     "noLudusaviToolDesc": "Ludusavi को Ascendara पर बैकअप/रिस्टोर फीचर का उपयोग करना आवश्यक है। जारी रखने से लुडुसावी को स्वचालित रूप से स्थापित किया जाएगा।",
-    "noTorrentTool": "Torrrent sidecar की आवश्यकता है",
+    "noTorrentTool": "टोरेंट साइडकार की आवश्यकता है",
     "noTorrentToolDesc": "टोरेंट साइडकार को Ascendara पर Torrent सुविधा का उपयोग करने की आवश्यकता होती है। जारी रखने पर क्लिक करने से टोरेंट साइडकार को स्वचालित रूप से स्थापित किया जाएगा।",
     "notifications": "डेस्कटॉप सूचनाएँ",
     "notificationsDescription": "डाउनलोड खत्म होने या असफल होने पर डेस्कटॉप सूचनाएं भेजें",
@@ -749,7 +750,7 @@
     "selectDirectory": "निर्देशिका का चयन करें",
     "selectMoreLanguages": "भाषाओं की पूरी सूची देखें",
     "setKey": "तय करना",
-    "showOldDownloadLinksDescription": "गेम के लिए पुराने डाउनलोड लिंक लाने के लिए Ascendara टाइम मशीन का उपयोग करें। कुछ गेम संस्करण काम नहीं कर सकते हैं या उपलब्ध नहीं हो सकते हैं।",
+    "showOldDownloadLinksDescription": "गेम के लिए पुराने डाउनलोड लिंक लाने के लिए Ascendara Timemachine का उपयोग करें। कुछ गेम संस्करण काम नहीं कर सकते हैं या उपलब्ध नहीं हो सकते हैं।",
     "sideScrollBar": "साइड स्क्रॉल बार",
     "sideScrollBarDescription": "एप्लिकेशन विंडो के किनारे पर एक स्क्रॉल बार दिखाएं",
     "sidecar": {

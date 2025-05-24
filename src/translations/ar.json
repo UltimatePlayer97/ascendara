@@ -180,6 +180,7 @@
     "igdbLoading": "تحميل معلومات اللعبة ...",
     "igdbRating": "تم تصنيف هذه اللعبة {{rating}} التفاح. تختلف تصنيفات Apple عن تصنيفات النجوم على Ascendara ، وأكثر من تصنيف عام للعبة.",
     "infoMaybeInaccurate": "قد تكون معلومات اللعبة غير دقيقة.",
+    "latestUpdate": "آخر تحديث",
     "linkCopied": "رابط نسخ إلى الحافظة",
     "newUserGuide": {
       "close": "يغلق",
@@ -735,7 +736,7 @@
     "noAdditionalLocations": "لا توجد مواقع إضافية بعد ...",
     "noLudusaviTool": "مطلوب Ludusavi Sidecar",
     "noLudusaviToolDesc": "مطلوب Ludusavi لاستخدام ميزة النسخ الاحتياطي/استعادة على Ascendara. سيقوم النقر على متابعة تثبيت Ludusavi تلقائيًا.",
-    "noTorrentTool": "مطلوب Torrrent Sidecar",
+    "noTorrentTool": "مطلوب سيل Sidecar",
     "noTorrentToolDesc": "مطلوب Torrent Sidecar لاستخدام ميزة Torrent على Ascendara. سيقوم النقر على متابعة تثبيت Torrent Sidecar تلقائيًا.",
     "notifications": "إخطارات سطح المكتب",
     "notificationsDescription": "إرسال إشعارات سطح المكتب عند الانتهاء من التنزيلات أو الفشل",
@@ -752,7 +753,7 @@
     "selectDirectory": "حدد الدليل",
     "selectMoreLanguages": "انظر قائمة كاملة من اللغات",
     "setKey": "تعيين",
-    "showOldDownloadLinksDescription": "استخدم جهاز Ascendara Time لجلب روابط التنزيل القديمة للألعاب. قد لا تعمل بعض إصدارات اللعبة أو تكون متاحة.",
+    "showOldDownloadLinksDescription": "استخدم Ascendara Timemachine لجلب روابط التنزيل القديمة للألعاب. قد لا تعمل بعض إصدارات اللعبة أو تكون متاحة.",
     "sideScrollBar": "شريط التمرير الجانبي",
     "sideScrollBarDescription": "عرض شريط التمرير على جانب نافذة التطبيق",
     "sidecar": {

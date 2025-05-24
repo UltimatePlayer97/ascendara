@@ -180,6 +180,7 @@
     "igdbLoading": "Ladespielinformationen ...",
     "igdbRating": "Dieses Spiel ist {{rating}} -Apfel bewertet. Die Apple -Bewertungen unterscheiden sich von den Sternenbewertungen auf Ascendara und sind eher eine allgemeine Bewertung des Spiels.",
     "infoMaybeInaccurate": "Spielinformationen können ungenau sein.",
+    "latestUpdate": "Zuletzt aktualisiert",
     "linkCopied": "Link in die Zwischenablage kopiert",
     "newUserGuide": {
       "close": "Schließen",
@@ -735,7 +736,7 @@
     "noAdditionalLocations": "Noch keine zusätzlichen Standorte ...",
     "noLudusaviTool": "Ludusavi Sidecar ist erforderlich",
     "noLudusaviToolDesc": "Ludusavi muss die Backup-/Wiederherstellungsfunktion auf Ascendara verwenden. Wenn Sie auf Weiter klicken, werden Ludusavi automatisch installiert.",
-    "noTorrentTool": "Torrrent Sidecar ist erforderlich",
+    "noTorrentTool": "Torrent Sidecar ist erforderlich",
     "noTorrentToolDesc": "Der Torrent Sidecar muss die Torrent -Funktion auf Ascendara verwenden. Wenn Sie auf Fortsetzung klicken, installiert das Torrent Sidecar automatisch.",
     "notifications": "Desktop -Benachrichtigungen",
     "notificationsDescription": "Senden Sie Desktop -Benachrichtigungen, wenn Downloads abgeschlossen sind oder fehlschlagen",
@@ -752,7 +753,7 @@
     "selectDirectory": "Verzeichnis auswählen",
     "selectMoreLanguages": "Sehen Sie die gesamte Liste der Sprachen an",
     "setKey": "Satz",
-    "showOldDownloadLinksDescription": "Verwenden Sie die Ascendara Time Machine, um alte Download -Links für Spiele zu holen. Einige Spielversionen funktionieren möglicherweise nicht oder sind nicht verfügbar.",
+    "showOldDownloadLinksDescription": "Verwenden Sie die Ascendara Timemachine, um alte Download -Links für Spiele zu holen. Einige Spielversionen funktionieren möglicherweise nicht oder sind nicht verfügbar.",
     "sideScrollBar": "Seitenrollstange",
     "sideScrollBarDescription": "Zeigen Sie eine Bildlaufleiste an der Seite des Anwendungsfensters an",
     "sidecar": {

@@ -70,7 +70,7 @@
     "torrentWarning": "Torrentingが有効になっています -  VPNを使用します",
     "watchdog": {
       "error": {
-        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションが一緒に実行できません。",
+        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションは一緒に実行できません。",
         "message": "Ascendaraの功績追跡サービスは実行されていません。これは一般に、Achievement Watcherをインストールすることによって引き起こされます。",
         "title": "実行中の達成サービス"
       }
@@ -180,6 +180,7 @@
     "igdbLoading": "ゲーム情報の読み込み...",
     "igdbRating": "このゲームは{{rating}}リンゴと評価されています。 Appleの評価は、Ascendaraでの星評価とは異なり、ゲームの一般的な評価です。",
     "infoMaybeInaccurate": "ゲーム情報は不正確な場合があります。",
+    "latestUpdate": "最後に更新されました",
     "linkCopied": "クリップボードにコピーされたリンク",
     "newUserGuide": {
       "close": "近い",
@@ -735,7 +736,7 @@
     "noAdditionalLocations": "まだ追加の場所はありません...",
     "noLudusaviTool": "Ludusavi Sidecarが必要です",
     "noLudusaviToolDesc": "Ludusaviは、Ascendaraでバックアップ/復元機能を使用する必要があります。 [続行]をクリックすると、Ludusaviが自動的にインストールされます。",
-    "noTorrentTool": "Torrrent Sidecarが必要です",
+    "noTorrentTool": "トレントサイドカーが必要です",
     "noTorrentToolDesc": "Torrent Sidecarは、AscendaraでTorrent機能を使用する必要があります。 [続行]をクリックすると、トレントサイドカーが自動的にインストールされます。",
     "notifications": "デスクトップ通知",
     "notificationsDescription": "ダウンロードが終了または失敗したときにデスクトップ通知を送信します",
@@ -752,7 +753,7 @@
     "selectDirectory": "ディレクトリを選択します",
     "selectMoreLanguages": "言語のリスト全体を参照してください",
     "setKey": "セット",
-    "showOldDownloadLinksDescription": "Ascendara Time Machineを使用して、ゲーム用の古いダウンロードリンクを取得します。一部のゲームバージョンは機能しないか、利用できない場合があります。",
+    "showOldDownloadLinksDescription": "Ascendara Timemachineを使用して、ゲーム用の古いダウンロードリンクを取得します。一部のゲームバージョンは機能しないか、利用できない場合があります。",
     "sideScrollBar": "サイドスクロールバー",
     "sideScrollBarDescription": "アプリケーションウィンドウの側面にスクロールバーを表示する",
     "sidecar": {
@@ -807,7 +808,7 @@
       "usernameError": "ユーザー名の保存に失敗しました"
     },
     "viewComponentsPage": "コンポーネントページを表示します",
-    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーが購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できるようにします。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
+    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーは購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できます。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
     "warningSupportDevelopers": "ゲーム開発者は、かなりの時間、リソース、創造性を投資して、私たち全員が楽しんでいる体験を生み出します。あなたの購入は、優れたゲームを継続し続け、ゲーム業界を維持する能力を直接サポートします。",
     "warningSupportDevelopersCallToAction": "楽しむゲームを購入することで、開発者をサポートしてください。",
     "warningTitle": "ねえ、これを読んでください！"

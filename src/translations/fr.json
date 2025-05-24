@@ -180,6 +180,7 @@
     "igdbLoading": "Chargement des informations sur le jeu ...",
     "igdbRating": "Ce jeu est classé {{rating}} pommes. Les notes Apple sont différentes des notes Star sur Ascendara, et sont plus une note générale du jeu.",
     "infoMaybeInaccurate": "Les informations sur le jeu peuvent être inexactes.",
+    "latestUpdate": "Dernière mise à jour",
     "linkCopied": "Lien copié dans le presse-papiers",
     "newUserGuide": {
       "close": "Fermer",
@@ -255,7 +256,7 @@
       "torrentSent": "Torrent envoyé à QbitTorrent"
     },
     "update": {
-      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements séparés, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
+      "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements distincts, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
       "title": "Prêt à mettre à jour {{game}}?"
     }
   },
@@ -752,7 +753,7 @@
     "selectDirectory": "Sélectionner le répertoire",
     "selectMoreLanguages": "Voir la liste des langues entières",
     "setKey": "Ensemble",
-    "showOldDownloadLinksDescription": "Utilisez la machine Time Ascendara pour récupérer d'anciens liens de téléchargement pour les jeux. Certaines versions de jeu peuvent ne pas fonctionner ou être disponibles.",
+    "showOldDownloadLinksDescription": "Utilisez le TimeMachine Ascendara pour récupérer d'anciens liens de téléchargement pour les jeux. Certaines versions de jeu peuvent ne pas fonctionner ou être disponibles.",
     "sideScrollBar": "Barre de défilement latérale",
     "sideScrollBarDescription": "Afficher une barre de défilement sur le côté de la fenêtre d'application",
     "sidecar": {
@@ -952,10 +953,10 @@
     "stayUpToDate": "Gardez Ascendara à jour",
     "takeTour": "Faire la tournée",
     "termsOfService": "Conditions de service",
-    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements des fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
+    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements de fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
-    "welcomeToAscendaraDescription": "Vous êtes presque prêt à commencer à utiliser Ascendara. Nous allons passer par le processus d'intégration ensemble pour faire trié certains paramètres de base, mais veuillez d'abord lire les conditions d'utilisation et la politique de confidentialité.",
+    "welcomeToAscendaraDescription": "Vous êtes presque prêt à commencer à utiliser Ascendara. Nous allons passer par le processus d'intégration ensemble pour obtenir des paramètres de base triés, mais veuillez d'abord lire les conditions d'utilisation et la politique de confidentialité.",
     "whenYouClickADownloadLink": "Lorsque vous commencez un téléchargement à partir d'un fournisseur connu, l'extension arrêtera automatiquement le téléchargement dans votre navigateur et le démarrera pour vous dans Ascencera",
     "wineIsRequired": "Jouer avec du vin",
     "wineMustBeInstalled": "Le vin, le DXVK et d'autres outils doivent être installés et configurés sur votre ordinateur pour exécuter les jeux de fenêtres. Ne vous inquiétez pas cependant, Ascendara peut installer et le configurer tout pour vous",
