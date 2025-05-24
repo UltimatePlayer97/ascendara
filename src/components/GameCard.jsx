@@ -281,8 +281,8 @@ const GameCard = memo(function GameCard({ game, compact }) {
           </div>
           {game.latest_update && (
             <div className="mt-1 flex items-center gap-2 text-sm text-primary/80">
-              <Calendar className="h-4 w-4 opacity-80" />
-              <span className="font-medium md:text-xs">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-muted-foreground md:text-xs">
                 {formatLatestUpdate(game.latest_update)}
               </span>
             </div>
