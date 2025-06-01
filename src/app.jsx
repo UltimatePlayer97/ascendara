@@ -275,8 +275,8 @@ const AppRoutes = () => {
         }
 
         const hasLaunched = await checkAndSetWelcomeStatus();
-
-        if (hasLaunched && isOnWindows) {
+        const isWindows = await window.electron.isOnWindows();
+        if (hasLaunched && isWindows) {
           const isWatchdogActive = await window.electron.isWatchdogRunning();
           if (!isWatchdogActive) {
             await ensureMinLoadingTime();
