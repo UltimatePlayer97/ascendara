@@ -44,8 +44,8 @@
   },
   "dependencies": {
     "0r": "^1.0.0",
-    "@million/lint": "^1.0.14",
     "@heroui/react": "latest",
+    "@million/lint": "^1.0.14",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -97,6 +97,8 @@
     "node-watch": "^0.6.4",
     "path": "^0.12.7",
     "react": "^18.3.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-i18next": "^15.2.0",
     "react-icons": "^5.4.0",
