@@ -682,7 +682,7 @@ function Settings() {
           {/* Left Column - Core Settings */}
           <div className="space-y-6 lg:col-span-8">
             {/* General Settings Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <h2 className="mb-2 text-xl font-semibold text-primary">
                 {t("settings.general")}
               </h2>
@@ -693,12 +693,9 @@ function Settings() {
                     <Accordion
                       type="single"
                       collapsible
-                      className="mt-2 w-full rounded-lg border bg-card text-card-foreground shadow-sm"
+                      className="mt-2 w-full rounded-lg border-border bg-background text-card-foreground shadow-sm"
                     >
-                      <AccordionItem
-                        value="light-themes"
-                        className="px-1 first:border-t-0"
-                      >
+                      <AccordionItem value="light-themes" className="border-0 px-1">
                         <AccordionTrigger className="px-3 py-4 hover:no-underline">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">
@@ -720,7 +717,10 @@ function Settings() {
                         </AccordionContent>
                       </AccordionItem>
 
-                      <AccordionItem value="dark-themes" className="border-t px-1">
+                      <AccordionItem
+                        value="dark-themes"
+                        className="border-0 border-t border-t-border/20 px-1"
+                      >
                         <AccordionTrigger className="px-3 py-4 hover:no-underline">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">
@@ -863,7 +863,7 @@ function Settings() {
               </div>
             </Card>
 
-            <Card className="mb-6">
+            <Card className="mb-6 border-border">
               <div className="space-y-3 p-6">
                 <h3 className="mb-2 text-xl font-semibold text-primary">
                   {t("settings.downloaderSettings")}
@@ -1227,7 +1227,7 @@ function Settings() {
               </div>
             </Card>
 
-            <Card>
+            <Card className="border-border">
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -1433,7 +1433,7 @@ function Settings() {
             </Card>
 
             {/* Achievement Watcher Directories Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <h3 className="mb-2 text-xl font-semibold text-primary">
                 {t("settings.achievementWatcher.title") ||
                   "Achievement Watcher Directories"}
@@ -1561,7 +1561,7 @@ function Settings() {
             </Card>
 
             {/* Additional Game Info Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-primary">
                   {t("settings.additionalGameInfo") || "Additional Game Info"}
@@ -1723,7 +1723,7 @@ function Settings() {
             </Card>
 
             {/* Game Sources Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-primary">
@@ -2002,7 +2002,7 @@ function Settings() {
           {/* Right Column - Additional Settings */}
           <div className="space-y-6 lg:col-span-4">
             {/* Analytics Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-2 flex items-center gap-2">
                 <ChartNoAxesCombined className="mb-2 h-5 w-5 text-primary" />
                 <h2 className="text-xl font-semibold text-primary">
@@ -2041,7 +2041,7 @@ function Settings() {
             </Card>
 
             {/* Timemachine Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-2 flex items-center gap-2">
                 <History className="mb-2 h-5 w-5 text-primary" />
                 <h2 className="text-xl font-semibold text-primary">
@@ -2093,7 +2093,7 @@ function Settings() {
             </Card>
 
             {/* Workshop Downloader Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-2 flex items-center gap-2">
                 <Package className="mb-2 h-5 w-5 text-primary" />
                 <h2 className="text-lg font-semibold text-primary">
@@ -2155,7 +2155,7 @@ function Settings() {
 
             {/* Components Card */}
             {isOnWindows && (
-              <Card className="p-6">
+              <Card className="border-border p-6">
                 <div className="mb-2 flex items-center gap-2">
                   <CpuIcon className="mb-2 h-5 w-5 text-primary" />
                   <h2 className="text-xl font-semibold text-primary">
@@ -2175,7 +2175,7 @@ function Settings() {
             )}
 
             {/* Language Settings Card */}
-            <Card className="p-6">
+            <Card className="border-border p-6">
               <div className="mb-2 flex items-center gap-2">
                 <Languages className="mb-2 h-5 w-5 text-primary" />
                 <h2 className="text-xl font-semibold text-primary">
@@ -2233,7 +2233,7 @@ function Settings() {
 
             {/* Developer Settings Card - Only shown in development mode */}
             {isDev && (
-              <Card className="p-6">
+              <Card className="border-border p-6">
                 <div className="space-y-6">
                   <div>
                     <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-primary">
@@ -2303,7 +2303,7 @@ function Settings() {
             )}
 
             {/* Notice Card */}
-            <Card className="border-yellow-500/50 bg-yellow-500/5 p-6">
+            <Card className="border-border border-yellow-500/50 bg-yellow-500/5 p-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-yellow-500">
                   <Hand className="h-5 w-5 scale-x-[-1]" />

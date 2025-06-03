@@ -286,7 +286,7 @@ const Downloads = () => {
           {/* Charts Section - Takes up 1 column on large screens */}
           <div className="space-y-4">
             {/* Speed History Chart */}
-            <Card>
+            <Card className="border border-border">
               <CardHeader>
                 <h3 className="text-lg font-semibold">{t("downloads.speedHistory")}</h3>
               </CardHeader>
@@ -335,7 +335,7 @@ const Downloads = () => {
             </Card>
 
             {/* Download Statistics */}
-            <Card>
+            <Card className="border border-border">
               <CardHeader>
                 <h3 className="text-lg font-semibold">{t("downloads.statistics")}</h3>
               </CardHeader>
@@ -617,7 +617,7 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
   }, [hasError, wasReported, downloadingData.message]);
 
   return (
-    <Card className="mb-4 w-full transition-all duration-200 hover:shadow-md">
+    <Card className="mb-4 w-full border border-border transition-all duration-200 hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <div className="flex items-center gap-2">

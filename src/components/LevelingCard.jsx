@@ -248,7 +248,7 @@ const LevelingCard = ({ level, currentXP, nextLevelXp, totalXP }) => {
 
   return (
     <Card
-      className={`bg-card/50 backdrop-blur transition-all duration-500 ${isMajorMilestone ? "major-milestone" : ""} ${localLevel >= 100 ? "legendary-card" : ""}`}
+      className={`border-border bg-card/50 backdrop-blur transition-all duration-500 ${isMajorMilestone ? "major-milestone" : ""} ${localLevel >= 100 ? "legendary-card" : ""}`}
     >
       <CardHeader>
         <CardTitle

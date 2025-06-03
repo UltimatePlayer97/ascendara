@@ -695,7 +695,7 @@ const Profile = () => {
       <div className="grid gap-6">
         {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="bg-card/50 backdrop-blur">
+          <Card className="border-border bg-card/50 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("profile.totalPlaytime")}
@@ -712,7 +712,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card/50 backdrop-blur">
+          <Card className="border-border bg-card/50 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("profile.avgSession")}
@@ -727,7 +727,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-card/50 backdrop-blur">
+          <Card className="border-border bg-card/50 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {t("profile.mostPlayed")}
@@ -759,7 +759,7 @@ const Profile = () => {
 
         {/* Playtime Distribution */}
         {playtimeStats && playtimeStats.recentGames.length > 0 && (
-          <Card className="col-span-full bg-card/50 backdrop-blur">
+          <Card className="col-span-full border-border bg-card/50 backdrop-blur">
             <CardHeader>
               <CardTitle>{t("profile.topGames")}</CardTitle>
               <CardDescription>{t("profile.playTimeDistribution")}</CardDescription>
@@ -802,7 +802,7 @@ const Profile = () => {
                 return (
                   <div
                     key={gameId}
-                    className="group flex items-center gap-3 rounded-lg border bg-card/50 p-3 backdrop-blur transition-all hover:bg-accent/50"
+                    className="group flex items-center gap-3 rounded-lg border border-border bg-card/50 p-3 backdrop-blur transition-all hover:bg-accent/50"
                   >
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
                       <img
@@ -848,7 +848,7 @@ const Profile = () => {
                 downloadHistory.map((item, index) => (
                   <div
                     key={`${item.game}-${index}`}
-                    className="flex items-center gap-3 rounded-lg border bg-card/50 p-3 backdrop-blur transition-all hover:bg-accent/50"
+                    className="flex items-center gap-3 rounded-lg border border-border bg-card/50 p-3 backdrop-blur transition-all hover:bg-accent/50"
                   >
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
                       <FileDown className="h-5 w-5 text-primary" />
