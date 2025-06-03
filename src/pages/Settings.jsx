@@ -944,15 +944,20 @@ function Settings() {
                         size="icon"
                         disabled={isDownloaderRunning || settings.threadCount <= 2}
                         onClick={() => {
-                          const step =
-                            settings.threadCount >= 32
-                              ? 16
-                              : settings.threadCount >= 16
-                                ? 8
-                                : settings.threadCount >= 8
-                                  ? 4
-                                  : 2;
-                          const newValue = Math.max(2, settings.threadCount - step);
+                          // For decrement, use the value we're going to
+                          const currentValue = settings.threadCount;
+                          let newValue;
+
+                          if (currentValue > 48) newValue = 48;
+                          else if (currentValue > 32) newValue = 32;
+                          else if (currentValue > 24) newValue = 24;
+                          else if (currentValue > 16) newValue = 16;
+                          else if (currentValue > 12) newValue = 12;
+                          else if (currentValue > 8) newValue = 8;
+                          else if (currentValue > 6) newValue = 6;
+                          else if (currentValue > 4) newValue = 4;
+                          else newValue = 2;
+
                           handleSettingChange("threadCount", newValue);
                         }}
                         className="transition-transform hover:scale-105"
@@ -1058,15 +1063,20 @@ function Settings() {
                         size="icon"
                         disabled={isDownloaderRunning || settings.threadCount >= 64}
                         onClick={() => {
-                          const step =
-                            settings.threadCount >= 32
-                              ? 16
-                              : settings.threadCount >= 16
-                                ? 8
-                                : settings.threadCount >= 8
-                                  ? 4
-                                  : 2;
-                          const newValue = Math.min(64, settings.threadCount + step);
+                          // For increment, use the value we're coming from
+                          const currentValue = settings.threadCount;
+                          let newValue;
+
+                          if (currentValue >= 48) newValue = 64;
+                          else if (currentValue >= 32) newValue = 48;
+                          else if (currentValue >= 24) newValue = 32;
+                          else if (currentValue >= 16) newValue = 24;
+                          else if (currentValue >= 12) newValue = 16;
+                          else if (currentValue >= 8) newValue = 12;
+                          else if (currentValue >= 6) newValue = 8;
+                          else if (currentValue >= 4) newValue = 6;
+                          else newValue = 4;
+
                           handleSettingChange("threadCount", newValue);
                         }}
                         className="transition-transform hover:scale-105"
