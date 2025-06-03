@@ -38,6 +38,7 @@ import SidecarAndDependencies from "./pages/SidecarAndDependencies";
 import GameScreen from "./pages/GameScreen";
 import Profile from "./pages/Profile";
 import Library from "./pages/Library";
+import FolderView from "./pages/FolderView";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
 import Welcome from "./pages/Welcome";
@@ -551,6 +552,16 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="library">
                     <Library />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
+              path="folderview/:folderName"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="folderview">
+                    <FolderView />
                   </PageTransition>
                 </AnimatePresence>
               }

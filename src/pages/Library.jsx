@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +35,7 @@ import {
   ArrowUpAZ,
   ArrowDownAZ,
   ImageUp,
+  FolderPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -59,6 +60,19 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import igdbService from "@/services/gameInfoService";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
+
+import NewFolderDialog from "@/components/NewFolderDialog";
+import FolderCard from "@/components/FolderCard";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import {
+  loadFolders,
+  saveFolders,
+  createFolder,
+  addGameToFolder,
+  filterGamesNotInFolders,
+  getGamesInFolders,
+} from "@/lib/folderManager";
 
 const Library = () => {
   const [selectionMode, setSelectionMode] = useState(false);
@@ -88,6 +102,7 @@ const Library = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
+  const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState(() => {
@@ -115,6 +130,10 @@ const Library = () => {
   });
   const [totalGamesSize, setTotalGamesSize] = useState(0);
   const [isCalculatingSize, setIsCalculatingSize] = useState(false);
+  const [folders, setFolders] = useState(() => {
+    const savedFolders = localStorage.getItem("library-folders");
+    return savedFolders ? JSON.parse(savedFolders) : [];
+  });
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -164,14 +183,18 @@ const Library = () => {
       return matchesSearch && matchesFavorites && matchesVr && matchesOnline;
     })
     .sort((a, b) => {
+      // Folders always first
+      if (a.isFolder && !b.isFolder) return -1;
+      if (!a.isFolder && b.isFolder) return 1;
+      // Then favorites
       const aName = a.game || a.name || "";
       const bName = b.game || b.name || "";
       const aFavorite = favorites.includes(aName);
       const bFavorite = favorites.includes(bName);
       if (aFavorite !== bFavorite) {
-        return aFavorite ? -1 : 1; // Favorites always first
+        return aFavorite ? -1 : 1;
       }
-      // Within each group, sort alphabetically according to sortOrder
+      // Alphabetical
       return sortOrder === "asc"
         ? aName.localeCompare(bName)
         : bName.localeCompare(aName);
@@ -189,12 +212,23 @@ const Library = () => {
     currentPage * PAGE_SIZE
   );
 
+  // Listen for folder changes (e.g. folder deleted, games moved back)
+  useEffect(() => {
+    const handleFoldersUpdated = () => {
+      loadGames();
+    };
+    window.addEventListener("ascendara:folders-updated", handleFoldersUpdated);
+    return () => {
+      window.removeEventListener("ascendara:folders-updated", handleFoldersUpdated);
+    };
+  }, []);
+
   // Reset to first page if filter/search changes and current page is out of range
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(1);
     }
-  }, [filteredGames.length, totalPages, currentPage]);
+  }, [currentPage, totalPages]);
 
   const toggleFavorite = gameName => {
     setFavorites(prev => {
@@ -275,6 +309,19 @@ const Library = () => {
     init();
   }, []);
 
+  const handleCreateFolder = name => {
+    // Create new folder using the folderManager library
+    const newFolder = createFolder(name);
+
+    // Add to games list
+    setGames(prev => [newFolder, ...prev]);
+
+    // Update folders state
+    setFolders(loadFolders());
+
+    setIsNewFolderOpen(false);
+  };
+
   const loadGames = async () => {
     try {
       // Get games from main process
@@ -313,7 +360,23 @@ const Library = () => {
         })),
       ];
 
-      setGames(allGames);
+      // Load folders using the folderManager library
+      const folders = loadFolders();
+
+      // Add folders to the games list
+      const foldersAsGames = folders.map(folder => ({
+        ...folder,
+        isFolder: true,
+      }));
+
+      // Filter out games that are in folders using the folderManager library
+      const gamesNotInFolders = filterGamesNotInFolders(allGames);
+
+      // Set the folders state
+      setFolders(folders);
+
+      // Combine games not in folders with folder items
+      setGames([...foldersAsGames, ...gamesNotInFolders]);
       setLoading(false);
     } catch (error) {
       console.error("Error loading games:", error);
@@ -558,7 +621,7 @@ const Library = () => {
                               selectionMode && "bg-primary/10 text-primary"
                             )}
                             type="button"
-                            aria-label={t("library.tools.multiselect")}
+                            aria-label={t("library.multiselect")}
                             onClick={() => {
                               setSelectionMode(prev => !prev);
                               setSelectedGames([]);
@@ -568,10 +631,23 @@ const Library = () => {
                           </button>
                         </TooltipTrigger>
                         <TooltipContent className="text-secondary">
-                          {t("library.tools.multiselect")}
+                          {t("library.multiselect")}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
+                    <button
+                      className={cn("rounded p-2 hover:bg-secondary/50")}
+                      type="button"
+                      aria-label={t("library.newFolder")}
+                      onClick={() => setIsNewFolderOpen(true)}
+                    >
+                      <FolderPlus className="h-5 w-5" />
+                    </button>
+                    <NewFolderDialog
+                      open={isNewFolderOpen}
+                      onOpenChange={setIsNewFolderOpen}
+                      onCreate={handleCreateFolder}
+                    />
                   </div>
                 </div>
 
@@ -748,21 +824,71 @@ const Library = () => {
               </AlertDialogContent>
             </AlertDialog>
 
-            {paginatedGames.map(game => (
-              <div key={game.game || game.name}>
-                <InstalledGameCard
-                  game={game}
-                  onPlay={() =>
-                    selectionMode ? handleSelectGame(game) : handlePlayGame(game)
-                  }
-                  favorites={favorites}
-                  onToggleFavorite={() => toggleFavorite(game.game || game.name)}
-                  selectionMode={selectionMode}
-                  isSelected={selectedGames.includes(game.game)}
-                  onSelectCheckbox={() => handleSelectGame(game)}
-                />
-              </div>
-            ))}
+            <DndProvider backend={HTML5Backend}>
+              {paginatedGames
+                .sort((a, b) => (a.isFolder === b.isFolder ? 0 : a.isFolder ? -1 : 1))
+                .map(game => (
+                  <div key={game.game || game.name}>
+                    {game.isFolder ? (
+                      <DroppableFolderCard
+                        folder={game}
+                        onDropGame={droppedGame => {
+                          // Add game to folder using the folderManager library
+                          addGameToFolder(droppedGame, game.game);
+
+                          // Get updated folder object from storage
+                          const updatedFolders = loadFolders();
+                          const updatedFolder = updatedFolders.find(
+                            f => f.game === game.game
+                          );
+
+                          // Update folders state
+                          setFolders(updatedFolders);
+
+                          // Remove game from main list and update the folder in games array
+                          setGames(prevGames =>
+                            prevGames
+                              .map(g => {
+                                if (g.isFolder && g.game === game.game) {
+                                  // Replace with updated folder object
+                                  return { ...updatedFolder };
+                                }
+                                return g;
+                              })
+                              .filter(
+                                g =>
+                                  (g.game || g.name) !==
+                                    (droppedGame.game || droppedGame.name) ||
+                                  (g.isFolder && g.game === game.game)
+                              )
+                          );
+                        }}
+                      >
+                        <FolderCard
+                          key={game.game + "-" + (game.items ? game.items.length : 0)}
+                          name={game.game || game.name}
+                          folder={game}
+                          refreshKey={game.items ? game.items.length : 0}
+                        />
+                      </DroppableFolderCard>
+                    ) : (
+                      <DraggableGameCard game={game}>
+                        <InstalledGameCard
+                          game={game}
+                          onPlay={() =>
+                            selectionMode ? handleSelectGame(game) : handlePlayGame(game)
+                          }
+                          favorites={favorites}
+                          onToggleFavorite={() => toggleFavorite(game.game || game.name)}
+                          selectionMode={selectionMode}
+                          isSelected={selectedGames.includes(game.game)}
+                          onSelectCheckbox={() => handleSelectGame(game)}
+                        />
+                      </DraggableGameCard>
+                    )}
+                  </div>
+                ))}
+            </DndProvider>
           </div>
 
           {/* Pagination Controls */}
@@ -1645,6 +1771,59 @@ const AddGameForm = ({ onSuccess }) => {
           {t("library.addGame")}
         </Button>
       </AlertDialogFooter>
+    </div>
+  );
+};
+
+// Drag and Drop Components
+
+// Draggable wrapper for game cards
+const DraggableGameCard = ({ game, children }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "GAME",
+    item: { ...game },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  return (
+    <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      {children}
+    </div>
+  );
+};
+
+// Droppable wrapper for folder cards
+const DroppableFolderCard = ({ folder, onDropGame, children }) => {
+  const navigate = useNavigate();
+
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: "GAME",
+    drop: item => {
+      if (onDropGame) onDropGame(item);
+    },
+    canDrop: item => {
+      // Prevent dropping a game that's already in this folder
+      return !folder.items?.some(g => (g.game || g.name) === (item.game || item.name));
+    },
+    collect: monitor => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drop}
+      style={{
+        background: isOver && canDrop ? "#e0e7ff" : "transparent",
+        borderRadius: "8px",
+        transition: "background-color 0.2s",
+      }}
+      onClick={() => navigate(`/folderview/${encodeURIComponent(folder.game)}`)}
+    >
+      {children}
     </div>
   );
 };
