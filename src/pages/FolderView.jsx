@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Heart, Gamepad2, Gift, FolderUp, Pencil } from "lucide-react";
@@ -24,16 +24,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+// Create a global image cache outside the component to persist across renders
+const imageCache = {};
+
 const FolderView = () => {
   const { folderName } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [folderGames, setFolderGames] = useState([]);
-  // Folder-specific favorites
   const [favorites, setFavorites] = useState([]);
-  const lastFolderNameRef = React.useRef(folderName);
-  const lastFolderGamesRef = React.useRef([]);
-  // Dialog states
+  const lastFolderNameRef = useRef(folderName);
+  const lastFolderGamesRef = useRef([]);
+  const isMounted = useRef(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -47,17 +50,68 @@ const FolderView = () => {
     if (folderGames && folderGames.length > 0) lastFolderGamesRef.current = folderGames;
   }, [folderGames]);
 
+  // Debounced folder/favorites loading to prevent flicker
+  // Track component mount/unmount
   useEffect(() => {
-    // Load folder data using the folderManager library
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  // Immediate folder loading on initial mount and folder change
+  useEffect(() => {
+    // Immediately load folder data when component mounts or folder changes
+    // This prevents the empty state when switching folders
+    if (!isMounted.current) return;
+
+    // Set loading state
+    setIsLoading(true);
+
+    // Immediately load and cache folder data
     const folder = getFolderByName(decodeURIComponent(folderName));
     if (folder && folder.items) {
-      setFolderGames(folder.items);
+      // Pre-cache all images before showing content
+      folder.items.forEach(game => {
+        const gameId = game.game || game.name;
+        if (!imageCache[gameId]) {
+          const localStorageKey = `game-image-${gameId}`;
+          const cachedImage = localStorage.getItem(localStorageKey);
+          if (cachedImage) {
+            imageCache[gameId] = cachedImage;
+          } else {
+            imageCache[gameId] = "/placeholder-game.jpg";
+          }
+        }
+      });
+
+      // Keep previous games visible until new ones are ready
+      // Only update if the games actually changed
+      const newGames = folder.items;
+      const isSame =
+        folderGames.length === newGames.length &&
+        folderGames.every(
+          (g, i) => (g.game || g.name) === (newGames[i].game || newGames[i].name)
+        );
+      if (!isSame) {
+        setFolderGames(newGames);
+      }
     }
 
     // Load folder-specific favorites
     const favoritesObj = JSON.parse(localStorage.getItem("folder-favorites") || "{}");
     const folderKey = decodeURIComponent(folderName);
-    setFavorites(favoritesObj[folderKey] || []);
+    const newFavs = favoritesObj[folderKey] || [];
+    const favsSame =
+      favorites.length === newFavs.length && favorites.every((f, i) => f === newFavs[i]);
+    if (!favsSame) {
+      setFavorites(newFavs);
+    }
+
+    // Clear loading state
+    setIsLoading(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
 
   // Sort games to show favorites at the top
@@ -203,22 +257,34 @@ const FolderView = () => {
     setFolderGames(prev => prev.filter(game => (game.game || game.name) !== gameId));
   };
 
-  const GameCard = ({ game }) => {
+  // Use React.memo to prevent unnecessary re-renders of GameCard
+  const GameCard = React.memo(({ game }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [imageData, setImageData] = useState("");
-    const isFavorite = favorites.includes(game.game || game.name);
+    const gameId = game.game || game.name;
+    const isFavorite = favorites.includes(gameId);
 
-    useEffect(() => {
-      // Try to load cached image from localStorage
-      const localStorageKey = `game-image-${game.game || game.name}`;
-      const cachedImage = localStorage.getItem(localStorageKey);
-      if (cachedImage) {
-        setImageData(cachedImage);
+    // Use ref for image data to prevent re-renders
+    const imageDataRef = useRef("");
+
+    // Initialize with cached image if available
+    if (!imageDataRef.current) {
+      // First check our in-memory cache
+      if (imageCache[gameId]) {
+        imageDataRef.current = imageCache[gameId];
       } else {
-        // Use a default image or placeholder
-        setImageData("/placeholder-game.jpg");
+        // Then check localStorage
+        const localStorageKey = `game-image-${gameId}`;
+        const cachedImage = localStorage.getItem(localStorageKey);
+        if (cachedImage) {
+          imageCache[gameId] = cachedImage; // Store in memory cache
+          imageDataRef.current = cachedImage;
+        } else {
+          // Use a default image
+          imageCache[gameId] = "/placeholder-game.jpg";
+          imageDataRef.current = "/placeholder-game.jpg";
+        }
       }
-    }, [game]);
+    }
 
     return (
       <Card
@@ -238,9 +304,10 @@ const FolderView = () => {
         <CardContent className="p-0">
           <div className="relative aspect-[4/3] overflow-hidden">
             <img
-              src={imageData}
+              src={imageDataRef.current}
               alt={game.game}
               className="h-full w-full border-b border-border object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="eager"
             />
             {typeof game.launchCount === "undefined" && !game.isCustom && (
               <span className="pointer-events-none absolute left-2 top-2 z-20 select-none rounded bg-secondary px-2 py-0.5 text-xs font-bold text-primary">
@@ -313,7 +380,23 @@ const FolderView = () => {
         </CardFooter>
       </Card>
     );
-  };
+  });
+
+  // Preload images for all games in the folder
+  useEffect(() => {
+    folderGames.forEach(game => {
+      const gameId = game.game || game.name;
+      if (!imageCache[gameId]) {
+        const localStorageKey = `game-image-${gameId}`;
+        const cachedImage = localStorage.getItem(localStorageKey);
+        if (cachedImage) {
+          imageCache[gameId] = cachedImage;
+        } else {
+          imageCache[gameId] = "/placeholder-game.jpg";
+        }
+      }
+    });
+  }, [folderGames]);
 
   return (
     <div className="container mx-auto p-4">
@@ -393,7 +476,7 @@ const FolderView = () => {
                 );
 
                 if (folderExists) {
-                  setRenameError(t("library.folderNameExists"));
+                  setRenameError(t("library.thisIsNamedThat"));
                   return;
                 }
 
@@ -453,22 +536,33 @@ const FolderView = () => {
       </AlertDialog>
 
       {(() => {
+        // Always use lastFolderGamesRef as fallback to prevent empty state
         const gamesToShow =
-          folderGames && folderGames.length > 0
-            ? folderGames
-            : lastFolderGamesRef.current && lastFolderGamesRef.current.length > 0
-              ? lastFolderGamesRef.current
-              : [];
-        return gamesToShow.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-8 text-center">
-            <div className="text-lg font-medium text-foreground">
-              {t("library.emptyFolder")}
+          folderGames.length > 0 ? folderGames : lastFolderGamesRef.current;
+
+        // Only show empty state when we're sure the folder is actually empty
+        // and not just in a loading state
+        if (gamesToShow.length === 0 && !isLoading) {
+          return (
+            <div className="mt-8 flex flex-col items-center justify-center text-center">
+              <Gift className="mb-4 h-16 w-16 text-primary" />
+              <h2 className="mb-2 text-2xl font-bold">{t("library.emptyFolderTitle")}</h2>
+              <p className="mb-4 text-muted-foreground">
+                {t("library.emptyFolderDescription")}
+              </p>
+              <Button
+                variant="default"
+                className="gap-2"
+                onClick={() => navigate("/library")}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                {t("library.backToLibrary")}
+              </Button>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t("library.dragGamesToFolder")}
-            </p>
-          </div>
-        ) : (
+          );
+        }
+
+        return (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {gamesToShow.map(game => (
               <GameCard key={game.game || game.name} game={game} />
