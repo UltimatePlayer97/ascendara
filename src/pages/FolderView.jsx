@@ -451,7 +451,7 @@ const FolderView = () => {
               autoFocus
             />
             {renameError && (
-              <p className="text-destructive mt-2 text-sm">{renameError}</p>
+              <p className="text-secondary-foreground mt-2 text-sm">{renameError}</p>
             )}
           </div>
 

@@ -58,7 +58,7 @@ const NewFolderDialog = ({ open, onOpenChange, onCreate }) => {
             if (e.key === "Enter") handleCreate();
           }}
         />
-        {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
+        {error && <div className="text-secondary-foreground mt-2 text-sm">{error}</div>}
         <AlertDialogFooter>
           <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
           <AlertDialogAction
