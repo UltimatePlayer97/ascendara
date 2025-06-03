@@ -743,7 +743,7 @@ class SettingsManager {
       endOnClose: false,
       language: "en",
       theme: "purple",
-      threadCount: 4,
+      threadCount: 12,
       downloadLimit: 0,
       sideScrollBar: false,
       excludeFolders: false,

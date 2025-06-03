@@ -28,7 +28,7 @@ export function SettingsProvider({ children }) {
     endOnClose: false,
     language: "en",
     theme: "purple",
-    threadCount: 4,
+    threadCount: 12,
     downloadLimit: 0,
     excludeFolders: false,
     sideScrollBar: false,
