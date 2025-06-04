@@ -744,6 +744,7 @@
       "formatSimple": "Simple (Directory structure)",
       "formatZip": "ZIP (Recommended)",
       "selectDirectory": "Select backup directory",
+      "selectLocationToEnable": "You need to have a backup directory selected to enable this",
       "skipManifestCheck": "Skip Manifest Check",
       "skipManifestCheckDesc": "Skip checking if backing up the game is having issues. Only enable if you know what you're doing.",
       "title": "Game Backups"

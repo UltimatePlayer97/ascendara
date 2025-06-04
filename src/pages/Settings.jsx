@@ -1265,8 +1265,18 @@ function Settings() {
                         </Button>
                       </div>
                     </div>
+                    {isOnWindows && !settings.ludusavi.backupLocation && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-primary" />
+                        <p className="text-sm text-primary">
+                          {t("settings.gameBackup.selectLocationToEnable")}
+                        </p>
+                      </div>
+                    )}
                     <div className="mt-4 flex items-center justify-between">
-                      <div className="space-y-2">
+                      <div
+                        className={`space-y-2 ${!isOnWindows || !settings.ludusavi.backupLocation ? "pointer-events-none opacity-50" : ""}`}
+                      >
                         <Label>{t("settings.gameBackup.title")}</Label>
                         <p className="max-w-[70%] text-sm text-muted-foreground">
                           {t("settings.gameBackup.description")}&nbsp;
