@@ -184,15 +184,25 @@ const FolderCard = ({ name, onClick, className, refreshKey }) => {
       {/* Remove Folder Alert Dialog */}
       <AlertDialogContent className="border-border bg-background">
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("library.confirmRemoveFolderTitle")}</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-lg font-semibold text-foreground">
+            {t("library.confirmRemoveFolderTitle")}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground">
             {t("library.confirmRemoveFolderDesc")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+          <AlertDialogCancel
+            className="text-foreground"
+            onClick={e => {
+              e.stopPropagation();
+              setShowDeleteDialog(false);
+            }}
+          >
+            {t("common.cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="text-primary-foreground bg-primary hover:bg-primary/90"
             onClick={e => {
               e.stopPropagation();
               // Move games back to main library
@@ -218,7 +228,7 @@ const FolderCard = ({ name, onClick, className, refreshKey }) => {
               window.dispatchEvent(new CustomEvent("ascendara:folders-updated"));
             }}
           >
-            {t("library.removeFolder", "Remove Folder")}
+            {t("library.removeFolder")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -406,7 +406,7 @@ const FolderView = () => {
           {t("common.back")}
         </Button>
 
-        <Button variant="destructive" size="sm" onClick={() => setShowDeleteDialog(true)}>
+        <Button variant="none" size="sm" onClick={() => setShowDeleteDialog(true)}>
           {t("library.deleteFolder")}
         </Button>
       </div>
@@ -433,8 +433,10 @@ const FolderView = () => {
       <AlertDialog open={showRenameDialog} onOpenChange={setShowRenameDialog}>
         <AlertDialogContent className="border-border bg-background">
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("library.renameFolderTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg font-semibold text-foreground">
+              {t("library.renameFolderTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               {t("library.renameFolderDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -447,7 +449,7 @@ const FolderView = () => {
                 setRenameError("");
               }}
               placeholder={t("library.folderNamePlaceholder")}
-              className="w-full"
+              className="text-foreground"
               autoFocus
             />
             {renameError && (
@@ -456,7 +458,9 @@ const FolderView = () => {
           </div>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel className="text-foreground">
+              {t("common.cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={e => {
                 e.preventDefault();
@@ -507,13 +511,16 @@ const FolderView = () => {
           onClick={e => e.stopPropagation()}
         >
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("library.confirmRemoveFolderTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg font-semibold text-foreground">
+              {t("library.confirmRemoveFolderTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               {t("library.confirmRemoveFolderDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
+              className="text-foreground"
               onClick={e => {
                 e.stopPropagation();
                 setShowDeleteDialog(false);
@@ -522,7 +529,7 @@ const FolderView = () => {
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="text-primary-foreground bg-primary hover:bg-primary/90"
               onClick={e => {
                 e.stopPropagation();
                 handleDeleteFolder();

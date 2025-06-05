@@ -46,11 +46,16 @@ const NewFolderDialog = ({ open, onOpenChange, onCreate }) => {
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="border-border bg-background">
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("library.newFolder.title")}</AlertDialogTitle>
-          <AlertDialogDescription>{t("library.newFolder.desc")}</AlertDialogDescription>
+          <AlertDialogTitle className="text-lg font-semibold text-foreground">
+            {t("library.newFolder.title")}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground">
+            {t("library.newFolder.desc")}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <Input
           autoFocus
+          className="text-foreground"
           placeholder={t("library.newFolder.placeholder")}
           value={name}
           onChange={e => setName(e.target.value)}
@@ -58,9 +63,11 @@ const NewFolderDialog = ({ open, onOpenChange, onCreate }) => {
             if (e.key === "Enter") handleCreate();
           }}
         />
-        {error && <div className="text-secondary-foreground mt-2 text-sm">{error}</div>}
+        {error && <div className="mt-2 text-sm text-primary">{error}</div>}
         <AlertDialogFooter>
-          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+          <AlertDialogCancel className="text-foreground">
+            {t("common.cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={e => {
               e.preventDefault();
