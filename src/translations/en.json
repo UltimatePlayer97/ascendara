@@ -390,12 +390,14 @@
     "topGames": "Top Games"
   },
   "library": {
+    "addFavorite": "Add to Favorites",
     "addGame": "Add to Library",
     "addGameDescription1": "Add your own games or import from Steam.",
     "addGameDescription2": "Add a game to your Ascendara library to easily launch it and track play time. No files will be modified when adding a game.",
     "addToFavorites": "Add to Favorites",
     "alreadyRunning": "{{game}} is already running",
     "availableSpace": "Available Space",
+    "backToLibrary": "Back to Library",
     "backups": {
       "autoBackupDesc": "Automatically backup save data when game closes",
       "autoBackupDisabled": "Auto-backup disabled",
@@ -461,6 +463,8 @@
     "dragGamesToFolder": "Drag games to the folder card to add them to this folder",
     "empty": "Empty",
     "emptyFolder": "This Folder is Empty",
+    "emptyFolderDescription": "There are no games in this folder. Add games to get started!",
+    "emptyFolderTitle": "This Folder is Empty",
     "emptySlot": "Empty",
     "enterMoreChars": "Image results will appear here as you type",
     "executable": "Executable",
@@ -544,7 +548,10 @@
       "title": "Rate {{game}}",
       "veryGood": "Really enjoyed it"
     },
+    "removeFavorite": "Remove from Favorites",
+    "removeFolder": "Remove Folder",
     "removeFromFavorites": "Remove from Favorites",
+    "removeFromFolder": "Remove from Folder",
     "removeGameFromLibrary": "Remove from Library",
     "renameFolderDesc": "Enter a new name for this folder.",
     "renameFolderTitle": "Rename Folder",
