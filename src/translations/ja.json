@@ -70,7 +70,7 @@
     "torrentWarning": "Torrentingが有効になっています -  VPNを使用します",
     "watchdog": {
       "error": {
-        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションは一緒に実行できません。",
+        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションが一緒に実行できません。",
         "message": "Ascendaraの功績追跡サービスは実行されていません。これは一般に、Achievement Watcherをインストールすることによって引き起こされます。",
         "title": "実行中の達成サービス"
       }
@@ -95,6 +95,7 @@
     "preferences": "好み",
     "prev": "前の",
     "profile": "プロフィール",
+    "remove": "取り除く",
     "reportDialog": {
       "authFailed": "認証に失敗しました",
       "authFailedDesc": "認証できません。後でもう一度やり直してください。",
@@ -120,6 +121,7 @@
     "reportToAscendara": "Ascendaraに報告します",
     "reporting": "報告...",
     "retry": "もう一度やり直してください",
+    "save": "保存",
     "search": "検索",
     "submit": "提出する",
     "submitting": "提出...",
@@ -388,12 +390,14 @@
     "topGames": "トップゲーム"
   },
   "library": {
+    "addFavorite": "お気に入りに追加します",
     "addGame": "ライブラリに追加します",
     "addGameDescription1": "独自のゲームを追加するか、Steamからインポートします。",
     "addGameDescription2": "Ascendaraライブラリにゲームを追加して簡単に起動し、プレイ時間を追跡します。ゲームを追加するときにファイルは変更されません。",
     "addToFavorites": "お気に入りに追加します",
     "alreadyRunning": "{{game}}はすでに実行されています",
     "availableSpace": "利用可能なスペース",
+    "backToLibrary": "図書館に戻ります",
     "backups": {
       "autoBackupDesc": "ゲームが閉じると自動的にバックアップデータを保存します",
       "autoBackupDisabled": "自動バックアップ無効",
@@ -444,13 +448,24 @@
     "changeExecutable": "実行可能ファイルを変更します",
     "chooseDirectory": "ディレクトリを選択します",
     "chooseExecutableFile": "実行可能ファイルを選択してください...",
+    "clickToOpenFolder": "クリックしてフォルダーを開きます",
     "confirmDelete": "うわー！",
+    "confirmRemoveFolderDesc": "このフォルダーを削除したいですか？内部のすべてのゲームはメインライブラリに戻されます。",
+    "confirmRemoveFolderTitle": "フォルダを削除しますか？",
     "coverSearchError": "画像の検索エラー",
     "createShortcut": "デスクトップショートカットを作成します",
     "delete": "{{game}}を削除します",
     "deleteConfirmMessage": "ライブラリから{{game}}を削除したいですか？これにより、Ascendaraライブラリからゲームが削除され、関連するすべてのファイルが削除されます。このアクションを元に戻すことはできません。",
+    "deleteFolder": "フォルダーを削除します",
     "deleteGame": "ゲームを削除します",
     "deleting": "削除...",
+    "dragGamesHere": "ここでゲームをドラッグします",
+    "dragGamesToFolder": "ゲームをフォルダカードにドラッグして、このフォルダーに追加します",
+    "empty": "空の",
+    "emptyFolder": "このフォルダーは空です",
+    "emptyFolderDescription": "このフォルダーにはゲームはありません。ゲームを追加して始めましょう！",
+    "emptyFolderTitle": "このフォルダーは空です",
+    "emptySlot": "空の",
     "enterMoreChars": "入力すると、画像の結果がここに表示されます",
     "executable": "実行可能",
     "executableNotFound": "ゲーム実行可能ファイルが見つかりません",
@@ -459,7 +474,12 @@
       "onlineGames": "オンラインゲーム",
       "vrGames": "VRゲーム"
     },
+    "folderNamePlaceholder": "このフォルダーに名前を付けます",
+    "folderNameRequired": "フォルダー名が必要です",
+    "folderRenameError": "フォルダーの変更エラー",
+    "gameInFolder": "ゲーム",
     "gameName": "ゲーム名",
+    "gamesInFolder": "ゲーム",
     "gamesInLibrary": "合計ゲーム",
     "gamesSpace": "インストールされたゲーム",
     "hasOnlineFix": "オンライン修正があります",
@@ -491,11 +511,21 @@
     "lessThanMinute2": "1分未満",
     "minute": "分",
     "minutes": "分",
+    "multiselect": "多選択",
     "neverPlayed": "あなたはまだこのゲームをプレイしていません",
     "neverPlayed2": "プレイしたことはありません",
     "newBadge": "新しい",
+    "newFolder": {
+      "create": "フォルダーを作成します",
+      "desc": "新しいフォルダーの名前を入力します",
+      "exists": "この名前のフォルダーはすでに存在しています",
+      "placeholder": "フォルダー名",
+      "required": "フォルダー名が必要です",
+      "title": "新しいフォルダー"
+    },
     "noResultsFound": "結果は見つかりませんでした。検索で正確にしてください。",
     "ofPlaytime": "このゲームで",
+    "openFolder": "開ける",
     "openGameDirectory": "オープンゲームディレクトリ",
     "pageTitle": "あなたの図書館",
     "play": "遊ぶ",
@@ -518,8 +548,13 @@
       "title": "レート{{game}}",
       "veryGood": "本当に楽しんだ"
     },
+    "removeFavorite": "お気に入りから取り外します",
+    "removeFolder": "フォルダーを削除します",
     "removeFromFavorites": "お気に入りから取り外します",
+    "removeFromFolder": "フォルダーから取り外します",
     "removeGameFromLibrary": "ライブラリから取り外します",
+    "renameFolderDesc": "このフォルダーの新しい名前を入力します。",
+    "renameFolderTitle": "フォルダーの名前を変更します",
     "running": "ランニング",
     "searchForCoverImage": "カバー画像を検索して現在の画像を置き換える",
     "searchGameCover": "Ascendaraを検索して画像カバーをご覧ください",
@@ -538,6 +573,7 @@
     "steamNotRunningMessage": "オンラインフィックスゲームでは、Steamが実行される必要があります。 Steamを起動して、アカウントに署名されていることを確認してから、もう一度ゲームを開始してください。",
     "steamappsDirectory": "インポートするディレクトリ",
     "steamappsDirectoryMissingCommon": "選択したディレクトリにはゲームが含まれていません。 SteamAppsディレクトリ内の「Common」ディレクトリを選択してください。",
+    "thisIsNamedThat": "このフォルダーにはすでに名前が付けられています",
     "tools": {
       "bulkRemove": "選択したゲームを削除します",
       "selected": "マルチセレクションが有効になっています"
@@ -712,6 +748,7 @@
       "formatSimple": "シンプル（ディレクトリ構造）",
       "formatZip": "zip（推奨）",
       "selectDirectory": "バックアップディレクトリを選択します",
+      "selectLocationToEnable": "これを有効にするためにバックアップディレクトリを選択する必要があります",
       "skipManifestCheck": "マニフェストチェックをスキップします",
       "skipManifestCheckDesc": "ゲームをバックアップしているかどうかを確認してください。自分が何をしているのかを知っている場合にのみ有効にします。",
       "title": "ゲームのバックアップ"
@@ -808,7 +845,7 @@
       "usernameError": "ユーザー名の保存に失敗しました"
     },
     "viewComponentsPage": "コンポーネントページを表示します",
-    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーは購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できます。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
+    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーが購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できるようにします。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
     "warningSupportDevelopers": "ゲーム開発者は、かなりの時間、リソース、創造性を投資して、私たち全員が楽しんでいる体験を生み出します。あなたの購入は、優れたゲームを継続し続け、ゲーム業界を維持する能力を直接サポートします。",
     "warningSupportDevelopersCallToAction": "楽しむゲームを購入することで、開発者をサポートしてください。",
     "warningTitle": "ねえ、これを読んでください！"
