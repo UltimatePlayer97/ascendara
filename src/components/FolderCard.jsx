@@ -13,7 +13,6 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
-  AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -119,7 +118,7 @@ const FolderCard = ({ name, onClick, className, refreshKey }) => {
                     setShowDeleteDialog(true);
                   }}
                 >
-                  <Trash2 className="text-destructive h-5 w-5" />
+                  <Trash2 className="h-5 w-5 text-primary" />
                 </button>
               </div>
             </div>
@@ -202,7 +201,7 @@ const FolderCard = ({ name, onClick, className, refreshKey }) => {
             {t("common.cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
-            className="text-primary-foreground bg-primary hover:bg-primary/90"
+            className="text-secondary"
             onClick={e => {
               e.stopPropagation();
               // Move games back to main library

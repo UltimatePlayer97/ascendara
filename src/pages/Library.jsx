@@ -706,7 +706,10 @@ const Library = () => {
                           {t("library.gamesInLibrary")}
                         </span>
                       </div>
-                      <span className="text-sm font-medium">{games.length}</span>
+                      <span className="text-sm font-medium">
+                        {games.filter(g => !g.isFolder).length +
+                          getGamesInFolders().length}
+                      </span>
                     </div>
 
                     {/* Storage section */}

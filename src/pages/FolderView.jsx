@@ -462,6 +462,7 @@ const FolderView = () => {
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
+              className="bg-primary text-secondary"
               onClick={e => {
                 e.preventDefault();
 
@@ -529,7 +530,7 @@ const FolderView = () => {
               {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="text-primary-foreground bg-primary hover:bg-primary/90"
+              className="bg-primary text-secondary"
               onClick={e => {
                 e.stopPropagation();
                 handleDeleteFolder();

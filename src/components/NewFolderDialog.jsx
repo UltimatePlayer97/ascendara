@@ -69,6 +69,7 @@ const NewFolderDialog = ({ open, onOpenChange, onCreate }) => {
             {t("common.cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
+            className="bg-primary text-secondary"
             onClick={e => {
               e.preventDefault();
               handleCreate();
