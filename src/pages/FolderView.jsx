@@ -560,7 +560,7 @@ const FolderView = () => {
               </p>
               <Button
                 variant="default"
-                className="gap-2"
+                className="gap-2 text-secondary"
                 onClick={() => navigate("/library")}
               >
                 <ChevronLeft className="h-4 w-4" />
