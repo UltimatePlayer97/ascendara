@@ -83,7 +83,11 @@ const Navigation = memo(({ items }) => {
       ) {
         return true;
       }
-      if (path === "/library" && location.pathname === "/gamescreen") {
+      if (
+        path === "/library" &&
+        (location.pathname === "/gamescreen" ||
+          location.pathname.startsWith("/folderview"))
+      ) {
         return true;
       }
       return location.pathname === path;
