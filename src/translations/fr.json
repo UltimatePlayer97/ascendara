@@ -131,9 +131,15 @@
     "aboutGame": "À propos de ce jeu",
     "allDlc": "All-DLCS",
     "allDlcTooltip": "Comprend tout le contenu téléchargeable (DLC) disponible pour ce jeu",
+    "betaFeature": "Woah ... c'est toujours en version bêta!",
+    "by": "par",
     "categories": "Catégories",
     "companies": "Entreprise",
+    "completionist": "Finitionniste",
+    "criticError": "Échec de la charge de critiques",
+    "criticReviews": "Critiques",
     "dataProvidedBy": "Données de jeu fournies par",
+    "description": "Description",
     "developers": "Développeurs",
     "dmcaNotice": "AVIS DMCA: Ascendara utilise des liens et des fichiers externalisés et n'héberge rien sur ses propres serveurs.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "En attendant que votre navigateur envoie le téléchargement ..."
     },
     "firstReleasedOn": "Jeu sorti",
+    "gameInfo": "Informations sur le jeu",
     "gameNeedsEmulator": "Cela nécessite un émulateur pour fonctionner.",
     "gameNeedsVR": "VR peut être nécessaire pour ce jeu.",
+    "gameNotRated": "Ce jeu n'a pas été examiné par les critiques",
+    "genres": "Genres",
+    "hours": "heures",
     "igdbLoading": "Chargement des informations sur le jeu ...",
     "igdbRating": "Ce jeu est classé {{rating}} pommes. Les notes Apple sont différentes des notes Star sur Ascendara, et sont plus une note générale du jeu.",
     "infoMaybeInaccurate": "Les informations sur le jeu peuvent être inexactes.",
     "latestUpdate": "Dernière mise à jour",
     "linkCopied": "Lien copié dans le presse-papiers",
+    "mainPlusExtras": "Extras principal +",
+    "mainStory": "Histoire principale",
+    "medianScore": "Score médian",
     "newUserGuide": {
       "close": "Fermer",
       "description": "Vous n'avez pas installé de jeu auparavant, alors Ascendara vous guidera tout au long du processus de configuration.",
@@ -197,10 +210,14 @@
       "title": "Téléchargement avec Ascendara"
     },
     "noGameInfoAvailable": "Configurez Ascendara Xtra dans les préférences pour voir plus d'informations sur ce jeu",
+    "noReviewsExplanation": "Ce jeu n'a pas de critiques professionnelles disponibles sur OpenCritic. Cela pourrait être dû au fait qu'il s'agit d'une nouvelle version, d'un titre indépendant, ou n'a tout simplement pas été révisé.",
+    "notExactMatch": "Le nom de jeu ne correspondait pas exactement. Signalez le jeu si nécessaire.",
     "online": "EN LIGNE",
     "onlineFixWarningDescription": "Ce jeu est livré avec une fixe en ligne installée, lorsque vous le lancez, vous verrez une invite vous disant qu'elle est faite par l'équipe en ligne. Ceci est normal et ne devrait se montrer qu'une seule fois pour chaque jeu avec.",
     "onlineFixWarningTitle": "Invite de fixe en ligne sur le lancement",
     "onlineTooltip": "Capacités multijoueurs en ligne activées via en ligne-fix.me",
+    "openCriticBetaWarning": "Ce point de terminaison API est en version bêta et il peut y avoir des problèmes. Si OpenCritic montre un jeu différent, veuillez signaler le jeu en cliquant sur «Rapport» à droite du titre.",
+    "platforms": "Plates-formes",
     "pressEscToGoBack": "Appuyez sur la touche ESC pour revenir en arrière",
     "protectYourself": {
       "learnHow": "Comment vous protéger des faux téléchargements",
@@ -209,6 +226,7 @@
     },
     "publishers": "Éditeurs",
     "ratingTooltip": "Ce jeu est classé {{rating}} sur 5 étoiles par d'autres sur Ascendara. Lisez les commentaires sur ce jeu dans le serveur Discord.",
+    "readReviews": "Lire les critiques",
     "reportBroken": "Rapport",
     "reportDescription": "Veuillez fournir plus de détails sur le problème",
     "reportError": "Veuillez fournir une raison et des détails pour votre rapport",
@@ -222,6 +240,8 @@
       "notAGame": "Ce n'est pas un jeu",
       "placeholder": "Sélectionnez une raison"
     },
+    "reviewCount": "Nombre de critiques",
+    "reviewSnippets": "Revoir les extraits",
     "screenshots": "Captures d'écran",
     "scrollToViewMore": "Faites défiler pour afficher plus de détails de jeu",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "Envoi de torrent ...",
     "shareGame": "Partagez le lien de jeu Ascendara",
+    "showingResultsFor": "Montrant des résultats pour",
     "size": "Taille",
     "submitReport": "Soumettre le rapport",
     "submitting": "Soumission...",
     "switchProvider": "Fournisseur de commutation",
+    "tier": "Étage",
+    "timeToBeat": "Il est temps de battre",
     "timemachine": {
       "cancel": "Annuler",
       "description": "Sélectionnez une version précédente de {game}",
@@ -257,10 +280,14 @@
       "reportSubmitted": "Rapport soumis avec succès",
       "torrentSent": "Torrent envoyé à QbitTorrent"
     },
+    "topCriticScore": "Top Score de Critic",
+    "understand": "Je comprends, continue",
     "update": {
       "description": "Cela réinstallera le jeu dans le même répertoire. Bien que la plupart des jeux enregistrent des données dans des emplacements séparés, il est recommandé de sauvegarder tout fichier de sauvegarde ou de contenu personnalisé important avant de procéder à la mise à jour.",
       "title": "Prêt à mettre à jour {{game}}?"
-    }
+    },
+    "viewCriticReviews": "Voir les critiques des critiques",
+    "viewOnOpenCritic": "Voir sur opencritique"
   },
   "downloads": {
     "actions": {
@@ -990,7 +1017,7 @@
     "stayUpToDate": "Gardez Ascendara à jour",
     "takeTour": "Faire la tournée",
     "termsOfService": "Conditions de service",
-    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements des fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
+    "theExtensionBlocksKnownProviders": "L'extension écoute les téléchargements de fournisseurs connus et les arrête avant de commencer dans votre navigateur, puis l'envoyer à Ascencerara pour télécharger",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "C'est là que tous vos jeux téléchargés seront stockés",
     "welcomeTo": "Bienvenue",
     "welcomeToAscendaraDescription": "Vous êtes presque prêt à commencer à utiliser Ascendara. Nous allons passer par le processus d'intégration ensemble pour faire trié certains paramètres de base, mais veuillez d'abord lire les conditions d'utilisation et la politique de confidentialité.",

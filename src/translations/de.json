@@ -42,7 +42,7 @@
       "active": "qbittorrent webui active ({{version}})",
       "checkWebUI": "Bitte überprüfen Sie, ob QBITTorrent mit aktivierter Web -Benutzeroberfläche ausgeführt wird",
       "checking": "Überprüfen Sie den QBITTorrent -Status ...",
-      "configInstructions": "Bitte setzen Sie Ihre QBITTorrent -Webui -Anmeldeinformationen auf den Benutzernamen 'Admin' und das Passwort 'Adminadmin' ein, um die Torrent -Funktionalität zu ermöglichen.",
+      "configInstructions": "Bitte setzen Sie Ihre QBITTorrent -Webui -Anmeldeinformationen auf den Benutzernamen \"Admin\" und das Passwort \"adminadmin\" ein, um die Torrent -Funktionalität zu ermöglichen.",
       "configRequired": "Überprüfen Sie die QBITTorrent -Konfiguration",
       "inactive": "Qbittorrent Webui Inaktiv",
       "inactiveWithError": "qbittorrent webui inaktiv - {{error}}",
@@ -131,9 +131,15 @@
     "aboutGame": "Über dieses Spiel",
     "allDlc": "All-DLCS",
     "allDlcTooltip": "Enthält alle herunterladbaren Inhalte (DLC) für dieses Spiel",
+    "betaFeature": "Woah ... das ist immer noch in Beta!",
+    "by": "von",
     "categories": "Kategorien",
     "companies": "Unternehmen",
+    "completionist": "Fertigstellungist",
+    "criticError": "Kritikerbewertungen nicht laden",
+    "criticReviews": "Kritiker Reviews",
     "dataProvidedBy": "Spieldaten bereitgestellt von",
+    "description": "Beschreibung",
     "developers": "Entwickler",
     "dmcaNotice": "DMCA -Hinweis: Ascendara verwendet ausgelagerte Links und Dateien und hostet nichts auf seinen eigenen Servern.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "Warten Sie darauf, dass Ihr Browser den Download sendet ..."
     },
     "firstReleasedOn": "Spiel veröffentlicht",
+    "gameInfo": "Spielinformationen",
     "gameNeedsEmulator": "Dies erfordert einen Emulator.",
     "gameNeedsVR": "Für dieses Spiel kann VR erforderlich sein.",
+    "gameNotRated": "Dieses Spiel wurde von Kritikern nicht überprüft",
+    "genres": "Genres",
+    "hours": "Std.",
     "igdbLoading": "Ladespielinformationen ...",
     "igdbRating": "Dieses Spiel ist {{rating}} -Apfel bewertet. Die Apple -Bewertungen unterscheiden sich von den Sternenbewertungen auf Ascendara und sind eher eine allgemeine Bewertung des Spiels.",
     "infoMaybeInaccurate": "Spielinformationen können ungenau sein.",
     "latestUpdate": "Zuletzt aktualisiert",
     "linkCopied": "Link in die Zwischenablage kopiert",
+    "mainPlusExtras": "Haupt + Extras",
+    "mainStory": "Hauptgeschichte",
+    "medianScore": "Mittelwert",
     "newUserGuide": {
       "close": "Schließen",
       "description": "Sie haben noch nie ein Spiel installiert, sodass Ascendara Sie durch den Setup -Prozess führt.",
@@ -197,10 +210,14 @@
       "title": "Herunterladen mit Ascendara"
     },
     "noGameInfoAvailable": "Setup Ascendara Xtra in den Vorlieben einrichten, um weitere Informationen zu diesem Spiel zu finden",
+    "noReviewsExplanation": "Dieses Spiel enthält keine professionellen Kritikerbewertungen auf OpenCritic. Dies könnte daran liegen, dass es sich um eine neue Veröffentlichung handelt, ein Indie -Titel oder einfach noch nicht überprüft wurde.",
+    "notExactMatch": "Spielname passte nicht genau. Melden Sie das Spiel bei Bedarf.",
     "online": "ONLINE",
     "onlineFixWarningDescription": "Dieses Spiel wird mit dem Online-Fix installiert. Wenn Sie es starten, wird eine Eingabeaufforderung angezeigt, die Ihnen mitteilt, dass es vom Online-Fix-Team erstellt wird. Dies ist normal und sollte nur für jedes Spiel damit einmal angezeigt werden.",
     "onlineFixWarningTitle": "Online-Fix-Eingabeaufforderung zum Start",
     "onlineTooltip": "Online-Multiplayer-Funktionen, die über online-fix.me aktiviert sind",
+    "openCriticBetaWarning": "Dieser API -Endpunkt befindet sich in Beta und es kann Probleme geben. Wenn OpenCritic ein anderes Spiel zeigt, melden Sie das Spiel bitte auf \"Bericht\" rechts vom Titel.",
+    "platforms": "Plattformen",
     "pressEscToGoBack": "Drücken Sie die ESC -Taste, um zurück zu gehen",
     "protectYourself": {
       "learnHow": "Wie Sie sich vor gefälschten Downloads schützen können",
@@ -209,6 +226,7 @@
     },
     "publishers": "Verlag",
     "ratingTooltip": "Dieses Spiel wird von 5 Sternen von anderen auf Ascendara von 5 Sternen bewertet. Lesen Sie Kommentare zu diesem Spiel auf dem Discord -Server.",
+    "readReviews": "Rezensionen lesen",
     "reportBroken": "Bericht",
     "reportDescription": "Bitte geben Sie weitere Informationen zum Problem an",
     "reportError": "Bitte geben Sie einen Grund und Einzelheiten für Ihren Bericht an",
@@ -222,6 +240,8 @@
       "notAGame": "Das ist kein Spiel",
       "placeholder": "Wählen Sie einen Grund aus"
     },
+    "reviewCount": "Anzahl der Bewertungen",
+    "reviewSnippets": "Überprüfung Snippets",
     "screenshots": "Screenshots",
     "scrollToViewMore": "Scrollen Sie, um weitere Spieldetails anzuzeigen",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "Torrent senden ...",
     "shareGame": "Teilen Sie Ascendara Game Link",
+    "showingResultsFor": "Ergebnisse zeigen für",
     "size": "Größe",
     "submitReport": "Bericht einreichen",
     "submitting": "Senden ...",
     "switchProvider": "Anbieter wechseln",
+    "tier": "Stufe",
+    "timeToBeat": "Zeit zu schlagen",
     "timemachine": {
       "cancel": "Stornieren",
       "description": "Wählen Sie eine frühere Version von {game} aus",
@@ -257,10 +280,14 @@
       "reportSubmitted": "Bericht erfolgreich eingereicht",
       "torrentSent": "Torrent an Qbittorrent gesendet"
     },
+    "topCriticScore": "Top -Kritiker",
+    "understand": "Ich verstehe, mach weiter",
     "update": {
       "description": "Dies wird das Spiel im selben Verzeichnis neu installieren. Während die meisten Spiele Daten an separaten Standorten speichern, wird empfohlen, wichtige Speichern von Dateien oder benutzerdefinierten Inhalten zu sichern, bevor Sie mit dem Update fortfahren.",
       "title": "Bereit zu aktualisieren {{game}}?"
-    }
+    },
+    "viewCriticReviews": "Kritiker anzeigen",
+    "viewOnOpenCritic": "Blick auf opencritisch"
   },
   "downloads": {
     "actions": {

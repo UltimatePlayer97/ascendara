@@ -131,9 +131,15 @@
     "aboutGame": "حول هذه اللعبة",
     "allDlc": "All-DLCS",
     "allDlcTooltip": "يتضمن جميع المحتوى القابل للتنزيل (DLC) متاحًا لهذه اللعبة",
+    "betaFeature": "واه ... هذا لا يزال في بيتا!",
+    "by": "بواسطة",
     "categories": "فئات",
     "companies": "شركات",
+    "completionist": "الانتهاء",
+    "criticError": "فشل في تحميل مراجعات الناقد",
+    "criticReviews": "مراجعات الناقد",
     "dataProvidedBy": "بيانات اللعبة المقدمة من",
+    "description": "وصف",
     "developers": "المطورين",
     "dmcaNotice": "إشعار DMCA: يستخدم Ascendara الروابط والملفات الخارجي ولا تستضيف أي شيء على خوادمه الخاصة.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "في انتظار أن يرسل متصفحك التنزيل ..."
     },
     "firstReleasedOn": "تم إصدار اللعبة",
+    "gameInfo": "معلومات اللعبة",
     "gameNeedsEmulator": "هذا يتطلب تشغيل المحاكي.",
     "gameNeedsVR": "قد يكون VR مطلوبًا لهذه اللعبة.",
+    "gameNotRated": "لم تتم مراجعة هذه اللعبة من قبل النقاد",
+    "genres": "الأنواع",
+    "hours": "ساعات",
     "igdbLoading": "تحميل معلومات اللعبة ...",
     "igdbRating": "تم تصنيف هذه اللعبة {{rating}} التفاح. تختلف تصنيفات Apple عن تصنيفات النجوم على Ascendara ، وأكثر من تصنيف عام للعبة.",
     "infoMaybeInaccurate": "قد تكون معلومات اللعبة غير دقيقة.",
     "latestUpdate": "آخر تحديث",
     "linkCopied": "رابط نسخ إلى الحافظة",
+    "mainPlusExtras": "الإضافات الرئيسية +",
+    "mainStory": "القصة الرئيسية",
+    "medianScore": "النتيجة المتوسطة",
     "newUserGuide": {
       "close": "يغلق",
       "description": "لم تقم بتثبيت لعبة من قبل ، لذلك سوف يرشدك Ascendara خلال عملية الإعداد.",
@@ -197,10 +210,14 @@
       "title": "تنزيل مع Ascendara"
     },
     "noGameInfoAvailable": "الإعداد Ascendara Xtra في التفضيلات لمعرفة مزيد من المعلومات حول هذه اللعبة",
+    "noReviewsExplanation": "لا تحتوي هذه اللعبة على أي مراجعات نقدية محترفة متوفرة على OpenCritic. قد يكون هذا لأنه إصدار جديد ، عنوان إيندي ، أو ببساطة لم تتم مراجعته بعد.",
+    "notExactMatch": "اسم اللعبة لا يتطابق بالضبط. الإبلاغ عن اللعبة إذا لزم الأمر.",
     "online": "متصل",
     "onlineFixWarningDescription": "تأتي هذه اللعبة مع تثبيت الإصلاح عبر الإنترنت ، عند تشغيلها ، سترى موجهًا تخبرك بأنه يصنعه فريق الإصلاح عبر الإنترنت. هذا أمر طبيعي ويجب أن يظهر مرة واحدة فقط لكل لعبة معها.",
     "onlineFixWarningTitle": "موجه الإصلاح عبر الإنترنت عند الإطلاق",
     "onlineTooltip": "تم تمكين إمكانيات اللاعبين متعددة اللاعبين عبر الإنترنت من خلال fix.me عبر الإنترنت",
+    "openCriticBetaWarning": "نقطة نهاية واجهة برمجة التطبيقات هذه في بيتا وقد تكون هناك مشاكل. إذا أظهرت OpenCritic لعبة مختلفة ، فيرجى الإبلاغ عن اللعبة بالنقر فوق \"تقرير\" على يمين العنوان.",
+    "platforms": "المنصات",
     "pressEscToGoBack": "اضغط على ESC Key للعودة",
     "protectYourself": {
       "learnHow": "كيف تحمي نفسك من التنزيلات المزيفة",
@@ -209,6 +226,7 @@
     },
     "publishers": "الناشرين",
     "ratingTooltip": "تم تصنيف هذه اللعبة {{rating}} من بين 5 نجوم من قبل الآخرين على Ascendara. اقرأ التعليقات حول هذه اللعبة في خادم Discord.",
+    "readReviews": "قراءة المراجعات",
     "reportBroken": "تقرير",
     "reportDescription": "يرجى تقديم المزيد من التفاصيل حول هذه المشكلة",
     "reportError": "يرجى تقديم سبب وتفاصيل لتقريرك",
@@ -222,6 +240,8 @@
       "notAGame": "هذه ليست لعبة",
       "placeholder": "حدد سببًا"
     },
+    "reviewCount": "عدد المراجعات",
+    "reviewSnippets": "مراجعة المقتطفات",
     "screenshots": "لقطات الشاشة",
     "scrollToViewMore": "قم بالتمرير لعرض المزيد من تفاصيل اللعبة",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "إرسال سيل ...",
     "shareGame": "مشاركة رابط لعبة Ascendara",
+    "showingResultsFor": "إظهار النتائج ل",
     "size": "مقاس",
     "submitReport": "إرسال التقرير",
     "submitting": "تقديم...",
     "switchProvider": "موفر التبديل",
+    "tier": "طبقة",
+    "timeToBeat": "حان الوقت للتغلب",
     "timemachine": {
       "cancel": "يلغي",
       "description": "حدد إصدارًا سابقًا من {game}",
@@ -257,10 +280,14 @@
       "reportSubmitted": "تم تقديم التقرير بنجاح",
       "torrentSent": "تم إرسال التورنت إلى Qbittorrent"
     },
+    "topCriticScore": "أفضل النتيجة الناقد",
+    "understand": "أنا أفهم ، تابع",
     "update": {
       "description": "سيؤدي هذا إلى إعادة تثبيت اللعبة في نفس الدليل. على الرغم من أن معظم الألعاب تنقذ البيانات في مواقع منفصلة ، إلا أنه يوصى بدعم أي ملفات حفظ مهمة أو محتوى مخصص قبل المتابعة مع التحديث.",
       "title": "هل أنت مستعد لتحديث {{game}}؟"
-    }
+    },
+    "viewCriticReviews": "عرض مراجعات الناقد",
+    "viewOnOpenCritic": "عرض على opencritic"
   },
   "downloads": {
     "actions": {
@@ -994,7 +1021,7 @@
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "هذا هو المكان الذي سيتم فيه تخزين جميع الألعاب التي تم تنزيلها",
     "welcomeTo": "مرحبا بكم في",
     "welcomeToAscendaraDescription": "أنت مستعد تقريبًا لبدء استخدام Ascendara. سنذهب من خلال عملية التنقل معًا للحصول على بعض الإعدادات الأساسية ، ولكن أولاً ، يرجى قراءة شروط الخدمة وسياسة الخصوصية.",
-    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله لك في Ascendara",
+    "whenYouClickADownloadLink": "عندما تبدأ تنزيلًا من مزود معروف ، فإن الامتداد سيوقف التنزيل تلقائيًا في متصفحك وبدء تشغيله في Ascendara",
     "wineIsRequired": "العب مع النبيذ",
     "wineMustBeInstalled": "يجب تثبيت Wine و DXVK وغيرها من الأدوات وإعدادها على جهاز الكمبيوتر الخاص بك لتشغيل ألعاب النوافذ. لا تقلق رغم ذلك ، يمكن لـ Ascendara تثبيت وإعداد كل شيء من أجلك فقط",
     "youCanAddMoreLater": "يمكنك إضافة المزيد من الدلائل في التفضيلات لاحقًا",
