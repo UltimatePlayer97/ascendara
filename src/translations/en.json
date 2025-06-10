@@ -131,9 +131,15 @@
     "aboutGame": "About This Game",
     "allDlc": "ALL-DLCs",
     "allDlcTooltip": "Includes all downloadable content (DLC) available for this game",
+    "betaFeature": "Woah... this is still in beta!",
+    "by": "by",
     "categories": "Categories",
     "companies": "Companies",
+    "completionist": "Completionist",
+    "criticError": "Failed to load critic reviews",
+    "criticReviews": "Critic Reviews",
     "dataProvidedBy": "Game data provided by",
+    "description": "Description",
     "developers": "Developers",
     "dmcaNotice": "DMCA Notice: Ascendara uses outsourced links and files and does not host anything on its own servers.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "Waiting for your browser to send the download..."
     },
     "firstReleasedOn": "Game Released",
+    "gameInfo": "Game Info",
     "gameNeedsEmulator": "This requires an emulator to run.",
     "gameNeedsVR": "VR may be required for this game.",
+    "gameNotRated": "This game has not been reviewed by critics",
+    "genres": "Genres",
+    "hours": "hours",
     "igdbLoading": "Loading game information...",
     "igdbRating": "This game is rated {{rating}} apples. Apple ratings are different than Star ratings on Ascendara, and are more of a general rating of the game.",
     "infoMaybeInaccurate": "Game information may be inaccurate.",
     "latestUpdate": "Last Updated",
     "linkCopied": "Link copied to clipboard",
+    "mainPlusExtras": "Main + Extras",
+    "mainStory": "Main Story",
+    "medianScore": "Median Score",
     "newUserGuide": {
       "close": "Close",
       "description": "You haven't installed a game before, so Ascendara will guide you through the setup process.",
@@ -197,10 +210,14 @@
       "title": "Downloading with Ascendara"
     },
     "noGameInfoAvailable": "Setup Ascendara Xtra in Preferences to see more information about this game",
+    "noReviewsExplanation": "This game doesn't have any professional critic reviews available on OpenCritic. This could be because it's a new release, an indie title, or simply hasn't been reviewed yet.",
+    "notExactMatch": "Game name didn't match exactly. Report the game if needed.",
     "online": "ONLINE",
     "onlineFixWarningDescription": "This game comes with Online-Fix installed, when you launch it you will see a prompt telling you that it is made by Online-Fix team. This is normal and should only show once ever for each game with it.",
     "onlineFixWarningTitle": "Online-Fix Prompt on Launch",
     "onlineTooltip": "Online multiplayer capabilities enabled through online-fix.me",
+    "openCriticBetaWarning": "This API endpoint is in beta and there may be issues. If OpenCritic shows a different game, please report the game by clicking 'Report' to the right of the title.",
+    "platforms": "Platforms",
     "pressEscToGoBack": "Press ESC key to go back",
     "protectYourself": {
       "learnHow": "How to protect yourself from fake downloads",
@@ -209,6 +226,7 @@
     },
     "publishers": "Publishers",
     "ratingTooltip": "This game is rated {{rating}} out of 5 stars by others on Ascendara. Read comments about this game in the Discord server.",
+    "readReviews": "Read Reviews",
     "reportBroken": "Report",
     "reportDescription": "Please provide more details about the issue",
     "reportError": "Please provide a reason and details for your report",
@@ -222,6 +240,8 @@
       "notAGame": "This isn't a game",
       "placeholder": "Select a reason"
     },
+    "reviewCount": "Number of Reviews",
+    "reviewSnippets": "Review Snippets",
     "screenshots": "Screenshots",
     "scrollToViewMore": "Scroll to view more game details",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "Sending Torrent...",
     "shareGame": "Share Ascendara Game Link",
+    "showingResultsFor": "Showing results for",
     "size": "Size",
     "submitReport": "Submit Report",
     "submitting": "Submitting...",
     "switchProvider": "Switch Provider",
+    "tier": "Tier",
+    "timeToBeat": "Time to Beat",
     "timemachine": {
       "cancel": "Cancel",
       "description": "Select a previous version of {game}",
@@ -257,10 +280,14 @@
       "reportSubmitted": "Report submitted successfully",
       "torrentSent": "Torrent sent to qBittorrent"
     },
+    "topCriticScore": "Top Critic Score",
+    "understand": "I Understand, Continue",
     "update": {
       "description": "This will reinstall the game in the same directory. While most games save data in separate locations, it is recommended to back up any important save files or custom content before proceeding with the update.",
       "title": "Ready to update {{game}}?"
-    }
+    },
+    "viewCriticReviews": "View Critic Reviews",
+    "viewOnOpenCritic": "View on OpenCritic"
   },
   "downloads": {
     "actions": {

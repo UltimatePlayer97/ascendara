@@ -131,9 +131,15 @@
     "aboutGame": "このゲームについて",
     "allDlc": "all-dlcs",
     "allDlcTooltip": "このゲームで利用可能なすべてのダウンロード可能なコンテンツ（DLC）が含まれています",
+    "betaFeature": "うわー...これはまだベータ版です！",
+    "by": "による",
     "categories": "カテゴリ",
     "companies": "企業",
+    "completionist": "完了主義者",
+    "criticError": "批評家のレビューをロードできませんでした",
+    "criticReviews": "批評家のレビュー",
     "dataProvidedBy": "によって提供されるゲームデータ",
+    "description": "説明",
     "developers": "開発者",
     "dmcaNotice": "DMCA通知：Ascendaraは外部委託リンクとファイルを使用しており、独自のサーバーで何もホストしていません。",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "ブラウザがダウンロードを送信するのを待っています..."
     },
     "firstReleasedOn": "ゲームがリリースされました",
+    "gameInfo": "ゲーム情報",
     "gameNeedsEmulator": "これには、エミュレータを実行する必要があります。",
     "gameNeedsVR": "このゲームにはVRが必要になる場合があります。",
+    "gameNotRated": "このゲームは批評家によってレビューされていません",
+    "genres": "ジャンル",
+    "hours": "時間",
     "igdbLoading": "ゲーム情報の読み込み...",
     "igdbRating": "このゲームは{{rating}}リンゴと評価されています。 Appleの評価は、Ascendaraでの星評価とは異なり、ゲームの一般的な評価です。",
     "infoMaybeInaccurate": "ゲーム情報は不正確な場合があります。",
     "latestUpdate": "最後に更新されました",
     "linkCopied": "クリップボードにコピーされたリンク",
+    "mainPlusExtras": "メイン +エキストラ",
+    "mainStory": "メインストーリー",
+    "medianScore": "中央スコア",
     "newUserGuide": {
       "close": "近い",
       "description": "以前にゲームをインストールしたことがないので、Ascendaraはセットアッププロセスをガイドします。",
@@ -197,10 +210,14 @@
       "title": "Ascendaraでダウンロードします"
     },
     "noGameInfoAvailable": "このゲームに関する詳細情報を見るために好みのascendaraxtraをセットアップ",
+    "noReviewsExplanation": "このゲームには、OpenCriticで利用可能なプロの批評家のレビューはありません。これは、新しいリリース、インディータイトル、または単にレビューされていないためかもしれません。",
+    "notExactMatch": "ゲーム名は正確に一致しませんでした。必要に応じてゲームを報告してください。",
     "online": "オンライン",
     "onlineFixWarningDescription": "このゲームにはオンラインフィックスがインストールされています。起動すると、オンラインフィックスチームが作成していることを示すプロンプトが表示されます。これは正常であり、各ゲームで1回しか表示されません。",
     "onlineFixWarningTitle": "起動時のオンラインフィックスプロンプト",
     "onlineTooltip": "オンラインマルチプレイヤー機能は、オンラインfix.meを介して有効になっています",
+    "openCriticBetaWarning": "このAPIエンドポイントはベータ版であり、問​​題がある可能性があります。 OpenCriticが別のゲームを表示している場合は、タイトルの右側に「レポート」をクリックしてゲームをレポートしてください。",
+    "platforms": "プラットフォーム",
     "pressEscToGoBack": "ESCキーを押して戻ります",
     "protectYourself": {
       "learnHow": "偽のダウンロードから身を守る方法",
@@ -209,6 +226,7 @@
     },
     "publishers": "出版社",
     "ratingTooltip": "このゲームは、アセンダラの他の人から5つ星のうち{{rating}}を評価します。 Discordサーバーでこのゲームに関するコメントを読んでください。",
+    "readReviews": "レビューを読んでください",
     "reportBroken": "報告",
     "reportDescription": "問題の詳細をご覧ください",
     "reportError": "レポートの理由と詳細を提供してください",
@@ -222,6 +240,8 @@
       "notAGame": "これはゲームではありません",
       "placeholder": "理由を選択します"
     },
+    "reviewCount": "レビューの数",
+    "reviewSnippets": "スニペットを確認します",
     "screenshots": "スクリーンショット",
     "scrollToViewMore": "スクロールして、より多くのゲームの詳細を表示します",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "急流を送る...",
     "shareGame": "Ascendaraゲームリンクを共有します",
+    "showingResultsFor": "結果を表示します",
     "size": "サイズ",
     "submitReport": "レポートを提出します",
     "submitting": "提出...",
     "switchProvider": "スイッチプロバイダー",
+    "tier": "ティア",
+    "timeToBeat": "打ち負かす時間",
     "timemachine": {
       "cancel": "キャンセル",
       "description": "{game}の以前のバージョンを選択します",
@@ -257,10 +280,14 @@
       "reportSubmitted": "正常に送信されたレポート",
       "torrentSent": "トレントはQbittorrentに送られました"
     },
+    "topCriticScore": "最高の批評家スコア",
+    "understand": "私は理解しています、続行します",
     "update": {
       "description": "これにより、同じディレクトリにゲームを再インストールします。ほとんどのゲームは別の場所にデータを保存しますが、更新を進める前に重要な保存ファイルまたはカスタムコンテンツをバックアップすることをお勧めします。",
       "title": "{{game}}を更新する準備ができましたか？"
-    }
+    },
+    "viewCriticReviews": "批評家のレビューを見る",
+    "viewOnOpenCritic": "OpenCriticの表示"
   },
   "downloads": {
     "actions": {
@@ -845,7 +872,7 @@
       "usernameError": "ユーザー名の保存に失敗しました"
     },
     "viewComponentsPage": "コンポーネントページを表示します",
-    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーが購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できるようにします。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
+    "warningDescription": "Ascendaraは、ビデオゲームのテストプラットフォームとして設計されており、ユーザーは購入決定を下す前にゲームプレイ、パフォーマンス、互換性を評価できます。 Ascendaraは、楽しんでいるゲームを購入することで、ユーザーがゲーム開発者をサポートすることを強く奨励しています。",
     "warningSupportDevelopers": "ゲーム開発者は、かなりの時間、リソース、創造性を投資して、私たち全員が楽しんでいる体験を生み出します。あなたの購入は、優れたゲームを継続し続け、ゲーム業界を維持する能力を直接サポートします。",
     "warningSupportDevelopersCallToAction": "楽しむゲームを購入することで、開発者をサポートしてください。",
     "warningTitle": "ねえ、これを読んでください！"

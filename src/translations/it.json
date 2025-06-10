@@ -131,9 +131,15 @@
     "aboutGame": "Su questo gioco",
     "allDlc": "All-dlcs",
     "allDlcTooltip": "Include tutti i contenuti scaricabili (DLC) disponibili per questo gioco",
+    "betaFeature": "Woah ... questo è ancora in beta!",
+    "by": "di",
     "categories": "Categorie",
     "companies": "Aziende",
+    "completionist": "Completamento",
+    "criticError": "Impossibile caricare le recensioni del critico",
+    "criticReviews": "Recensioni del critico",
     "dataProvidedBy": "Dati di gioco forniti da",
+    "description": "Descrizione",
     "developers": "Sviluppatori",
     "dmcaNotice": "Avviso DMCA: Ascendara utilizza collegamenti e file in outsourcing e non ospita nulla sui propri server.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "Aspettando che il tuo browser invii il download ..."
     },
     "firstReleasedOn": "Gioco rilasciato",
+    "gameInfo": "Informazioni sul gioco",
     "gameNeedsEmulator": "Ciò richiede che un emulatore sia eseguito.",
     "gameNeedsVR": "Per questo gioco potrebbe essere richiesto VR.",
+    "gameNotRated": "Questo gioco non è stato esaminato dai critici",
+    "genres": "Generi",
+    "hours": "ore",
     "igdbLoading": "Caricamento delle informazioni sul gioco ...",
     "igdbRating": "Questo gioco è valutato {{rating}} mele. Le valutazioni di Apple sono diverse dalle valutazioni delle stelle su Ascendara e sono più una valutazione generale del gioco.",
     "infoMaybeInaccurate": "Le informazioni sul gioco potrebbero essere inaccurate.",
     "latestUpdate": "Ultimo aggiornamento",
     "linkCopied": "Link copiato negli appunti",
+    "mainPlusExtras": "Main + extra",
+    "mainStory": "Storia principale",
+    "medianScore": "Punteggio mediano",
     "newUserGuide": {
       "close": "Vicino",
       "description": "Non hai mai installato un gioco prima, quindi Ascendara ti guiderà attraverso il processo di configurazione.",
@@ -197,10 +210,14 @@
       "title": "Download con Ascendara"
     },
     "noGameInfoAvailable": "Imposta Ascendara Xtra nelle preferenze per vedere ulteriori informazioni su questo gioco",
+    "noReviewsExplanation": "Questo gioco non ha recensioni di critiche professionali disponibili su OpenCritic. Ciò potrebbe essere dovuto al fatto che è una nuova versione, un titolo indipendente o semplicemente non è stato ancora rivisto.",
+    "notExactMatch": "Il nome del gioco non corrispondeva esattamente. Segnalare il gioco se necessario.",
     "online": "Online",
     "onlineFixWarningDescription": "Questo gioco viene fornito con la riquadro online installato, quando lo avvii vedrai un prompt che ti dice che è realizzato dal team online. Questo è normale e dovrebbe mostrare solo una volta per ogni partita con esso.",
     "onlineFixWarningTitle": "Prompt online al lancio",
     "onlineTooltip": "Funzionalità multiplayer online abilitate tramite online-fix.me",
+    "openCriticBetaWarning": "Questo endpoint API è in beta e potrebbero esserci problemi. Se OpenCritic mostra un gioco diverso, segnala il gioco facendo clic su \"Rapporto\" a destra del titolo.",
+    "platforms": "Piattaforme",
     "pressEscToGoBack": "Premi il tasto ESC per tornare indietro",
     "protectYourself": {
       "learnHow": "Come proteggerti da download falsi",
@@ -209,6 +226,7 @@
     },
     "publishers": "Editori",
     "ratingTooltip": "Questo gioco è valutato {{rating}} su 5 stelle da altri su Ascendara. Leggi i commenti su questo gioco nel server Discord.",
+    "readReviews": "Leggi le recensioni",
     "reportBroken": "Rapporto",
     "reportDescription": "Si prega di fornire maggiori dettagli sul problema",
     "reportError": "Fornisci un motivo e un dettaglio per il tuo rapporto",
@@ -222,6 +240,8 @@
       "notAGame": "Questo non è un gioco",
       "placeholder": "Seleziona un motivo"
     },
+    "reviewCount": "Numero di recensioni",
+    "reviewSnippets": "Recensione di frammenti",
     "screenshots": "Screenshot",
     "scrollToViewMore": "Scorri per visualizzare più dettagli del gioco",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "Invio torrent ...",
     "shareGame": "Condividi Ascendara Game Link",
+    "showingResultsFor": "Mostrando i risultati per",
     "size": "Misurare",
     "submitReport": "Invia relazione",
     "submitting": "Invio ...",
     "switchProvider": "Switch Provider",
+    "tier": "Livello",
+    "timeToBeat": "È ora di battere",
     "timemachine": {
       "cancel": "Cancellare",
       "description": "Seleziona una versione precedente di {game}",
@@ -257,10 +280,14 @@
       "reportSubmitted": "Rapporto inviato con successo",
       "torrentSent": "Torrent inviato a QbitTorrent"
     },
+    "topCriticScore": "Punteggio del critico di punta",
+    "understand": "Capisco, continua",
     "update": {
       "description": "Questo reinstallerà il gioco nella stessa directory. Mentre la maggior parte dei giochi salva i dati in posizioni separate, si consiglia di eseguire il backup di eventuali file di salvataggio importanti o contenuti personalizzati prima di procedere con l'aggiornamento.",
       "title": "Pronto per aggiornare {{game}}?"
-    }
+    },
+    "viewCriticReviews": "Visualizza le recensioni del critico",
+    "viewOnOpenCritic": "Visualizza su OpenCritic"
   },
   "downloads": {
     "actions": {
@@ -596,7 +623,7 @@
     "nowPlaying": "Ora giocando",
     "pause": "Pausa",
     "play": "Giocare",
-    "unmute": "Snuto"
+    "unmute": "Sgraziato"
   },
   "profile": {
     "acrossGames": "In tutti i tuoi giochi scaricati",
@@ -990,7 +1017,7 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Sei quasi pronto per iniziare a usare Ascendara. Passeremo insieme il processo di onboarding per ordinare alcune impostazioni di base, ma prima si prega di leggere i termini di servizio e politica sulla privacy.",

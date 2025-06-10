@@ -131,9 +131,15 @@
     "aboutGame": "关于这个游戏",
     "allDlc": "all-dlcs",
     "allDlcTooltip": "包括可用于此游戏的所有可下载内容（DLC）",
+    "betaFeature": "哇...这仍然在Beta中！",
+    "by": "经过",
     "categories": "类别",
     "companies": "公司",
+    "completionist": "完成主义者",
+    "criticError": "未能加载评论评论",
+    "criticReviews": "评论家评论",
     "dataProvidedBy": "提供的游戏数据由",
+    "description": "描述",
     "developers": "开发人员",
     "dmcaNotice": "DMCA注意：Ascendara使用外包链接和文件，并且不会在其自己的服务器上托管任何内容。",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "等待您的浏览器发送下载..."
     },
     "firstReleasedOn": "游戏发布",
+    "gameInfo": "游戏信息",
     "gameNeedsEmulator": "这需要模拟器运行。",
     "gameNeedsVR": "该游戏可能需要VR。",
+    "gameNotRated": "批评家尚未对此游戏进行审查",
+    "genres": "流派",
+    "hours": "小时",
     "igdbLoading": "加载游戏信息...",
     "igdbRating": "该游戏被评为{{rating}}苹果。 Apple评分与Ascendara的Star评分不同，并且更像是游戏的一般评级。",
     "infoMaybeInaccurate": "游戏信息可能不准确。",
     "latestUpdate": "最后更新",
     "linkCopied": "链接复制到剪贴板",
+    "mainPlusExtras": "主 +额外",
+    "mainStory": "主要故事",
+    "medianScore": "中位数得分",
     "newUserGuide": {
       "close": "关闭",
       "description": "您以前没有安装游戏，因此Ascendara将指导您完成设置过程。",
@@ -197,10 +210,14 @@
       "title": "与Ascendara下载"
     },
     "noGameInfoAvailable": "设置Ascendara Xtra以偏好的方式查看有关此游戏的更多信息",
+    "noReviewsExplanation": "该游戏没有关于OpenCritic的专业评论评论。这可能是因为这是一个新版本，一个独立的标题，或者只是尚未被评论。",
+    "notExactMatch": "游戏名称不完全匹配。如果需要，报告游戏。",
     "online": "在线的",
     "onlineFixWarningDescription": "该游戏随附在线修饰，当您启动它时，您会看到一个提示，告诉您它是由在线fix团队制造的。这是正常的，每个游戏都只能显示一次。",
     "onlineFixWarningTitle": "启动时在线修正提示",
     "onlineTooltip": "通过在线fix.me启用了在线多人游戏功能",
+    "openCriticBetaWarning": "此API端点处于Beta中，可能存在问题。如果OpenCritic显示了不同的游戏，请通过单击标题右侧的“报告”来报告游戏。",
+    "platforms": "平台",
     "pressEscToGoBack": "按ESC键回去",
     "protectYourself": {
       "learnHow": "如何保护自己免受虚假下载侵害",
@@ -209,6 +226,7 @@
     },
     "publishers": "出版商",
     "ratingTooltip": "该游戏在Ascendara上的其他人在5星中被评为{{rating}}。在Discord服务器中阅读有关此游戏的评论。",
+    "readReviews": "阅读评论",
     "reportBroken": "报告",
     "reportDescription": "请提供有关此问题的更多详细信息",
     "reportError": "请为您的报告提供原因和详细信息",
@@ -222,6 +240,8 @@
       "notAGame": "这不是游戏",
       "placeholder": "选择一个原因"
     },
+    "reviewCount": "评论数量",
+    "reviewSnippets": "查看摘要",
     "screenshots": "屏幕截图",
     "scrollToViewMore": "滚动查看更多游戏详细信息",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "发送洪流...",
     "shareGame": "分享Ascendara游戏链接",
+    "showingResultsFor": "显示结果",
     "size": "尺寸",
     "submitReport": "提交报告",
     "submitting": "提交...",
     "switchProvider": "开关提供商",
+    "tier": "层",
+    "timeToBeat": "是时候击败了",
     "timemachine": {
       "cancel": "取消",
       "description": "选择{game}的先前版本",
@@ -257,10 +280,14 @@
       "reportSubmitted": "报告成功提交",
       "torrentSent": "洪流发送到qbittorrent"
     },
+    "topCriticScore": "最高评论得分",
+    "understand": "我明白，继续",
     "update": {
       "description": "这将重新安装在同一目录中。尽管大多数游戏将数据保存在不同的位置，但建议在进行更新之前备份任何重要的保存文件或自定义内容。",
       "title": "准备更新{{game}}了吗？"
-    }
+    },
+    "viewCriticReviews": "查看评论家评论",
+    "viewOnOpenCritic": "查看Opencritic"
   },
   "downloads": {
     "actions": {
@@ -953,8 +980,8 @@
     "next": "下一个",
     "notEnoughSpaceWarning": "哇！所选驱动器上的空间不到40 GB。考虑清除一些空间或选择其他驱动器。",
     "okay": "好的",
-    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
-    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，则始终可以在以后的设置中启用此功能。",
+    "optOutOfSharing": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
+    "optOutOfSharingAnonymousUsageData": "选择退出共享匿名用法数据。如果您改变主意，可以随时在以后的设置中启用此功能。",
     "personalizeYourExperience": "个性化您的体验，以适合您的风格的主题",
     "pleaseWaitAndRespondToAdminPrompts": "请等待并回复出现的任何管理员提示。请勿关闭应用程序。",
     "privacyPolicy": "隐私政策",
@@ -983,7 +1010,7 @@
     "stayUpToDate": "保持Ascendara最新",
     "takeTour": "参加游览",
     "termsOfService": "服务条款",
-    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara下载",
+    "theExtensionBlocksKnownProviders": "扩展名来从已知提供商中听下载，并在浏览器开始之前将其停止，然后将其发送到Ascendara进行下载",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "这是您所有下载的游戏都将存储的地方",
     "welcomeTo": "欢迎来",
     "welcomeToAscendaraDescription": "您几乎可以开始使用Ascendara。我们将共同完成入职过程，以使一些基本设置分类，但首先请阅读服务条款和隐私政策。",

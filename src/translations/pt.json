@@ -131,9 +131,15 @@
     "aboutGame": "Sobre este jogo",
     "allDlc": "All-DLCs",
     "allDlcTooltip": "Inclui todo o conteúdo para download (DLC) disponível para este jogo",
+    "betaFeature": "Woah ... isso ainda está na versão beta!",
+    "by": "por",
     "categories": "Categorias",
     "companies": "Empresas",
+    "completionist": "Conclusão",
+    "criticError": "Falhou em carregar críticas críticas",
+    "criticReviews": "Críticas críticas",
     "dataProvidedBy": "Dados de jogo fornecidos por",
+    "description": "Descrição",
     "developers": "Desenvolvedores",
     "dmcaNotice": "Aviso DMCA: Ascendara usa links e arquivos terceirizados e não hospeda nada em seus próprios servidores.",
     "downloadOptions": {
@@ -177,13 +183,20 @@
       "waitingForBrowser": "Esperando o seu navegador enviar o download ..."
     },
     "firstReleasedOn": "Jogo lançado",
+    "gameInfo": "Informações do jogo",
     "gameNeedsEmulator": "Isso exige que um emulador seja executado.",
     "gameNeedsVR": "A VR pode ser necessária para este jogo.",
+    "gameNotRated": "Este jogo não foi revisado pelos críticos",
+    "genres": "Gêneros",
+    "hours": "horas",
     "igdbLoading": "Carregando informações do jogo ...",
     "igdbRating": "Este jogo é classificado como maçãs {{rating}}. As classificações da Apple são diferentes das classificações de estrelas em Ascendara e são mais uma classificação geral do jogo.",
     "infoMaybeInaccurate": "As informações do jogo podem ser imprecisas.",
     "latestUpdate": "Última atualização",
     "linkCopied": "Link copiado para a área de transferência",
+    "mainPlusExtras": "Principal + extras",
+    "mainStory": "História principal",
+    "medianScore": "Pontuação mediana",
     "newUserGuide": {
       "close": "Fechar",
       "description": "Você nunca instalou um jogo antes, então Ascendara o guiará pelo processo de configuração.",
@@ -197,10 +210,14 @@
       "title": "Download com Ascendara"
     },
     "noGameInfoAvailable": "Configurar ascendara xtra em preferências para ver mais informações sobre este jogo",
+    "noReviewsExplanation": "Este jogo não possui críticas profissionais disponíveis na OpenCritic. Isso pode ser porque é um novo lançamento, um título indie, ou simplesmente ainda não foi revisado.",
+    "notExactMatch": "O nome do jogo não combinou exatamente. Relate o jogo, se necessário.",
     "online": "ON-LINE",
     "onlineFixWarningDescription": "Este jogo vem com a instalação on-line, quando você o inicia, você verá um prompt dizendo que ele é fabricado pela equipe de Fix Online. Isso é normal e só deve aparecer uma vez para cada jogo com ele.",
     "onlineFixWarningTitle": "Prompt de Fix Online no lançamento",
     "onlineTooltip": "Recursos multiplayer online habilitados através do online-fix.me",
+    "openCriticBetaWarning": "Este endpoint da API está no beta e pode haver problemas. Se a OpenCritic mostrar um jogo diferente, relate o jogo clicando em 'Relatório' à direita do título.",
+    "platforms": "Plataformas",
     "pressEscToGoBack": "Pressione a tecla ESC para voltar",
     "protectYourself": {
       "learnHow": "Como se proteger de downloads falsos",
@@ -209,6 +226,7 @@
     },
     "publishers": "Editores",
     "ratingTooltip": "Este jogo é avaliado {{rating}} de 5 estrelas de outras pessoas em Ascendara. Leia comentários sobre este jogo no servidor Discord.",
+    "readReviews": "Leia as críticas",
     "reportBroken": "Relatório",
     "reportDescription": "Por favor, forneça mais detalhes sobre o problema",
     "reportError": "Por favor, forneça um motivo e detalhes para o seu relatório",
@@ -222,6 +240,8 @@
       "notAGame": "Este não é um jogo",
       "placeholder": "Selecione um motivo"
     },
+    "reviewCount": "Número de revisões",
+    "reviewSnippets": "Revise os trechos",
     "screenshots": "Capturas de tela",
     "scrollToViewMore": "Role para ver mais detalhes do jogo",
     "selectPath": {
@@ -231,10 +251,13 @@
     },
     "sendingTorrent": "Enviando torrent ...",
     "shareGame": "Compartilhe o link do jogo ascendara",
+    "showingResultsFor": "Mostrando resultados para",
     "size": "Tamanho",
     "submitReport": "Enviar relatório",
     "submitting": "Enviando ...",
     "switchProvider": "Provedor de interruptor",
+    "tier": "Nível",
+    "timeToBeat": "Hora de vencer",
     "timemachine": {
       "cancel": "Cancelar",
       "description": "Selecione uma versão anterior de {game}",
@@ -257,10 +280,14 @@
       "reportSubmitted": "Relatório enviado com sucesso",
       "torrentSent": "Torrent enviado para Qbittorrent"
     },
+    "topCriticScore": "Pontuação crítica",
+    "understand": "Eu entendo, continue",
     "update": {
       "description": "Isso reinstalará o jogo no mesmo diretório. Enquanto a maioria dos jogos salva dados em locais separados, é recomendável fazer backup de arquivos salvos importantes ou conteúdo personalizado antes de prosseguir com a atualização.",
       "title": "Pronto para atualizar {{game}}?"
-    }
+    },
+    "viewCriticReviews": "Ver críticas críticas",
+    "viewOnOpenCritic": "Vista sobre o OpenCrítico"
   },
   "downloads": {
     "actions": {
@@ -845,7 +872,7 @@
       "usernameError": "Falhou em salvar o nome de usuário"
     },
     "viewComponentsPage": "Veja a página de componentes",
-    "warningDescription": "Ascendara é projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
+    "warningDescription": "Ascendara foi projetada como uma plataforma de teste para videogames, permitindo que os usuários avaliem a jogabilidade, o desempenho e a compatibilidade antes de tomar uma decisão de compra. Ascendara incentiva fortemente os usuários a apoiar os desenvolvedores de jogos comprando jogos que eles gostam.",
     "warningSupportDevelopers": "Os desenvolvedores de jogos investem tempo, recursos e criatividade significativos na criação das experiências que todos gostamos. Sua compra suporta diretamente a capacidade deles de continuar fazendo ótimos jogos e sustenta a indústria de jogos.",
     "warningSupportDevelopersCallToAction": "Apoie os desenvolvedores comprando jogos que você gosta.",
     "warningTitle": "Olá, por favor, leia isso!"
