@@ -1,7 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Heart, Gamepad2, Gift, FolderUp, Pencil } from "lucide-react";
+import {
+  ChevronLeft,
+  Heart,
+  Gamepad2,
+  Gift,
+  FolderUp,
+  Pencil,
+  Folder,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -553,7 +561,7 @@ const FolderView = () => {
         if (gamesToShow.length === 0 && !isLoading) {
           return (
             <div className="mt-8 flex flex-col items-center justify-center text-center">
-              <Gift className="mb-4 h-16 w-16 text-primary" />
+              <Folder className="mb-4 h-16 w-16 text-primary" />
               <h2 className="mb-2 text-2xl font-bold">{t("library.emptyFolderTitle")}</h2>
               <p className="mb-4 text-muted-foreground">
                 {t("library.emptyFolderDescription")}
