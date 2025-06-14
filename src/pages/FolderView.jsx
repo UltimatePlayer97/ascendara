@@ -262,7 +262,16 @@ const FolderView = () => {
     removeGameFromFolder(gameId, folderKey);
 
     // Update UI
-    setFolderGames(prev => prev.filter(game => (game.game || game.name) !== gameId));
+    const updatedGames = folderGames.filter(game => (game.game || game.name) !== gameId);
+    setFolderGames(updatedGames);
+
+    // If this was the last game in the folder, navigate back to library
+    if (updatedGames.length === 0) {
+      // Small delay to allow the UI to update before navigating
+      setTimeout(() => {
+        navigate("/library");
+      }, 300);
+    }
   };
 
   // Use React.memo to prevent unnecessary re-renders of GameCard
