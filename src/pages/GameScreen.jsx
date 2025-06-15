@@ -35,6 +35,7 @@ import {
   BookX,
   LockIcon,
 } from "lucide-react";
+import gameUpdateService from "@/services/gameUpdateService";
 
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
@@ -98,7 +99,7 @@ const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
           onClick={async () => {
             const exePath = await window.electron.openFileDialog();
             if (exePath) {
-              await window.electron.modifyGameExecutable(errorGame, exePath);
+              await gameUpdateService.updateGameExecutable(errorGame, exePath);
             }
             onClose();
           }}
@@ -860,7 +861,7 @@ export default function GameScreen() {
                           game.executable
                         );
                         if (exePath) {
-                          await window.electron.modifyGameExecutable(
+                          await gameUpdateService.updateGameExecutable(
                             game.game || game.name,
                             exePath
                           );
@@ -935,7 +936,7 @@ export default function GameScreen() {
                           game.executable
                         );
                         if (exePath) {
-                          await window.electron.modifyGameExecutable(
+                          await gameUpdateService.updateGameExecutable(
                             game.game || game.name,
                             exePath
                           );

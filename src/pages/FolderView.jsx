@@ -234,9 +234,56 @@ const FolderView = () => {
     navigate("/library");
   };
 
-  const handlePlayGame = game => {
+  const handlePlayGame = async game => {
     const gameId = game.game || game.name;
     console.log("Play game:", gameId);
+    // Get the complete game data from the main library to ensure we have all properties
+    try {
+      // First try to get from installed games
+      const installedGames = await window.electron.getGames();
+      const installedGame = installedGames.find(g => (g.game || g.name) === gameId);
+
+      if (installedGame) {
+        // Use the installed game data but preserve any folder-specific properties
+        navigate("/gamescreen", {
+          state: {
+            gameData: {
+              ...installedGame,
+              // Preserve folder-specific properties if they exist
+              ...(game.folderSpecificProps
+                ? { folderSpecificProps: game.folderSpecificProps }
+                : {}),
+            },
+          },
+        });
+        return;
+      }
+
+      // If not found in installed games, try custom games
+      const customGames = await window.electron.getCustomGames();
+      const customGame = customGames.find(g => (g.game || g.name) === gameId);
+
+      if (customGame) {
+        // Use the custom game data but preserve any folder-specific properties
+        navigate("/gamescreen", {
+          state: {
+            gameData: {
+              ...customGame,
+              isCustom: true,
+              // Preserve folder-specific properties if they exist
+              ...(game.folderSpecificProps
+                ? { folderSpecificProps: game.folderSpecificProps }
+                : {}),
+            },
+          },
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Error loading complete game data:", error);
+    }
+
+    // Fallback to using the folder game data if we couldn't get the complete data
     navigate("/gamescreen", {
       state: {
         gameData: game,
