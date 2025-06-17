@@ -410,6 +410,7 @@
   },
   "home": {
     "actionGames": "एक्शन गेम्स",
+    "mostRecentlyUpdated": "हाल ही में अपडेट किया गया",
     "onlineGames": "ऑनलाइन गेम",
     "popularCategories": "लोकप्रिय श्रेणियां",
     "randomGames": "यादृच्छिक खेल",
@@ -658,6 +659,7 @@
     "lastUpdated": "आखरी अपडेट",
     "leastPopular": "कम से कम लोकप्रिय",
     "mostPopular": "सबसे लोकप्रिय",
+    "mostRecentlyUpdated": "हाल ही में अपडेट किया गया",
     "noResults": "कोई परिणाम नहीं मिला",
     "placeholder": "खोज खेल ...",
     "refreshIndex": "रिफ्रेश इंडेक्स",

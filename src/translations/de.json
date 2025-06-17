@@ -410,6 +410,7 @@
   },
   "home": {
     "actionGames": "Actionspiele",
+    "mostRecentlyUpdated": "Zuletzt aktualisiert",
     "onlineGames": "Online -Spiele",
     "popularCategories": "Beliebte Kategorien",
     "randomGames": "Zufällige Spiele",
@@ -661,6 +662,7 @@
     "lastUpdated": "Zuletzt aktualisiert",
     "leastPopular": "Am wenigsten beliebt",
     "mostPopular": "Am beliebtesten",
+    "mostRecentlyUpdated": "Kürzlich aktualisiert",
     "noResults": "Keine Ergebnisse gefunden",
     "placeholder": "Suchspiele ...",
     "refreshIndex": "Index aktualisieren",

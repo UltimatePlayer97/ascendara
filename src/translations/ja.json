@@ -70,7 +70,7 @@
     "torrentWarning": "Torrentingが有効になっています -  VPNを使用します",
     "watchdog": {
       "error": {
-        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションが一緒に実行できません。",
+        "help": "システムからAchievement Watcherをアンインストールしてから、Ascendaraを再起動してください。同じ達成追跡システムを使用するため、両方のアプリケーションは一緒に実行できません。",
         "message": "Ascendaraの功績追跡サービスは実行されていません。これは一般に、Achievement Watcherをインストールすることによって引き起こされます。",
         "title": "実行中の達成サービス"
       }
@@ -410,6 +410,7 @@
   },
   "home": {
     "actionGames": "アクションゲーム",
+    "mostRecentlyUpdated": "ごく最近更新されました",
     "onlineGames": "オンラインゲーム",
     "popularCategories": "人気のあるカテゴリ",
     "randomGames": "ランダムゲーム",
@@ -661,6 +662,7 @@
     "lastUpdated": "最後に更新されました",
     "leastPopular": "最も人気が少ない",
     "mostPopular": "最も人気があります",
+    "mostRecentlyUpdated": "最近更新されました",
     "noResults": "結果は見つかりませんでした",
     "placeholder": "ゲームを検索...",
     "refreshIndex": "インデックスを更新します",
