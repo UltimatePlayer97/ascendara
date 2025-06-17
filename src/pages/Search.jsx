@@ -339,6 +339,15 @@ const Search = memo(() => {
           return (a, b) => a.game.localeCompare(b.game);
         case "name-desc":
           return (a, b) => b.game.localeCompare(a.game);
+        case "latest_update-desc":
+          return (a, b) => {
+            // Sort descending by latest_update (most recent first)
+            if (!a.latest_update && !b.latest_update) return 0;
+            if (!a.latest_update) return 1;
+            if (!b.latest_update) return -1;
+            // Compare as dates (YYYY-MM-DD)
+            return new Date(b.latest_update) - new Date(a.latest_update);
+          };
         default:
           return null;
       }
@@ -607,6 +616,19 @@ const Search = memo(() => {
                             htmlFor="weight-asc"
                           >
                             {t("search.leastPopular")}
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            value="latest_update-desc"
+                            id="latest_update-desc"
+                            disabled={isFitGirlSource}
+                          />
+                          <Label
+                            className={`${isFitGirlSource ? "text-muted-foreground" : "cursor-pointer text-foreground hover:text-foreground/90"}`}
+                            htmlFor="latest_update-desc"
+                          >
+                            {t("search.mostRecentlyUpdated")}
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
