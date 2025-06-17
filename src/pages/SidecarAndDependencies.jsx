@@ -70,7 +70,7 @@ const ALL_SIDECARS = [
       "Ascendara's download manager for downloading files from source providers",
     builtIn: true,
     source:
-      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraDownloadManager/src",
+      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraDownloader/src",
   },
   {
     id: "gofilehelper",
@@ -78,7 +78,7 @@ const ALL_SIDECARS = [
     description: "Download and manage files from the GoFile provider",
     builtIn: true,
     source:
-      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraGoFileHelper/src",
+      "https://github.com/Ascendara/ascendara/tree/main/binaries/AscendaraDownloader/src",
   },
   {
     id: "crashreporter",
