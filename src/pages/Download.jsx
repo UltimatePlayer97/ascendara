@@ -385,6 +385,8 @@ export default function DownloadPage() {
         return;
       }
       if (!inputLink || !isValidLink) {
+        console.log("Input link:", inputLink);
+        console.log("Is valid link:", isValidLink);
         console.log("Invalid link for manual download");
         return;
       }
@@ -452,9 +454,9 @@ export default function DownloadPage() {
     checkDevMode();
   }, []);
 
-  // Protocol URL listener effect
+  // Protocol URL listener effect - only register handler when both useAscendara and providerPatterns are loaded
   useEffect(() => {
-    if (!useAscendara) return;
+    if (!useAscendara || !providerPatterns) return;
 
     // Mark component as active
     isActive.current = true;
@@ -469,7 +471,7 @@ export default function DownloadPage() {
     }
 
     // Create new handler and store in ref
-    urlHandlerRef.current = (event, url) => {
+    urlHandlerRef.current = async (event, url) => {
       if (!url?.startsWith("ascendara://") || !isActive.current) {
         return;
       }
@@ -489,7 +491,9 @@ export default function DownloadPage() {
         console.log("Handling protocol URL:", cleanUrl);
         // Detect provider from URL
         for (const provider of VERIFIED_PROVIDERS) {
-          if (isValidURL(cleanUrl, provider)) {
+          // Await the async validation
+          const valid = await isValidURL(cleanUrl, provider, providerPatterns);
+          if (valid) {
             setSelectedProvider(provider);
             setInputLink(cleanUrl);
             setIsValidLink(true);
@@ -524,7 +528,7 @@ export default function DownloadPage() {
       setLastProcessedUrl(null);
       setIsProcessingUrl(false);
     };
-  }, [useAscendara]); // Remove lastProcessedUrl from dependencies
+  }, [useAscendara, providerPatterns]); // Only register handler when both are ready
 
   useEffect(() => {
     const loadFileFromPath = async path => {
@@ -1784,9 +1788,12 @@ export default function DownloadPage() {
                               onClick={handleCopyLink}
                             >
                               <span>
-                                {downloadLinks[selectedProvider][0].startsWith("//")
-                                  ? `https:${downloadLinks[selectedProvider][0]}`
-                                  : downloadLinks[selectedProvider][0]}
+                                {downloadLinks[selectedProvider] &&
+                                downloadLinks[selectedProvider][0]
+                                  ? downloadLinks[selectedProvider][0].startsWith("//")
+                                    ? `https:${downloadLinks[selectedProvider][0]}`
+                                    : downloadLinks[selectedProvider][0]
+                                  : t("download.downloadOptions.noDownloadLink")}
                               </span>
                               {showCopySuccess ? (
                                 <CheckIcon className="h-4 w-4 text-green-500" />
