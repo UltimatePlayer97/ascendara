@@ -188,3 +188,48 @@ export const updateFolderName = (oldFolderName, newFolderName) => {
 
   return updatedFolders;
 };
+
+/**
+ * Update a game's properties in all folders
+ * @param {string} gameId - ID of the game to update (game.game or game.name)
+ * @param {Object} updatedProperties - Object containing the properties to update
+ * @returns {Array} Updated array of folders
+ */
+export const updateGameInFolders = (gameId, updatedProperties) => {
+  const folders = loadFolders();
+  let updated = false;
+
+  const updatedFolders = folders.map(folder => {
+    // Check if this folder contains the game
+    const gameIndex = folder.items?.findIndex(
+      game => (game.game || game.name) === gameId
+    );
+
+    if (gameIndex !== -1 && gameIndex !== undefined) {
+      // Create a new items array with the updated game
+      const updatedItems = [...folder.items];
+      updatedItems[gameIndex] = {
+        ...updatedItems[gameIndex],
+        ...updatedProperties,
+      };
+
+      updated = true;
+      return { ...folder, items: updatedItems };
+    }
+
+    return folder;
+  });
+
+  if (updated) {
+    saveFolders(updatedFolders);
+
+    // Dispatch an event to notify that folders have been updated
+    try {
+      window.dispatchEvent(new CustomEvent("ascendara:game-updated-in-folders"));
+    } catch (error) {
+      console.error("Error dispatching game-updated-in-folders event:", error);
+    }
+  }
+
+  return updatedFolders;
+};

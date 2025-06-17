@@ -7,7 +7,7 @@ import RecentGameCard from "@/components/RecentGameCard";
 import { useTheme } from "@/context/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSettings } from "@/context/SettingsContext";
-import { Sword, Flame, Globe, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Sword, Flame, Globe, ChevronLeft, ChevronRight, Clock, Zap } from "lucide-react";
 import gameService from "@/services/gameService";
 import Tour from "@/components/Tour";
 import imageCacheService from "@/services/imageCacheService";
@@ -635,6 +635,25 @@ const Home = memo(() => {
             </section>
           )}
 
+          {/* Most Recently Updated Games Section */}
+          {apiGames && apiGames.length > 0 && (
+            <section className="space-y-8">
+              <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
+                <Clock className="h-6 w-6 text-primary" />
+                {t("home.mostRecentlyUpdated")}
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {apiGames
+                  .filter(game => !!game.latest_update)
+                  .sort((a, b) => new Date(b.latest_update) - new Date(a.latest_update))
+                  .slice(0, 6)
+                  .map(game => (
+                    <HomeGameCard key={game.game + "-recent-update"} game={game} />
+                  ))}
+              </div>
+            </section>
+          )}
+
           {onlineGames.length > 0 && (
             <section className="space-y-8">
               <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
@@ -653,7 +672,7 @@ const Home = memo(() => {
             <>
               <section className="space-y-8">
                 <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
-                  <Flame className="h-6 w-6 text-primary" />
+                  <Zap className="h-6 w-6 text-primary" />
                   {t("home.actionGames")}
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

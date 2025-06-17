@@ -410,6 +410,7 @@
   },
   "home": {
     "actionGames": "Giochi d'azione",
+    "mostRecentlyUpdated": "Più recentemente aggiornato",
     "onlineGames": "Giochi online",
     "popularCategories": "Categorie popolari",
     "randomGames": "Giochi casuali",
@@ -623,7 +624,7 @@
     "nowPlaying": "Ora giocando",
     "pause": "Pausa",
     "play": "Giocare",
-    "unmute": "Sgraziato"
+    "unmute": "Snuto"
   },
   "profile": {
     "acrossGames": "In tutti i tuoi giochi scaricati",
@@ -661,6 +662,7 @@
     "lastUpdated": "Ultimo aggiornamento",
     "leastPopular": "Meno popolare",
     "mostPopular": "Più popolare",
+    "mostRecentlyUpdated": "Recentemente aggiornato",
     "noResults": "Nessun risultato trovato",
     "placeholder": "Giochi di ricerca ...",
     "refreshIndex": "Aggiorna indice",
@@ -1017,7 +1019,7 @@
     "stayUpToDate": "Mantieni l'Ascendara aggiornata",
     "takeTour": "Fai il tour",
     "termsOfService": "Termini di servizio",
-    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li fermano prima di iniziare nel browser, quindi inviarlo ad Ascendara per scaricare",
+    "theExtensionBlocksKnownProviders": "L'estensione ascolta i download da provider noti e li ferma prima che inizino nel browser, quindi inviandolo ad Ascendara per scaricare",
     "thisIsWhereAllYourDownloadedGamesWillBeStored": "Questo è dove verranno archiviati tutti i tuoi giochi scaricati",
     "welcomeTo": "Benvenuti a",
     "welcomeToAscendaraDescription": "Sei quasi pronto per iniziare a usare Ascendara. Passeremo insieme il processo di onboarding per ordinare alcune impostazioni di base, ma prima si prega di leggere i termini di servizio e politica sulla privacy.",
