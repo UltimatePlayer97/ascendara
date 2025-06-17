@@ -19,7 +19,7 @@
 
 ## 🎮 About
 
-Ascendara simplifies your pirating experience by providing a seamless way to download, manage, and play the pre-installed games. No more hassle with extracting, installing, or moving files. The game library is powered by a custom webscraper, currently featuring games from [STEAMRIP](https://ascendara.app/sources/steamrip) and [FitGirl](https://ascendara.app/sources/fitgirl), with plans to expand to more sources.
+Ascendara simplifies your game management experience by providing a seamless way to discover, organize, and test pre-installed games. No more hassle with extracting, installing, or moving files. The game library is powered by a custom webscraper, currently featuring titles mainly from [STEAMRIP](https://ascendara.app/sources/steamrip) with plans to expand to more sources.
 
 ### 👥 Community
 
