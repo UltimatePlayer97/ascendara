@@ -64,6 +64,8 @@ import { toast } from "sonner";
 import TimemachineDialog from "@/components/TimemachineDialog";
 import igdbService from "@/services/gameInfoService";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
+import torboxService from "@/services/torboxService";
+import TorboxIcon from "@/components/TorboxIcon";
 import GameScreenshots from "@/components/GameScreenshots";
 import {
   fetchProviderPatterns,
@@ -1016,6 +1018,11 @@ export default function DownloadPage() {
 
       if (availableProviders.includes("gofile")) {
         setSelectedProvider("gofile");
+      } else if (
+        torboxService.isEnabled(settings) &&
+        availableProviders.includes("1fichier")
+      ) {
+        setSelectedProvider("1fichier");
       } else if (availableProviders.includes("buzzheavier")) {
         setSelectedProvider("buzzheavier");
       } else if (availableProviders.length > 0) {
@@ -1646,7 +1653,8 @@ export default function DownloadPage() {
                 </div>
               </div>
             </div>
-          ) : selectedProvider === "gofile" ? (
+          ) : selectedProvider === "gofile" ||
+            (selectedProvider === "1fichier" && torboxService.isEnabled(settings)) ? (
             <div className="mx-auto max-w-xl">
               <div className="flex flex-col items-center space-y-8 py-6">
                 <div className="flex w-full items-center justify-between">
@@ -1656,14 +1664,24 @@ export default function DownloadPage() {
                       <Zap fill="currentColor" className="h-4 w-4 text-primary" />
                     </span>
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      ( GoFile <BadgeCheckIcon className="h-3.5 w-3.5" />)
+                      {selectedProvider === "gofile" ? (
+                        <>
+                          ( GoFile <BadgeCheckIcon className="h-3.5 w-3.5" />)
+                        </>
+                      ) : selectedProvider === "1fichier" ? (
+                        <>
+                          ( 1fichier <TorboxIcon className="h-6 w-6" />)
+                        </>
+                      ) : null}
                     </span>
                   </h2>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setSelectedProvider(providers.find(p => p !== "gofile") || "")
+                      setSelectedProvider(
+                        providers.find(p => p !== selectedProvider) || ""
+                      )
                     }
                   >
                     {t("download.switchProvider")}
@@ -1672,10 +1690,18 @@ export default function DownloadPage() {
 
                 <div className="w-full max-w-md space-y-4 text-center">
                   <h3 className="text-2xl font-semibold">
-                    {t("download.downloadOptions.gofileInstructions.thanks")}
+                    {selectedProvider === "gofile"
+                      ? t("download.downloadOptions.gofileInstructions.thanks")
+                      : selectedProvider === "1fichier"
+                        ? t("download.downloadOptions.1fichierInstructions.thanks")
+                        : null}
                   </h3>
                   <p className="text-muted-foreground">
-                    {t("download.downloadOptions.gofileInstructions.description")}
+                    {selectedProvider === "gofile"
+                      ? t("download.downloadOptions.gofileInstructions.description")
+                      : selectedProvider === "1fichier"
+                        ? t("download.downloadOptions.1fichierInstructions.description")
+                        : ""}
                   </p>
                 </div>
 
@@ -1767,6 +1793,11 @@ export default function DownloadPage() {
                                 >
                                   <div className="flex items-center gap-2">
                                     {displayName}
+                                    {isVerified && <BadgeCheckIcon className="h-4 w-4" />}
+                                    {provider === "1fichier" &&
+                                      torboxService.isEnabled(settings) && (
+                                        <TorboxIcon className="h-7 w-7" />
+                                      )}
                                   </div>
                                 </SelectItem>
                               );

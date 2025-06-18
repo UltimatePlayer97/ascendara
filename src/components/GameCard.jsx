@@ -17,10 +17,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TorboxIcon from "./TorboxIcon";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSettings } from "@/context/SettingsContext";
+import torboxService from "@/services/torboxService";
 import { sanitizeText, formatLatestUpdate } from "@/lib/utils";
 import { useImageLoader } from "@/hooks/useImageLoader";
 import { analytics } from "@/services/analyticsService";
@@ -149,6 +152,8 @@ const GameCard = memo(function GameCard({ game, compact }) {
       </div>
     );
   }
+
+  const { settings } = useSettings();
 
   return (
     <Card
@@ -316,6 +321,9 @@ const GameCard = memo(function GameCard({ game, compact }) {
             )
           ) : Object.keys(game.download_links || {}).includes("gofile") ? (
             <Zap fill="currentColor" className="ml-2 h-3 w-3" />
+          ) : Object.keys(game.download_links || {}).includes("1fichier") &&
+            torboxService.isEnabled(settings) ? (
+            <TorboxIcon className="ml-2 h-7 w-7" title="1fichier (Torbox enabled)" />
           ) : (
             <ArrowDown className="ml-2 h-3.5 w-3.5 stroke-[4]" />
           )}
