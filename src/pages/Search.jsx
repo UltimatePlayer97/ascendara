@@ -24,6 +24,7 @@ import {
   RefreshCw,
   AlertTriangle,
   X,
+  SendIcon,
 } from "lucide-react";
 import gameService from "@/services/gameService";
 import {
@@ -79,6 +80,7 @@ const Search = memo(() => {
   const [filterProvider, setFilterProvider] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isIndexUpdating, setIsIndexUpdating] = useState(false);
+  const [isRefreshRequestDialogOpen, setIsRefreshRequestDialogOpen] = useState(false);
   const gamesPerPage = useWindowSize();
   const [size, setSize] = useState(() => {
     const savedSize = localStorage.getItem("navSize");
@@ -452,6 +454,17 @@ const Search = memo(() => {
     }
   };
 
+  const handleSendRefreshRequest = () => {
+    // Close the confirmation dialog
+    setIsRefreshRequestDialogOpen(false);
+
+    // Here you would implement the actual functionality to send a refresh request
+    // For now, just show a console message
+    console.log("Sending refresh request");
+
+    // You could add a toast notification or other feedback here
+  };
+
   return (
     <div className="flex flex-col bg-background">
       <div className="flex-1 p-8 pb-24">
@@ -465,7 +478,7 @@ const Search = memo(() => {
                 <AlertDialogTrigger asChild>
                   <InfoIcon className="h-4 w-4 cursor-pointer transition-colors hover:text-foreground" />
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="border-border">
                   <AlertDialogCancel className="absolute right-2 top-2 cursor-pointer text-foreground transition-colors">
                     <X className="h-4 w-4" />
                   </AlertDialogCancel>
@@ -498,7 +511,7 @@ const Search = memo(() => {
                         {t("search.lastUpdated")}: {apiMetadata.getDate}
                       </p>
                       <Separator className="bg-border/50" />
-                      <div className="pt-2">
+                      <div className="space-y-2 pt-2">
                         <Button
                           variant="outline"
                           onClick={handleRefreshIndex}
@@ -511,6 +524,47 @@ const Search = memo(() => {
                           {isRefreshing
                             ? t("search.refreshingIndex")
                             : t("search.refreshIndex")}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsRefreshRequestDialogOpen(true)}
+                          className="flex w-full items-center justify-center gap-2"
+                        >
+                          <SendIcon className="h-4 w-4" />
+                          {t("search.sendRefreshRequest")}
+                        </Button>
+                      </div>
+                    </div>
+                  </AlertDialogHeader>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Send Refresh Request Confirmation Dialog */}
+              <AlertDialog
+                open={isRefreshRequestDialogOpen}
+                onOpenChange={setIsRefreshRequestDialogOpen}
+              >
+                <AlertDialogContent className="border-border">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                      {t("search.sendRefreshRequestTitle")}
+                    </AlertDialogTitle>
+                    <div className="mt-4 space-y-4 text-sm text-muted-foreground">
+                      <p>{t("search.sendRefreshRequestDescription")}</p>
+
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsRefreshRequestDialogOpen(false)}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          className="text-secondary"
+                          onClick={handleSendRefreshRequest}
+                        >
+                          {t("search.confirmSendRefreshRequest")}
                         </Button>
                       </div>
                     </div>
