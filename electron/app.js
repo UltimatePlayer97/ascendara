@@ -724,7 +724,12 @@ function decrypt(encryptedText) {
 class SettingsManager {
   constructor() {
     this.filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-    this.sensitiveKeys = ["twitchSecret", "twitchClientId", "giantBombKey"];
+    this.sensitiveKeys = [
+      "twitchSecret",
+      "twitchClientId",
+      "giantBombKey",
+      "torboxApiKey",
+    ];
     this.defaultSettings = {
       downloadDirectory: "",
       additionalDirectories: [],
@@ -751,6 +756,7 @@ class SettingsManager {
       twitchSecret: "",
       twitchClientId: "",
       giantBombKey: "",
+      torboxApiKey: "",
       ludusavi: {
         backupLocation: "",
         backupFormat: "zip",

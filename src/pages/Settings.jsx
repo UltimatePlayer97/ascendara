@@ -211,6 +211,7 @@ function Settings() {
   const [isTriggering, setIsTriggering] = useState(false);
   const [apiMetadata, setApiMetadata] = useState(null);
   const [fitgirlMetadata, setFitgirlMetadata] = useState(null);
+  const [torboxApiKey, setTorboxApiKey] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOnWindows, setIsOnWindows] = useState(null);
   const [downloadPath, setDownloadPath] = useState("");
@@ -915,6 +916,50 @@ function Settings() {
                     )}
                   </div>
                 ) : null}
+
+                {/* Torbox API Key Config */}
+                <div className="space-y-0.5 pb-2">
+                  <Label>{t("settings.torboxApiKey")}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.torboxApiKeyDescription")}&nbsp;
+                    <a
+                      onClick={() =>
+                        window.electron.openURL(
+                          "https://ascendara.app/docs/features/debriding-links"
+                        )
+                      }
+                      className="cursor inline-flex cursor-pointer items-center text-primary hover:underline"
+                    >
+                      {t("settings.torboxApiKeyLearnHowtoGet")}
+                      <ExternalLink className="ml-1 inline-block h-3 w-3" />
+                    </a>
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 pb-8">
+                  <Input
+                    id="torboxApiKey"
+                    type="password"
+                    placeholder={t("settings.torboxApiKeyPlaceholder")}
+                    value={
+                      torboxApiKey !== null ? torboxApiKey : settings.torboxApiKey || ""
+                    }
+                    onChange={e => setTorboxApiKey(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <Button
+                    onClick={() => {
+                      setSettings(s => ({ ...s, torboxApiKey: torboxApiKey }));
+                      toast.success(t("settings.apiKeySaved") || "API Key saved");
+                      setTorboxApiKey(null);
+                    }}
+                    disabled={torboxApiKey === null}
+                    variant="none"
+                    className="text-primary"
+                  >
+                    {t("settings.setKey")}
+                  </Button>
+                </div>
+
                 {/* Download Threads Config */}
                 <div className="pb-8">
                   <Label

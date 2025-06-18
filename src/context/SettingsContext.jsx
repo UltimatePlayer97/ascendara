@@ -36,6 +36,7 @@ export function SettingsProvider({ children }) {
     twitchSecret: "",
     twitchClientId: "",
     giantBombKey: "",
+    torboxApiKey: "",
     ludusavi: {
       backupLocation: "",
       backupFormat: "zip",
