@@ -4791,57 +4791,138 @@ let debouncedUpdate = null;
 
 ipcMain.handle("get-drive-space", async (event, directory) => {
   try {
-    const cache = driveSpaceCache.get(directory);
+    const settings = settingsManager.getSettings();
+    const directories = [];
+
+    // Add main directory if provided
+    if (directory) {
+      directories.push(directory);
+    }
+
+    // Add additional directories from settings if they exist
+    if (settings.additionalDirectories && Array.isArray(settings.additionalDirectories)) {
+      directories.push(
+        ...settings.additionalDirectories.filter(dir => dir && dir.trim() !== "")
+      );
+    }
+
+    // If no directories are available, return zeros
+    if (directories.length === 0) {
+      return {
+        directories: [],
+        freeSpace: 0,
+        totalSpace: 0,
+      };
+    }
+
     const now = Date.now();
+    const result = { directories: [] };
+    let totalFreeSpace = 0;
+    let totalSpace = 0;
 
-    // If we have valid cache, return it immediately
-    if (cache && cache.lastCalculated > now - 5 * 60 * 1000) {
-      return {
-        freeSpace: cache.freeSpace,
-        totalSpace: cache.totalSpace,
-      };
-    }
+    // Process each directory
+    for (const dir of directories) {
+      try {
+        const cache = driveSpaceCache.get(dir);
+        let dirInfo;
 
-    // Debounce the actual disk check to prevent multiple rapid checks
-    if (!debouncedUpdate) {
-      debouncedUpdate = setTimeout(async () => {
-        try {
-          const { available, total } = await disk.check(directory);
+        // If we have valid cache, use it
+        if (cache && cache.lastCalculated > now - 5 * 60 * 1000) {
+          dirInfo = {
+            path: dir,
+            freeSpace: cache.freeSpace,
+            totalSpace: cache.totalSpace,
+          };
+        } else {
+          // If no valid cache, check the disk
+          // Debounce the actual disk check to prevent multiple rapid checks
+          if (!debouncedUpdate) {
+            debouncedUpdate = setTimeout(async () => {
+              try {
+                for (const directory of directories) {
+                  try {
+                    const { available, total } = await disk.check(directory);
 
-          driveSpaceCache.set(directory, {
-            freeSpace: available,
-            totalSpace: total,
-            lastCalculated: Date.now(),
-          });
+                    driveSpaceCache.set(directory, {
+                      freeSpace: available,
+                      totalSpace: total,
+                      lastCalculated: Date.now(),
+                    });
+                  } catch (err) {
+                    console.error(`Error updating cache for ${directory}:`, err);
+                  }
+                }
 
-          debouncedUpdate = null;
-        } catch (error) {
-          console.error("Error in debounced drive space update:", error);
+                debouncedUpdate = null;
+              } catch (error) {
+                console.error("Error in debounced drive space update:", error);
+              }
+            }, DEBOUNCE_TIME);
+          }
+
+          // If we have any cached data (even if expired), use it while updating
+          if (cache) {
+            dirInfo = {
+              path: dir,
+              freeSpace: cache.freeSpace,
+              totalSpace: cache.totalSpace,
+            };
+          } else {
+            // If no cache exists at all, we need to wait for the first check
+            try {
+              const { available, total } = await disk.check(dir);
+
+              driveSpaceCache.set(dir, {
+                freeSpace: available,
+                totalSpace: total,
+                lastCalculated: now,
+              });
+
+              dirInfo = {
+                path: dir,
+                freeSpace: available,
+                totalSpace: total,
+              };
+            } catch (err) {
+              console.error(`Error checking disk space for ${dir}:`, err);
+              dirInfo = {
+                path: dir,
+                freeSpace: 0,
+                totalSpace: 0,
+                error: err.message || "Unknown error",
+              };
+            }
+          }
         }
-      }, DEBOUNCE_TIME);
+
+        // Add to result and totals
+        result.directories.push(dirInfo);
+        totalFreeSpace += dirInfo.freeSpace;
+        totalSpace += dirInfo.totalSpace;
+      } catch (dirError) {
+        console.error(`Error processing directory ${dir}:`, dirError);
+        result.directories.push({
+          path: dir,
+          freeSpace: 0,
+          totalSpace: 0,
+          error: dirError.message || "Unknown error",
+        });
+      }
     }
 
-    // If we have any cached data (even if expired), return it while updating
-    if (cache) {
-      return {
-        freeSpace: cache.freeSpace,
-        totalSpace: cache.totalSpace,
-      };
-    }
+    // Add totals to the result
+    result.freeSpace = totalFreeSpace;
+    result.totalSpace = totalSpace;
 
-    // If no cache exists at all, we need to wait for the first check
-    const { available, total } = await disk.check(directory);
-
-    driveSpaceCache.set(directory, {
-      freeSpace: available,
-      totalSpace: total,
-      lastCalculated: now,
-    });
-
-    return { freeSpace: available, totalSpace: total };
+    return result;
   } catch (error) {
     console.error("Error getting drive space:", error);
-    return { freeSpace: 0, totalSpace: 0 };
+    return {
+      directories: [],
+      freeSpace: 0,
+      totalSpace: 0,
+      error: error.message || "Unknown error",
+    };
   }
 });
 
@@ -4886,28 +4967,66 @@ ipcMain.handle("get-installed-games-size", async () => {
         success: true,
         calculating: false,
         totalSize: gamesSizeCache.totalSize,
+        directorySizes: gamesSizeCache.directorySizes || [],
       };
     }
 
-    const downloadDir = settings.downloadDirectory;
-    if (!downloadDir) {
+    const directories = [];
+
+    // Add main download directory if it exists
+    if (settings.downloadDirectory && settings.downloadDirectory.trim() !== "") {
+      directories.push(settings.downloadDirectory);
+    }
+
+    // Add additional directories if they exist
+    if (settings.additionalDirectories && Array.isArray(settings.additionalDirectories)) {
+      directories.push(
+        ...settings.additionalDirectories.filter(dir => dir && dir.trim() !== "")
+      );
+    }
+
+    // If no directories are available, return zero
+    if (directories.length === 0) {
       return {
         success: false,
         calculating: false,
         totalSize: 0,
+        directorySizes: [],
       };
     }
 
-    const totalSize = await getDirectorySize(downloadDir);
+    let totalSize = 0;
+    const directorySizes = [];
+
+    // Calculate size for each directory
+    for (const dir of directories) {
+      try {
+        const size = await getDirectorySize(dir);
+        directorySizes.push({
+          path: dir,
+          size: size,
+        });
+        totalSize += size;
+      } catch (err) {
+        console.error(`Error calculating size for directory ${dir}:`, err);
+        directorySizes.push({
+          path: dir,
+          size: 0,
+          error: err.message || "Unknown error",
+        });
+      }
+    }
 
     // Update cache
     gamesSizeCache.totalSize = totalSize;
+    gamesSizeCache.directorySizes = directorySizes;
     gamesSizeCache.lastCalculated = now;
 
     return {
       success: true,
       calculating: false,
       totalSize: totalSize,
+      directorySizes: directorySizes,
     };
   } catch (error) {
     console.error("Error getting installed games size:", error);
@@ -4915,6 +5034,8 @@ ipcMain.handle("get-installed-games-size", async () => {
       success: false,
       calculating: false,
       totalSize: 0,
+      directorySizes: [],
+      error: error.message || "Unknown error",
     };
   }
 });
