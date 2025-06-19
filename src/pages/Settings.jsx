@@ -949,7 +949,7 @@ function Settings() {
                   <Button
                     onClick={() => {
                       setSettings(s => ({ ...s, torboxApiKey: torboxApiKey }));
-                      toast.success(t("settings.apiKeySaved") || "API Key saved");
+                      toast.success(t("settings.apiKeySaved"));
                       setTorboxApiKey(null);
                     }}
                     disabled={torboxApiKey === null}
