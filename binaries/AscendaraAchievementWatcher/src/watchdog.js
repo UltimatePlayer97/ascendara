@@ -59,11 +59,11 @@ let sendNotification = async opts => {
   try {
     const exePath =
       process.env.NODE_ENV === "development"
-        ? path.join(path.dirname(process.execPath), "AscendaraNotificationHelper.exe")
-        : path.join(
+        ? path.join(
             path.dirname(process.execPath),
             "../../AscendaraNotificationHelper/dist/AscendaraNotificationHelper.exe"
-          );
+          )
+        : path.join(path.dirname(process.execPath), "AscendaraNotificationHelper.exe");
     let args = [];
     args.push("--is-achievement");
     let settings = await getSettings();
