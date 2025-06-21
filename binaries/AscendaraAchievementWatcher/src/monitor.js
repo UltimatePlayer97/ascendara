@@ -2,7 +2,15 @@
 
 const path = require("path");
 const parentFind = require("find-up");
-const omit = require("lodash.omit");
+function omit(obj, keys) {
+  const result = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && !keys.includes(key)) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
 const fs = require("fs").promises;
 const sse = require("./sse.js");
 const ini = require("ini");
