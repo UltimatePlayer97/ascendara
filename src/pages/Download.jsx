@@ -84,8 +84,6 @@ const isValidURL = async (url, provider, patterns) => {
   return pattern.test(trimmedUrl);
 };
 
-const VERIFIED_PROVIDERS = ["megadb", "gofile", "datanodes", "buzzheavier", "qiwi"];
-
 const sanitizeGameName = name => {
   return sanitizeText(name);
 };
@@ -289,6 +287,8 @@ export default function DownloadPage() {
   const igdbSectionRef = useRef(null);
   const mainContentRef = useRef(null);
   const scrollThreshold = 30; // Even lower threshold for quicker response
+  const seamlessProviders = ["gofile", "buzzheavier", "pixeldrain"];
+  const VERIFIED_PROVIDERS = ["megadb", "gofile", "buzzheavier", "pixeldrain"];
 
   async function whereToDownload(directUrl = null) {
     // Check if game is wanting to update

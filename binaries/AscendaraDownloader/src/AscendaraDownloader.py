@@ -210,8 +210,41 @@ class SmartDLDownloader:
             }
         safe_write_json(self.game_info_path, self.game_info)
 
+    VALID_BUZZHEAVIER_DOMAINS = [
+        'buzzheavier.com',
+        'bzzhr.co',
+        'fuckingfast.net',
+        'fuckingfast.co'
+    ]
+
     def download(self, url, withNotification=None):
         try:
+            # Buzzheavier detection
+            if any(domain in url for domain in self.VALID_BUZZHEAVIER_DOMAINS):
+                try:
+                    self._download_buzzheavier(url)
+                    if withNotification:
+                        _launch_notification(
+                            withNotification,
+                            "Download Complete",
+                            f"Successfully downloaded from buzzheavier: {self.game_info['game']}"
+                        )
+                    self.game_info["downloadingData"]["downloading"] = False
+                    self.game_info["downloadingData"]["progressCompleted"] = "100.00"
+                    self.game_info["downloadingData"]["progressDownloadSpeeds"] = "0.00 KB/s"
+                    self.game_info["downloadingData"]["timeUntilComplete"] = "0s"
+                    safe_write_json(self.game_info_path, self.game_info)
+                except Exception as e:
+                    logging.error(f"[AscendaraDownloader] Buzzheavier download failed: {e}")
+                    handleerror(self.game_info, self.game_info_path, e)
+                    if withNotification:
+                        _launch_notification(
+                            withNotification,
+                            "Download Error",
+                            f"Error downloading {self.game_info['game']}: {e}"
+                        )
+                return
+
             self.game_info["downloadingData"]["downloading"] = True
             safe_write_json(self.game_info_path, self.game_info)
             base_name = os.path.basename(url.split('?')[0])
@@ -382,6 +415,92 @@ class SmartDLDownloader:
                 )
             # Do not re-raise to prevent crash
             return
+
+    @staticmethod
+    def _resolve_buzzheavier_url(input_str):
+        input_str = input_str.strip()
+        for domain in SmartDLDownloader.VALID_BUZZHEAVIER_DOMAINS:
+            if domain in input_str:
+                return input_str
+        raise ValueError(f"URL domain not recognized: {input_str}")
+
+    def _download_buzzheavier(self, input_str):
+        import requests
+        from bs4 import BeautifulSoup
+        from tqdm import tqdm
+        url = self._resolve_buzzheavier_url(input_str)
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title = soup.title.string.strip() if soup.title else 'buzzheavier_download'
+        logging.info(f"[Buzzheavier] Title: {title}")
+        download_url = url + '/download'
+        headers = {
+            'hx-current-url': url,
+            'hx-request': 'true',
+            'referer': url
+        }
+        head_response = requests.head(download_url, headers=headers, allow_redirects=False)
+        hx_redirect = head_response.headers.get('hx-redirect')
+        if not hx_redirect:
+            raise Exception("Download link not found. Is this a directory?")
+        logging.info(f"[Buzzheavier] Download link: {hx_redirect}")
+        domain = url.split('/')[2]
+        final_url = f'https://{domain}' + hx_redirect if hx_redirect.startswith('/dl/') else hx_redirect
+        file_response = requests.get(final_url, stream=True)
+        file_response.raise_for_status()
+        total_size = int(file_response.headers.get('content-length', 0))
+        block_size = 1024
+        dest_path = os.path.join(self.download_dir, title)
+        start_time = time.time()
+        downloaded = 0
+        last_update_time = start_time
+        speed = 0
+        with open(dest_path, 'wb') as f, tqdm(
+            total=total_size, unit='B', unit_scale=True, desc=title
+        ) as progress_bar:
+            for chunk in file_response.iter_content(chunk_size=block_size):
+                if chunk:
+                    f.write(chunk)
+                    progress_bar.update(len(chunk))
+                    downloaded += len(chunk)
+                    now = time.time()
+                    elapsed = now - start_time
+                    # Update every 0.5s or on last chunk
+                    if elapsed > 0 and (now - last_update_time > 0.5 or downloaded == total_size):
+                        percent = (downloaded / total_size) * 100 if total_size else 0
+                        speed = downloaded / elapsed if elapsed > 0 else 0
+                        remaining = total_size - downloaded
+                        eta = remaining / speed if speed > 0 else 0
+                        def format_speed(bytes_per_sec):
+                            if bytes_per_sec >= 1024**3:
+                                return f"{bytes_per_sec/1024**3:.2f} GB/s"
+                            elif bytes_per_sec >= 1024**2:
+                                return f"{bytes_per_sec/1024**2:.2f} MB/s"
+                            elif bytes_per_sec >= 1024:
+                                return f"{bytes_per_sec/1024:.2f} KB/s"
+                            else:
+                                return f"{bytes_per_sec:.2f} B/s"
+                        def format_eta(seconds):
+                            seconds = int(seconds)
+                            if seconds < 60:
+                                return f"{seconds} seconds"
+                            minutes = seconds // 60
+                            sec = seconds % 60
+                            if minutes < 60:
+                                return f"{minutes} minute{'s' if minutes != 1 else ''}, {sec} second{'s' if sec != 1 else ''}"
+                            hours = minutes // 60
+                            min_left = minutes % 60
+                            return f"{hours} hour{'s' if hours != 1 else ''}, {min_left} minute{'s' if min_left != 1 else ''}"
+                        self.game_info["downloadingData"]["progressCompleted"] = f"{percent:.2f}"
+                        self.game_info["downloadingData"]["progressDownloadSpeeds"] = format_speed(speed)
+                        self.game_info["downloadingData"]["timeUntilComplete"] = format_eta(eta)
+                        self.game_info["downloadingData"]["downloading"] = True
+                        safe_write_json(self.game_info_path, self.game_info)
+                        last_update_time = now
+
+        logging.info(f"[Buzzheavier] Downloaded as: {dest_path}")
+        self._extract_files(dest_path)
 
     @staticmethod
     def detect_file_type(filepath):
