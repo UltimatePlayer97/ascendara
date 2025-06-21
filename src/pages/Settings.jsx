@@ -877,7 +877,7 @@ function Settings() {
                 )}
                 {isOnWindows ? (
                   <div className="mb-6 flex items-center justify-between">
-                    <div className="space-y-0.5">
+                    <div className="space-y-2">
                       <Label>
                         {t("settings.excludeFolders")}{" "}
                         <TooltipProvider>
@@ -918,7 +918,7 @@ function Settings() {
                 ) : null}
 
                 {/* Torbox API Key Config */}
-                <div className="space-y-0.5 pb-2">
+                <div className="space-y-2">
                   <Label>{t("settings.torboxApiKey")}</Label>
                   <p className="text-sm text-muted-foreground">
                     {t("settings.torboxApiKeyDescription")}&nbsp;
@@ -935,7 +935,7 @@ function Settings() {
                     </a>
                   </p>
                 </div>
-                <div className="flex items-center space-x-2 pb-8">
+                <div className="flex items-center space-x-2">
                   <Input
                     id="torboxApiKey"
                     type="password"
@@ -960,8 +960,41 @@ function Settings() {
                   </Button>
                 </div>
 
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`space-y-2${
+                      !(
+                        (torboxApiKey !== null && torboxApiKey.trim() !== "") ||
+                        (settings.torboxApiKey && settings.torboxApiKey.trim() !== "")
+                      )
+                        ? "pointer-events-none select-none opacity-50"
+                        : ""
+                    }`}
+                  >
+                    <Label>{t("settings.prioritizeTorboxOverSeamless")}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t("settings.prioritizeTorboxOverSeamlessDesc")}&nbsp;
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.prioritizeTorboxOverSeamless}
+                    onCheckedChange={value => {
+                      setSettings(prev => ({
+                        ...prev,
+                        prioritizeTorboxOverSeamless: value,
+                      }));
+                    }}
+                    disabled={
+                      !(
+                        (torboxApiKey !== null && torboxApiKey.trim() !== "") ||
+                        (settings.torboxApiKey && settings.torboxApiKey.trim() !== "")
+                      )
+                    }
+                  />
+                </div>
+
                 {/* Download Threads Config */}
-                <div className="pb-8">
+                <div className="space-y-2">
                   <Label
                     htmlFor="threadCount"
                     className={isDownloaderRunning ? "opacity-50" : ""}
@@ -977,9 +1010,10 @@ function Settings() {
                       <p className="text-sm">{t("settings.highThreadWarning")}</p>
                     </div>
                   )}
-                  <div className="mt-2 flex w-full justify-center">
+
+                  <div className="flex w-full justify-center">
                     <motion.div
-                      className="flex items-center space-x-4"
+                      className="mt-4 flex items-center space-x-4"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
@@ -1158,7 +1192,7 @@ function Settings() {
                 </div>
 
                 {/* Download Speed Limit Section */}
-                <div className="pt-8">
+                <div className="space-y-2 pt-8">
                   <Label
                     htmlFor="downloadLimit"
                     className={isDownloaderRunning ? "opacity-50" : ""}

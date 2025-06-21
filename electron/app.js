@@ -752,6 +752,7 @@ class SettingsManager {
       downloadLimit: 0,
       sideScrollBar: false,
       excludeFolders: false,
+      prioritizeTorboxOverSeamless: false,
       crackDirectory: "",
       twitchSecret: "",
       twitchClientId: "",

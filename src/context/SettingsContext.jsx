@@ -32,6 +32,7 @@ export function SettingsProvider({ children }) {
     downloadLimit: 0,
     excludeFolders: false,
     sideScrollBar: false,
+    prioritizeTorboxOverSeamless: false,
     crackDirectory: "",
     twitchSecret: "",
     twitchClientId: "",
