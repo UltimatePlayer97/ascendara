@@ -41,6 +41,26 @@ export default defineConfig({
           });
         },
       },
+      "/api/torbox": {
+        target: "https://api.torbox.app/v1/api",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api\/torbox/, ""),
+        configure: (proxy, _options) => {
+          proxy.on("error", (err, _req, _res) => {
+            console.log("Torbox proxy error", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, _res) => {
+            console.log("Sending Request to Torbox API:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req, _res) => {
+            console.log(
+              "Received Response from Torbox API:",
+              proxyRes.statusCode,
+              req.url
+            );
+          });
+        },
+      },
       "/api/khinsider": {
         target: "https://downloads.khinsider.com",
         changeOrigin: true,

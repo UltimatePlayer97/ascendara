@@ -307,7 +307,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
                 ? "installed"
                 : "download";
 
-          const seamlessHosts = ["gofile", "buzzheavier"];
+          const seamlessHosts = ["gofile", "buzzheavier", "pixeldrain"];
           const torboxHosts = ["1fichier", "datanodes", "qiwi"];
           const prioritizedTorbox = settings.prioritizeTorboxOverSeamless;
           const downloadLinks = game.download_links || {};
@@ -323,7 +323,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
           let provider = "default";
           if (
             prioritizedTorbox &&
-            ["gofile", "buzzheavier", "datanodes"].includes(host)
+            ["gofile", "buzzheavier", "datanodes", "pixeldrain"].includes(host)
           ) {
             provider = "torbox";
           } else if (seamlessHosts.includes(host)) {
@@ -372,8 +372,8 @@ const GameCard = memo(function GameCard({ game, compact }) {
                 >
                   {torboxEnabled && (
                     <>
-                      <TorboxIcon className="mr-1 h-4 w-4" />
-                      Torbox
+                      <TorboxIcon className="mr-1 h-6 w-6" />
+                      Seamless with Torbox
                     </>
                   )}
                   {provider === "seamless" && (

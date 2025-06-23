@@ -35,6 +35,7 @@ import ExtraLanguages from "./pages/ExtraLanguages";
 import Home from "./pages/Home";
 import WorkshopDownloader from "./pages/WorkshopDownloader";
 import SidecarAndDependencies from "./pages/SidecarAndDependencies";
+import TorboxDownloads from "./pages/TorboxDownloads";
 import GameScreen from "./pages/GameScreen";
 import Profile from "./pages/Profile";
 import Library from "./pages/Library";
@@ -582,6 +583,16 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="downloads">
                     <Downloads />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
+              path="torboxdownloads"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="torboxdownloads">
+                    <TorboxDownloads />
                   </PageTransition>
                 </AnimatePresence>
               }

@@ -46,6 +46,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useSettings } from "@/context/SettingsContext";
+import * as torboxService from "../services/torboxService";
 
 const Downloads = () => {
   useEffect(() => {
@@ -55,6 +56,7 @@ const Downloads = () => {
     };
   }, []);
   const [downloadingGames, setDownloadingGames] = useState([]);
+  const [torboxStates, setTorboxStates] = useState({}); // webdownloadId -> state
   // Ref to always access the latest downloadingGames inside polling
   const downloadingGamesRef = React.useRef(downloadingGames);
   useEffect(() => {
@@ -271,6 +273,11 @@ const Downloads = () => {
               <DownloadCard
                 key={`${game.game}-${game.executable}`}
                 game={game}
+                torboxState={
+                  game.torboxWebdownloadId
+                    ? torboxStates[game.torboxWebdownloadId]
+                    : undefined
+                }
                 onStop={() => handleStopDownload(game)}
                 onRetry={() => handleRetryDownload(game)}
                 onOpenFolder={() => handleOpenFolder(game)}
