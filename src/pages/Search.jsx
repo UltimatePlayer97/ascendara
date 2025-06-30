@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, memo, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -454,15 +455,57 @@ const Search = memo(() => {
     }
   };
 
-  const handleSendRefreshRequest = () => {
+  const handleSendRefreshRequest = async () => {
     // Close the confirmation dialog
     setIsRefreshRequestDialogOpen(false);
 
-    // Here you would implement the actual functionality to send a refresh request
-    // For now, just show a console message
-    console.log("Sending refresh request");
+    try {
+      // Get auth token
+      const AUTHORIZATION = await window.electron.getAPIKey();
+      const response = await fetch("https://api.ascendara.app/auth/token", {
+        headers: {
+          Authorization: AUTHORIZATION,
+        },
+      });
 
-    // You could add a toast notification or other feedback here
+      if (!response.ok) {
+        throw new Error("Failed to obtain token");
+      }
+
+      const { token } = await response.json();
+
+      // Send the refresh request
+      const refreshResponse = await fetch(
+        "https://api.ascendara.app/app/request-refresh",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (refreshResponse.status === 200) {
+        const data = await refreshResponse.json();
+        if (data.status === "success") {
+          toast.success(t("search.refreshRequestSuccess"));
+          console.log("Refresh request sent successfully");
+        } else {
+          toast.error(t("search.refreshRequestError"));
+          console.error("Error in refresh request response:", data);
+        }
+      } else if (refreshResponse.status === 500) {
+        toast.error(t("search.refreshRequestRateLimited"));
+        console.error("Rate limited: User already sent a refresh request");
+      } else {
+        toast.error(t("search.refreshRequestError"));
+        console.error("Unexpected status code:", refreshResponse.status);
+      }
+    } catch (error) {
+      toast.error(t("search.refreshRequestError"));
+      console.error("Error sending refresh request:", error);
+    }
   };
 
   return (
