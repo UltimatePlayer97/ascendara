@@ -55,7 +55,7 @@ const TIMESTAMP_FILE = !isWindows
   ? path.join(os.homedir(), "timestamp.ascendara.json")
   : path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
 
-const LANG_DIR = !isWindows
+const LANG_DIR = isWindows
   ? path.join(app.getPath("userData"), "Ascendara", "languages")
   : path.join(os.homedir(), ".ascendara", "languages");
 
@@ -733,6 +733,7 @@ class SettingsManager {
     this.defaultSettings = {
       downloadDirectory: "",
       additionalDirectories: [],
+      defaultOpenPage: "home",
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
       earlyReleasePreview: false,

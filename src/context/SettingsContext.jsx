@@ -14,6 +14,7 @@ export function SettingsProvider({ children }) {
     additionalDirectories: [],
     watchingFolders: [],
     showOldDownloadLinks: false,
+    defaultOpenPage: "home",
     seeInappropriateContent: false,
     earlyReleasePreview: false,
     viewWorkshopPage: false,

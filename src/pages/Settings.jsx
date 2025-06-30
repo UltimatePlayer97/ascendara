@@ -747,6 +747,31 @@ function Settings() {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
+                      <Label>{t("settings.defaultLandingPage")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.defaultLandingPageDescription")}
+                      </p>
+                    </div>
+                    <Select
+                      value={settings.defaultOpenPage || "home"}
+                      onValueChange={value =>
+                        handleSettingChange("defaultOpenPage", value)
+                      }
+                    >
+                      <SelectTrigger className="w-[180px] bg-background">
+                        <SelectValue placeholder="Home" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="home">{t("common.home")}</SelectItem>
+                        <SelectItem value="search">{t("common.search")}</SelectItem>
+                        <SelectItem value="library">{t("common.library")}</SelectItem>
+                        <SelectItem value="downloads">{t("common.downloads")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
                       <Label>{t("settings.ascendaraUpdates")}</Label>
                       <p className="text-sm text-muted-foreground">
                         {t("settings.ascendaraUpdatesDescription")}
