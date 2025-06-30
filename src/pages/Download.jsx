@@ -1175,7 +1175,7 @@ export default function DownloadPage() {
     : [];
 
   const prioritizeTorbox = settings.prioritizeTorboxOverSeamless;
-  const torboxProviders = prioritizeTorbox ? providers : ["1fichier"];
+  const torboxProviders = prioritizeTorbox ? providers : ["1fichier", "megadb"];
 
   console.log("Final Available Providers:", providers);
 

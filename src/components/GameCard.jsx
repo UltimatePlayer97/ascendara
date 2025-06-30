@@ -308,7 +308,7 @@ const GameCard = memo(function GameCard({ game, compact }) {
                 : "download";
 
           const seamlessHosts = ["gofile", "buzzheavier", "pixeldrain"];
-          const torboxHosts = ["1fichier", "datanodes", "qiwi"];
+          const torboxHosts = ["1fichier", "datanodes", "qiwi", "megadb"];
           const prioritizedTorbox = settings.prioritizeTorboxOverSeamless;
           const downloadLinks = game.download_links || {};
           const allHosts = Object.keys(downloadLinks);
