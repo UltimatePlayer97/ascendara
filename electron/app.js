@@ -56,7 +56,7 @@ const TIMESTAMP_FILE = !isWindows
   : path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
 
 const LANG_DIR = isWindows
-  ? path.join(app.getPath("userData"), "Ascendara", "languages")
+  ? path.join(process.env.LOCALAPPDATA, "Ascendara", "languages")
   : path.join(os.homedir(), ".ascendara", "languages");
 
 try {

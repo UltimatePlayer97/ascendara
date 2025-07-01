@@ -319,16 +319,9 @@ def get_base_path():
 def save_translations(translations, output_path):
     """Save translations to a JSON file"""
     try:
-        base_path = get_base_path()
-        if not os.path.isabs(output_path):
-            # Use AppData Local for translations
-            appdata_path = os.path.expandvars(r"%LOCALAPPDATA%\Ascendara")
-            output_path = os.path.join(appdata_path, os.path.basename(output_path))
-        
-        logging.debug(f"Base path: {base_path}")
         logging.debug(f"Saving translations to: {output_path}")
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        
+
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(translations, f, ensure_ascii=False, indent=2)
         
@@ -378,14 +371,11 @@ def main():
             # Handle specific key updates
             logging.info(f"Updating specific keys: {args.newKey}")
             try:
-                # Load existing translations if available
-                base_path = get_base_path()
-                # Go up one level from dist and into languages directory
-                languages_dir = os.path.join(base_path, "..", "languages")
-                output_path = args.output or os.path.join(languages_dir, f"{args.lang}.json")
+                # Always load from AppData Local for translations
+                appdata_path = os.path.expandvars(r"%LOCALAPPDATA%\Ascendara")
+                output_path = os.path.join(appdata_path, f"{args.lang}.json")
                 
-                logging.debug(f"Base path: {base_path}")
-                logging.debug(f"Languages dir: {languages_dir}")
+                logging.debug(f"AppData path: {appdata_path}")
                 logging.debug(f"Using output path: {output_path}")
                 
                 existing_translations = {}
@@ -517,13 +507,10 @@ def main():
         progress.set_phase("saving")
         logging.info("Saving translations...")
         
-        # Determine output path
-        if args.output:
-            output_path = args.output
-        else:
-            base_path = get_base_path()
-            languages_dir = os.path.join(base_path, "..", "languages")
-            output_path = os.path.join(languages_dir, f"{args.lang}.json")
+        # Always save to AppData Local for translations
+        appdata_path = os.path.expandvars(r"%LOCALAPPDATA%\Ascendara\\languages")
+        os.makedirs(appdata_path, exist_ok=True)
+        output_path = os.path.join(appdata_path, f"{args.lang}.json")
         
         try:
             save_translations(translated, output_path)
