@@ -36,7 +36,7 @@ import {
   LockIcon,
 } from "lucide-react";
 import gameUpdateService from "@/services/gameUpdateService";
-
+import { loadFolders, saveFolders } from "@/lib/folderManager";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
@@ -572,17 +572,47 @@ export default function GameScreen() {
   const handleDeleteGame = async () => {
     try {
       setIsUninstalling(true);
-      if (game.isCustom) {
-        await window.electron.removeCustomGame(game.game || game.name);
-      } else {
-        await window.electron.deleteGame(game.game || game.name);
+      const gameId = game.game || game.name;
+
+      // Remove the game from all folders
+      const folders = loadFolders();
+      const updatedFolders = folders.map(folder => ({
+        ...folder,
+        items: (folder.items || []).filter(item => (item.game || item.name) !== gameId),
+      }));
+      saveFolders(updatedFolders);
+
+      // Clean up folder-specific favorites
+      try {
+        const favoritesObj = JSON.parse(localStorage.getItem("folder-favorites") || "{}");
+        let favoritesUpdated = false;
+
+        Object.keys(favoritesObj).forEach(folderKey => {
+          if (favoritesObj[folderKey].includes(gameId)) {
+            favoritesObj[folderKey] = favoritesObj[folderKey].filter(id => id !== gameId);
+            favoritesUpdated = true;
+          }
+        });
+
+        if (favoritesUpdated) {
+          localStorage.setItem("folder-favorites", JSON.stringify(favoritesObj));
+        }
+      } catch (error) {
+        console.error("Error updating folder favorites:", error);
       }
+
+      // Delete the game from the main library
+      if (game.isCustom) {
+        await window.electron.removeCustomGame(gameId);
+      } else {
+        await window.electron.deleteGame(gameId);
+      }
+
       setIsUninstalling(false);
       setIsDeleteDialogOpen(false);
       navigate("/library");
     } catch (error) {
       console.error("Error deleting game:", error);
-      setIsUninstalling(false);
       setIsUninstalling(false);
     }
   };
