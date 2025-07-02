@@ -1216,6 +1216,41 @@ function Settings() {
                   )}
                 </div>
 
+                <div className="space-y-2 pt-8">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <Label>{t("settings.behaviorAfterDownload")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.behaviorAfterDownloadDescription")}
+                      </p>
+                    </div>
+                    <Select
+                      value={settings.behaviorAfterDownload || "none"}
+                      onValueChange={value =>
+                        handleSettingChange("behaviorAfterDownload", value)
+                      }
+                    >
+                      <SelectTrigger className="w-[180px] bg-background">
+                        <SelectValue placeholder="None" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          {t("settings.behaviors.none")}
+                        </SelectItem>
+                        <SelectItem value="lock">
+                          {t("settings.behaviors.lock")}
+                        </SelectItem>
+                        <SelectItem value="sleep">
+                          {t("settings.behaviors.sleep")}
+                        </SelectItem>
+                        <SelectItem value="shutdown">
+                          {t("settings.behaviors.shutdown")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 {/* Download Speed Limit Section */}
                 <div className="space-y-2 pt-8">
                   <Label

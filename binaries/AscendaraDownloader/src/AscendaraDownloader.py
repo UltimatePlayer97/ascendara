@@ -502,6 +502,51 @@ class SmartDLDownloader:
         logging.info(f"[Buzzheavier] Downloaded as: {dest_path}")
         self._extract_files(dest_path)
 
+    def _handle_post_download_behavior(self):
+        try:
+            # Get the settings path
+            settings_path = None
+            if sys.platform == 'win32':
+                appdata = os.environ.get('APPDATA')
+                if appdata:
+                    candidate = os.path.join(appdata, 'Electron', 'ascendarasettings.json')
+                    if os.path.exists(candidate):
+                        settings_path = candidate
+            elif sys.platform == 'darwin':
+                user_data_dir = os.path.expanduser('~/Library/Application Support/ascendara')
+                candidate = os.path.join(user_data_dir, 'ascendarasettings.json')
+                if os.path.exists(candidate):
+                    settings_path = candidate
+            
+            if settings_path and os.path.exists(settings_path):
+                with open(settings_path, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                    behavior = settings.get('behaviorAfterDownload', 'none')
+                    logging.info(f"[AscendaraDownloader] Post-download behavior: {behavior}")
+                    
+                    if behavior == 'lock':
+                        logging.info("[AscendaraDownloader] Locking computer as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('rundll32.exe user32.dll,LockWorkStation')
+                        elif sys.platform == 'darwin':
+                            os.system('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend')
+                    elif behavior == 'sleep':
+                        logging.info("[AscendaraDownloader] Putting computer to sleep as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('rundll32.exe powrprof.dll,SetSuspendState 0,1,0')
+                        elif sys.platform == 'darwin':
+                            os.system('pmset sleepnow')
+                    elif behavior == 'shutdown':
+                        logging.info("[AscendaraDownloader] Shutting down computer as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('shutdown /s /t 60 /c "Ascendara download complete - shutting down in 60 seconds"')
+                        elif sys.platform == 'darwin':
+                            os.system('osascript -e "tell app \"System Events\" to shut down"')
+                    else:  # 'none' or any other value
+                        logging.info("[AscendaraDownloader] No post-download action required")
+        except Exception as e:
+            logging.error(f"[AscendaraDownloader] Error in post-download behavior handling: {e}")
+
     @staticmethod
     def detect_file_type(filepath):
         with open(filepath, 'rb') as f:
@@ -659,6 +704,10 @@ class SmartDLDownloader:
             if "downloadingData" in self.game_info:
                 del self.game_info["downloadingData"]
                 safe_write_json(self.game_info_path, self.game_info)
+                
+            # Check if there were no verification errors before proceeding with post-download behavior
+            if not verify_errors:
+                self._handle_post_download_behavior()
         except Exception as e:
             handleerror(self.game_info, self.game_info_path, e)
 

@@ -734,6 +734,7 @@ class SettingsManager {
       downloadDirectory: "",
       additionalDirectories: [],
       defaultOpenPage: "home",
+      behaviorAfterDownload: "none",
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
       earlyReleasePreview: false,
