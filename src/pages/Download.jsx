@@ -1072,10 +1072,10 @@ export default function DownloadPage() {
 
     setIsReporting(true);
     try {
-      const token = await window.electron.getAPIKey();
+      const AUTHORIZATION = await window.electron.getAPIKey();
       const response = await fetch("https://api.ascendara.app/auth/token", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: AUTHORIZATION,
         },
       });
 
@@ -1104,7 +1104,7 @@ export default function DownloadPage() {
         if (reportResponse.status === 401) {
           const newTokenResponse = await fetch("https://api.ascendara.app/auth/token", {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: AUTHORIZATION,
             },
           });
 
@@ -1328,6 +1328,7 @@ export default function DownloadPage() {
 
                         <AlertDialogFooter className="mt-4 gap-2">
                           <AlertDialogCancel
+                            className="text-primary"
                             onClick={() => {
                               setReportReason("");
                               setReportDetails("");
