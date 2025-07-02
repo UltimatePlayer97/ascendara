@@ -1,6 +1,8 @@
 /**
  * ImageCacheService - A simplified and robust image caching service
  */
+import gameService from "./gameService";
+
 class ImageCacheService {
   constructor() {
     // Core caching
@@ -353,6 +355,25 @@ class ImageCacheService {
       } catch (error) {
         console.error("[ImageCache] Error clearing cache:", error);
       }
+    }
+    try {
+      // Clear localStorage cache
+      localStorage.removeItem("ascendara_games_cache");
+      localStorage.removeItem("local_ascendara_games_timestamp");
+      localStorage.removeItem("local_ascendara_metadata_cache");
+
+      // Force a refresh of the game data by fetching from API
+      gameService
+        .fetchDataFromAPI()
+        .then(data => {
+          gameService.updateCache(data);
+          console.log("[ImageCache] Game service cache refreshed successfully");
+        })
+        .catch(error => {
+          console.error("[ImageCache] Error refreshing game service cache:", error);
+        });
+    } catch (error) {
+      console.error("[ImageCache] Error clearing game service cache:", error);
     }
   }
 }
