@@ -3834,9 +3834,59 @@ ipcMain.handle("update-game-cover", async (event, game, imgID, imageData) => {
       return false;
     }
 
-    // Overwrite the existing image file
-    const filePath = path.join(gamesDirectory, `${game}.ascendara${extension}`);
+    // Determine the correct game directory by checking games.json first
+    let gameDirectory;
+    let customGamePath = null;
+
+    // Check if games.json exists and read it to find custom game paths
+    if (fs.existsSync(gamesFilePath)) {
+      try {
+        const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+        console.log(`[update-game-cover] Games data loaded from ${gamesFilePath}`);
+
+        // Check if this game has a custom path in games.json
+        if (gamesData && gamesData[game] && gamesData[game].path) {
+          customGamePath = gamesData[game].path;
+          console.log(
+            `[update-game-cover] Found custom path for ${game}: ${customGamePath}`
+          );
+        }
+      } catch (jsonError) {
+        console.error(
+          `[update-game-cover] Error reading games.json: ${jsonError.message}`
+        );
+        // Continue with default path if there's an error reading the JSON
+      }
+    }
+
+    // Use the custom path if found, otherwise use default path
+    if (customGamePath) {
+      gameDirectory = customGamePath;
+    } else {
+      gameDirectory = path.join(downloadDirectory, game);
+    }
+
+    // The file should be named header.ascendara.jpg
+    const filePath = path.join(gameDirectory, `header.ascendara${extension}`);
+    console.log(`[update-game-cover] Game directory: ${gameDirectory}`);
     console.log(`[update-game-cover] Writing to file: ${filePath}`);
+
+    // Check if the game directory exists
+    const gameDirExists = fs.existsSync(gameDirectory);
+    console.log(`[update-game-cover] Game directory exists: ${gameDirExists}`);
+
+    // If game directory doesn't exist, try to create it
+    if (!gameDirExists) {
+      try {
+        fs.mkdirSync(gameDirectory, { recursive: true });
+        console.log(`[update-game-cover] Created game directory: ${gameDirectory}`);
+      } catch (mkdirError) {
+        console.error(
+          `[update-game-cover] Error creating game directory: ${mkdirError.message}`
+        );
+        return false;
+      }
+    }
 
     try {
       await fs.promises.writeFile(filePath, imageBuffer);
@@ -3845,6 +3895,16 @@ ipcMain.handle("update-game-cover", async (event, game, imgID, imageData) => {
       // Verify the file exists after writing
       const fileExists = fs.existsSync(filePath);
       console.log(`[update-game-cover] File exists after write: ${fileExists}`);
+
+      // Notify renderer process that the cover image has been updated
+      if (fileExists) {
+        // Send notification to all renderer processes
+        BrowserWindow.getAllWindows().forEach(win => {
+          if (!win.isDestroyed()) {
+            win.webContents.send("cover-image-updated", { game, success: true });
+          }
+        });
+      }
 
       return true;
     } catch (writeError) {

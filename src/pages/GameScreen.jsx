@@ -366,8 +366,26 @@ export default function GameScreen() {
       }
     };
 
+    // Handle cover image updates from the main process
+    const handleCoverImageUpdated = (_, data) => {
+      if (data && data.game === (game.game || game.name) && data.success) {
+        console.log(
+          `[GameScreen] Received cover-image-updated IPC event for ${data.game}`
+        );
+        // Reload the game image with cache busting
+        const gameId = game.game || game.name;
+        window.electron.getGameImage(gameId).then(imageBase64 => {
+          if (imageBase64) {
+            const timestamp = new Date().getTime();
+            setImageData(`data:image/jpeg;base64,${imageBase64}?t=${timestamp}`);
+          }
+        });
+      }
+    };
+
     window.electron.ipcRenderer.on("game-launch-error", handleGameLaunchError);
     window.electron.ipcRenderer.on("game-closed", handleGameClosed);
+    window.electron.ipcRenderer.on("cover-image-updated", handleCoverImageUpdated);
 
     return () => {
       window.electron.ipcRenderer.removeListener(
@@ -375,8 +393,12 @@ export default function GameScreen() {
         handleGameLaunchError
       );
       window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
+      window.electron.ipcRenderer.removeListener(
+        "cover-image-updated",
+        handleCoverImageUpdated
+      );
     };
-  }, [isInitialized, setShowRateDialog]); // Add required dependencies
+  }, [isInitialized, setShowRateDialog, game]); // Add required dependencies
 
   // Update favorite status when game or favorites change
   useEffect(() => {
@@ -411,36 +433,78 @@ export default function GameScreen() {
     }
   }, [game]);
 
-  // Load game image
+  // Load game image with localStorage cache (similar to Library.jsx)
   useEffect(() => {
     let isMounted = true;
     const gameId = game.game || game.name;
+    const localStorageKey = `game-cover-${gameId}`; // Use consistent key naming
 
     const loadGameImage = async () => {
-      try {
-        // First try to use IGDB cover if available
-        if (igdbData?.cover?.url) {
-          const coverUrl = igdbService.formatImageUrl(igdbData.cover.url, "cover_big");
-          if (coverUrl && isMounted) {
-            setImageData(coverUrl);
-            return;
-          }
-        }
+      // Try localStorage first
+      const cachedImage = localStorage.getItem(localStorageKey);
+      if (cachedImage) {
+        if (isMounted) setImageData(cachedImage);
+        return;
+      }
 
-        // Fall back to local game image if IGDB cover is not available
+      // If IGDB cover is available, use it
+      if (igdbData?.cover?.url) {
+        const coverUrl = igdbService.formatImageUrl(igdbData.cover.url, "cover_big");
+        if (coverUrl && isMounted) {
+          setImageData(coverUrl);
+          // Cache the IGDB cover URL
+          try {
+            localStorage.setItem(localStorageKey, coverUrl);
+          } catch (e) {
+            console.warn("Could not cache game image:", e);
+          }
+          return;
+        }
+      }
+
+      // Otherwise, fetch from Electron
+      try {
         const imageBase64 = await window.electron.getGameImage(gameId);
         if (imageBase64 && isMounted) {
-          setImageData(`data:image/jpeg;base64,${imageBase64}`);
+          const dataUrl = `data:image/jpeg;base64,${imageBase64}`;
+          setImageData(dataUrl);
+          try {
+            localStorage.setItem(localStorageKey, dataUrl);
+          } catch (e) {
+            // If storage quota exceeded, skip caching
+            console.warn("Could not cache game image:", e);
+          }
         }
       } catch (error) {
         console.error("Error loading game image:", error);
       }
     };
 
+    // Listen for game cover update events
+    const handleCoverUpdate = event => {
+      const { gameName, dataUrl } = event.detail;
+      if (gameName === gameId && dataUrl && isMounted) {
+        console.log(`[GameScreen] Received cover update for ${gameName}`);
+        setImageData(dataUrl);
+        // Update localStorage cache
+        try {
+          localStorage.setItem(localStorageKey, dataUrl);
+        } catch (e) {
+          console.warn("Could not cache updated game image:", e);
+        }
+      }
+    };
+
+    // Add event listener for cover updates
+    window.addEventListener("game-cover-updated", handleCoverUpdate);
+
+    // Initial load
     loadGameImage();
 
     return () => {
       isMounted = false;
+      // Clean up event listener
+      window.removeEventListener("game-cover-updated", handleCoverUpdate);
     };
   }, [game.game, game.name, igdbData?.cover?.url]); // Add igdbData.cover.url as dependency
 
