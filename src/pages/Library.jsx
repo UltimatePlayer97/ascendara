@@ -1231,7 +1231,7 @@ const InstalledGameCard = memo(
     useEffect(() => {
       let isMounted = true;
       const gameId = game.game || game.name;
-      const localStorageKey = `game-image-${gameId}`;
+      const localStorageKey = `game-cover-${gameId}`; // Use consistent key naming
 
       const loadGameImage = async () => {
         // Try localStorage first
@@ -1258,10 +1258,25 @@ const InstalledGameCard = memo(
         }
       };
 
+      // Listen for game cover update events
+      const handleCoverUpdate = event => {
+        const { gameName, dataUrl } = event.detail;
+        if (gameName === gameId && dataUrl && isMounted) {
+          console.log(`Received cover update for ${gameName}`);
+          setImageData(dataUrl);
+        }
+      };
+
+      // Add event listener for cover updates
+      window.addEventListener("game-cover-updated", handleCoverUpdate);
+
+      // Initial load
       loadGameImage();
 
       return () => {
         isMounted = false;
+        // Clean up event listener
+        window.removeEventListener("game-cover-updated", handleCoverUpdate);
       };
     }, [game.game, game.name]); // Only depend on game ID properties
 
@@ -1479,22 +1494,6 @@ const InstalledGameCard = memo(
                     )}
                   />
                 </Button>
-                {game.isCustom && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
-                    style={{ pointerEvents: "auto" }}
-                    title={t("library.editCoverImage")}
-                    tabIndex={0}
-                    onClick={e => {
-                      e.stopPropagation();
-                      setShowEditCoverDialog(true);
-                    }}
-                  >
-                    <ImageUp className="h-5 w-5 fill-none text-white" />
-                  </Button>
-                )}
               </div>
             </div>
           </CardContent>

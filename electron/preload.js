@@ -23,8 +23,6 @@ contextBridge.exposeInMainWorld("electron", {
     off: (channel, func) => ipcRenderer.off(channel, func),
     removeListener: (channel, func) => ipcRenderer.removeListener(channel, func),
     invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
-    saveGameImage: (gameName, imageBase64) =>
-      ipcRenderer.invoke("save-game-image", gameName, imageBase64),
     readFile: path => ipcRenderer.invoke("read-file", path),
     writeFile: (path, content) => ipcRenderer.invoke("write-file", path, content),
   },
@@ -55,6 +53,8 @@ contextBridge.exposeInMainWorld("electron", {
   // Game Management
   getGames: () => ipcRenderer.invoke("get-games"),
   getCustomGames: () => ipcRenderer.invoke("get-custom-games"),
+  updateGameCover: (gameName, imgID, imageData) =>
+    ipcRenderer.invoke("update-game-cover", gameName, imgID, imageData),
   gameRated: (game, isCustom) => ipcRenderer.invoke("game-rated", game, isCustom),
   enableGameAutoBackups: (game, isCustom) =>
     ipcRenderer.invoke("enable-game-auto-backups", game, isCustom),

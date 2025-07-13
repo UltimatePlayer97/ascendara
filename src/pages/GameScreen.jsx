@@ -34,6 +34,7 @@ import {
   LetterText,
   BookX,
   LockIcon,
+  ImageUp,
 } from "lucide-react";
 import gameUpdateService from "@/services/gameUpdateService";
 import { loadFolders, saveFolders } from "@/lib/folderManager";
@@ -65,6 +66,7 @@ import imageCacheService from "@/services/imageCacheService";
 import GameMetadata from "@/components/GameMetadata";
 import igdbService from "@/services/gameInfoService";
 import GameRate from "@/components/GameRate";
+import EditCoverDialog from "@/components/EditCoverDialog";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -245,6 +247,7 @@ export default function GameScreen() {
   const [igdbData, setIgdbData] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [showEditCoverDialog, setShowEditCoverDialog] = useState(false);
   const { setTrack, play } = useAudioPlayer();
 
   // Achievements state
@@ -813,6 +816,23 @@ export default function GameScreen() {
                     alt={game.game}
                     className="h-full w-full object-cover"
                   />
+                  {/* Edit cover button */}
+                  <div className="absolute left-2 top-2 z-10">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                      style={{ pointerEvents: "auto" }}
+                      title={t("library.editCoverImage")}
+                      tabIndex={0}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setShowEditCoverDialog(true);
+                      }}
+                    >
+                      <ImageUp className="h-5 w-5 fill-none text-white" />
+                    </Button>
+                  </div>
                   {isUninstalling && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                       <div className="w-full max-w-[200px] space-y-2 px-4">
@@ -1731,13 +1751,41 @@ export default function GameScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Error Dialog */}
+      <GamesBackupDialog
+        open={backupDialogOpen}
+        onOpenChange={setBackupDialogOpen}
+        game={game}
+      />
+
       <ErrorDialog
         open={showErrorDialog}
-        onClose={handleCloseErrorDialog}
+        onClose={() => setShowErrorDialog(false)}
         errorGame={errorGame}
         errorMessage={errorMessage}
         t={t}
+      />
+
+      {/* Edit Cover Dialog */}
+      <EditCoverDialog
+        open={showEditCoverDialog}
+        onOpenChange={setShowEditCoverDialog}
+        gameName={game?.game || game?.name}
+        onImageUpdate={(dataUrl, imgId) => {
+          setImageData(dataUrl);
+          // Update the game's imgID if needed
+          if (game) {
+            // Pass both imgId and dataUrl to the updateGameCover function
+            // The IPC handler will decide which one to use based on what's provided
+            window.electron
+              .updateGameCover(game.game || game.name, imgId, dataUrl)
+              .then(() => {
+                console.log("Game image updated successfully");
+              })
+              .catch(error => {
+                console.error("Failed to update game image:", error);
+              });
+          }
+        }}
       />
 
       {/* Uninstall Confirmation Dialog */}

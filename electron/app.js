@@ -3769,18 +3769,39 @@ ipcMain.handle("folder-exclusion", async (event, boolean) => {
 });
 
 // Update a custom game's cover image
-ipcMain.handle("update-game-cover", async (event, game, imgID) => {
+ipcMain.handle("update-game-cover", async (event, game, imgID, imageData) => {
   const settings = settingsManager.getSettings();
+  console.log(
+    "[update-game-cover] Called with:",
+    game,
+    imgID,
+    imageData ? "[image data present]" : "[no image data]"
+  );
   try {
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
       return false;
     }
     const downloadDirectory = settings.downloadDirectory;
+    console.log(`[update-game-cover] Download directory: ${downloadDirectory}`);
+
     const gamesFilePath = path.join(downloadDirectory, "games.json");
     const gamesDirectory = path.join(downloadDirectory, "games");
+    console.log(`[update-game-cover] Games directory: ${gamesDirectory}`);
 
-    // Download and save the new cover image
+    // Check if the games directory exists
+    const gamesDirExists = fs.existsSync(gamesDirectory);
+    console.log(`[update-game-cover] Games directory exists: ${gamesDirExists}`);
+
+    // Create games directory if it doesn't exist
+    if (!fs.existsSync(gamesDirectory)) {
+      await fs.promises.mkdir(gamesDirectory, { recursive: true });
+    }
+
+    let imageBuffer;
+    let extension = ".jpg"; // Default extension
+
+    // Case 1: Using imgID to fetch image from API
     if (imgID) {
       const imageLink =
         settings.gameSource === "fitgirl"
@@ -3793,18 +3814,43 @@ ipcMain.handle("update-game-cover", async (event, game, imgID) => {
         responseType: "arraybuffer",
       });
 
-      const imageBuffer = Buffer.from(response.data);
+      imageBuffer = Buffer.from(response.data);
       const mimeType = response.headers["content-type"];
-      const extension = getExtensionFromMimeType(mimeType);
+      extension = getExtensionFromMimeType(mimeType);
+    }
+    // Case 2: Using direct image data (custom upload)
+    else if (imageData) {
+      // Extract the base64 data from the data URL
+      const base64Data = imageData.split(",")[1];
+      imageBuffer = Buffer.from(base64Data, "base64");
 
-      // Overwrite the existing image file
-      await fs.promises.writeFile(
-        path.join(gamesDirectory, `${game}.ascendara${extension}`),
-        imageBuffer
-      );
+      // Try to determine the extension from the data URL
+      const mimeMatch = imageData.match(/^data:([\w\/+]+);base64,/);
+      if (mimeMatch && mimeMatch[1]) {
+        extension = getExtensionFromMimeType(mimeMatch[1]) || ".jpg";
+      }
+    } else {
+      console.error("No image data or imgID provided");
+      return false;
     }
 
-    return true;
+    // Overwrite the existing image file
+    const filePath = path.join(gamesDirectory, `${game}.ascendara${extension}`);
+    console.log(`[update-game-cover] Writing to file: ${filePath}`);
+
+    try {
+      await fs.promises.writeFile(filePath, imageBuffer);
+      console.log(`[update-game-cover] File written successfully: ${filePath}`);
+
+      // Verify the file exists after writing
+      const fileExists = fs.existsSync(filePath);
+      console.log(`[update-game-cover] File exists after write: ${fileExists}`);
+
+      return true;
+    } catch (writeError) {
+      console.error(`[update-game-cover] Error writing file: ${writeError.message}`);
+      throw writeError;
+    }
   } catch (error) {
     console.error("Error updating game cover:", error);
     return false;
