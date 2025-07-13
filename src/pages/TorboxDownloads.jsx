@@ -36,6 +36,7 @@ import {
   StopCircle,
   RefreshCw,
   Coffee,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +44,7 @@ import {
   getAllDownloads,
   controlWebDownload,
   getApiKey,
+  getDirectDownloadLink,
 } from "@/services/torboxService";
 
 // Utility function to manage stored game names
@@ -71,6 +73,33 @@ const TorboxDownloads = () => {
   const [userInfoError, setUserInfoError] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [confirmStop, setConfirmStop] = useState(null);
+  // State for redownload dialog
+  const [confirmRedownload, setConfirmRedownload] = useState(false);
+  const [redownloadTarget, setRedownloadTarget] = useState(null);
+
+  // Helper to trigger redownload dialog
+  const handleRedownloadConfirm = download => {
+    setRedownloadTarget(download);
+    setConfirmRedownload(true);
+  };
+  // Helper to actually redownload
+  const handleRedownload = () => {
+    setConfirmRedownload(false);
+    if (redownloadTarget) {
+      handleDownloadToPC(redownloadTarget);
+      setRedownloadTarget(null);
+    }
+  };
+
+  // State to track downloads that have been downloaded to PC
+  const [downloadedToPc, setDownloadedToPc] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("torboxDownloadedToPc") || "{}");
+    } catch (err) {
+      console.error("Error loading downloaded to PC state:", err);
+      return {};
+    }
+  });
 
   // Polling interval reference
   const pollingRef = useRef(null);
@@ -261,16 +290,46 @@ const TorboxDownloads = () => {
       }
 
       // Get a fresh direct download link
-      const result = await controlWebDownload(apiKey, {
-        webdl_id: download.id,
-        operation: "download",
-      });
+      const downloadUrlResponse = await getDirectDownloadLink(apiKey, download.id);
 
-      if (!result || !result.data || !result.data.url) {
+      // Check if we have a valid response
+      if (!downloadUrlResponse) {
         throw new Error("Failed to get direct download URL");
       }
 
-      const directUrl = result.data.url;
+      // Log the response structure to understand its format
+      console.log(
+        "Download URL response structure:",
+        JSON.stringify(downloadUrlResponse, null, 2)
+      );
+
+      // Extract the URL string from the response
+      // Based on the error message, we know the URL is in the data property
+      let directUrl = null;
+
+      // Simple extraction logic that checks common patterns
+      if (typeof downloadUrlResponse === "string") {
+        directUrl = downloadUrlResponse;
+      } else if (downloadUrlResponse && typeof downloadUrlResponse === "object") {
+        // Check the most likely places for the URL based on the API response
+        directUrl =
+          downloadUrlResponse.data ||
+          downloadUrlResponse.download_url ||
+          downloadUrlResponse.url ||
+          (downloadUrlResponse.data && downloadUrlResponse.data.url);
+      }
+
+      if (!directUrl || typeof directUrl !== "string") {
+        console.error("Invalid download URL format:", downloadUrlResponse);
+        throw new Error("Failed to extract download URL from response");
+      }
+
+      // Ensure the URL is properly formatted
+      if (!directUrl.startsWith("http")) {
+        directUrl = `https://${directUrl.replace(/^(?:https?:\/\/)?/, "")}`;
+      }
+
+      console.log("Extracted direct URL:", directUrl);
 
       // Sanitize game name
       const sanitizedGameName = gameData.game.replace(/[<>:"/\\|?*]/g, "");
@@ -283,7 +342,8 @@ const TorboxDownloads = () => {
         sanitizedGameName,
         gameData.online || false,
         gameData.dlc || false,
-        false, // update
+        gameData.vr || false, // isVr
+        false, // updateFlow - explicitly set to false
         gameData.version || "",
         gameData.imgID || null,
         gameData.size || "",
@@ -291,6 +351,19 @@ const TorboxDownloads = () => {
       );
 
       toast.success(t("torbox.download_started", { name: gameData.game }));
+
+      // Mark this download as downloaded to PC
+      const updatedDownloadedToPc = {
+        ...downloadedToPc,
+        [download.id]: {
+          timestamp: Date.now(),
+          name: gameData.game,
+        },
+      };
+
+      // Update state and save to localStorage
+      setDownloadedToPc(updatedDownloadedToPc);
+      localStorage.setItem("torboxDownloadedToPc", JSON.stringify(updatedDownloadedToPc));
     } catch (error) {
       console.error("[TorboxDownloads] Error downloading to PC:", error);
       toast.error(t("torbox.error_downloading_to_pc"));
@@ -430,10 +503,10 @@ const TorboxDownloads = () => {
       </Card>
 
       {/* Tabs for download categories */}
-      <Tabs defaultValue="all" className="w-full">
+      <Tabs defaultValue="ready" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="all">{t("torbox.all_downloads")}</TabsTrigger>
-          <TabsTrigger value="active">{t("torbox.active")}</TabsTrigger>
+          <TabsTrigger value="ready">{t("torbox.ready")}</TabsTrigger>
+          <TabsTrigger value="downloading">{t("torbox.downloading")}</TabsTrigger>
           <TabsTrigger value="completed">{t("torbox.completed")}</TabsTrigger>
         </TabsList>
 
@@ -454,105 +527,144 @@ const TorboxDownloads = () => {
           </div>
         ) : (
           <>
-            <TabsContent value="all">
-              {torboxDownloads.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
-                    <Coffee className="h-12 w-12 text-primary" />
+            <TabsContent value="ready">
+              {/* ab shows downloads that are completed or cached on server but not yet downloaded to PC */}
+              {(() => {
+                const readyDownloads = torboxDownloads.filter(
+                  d =>
+                    (d.download_state?.toLowerCase() === "completed" ||
+                      d.download_state?.toLowerCase() === "cached") &&
+                    !downloadedToPc[d.id]
+                );
+
+                return readyDownloads.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
+                      <Coffee className="h-12 w-12 text-primary" />
+                    </div>
+                    <h3 className="mb-1 mt-2 text-xl font-semibold">
+                      {t("torbox.no_ready_downloads")}
+                    </h3>
+                    <p className="mt-2 text-muted-foreground">
+                      {t("torbox.no_ready_downloads_desc")}
+                    </p>
                   </div>
-                  <h3 className="mb-1 mt-2 text-xl font-semibold">
-                    {t("torbox.no_downloads")}
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
-                    {t("torbox.no_downloads_desc")}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {torboxDownloads.map((download, idx) => (
-                    <TorboxDownloadCard
-                      key={download.id || `torbox-${idx}`}
-                      download={download}
-                      onStop={() => handleStopDownload(download)}
-                      onDelete={() => handleDeleteDownload(download)}
-                      onDownloadToPC={() => handleDownloadToPC(download)}
-                    />
-                  ))}
-                </div>
-              )}
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {readyDownloads.map((download, idx) => (
+                      <TorboxDownloadCard
+                        key={download.id || `torbox-ready-${idx}`}
+                        download={download}
+                        onDelete={() => handleDeleteDownload(download)}
+                        onDownloadToPC={() => handleDownloadToPC(download)}
+                      />
+                    ))}
+                  </div>
+                );
+              })()}
             </TabsContent>
 
-            <TabsContent value="active">
-              {torboxDownloads.filter(
-                d =>
-                  d.download_state?.toLowerCase() !== "completed" &&
-                  d.download_state?.toLowerCase() !== "error"
-              ).length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
-                    <Coffee className="h-12 w-12 text-primary" />
+            <TabsContent value="downloading">
+              {/* Downloading tab shows downloads that are in progress on the server */}
+              {(() => {
+                const downloadingDownloads = torboxDownloads.filter(
+                  d =>
+                    d.download_state?.toLowerCase() !== "completed" &&
+                    d.download_state?.toLowerCase() !== "cached" &&
+                    d.download_state?.toLowerCase() !== "error"
+                );
+
+                return downloadingDownloads.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
+                      <Coffee className="h-12 w-12 text-primary" />
+                    </div>
+                    <h3 className="mb-1 mt-2 text-xl font-semibold">
+                      {t("torbox.no_downloading")}
+                    </h3>
+                    <p className="mt-2 text-muted-foreground">
+                      {t("torbox.no_downloading_desc")}
+                    </p>
                   </div>
-                  <h3 className="mb-1 mt-2 text-xl font-semibold">
-                    {t("torbox.no_active_downloads")}
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
-                    {t("torbox.no_active_downloads_desc")}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {torboxDownloads
-                    .filter(
-                      d =>
-                        d.download_state?.toLowerCase() !== "completed" &&
-                        d.download_state?.toLowerCase() !== "error"
-                    )
-                    .map((download, idx) => (
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {downloadingDownloads.map((download, idx) => (
                       <TorboxDownloadCard
-                        key={download.id || `torbox-active-${idx}`}
+                        key={download.id || `torbox-downloading-${idx}`}
                         download={download}
                         onStop={() => handleStopDownload(download)}
                         onDelete={() => handleDeleteDownload(download)}
                         onDownloadToPC={() => handleDownloadToPC(download)}
                       />
                     ))}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
             </TabsContent>
 
             <TabsContent value="completed">
-              {torboxDownloads.filter(
-                d => d.download_state?.toLowerCase() === "completed"
-              ).length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
-                    <Coffee className="h-12 w-12 text-primary" />
+              {/* Completed tab shows downloads that have been downloaded to PC */}
+              {(() => {
+                const completedDownloads = torboxDownloads.filter(
+                  d => downloadedToPc[d.id]
+                );
+
+                return completedDownloads.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="mx-auto w-fit rounded-full bg-primary/5 p-6">
+                      <Coffee className="h-12 w-12 text-primary" />
+                    </div>
+                    <h3 className="mb-1 mt-2 text-xl font-semibold">
+                      {t("torbox.no_completed_downloads")}
+                    </h3>
+                    <p className="mt-2 text-muted-foreground">
+                      {t("torbox.no_completed_downloads_desc")}
+                    </p>
                   </div>
-                  <h3 className="mb-1 mt-2 text-xl font-semibold">
-                    {t("torbox.no_completed_downloads")}
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
-                    {t("torbox.no_completed_downloads_desc")}
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {torboxDownloads
-                    .filter(d => d.download_state?.toLowerCase() === "completed")
-                    .map((download, idx) => (
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {completedDownloads.map((download, idx) => (
                       <TorboxDownloadCard
                         key={download.id || `torbox-completed-${idx}`}
                         download={download}
                         onDelete={() => handleDeleteDownload(download)}
-                        onDownloadToPC={() => handleDownloadToPC(download)}
+                        isCompletedTab={true}
+                        onRedownloadConfirm={handleRedownloadConfirm}
                       />
                     ))}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
             </TabsContent>
           </>
         )}
       </Tabs>
+
+      {/* Redownload Confirmation Dialog */}
+      <AlertDialog open={!!confirmRedownload} onOpenChange={setConfirmRedownload}>
+        <AlertDialogContent className="border-border">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-4">
+              <AlertDialogTitle className="text-2xl font-bold text-foreground">
+                {t("torbox.redownload_same_file")}
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="space-y-4">
+              <p className="text-foreground">
+                {t("torbox.redownload_same_file_confirm")}
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-3 sm:justify-end">
+            <AlertDialogCancel className="text-foreground">
+              {t("common.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleRedownload}>
+              {t("common.redownload")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Confirmation Dialogs */}
       <AlertDialog open={!!confirmStop} onOpenChange={() => setConfirmStop(null)}>
@@ -580,7 +692,7 @@ const TorboxDownloads = () => {
                 setConfirmStop(null);
               }}
             >
-              Stop Download
+              {t("common.stop")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -617,7 +729,14 @@ const TorboxDownloads = () => {
 };
 
 // TorBox Download Card Component
-const TorboxDownloadCard = ({ download, onStop, onDelete, onDownloadToPC }) => {
+const TorboxDownloadCard = ({
+  download,
+  onStop,
+  onDelete,
+  onDownloadToPC,
+  isCompletedTab,
+  onRedownloadConfirm,
+}) => {
   const { t } = useLanguage();
   const [storedName, setStoredName] = useState(null);
 
@@ -710,6 +829,24 @@ const TorboxDownloadCard = ({ download, onStop, onDelete, onDownloadToPC }) => {
     }
   };
 
+  // State for confirmation dialog when re-downloading
+  const [confirmRedownload, setConfirmRedownload] = useState(false);
+
+  // Check if this download has been downloaded to PC
+  const isDownloadedToPc =
+    download?.id &&
+    window.localStorage.getItem("torboxDownloadedToPc") &&
+    JSON.parse(window.localStorage.getItem("torboxDownloadedToPc"))[download.id];
+
+  // Handle download to PC with confirmation for re-downloading
+  const handleDownloadClick = () => {
+    if (isDownloadedToPc) {
+      setConfirmRedownload(true);
+    } else if (onDownloadToPC) {
+      onDownloadToPC();
+    }
+  };
+
   return (
     <Card className="overflow-hidden border border-border/30 bg-background/50">
       <CardContent className="p-4">
@@ -718,9 +855,14 @@ const TorboxDownloadCard = ({ download, onStop, onDelete, onDownloadToPC }) => {
             <Badge className={cn("capitalize", getStatusColor(status))}>
               {status || t("common.unknown")}
             </Badge>
-            {isCompleted && (
+            {isCompleted && !isDownloadedToPc && (
               <Badge variant="outline" className="border-primary text-primary">
                 {t("torbox.ready_to_download")}
+              </Badge>
+            )}
+            {isDownloadedToPc && (
+              <Badge variant="outline" className="border-success text-success">
+                {t("torbox.downloaded")}
               </Badge>
             )}
           </div>
@@ -737,12 +879,20 @@ const TorboxDownloadCard = ({ download, onStop, onDelete, onDownloadToPC }) => {
                   {t("torbox.stop_download")}
                 </DropdownMenuItem>
               )}
-              {isCompleted && onDownloadToPC && (
-                <DropdownMenuItem onClick={onDownloadToPC}>
-                  <Download className="mr-2 h-4 w-4" />
-                  {t("torbox.download_to_pc")}
-                </DropdownMenuItem>
-              )}
+              {isCompleted &&
+                (isCompletedTab && onRedownloadConfirm ? (
+                  <DropdownMenuItem onClick={() => onRedownloadConfirm(download)}>
+                    <Download className="mr-2 h-4 w-4" />
+                    {t("torbox.redownload")}
+                  </DropdownMenuItem>
+                ) : (
+                  onDownloadToPC && (
+                    <DropdownMenuItem onClick={onDownloadToPC}>
+                      <Download className="mr-2 h-4 w-4" />
+                      {t("torbox.download_to_pc")}
+                    </DropdownMenuItem>
+                  )
+                ))}
               {onDelete && (
                 <DropdownMenuItem
                   onClick={onDelete}
