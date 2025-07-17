@@ -20,9 +20,10 @@ import sys
 import time
 import json
 import logging
-import atexit
-import subprocess
 import platform
+import subprocess
+from datetime import datetime
+import ctypes
 from pypresence import Presence
 import argparse
 import psutil
@@ -255,8 +256,8 @@ def run_ludusavi_backup(game_name):
         logging.info("[EXIT] run_ludusavi_backup() - Exception")
         return False
 
-def execute(game_path, is_custom_game, is_shortcut=False, use_ludusavi=False):
-    logging.info(f"[ENTRY] execute(game_path={game_path}, is_custom_game={is_custom_game}, is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi})")
+def execute(game_path, is_custom_game, admin, is_shortcut=False, use_ludusavi=False):
+    logging.info(f"[ENTRY] execute(game_path={game_path}, is_custom_game={is_custom_game}, admin={admin}, is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi})")
     rpc = None  # Discord RPC client
     logging.debug("Initialized rpc=None for Discord Rich Presence")
     if is_shortcut:
@@ -433,7 +434,41 @@ def execute(game_path, is_custom_game, is_shortcut=False, use_ludusavi=False):
         else:
             # Regular game execution (no wrapping)
             logging.info(f"Launching executable directly: {exe_path}")
-            process = subprocess.Popen(exe_path)
+            
+            # Check if admin launch is requested and we're on Windows
+            if admin and platform.system().lower() == 'windows':
+                logging.info(f"Launching with admin privileges: {exe_path}")
+                try:
+                    # Use ShellExecute with 'runas' verb to prompt for admin
+                    exe_dir = os.path.dirname(exe_path)
+                    exe_file = os.path.basename(exe_path)
+                    ctypes.windll.shell32.ShellExecuteW(
+                        None,  # hwnd
+                        "runas",  # operation (runas = run as administrator)
+                        exe_path,  # file
+                        None,  # parameters
+                        exe_dir,  # directory
+                        1  # show command (1 = normal window)
+                    )
+                    # Create a dummy process that we can monitor
+                    # This is needed because ShellExecute doesn't return a process handle
+                    process = subprocess.Popen(["cmd", "/c", "echo Admin launch initiated"], 
+                                            stdout=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE)
+                    # Wait a moment for the admin process to start
+                    time.sleep(1)
+                    # Return early since we can't monitor the admin process
+                    logging.info("Admin process launched, handler will exit after brief delay")
+                    # Allow a short time for the game to start before exiting
+                    time.sleep(3)
+                    return
+                except Exception as e:
+                    logging.error(f"Failed to launch with admin privileges: {e}", exc_info=True)
+                    # Fall back to regular launch
+                    logging.info("Falling back to regular launch")
+                    process = subprocess.Popen(exe_path)
+            else:
+                process = subprocess.Popen(exe_path)
 
         start_time = time.time()
         last_update = start_time
@@ -556,21 +591,22 @@ if __name__ == "__main__":
         logging.info(f"Arguments received: {args}")
         
         if len(args) < 2:
-            error_msg = "Error: Not enough arguments\nUsage: AscendaraGameHandler.exe [game_path] [is_custom_game] [--shortcut] [--ludusavi]"
+            error_msg = "Error: Not enough arguments\nUsage: AscendaraGameHandler.exe [game_path] [is_custom_game] [admin] [--shortcut] [--ludusavi]"
             logging.error(error_msg)
             print(error_msg)
             sys.exit(1)
             
         game_path = args[0]
         is_custom_game = args[1] == '1' or args[1].lower() == 'true'
+        admin = args[2] == '1' or args[2].lower() == 'true'
         is_shortcut = "--shortcut" in args
         use_ludusavi = "--ludusavi" in args
         
         logging.info(f"Initializing with: game_path={game_path}, is_custom_game={is_custom_game}, "  
-                     f"is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi}")
-        print(f"[DEBUG] Initializing with: game_path={game_path}, is_custom_game={is_custom_game}, is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi}")
+                     f"is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi}, admin={admin}")
+        print(f"[DEBUG] Initializing with: game_path={game_path}, is_custom_game={is_custom_game}, is_shortcut={is_shortcut}, use_ludusavi={use_ludusavi}, admin={admin}")
 
-        execute(game_path, is_custom_game, is_shortcut, use_ludusavi)
+        execute(game_path, is_custom_game, admin, is_shortcut, use_ludusavi)
         print("[DEBUG] execute() finished.")
     except Exception as e:
         logging.error(f"Failed to execute game: {e}")

@@ -4239,7 +4239,13 @@ ipcMain.handle("is-steam-running", () => {
 
 ipcMain.handle(
   "play-game",
-  async (event, game, isCustom = false, backupOnClose = false) => {
+  async (
+    event,
+    game,
+    isCustom = false,
+    backupOnClose = false,
+    launchWithAdmin = false
+  ) => {
     try {
       const settings = settingsManager.getSettings();
       if (!settings.downloadDirectory || !settings.additionalDirectories) {
@@ -4343,11 +4349,17 @@ ipcMain.handle(
       });
 
       const spawnArgs = isWindows
-        ? [executable, isCustom.toString(), ...(backupOnClose ? ["--ludusavi"] : [])]
+        ? [
+            executable,
+            isCustom.toString(),
+            launchWithAdmin.toString(),
+            ...(backupOnClose ? ["--ludusavi"] : []),
+          ]
         : [
             handlerScript,
             executable,
             isCustom.toString(),
+            launchWithAdmin.toString(),
             ...(backupOnClose ? ["--ludusavi"] : []),
           ];
 

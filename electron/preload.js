@@ -92,8 +92,8 @@ contextBridge.exposeInMainWorld("electron", {
   },
 
   // Game Execution
-  playGame: (game, isCustom, backupOnClose) =>
-    ipcRenderer.invoke("play-game", game, isCustom, backupOnClose),
+  playGame: (game, isCustom, backupOnClose, launchWithAdmin) =>
+    ipcRenderer.invoke("play-game", game, isCustom, backupOnClose, launchWithAdmin),
   isGameRunning: game => ipcRenderer.invoke("is-game-running", game),
   startSteam: () => ipcRenderer.invoke("start-steam"),
 

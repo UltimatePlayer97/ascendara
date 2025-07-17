@@ -227,6 +227,7 @@ export default function GameScreen() {
   });
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
@@ -271,6 +272,29 @@ export default function GameScreen() {
   useEffect(() => {
     setAchievementsPage(0);
   }, [achievements]);
+
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.key === "Shift") {
+        setIsShiftKeyPressed(true);
+      }
+    };
+
+    const handleKeyUp = e => {
+      if (e.key === "Shift") {
+        setIsShiftKeyPressed(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -599,7 +623,16 @@ export default function GameScreen() {
       console.log("Launching game: ", gameName);
       // Launch the game
       killAudioAndMiniplayer();
-      await window.electron.playGame(gameName, game.isCustom, game.backups ?? false);
+      // Use the tracked shift key state for admin privileges
+      if (isShiftKeyPressed) {
+        console.log("Launching game with admin privileges");
+      }
+      await window.electron.playGame(
+        gameName,
+        game.isCustom,
+        game.backups ?? false,
+        isShiftKeyPressed
+      );
 
       // Get and cache the game image before saving to recently played
       const imageBase64 = await window.electron.getGameImage(gameName);
