@@ -16,6 +16,7 @@ export function SettingsProvider({ children }) {
     showOldDownloadLinks: false,
     defaultOpenPage: "home",
     behaviorAfterDownload: "none",
+    rpcEnabled: true,
     seeInappropriateContent: false,
     earlyReleasePreview: false,
     viewWorkshopPage: false,
@@ -72,6 +73,22 @@ export function SettingsProvider({ children }) {
     },
     [settings]
   );
+
+  // Effect to toggle Discord RPC when rpcEnabled setting changes
+  useEffect(() => {
+    const toggleDiscordRPC = async () => {
+      try {
+        await window.electron.toggleDiscordRPC(settings.rpcEnabled);
+      } catch (error) {
+        console.error("Error toggling Discord RPC:", error);
+      }
+    };
+
+    // Only run after initial settings load (when downloadDirectory exists)
+    if (settings.downloadDirectory) {
+      toggleDiscordRPC();
+    }
+  }, [settings.rpcEnabled]);
 
   useEffect(() => {
     // Load settings on mount

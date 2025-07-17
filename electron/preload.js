@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld("electron", {
   saveSettings: (options, directory) =>
     ipcRenderer.invoke("save-settings", options, directory),
   updateSetting: (key, value) => ipcRenderer.invoke("update-setting", key, value),
+  toggleDiscordRPC: enabled => ipcRenderer.invoke("toggle-discord-rpc", enabled),
 
   // Language Management
   downloadLanguage: langCode => ipcRenderer.invoke("download-language", langCode),

@@ -155,6 +155,12 @@ function initializeDiscordRPC() {
     return;
   }
 
+  const settings = settingsManager.getSettings();
+  if (settings.rpcEnabled === false) {
+    console.log("Discord RPC is disabled in settings");
+    return;
+  }
+
   // Ensure any existing client is cleaned up
   destroyDiscordRPC();
 
@@ -742,6 +748,7 @@ class SettingsManager {
       notifications: true,
       downloadHandler: false,
       torrentEnabled: false,
+      rpcEnabled: true,
       gameSource: "steamrip",
       autoCreateShortcuts: true,
       smoothTransitions: true,
@@ -1133,6 +1140,26 @@ ipcMain.handle("ludusavi", async (event, action, game, backupName) => {
     }
   } catch (error) {
     console.error("Error executing ludusavi command:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle Discord RPC state changes when rpcEnabled setting changes
+ipcMain.handle("toggle-discord-rpc", async (event, enabled) => {
+  try {
+    console.log(`Discord RPC ${enabled ? "enabling" : "disabling"}...`);
+
+    if (enabled) {
+      // Initialize Discord RPC
+      initializeDiscordRPC();
+      return { success: true, message: "Discord RPC enabled" };
+    } else {
+      // Destroy Discord RPC
+      destroyDiscordRPC();
+      return { success: true, message: "Discord RPC disabled" };
+    }
+  } catch (error) {
+    console.error("Error toggling Discord RPC:", error);
     return { success: false, error: error.message };
   }
 });

@@ -787,6 +787,21 @@ function Settings() {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
+                      <Label>{t("settings.discordRPC")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.discordRPCDescription")}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.rpcEnabled}
+                      onCheckedChange={() =>
+                        handleSettingChange("rpcEnabled", !settings.rpcEnabled)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
                       <Label>{t("settings.notifications")}</Label>
                       <p className="text-sm text-muted-foreground">
                         {t("settings.notificationsDescription")}
