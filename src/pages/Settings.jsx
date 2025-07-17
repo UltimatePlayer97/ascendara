@@ -950,7 +950,7 @@ function Settings() {
                     <a
                       onClick={() =>
                         window.electron.openURL(
-                          "https://ascendara.app/docs/features/debriding-links"
+                          "https://ascendara.app/docs/features/torbox-integration"
                         )
                       }
                       className="cursor inline-flex cursor-pointer items-center text-primary hover:underline"
