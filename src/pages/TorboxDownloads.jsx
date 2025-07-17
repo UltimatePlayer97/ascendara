@@ -185,12 +185,72 @@ const TorboxDownloads = () => {
 
   // Handle stop download
   const handleStopDownload = download => {
-    setConfirmStop(download);
+    // Try to get the stored name from localStorage before setting confirmStop
+    try {
+      const torboxNames = manageStoredGameNames();
+      let storedName = null;
+
+      // Check for stored name using the same logic as in TorboxDownloadCard
+      if (download.id && torboxNames[download.id]) {
+        storedName = torboxNames[download.id].name;
+      } else if (download.url && torboxNames[download.url]) {
+        storedName = torboxNames[download.url].name;
+      } else if (download.files && Array.isArray(download.files)) {
+        for (const file of download.files) {
+          if (file.url && torboxNames[file.url]) {
+            storedName = torboxNames[file.url].name;
+            break;
+          }
+        }
+      } else if (download.original_url && torboxNames[download.original_url]) {
+        storedName = torboxNames[download.original_url].name;
+      }
+
+      // Add the stored name to the download object if found
+      if (storedName) {
+        setConfirmStop({ ...download, displayName: storedName });
+      } else {
+        setConfirmStop(download);
+      }
+    } catch (err) {
+      console.error("Error retrieving stored game name for stop dialog:", err);
+      setConfirmStop(download);
+    }
   };
 
   // Handle delete download
   const handleDeleteDownload = download => {
-    setConfirmDelete(download);
+    // Try to get the stored name from localStorage before setting confirmDelete
+    try {
+      const torboxNames = manageStoredGameNames();
+      let storedName = null;
+
+      // Check for stored name using the same logic as in TorboxDownloadCard
+      if (download.id && torboxNames[download.id]) {
+        storedName = torboxNames[download.id].name;
+      } else if (download.url && torboxNames[download.url]) {
+        storedName = torboxNames[download.url].name;
+      } else if (download.files && Array.isArray(download.files)) {
+        for (const file of download.files) {
+          if (file.url && torboxNames[file.url]) {
+            storedName = torboxNames[file.url].name;
+            break;
+          }
+        }
+      } else if (download.original_url && torboxNames[download.original_url]) {
+        storedName = torboxNames[download.original_url].name;
+      }
+
+      // Add the stored name to the download object if found
+      if (storedName) {
+        setConfirmDelete({ ...download, displayName: storedName });
+      } else {
+        setConfirmDelete(download);
+      }
+    } catch (err) {
+      console.error("Error retrieving stored game name for delete dialog:", err);
+      setConfirmDelete(download);
+    }
   };
 
   const deleteDownload = async download => {
@@ -212,14 +272,13 @@ const TorboxDownloads = () => {
       });
 
       // Update the downloads list after successful deletion
-      fetchDownloads();
+      fetchTorboxDownloads();
 
-      toast({
-        title: t("torbox.download_deleted"),
-        description: t("torbox.download_deleted_desc", {
+      toast.success(
+        t("torbox.download_deleted_desc", {
           name: download?.name || download?.files?.[0]?.short_name || t("common.file"),
-        }),
-      });
+        })
+      );
     } catch (error) {
       console.error("[TorboxDownloads] Error deleting download:", error);
       toast.error(t("torbox.error_deleting_download"));
@@ -673,20 +732,28 @@ const TorboxDownloads = () => {
             <AlertDialogTitle>{t("torbox.stop_download")}</AlertDialogTitle>
             <AlertDialogDescription>
               {t("torbox.stop_download_confirm", {
-                name: confirmStop?.name || confirmStop?.filename || t("torbox.this_file"),
+                name:
+                  confirmStop?.displayName ||
+                  confirmStop?.name ||
+                  confirmStop?.files?.[0]?.short_name ||
+                  t("torbox.this_file"),
               })}
               {t("common.action_cannot_be_undone")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 // In a real implementation, this would call an API to stop the download
                 toast({
                   title: t("torbox.download_stopped"),
                   description: t("torbox.download_stopped_desc", {
-                    name: confirmStop?.name || confirmStop?.filename || t("common.file"),
+                    name:
+                      confirmStop?.displayName ||
+                      confirmStop?.name ||
+                      confirmStop?.files?.[0]?.short_name ||
+                      t("common.file"),
                   }),
                 });
                 setConfirmStop(null);
@@ -705,21 +772,23 @@ const TorboxDownloads = () => {
             <AlertDialogDescription>
               {t("torbox.delete_download_confirm", {
                 name:
-                  confirmDelete?.name || confirmDelete?.filename || t("torbox.this_file"),
+                  confirmDelete?.displayName ||
+                  confirmDelete?.name ||
+                  confirmDelete?.files?.[0]?.short_name ||
+                  t("torbox.this_file"),
               })}
               {t("common.action_cannot_be_undone")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90"
               onClick={() => {
                 deleteDownload(confirmDelete);
                 setConfirmDelete(null);
               }}
             >
-              Delete
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
