@@ -745,17 +745,15 @@ const TorboxDownloads = () => {
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                // In a real implementation, this would call an API to stop the download
-                toast({
-                  title: t("torbox.download_stopped"),
-                  description: t("torbox.download_stopped_desc", {
+                toast.success(
+                  t("torbox.download_stopped_desc", {
                     name:
                       confirmStop?.displayName ||
                       confirmStop?.name ||
                       confirmStop?.files?.[0]?.short_name ||
                       t("common.file"),
-                  }),
-                });
+                  })
+                );
                 setConfirmStop(null);
               }}
             >

@@ -1,4 +1,104 @@
 import React, { useState, useEffect } from "react";
+
+// Background Speed Animation Component
+const BackgroundSpeedAnimation = () => {
+  const containerStyle = {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    overflow: "hidden",
+    pointerEvents: "none",
+    zIndex: "0",
+  };
+
+  const speedLinesStyle = {
+    position: "relative",
+    width: "100px",
+    height: "30px",
+  };
+
+  const baseSpeedLineStyle = {
+    position: "absolute",
+    height: "2px",
+    background:
+      "linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.4) 50%, transparent 100%)",
+    borderRadius: "1px",
+    animation: "speedTrail 1.2s ease-in-out infinite",
+  };
+
+  const speedLineStyles = [
+    {
+      ...baseSpeedLineStyle,
+      top: "6px",
+      width: "35px",
+      left: "10px",
+      animationDelay: "0s",
+    },
+    {
+      ...baseSpeedLineStyle,
+      top: "10px",
+      width: "28px",
+      left: "15px",
+      animationDelay: "0.15s",
+    },
+    {
+      ...baseSpeedLineStyle,
+      top: "14px",
+      width: "40px",
+      left: "8px",
+      animationDelay: "0.3s",
+    },
+    {
+      ...baseSpeedLineStyle,
+      top: "18px",
+      width: "25px",
+      left: "18px",
+      animationDelay: "0.45s",
+    },
+    {
+      ...baseSpeedLineStyle,
+      top: "22px",
+      width: "32px",
+      left: "12px",
+      animationDelay: "0.6s",
+    },
+  ];
+
+  return (
+    <>
+      <style>{`
+        @keyframes speedTrail {
+          0% {
+            transform: translateX(-150%);
+            opacity: 0;
+          }
+          25% {
+            opacity: 0.6;
+          }
+          75% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateX(200%);
+            opacity: 0;
+          }
+        }
+      `}</style>
+      <div style={containerStyle}>
+        <div style={speedLinesStyle}>
+          {speedLineStyles.map((style, index) => (
+            <div key={index} style={style}></div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -47,6 +147,28 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSettings } from "@/context/SettingsContext";
 import * as torboxService from "../services/torboxService";
+
+// Helper function to check if download speed is above 50 MB/s
+const isHighSpeed = speedString => {
+  if (!speedString) return false;
+
+  // Extract the numeric value and unit from the speed string
+  const match = speedString.match(/(\d+(?:\.\d+)?)\s*(MB|KB|GB)\/s/);
+  if (!match) return false;
+
+  const value = parseFloat(match[1]);
+  const unit = match[2];
+
+  // Convert to MB/s for comparison
+  let speedInMB = value;
+  if (unit === "KB") {
+    speedInMB = value / 1024;
+  } else if (unit === "GB") {
+    speedInMB = value * 1024;
+  }
+
+  return speedInMB >= 50;
+};
 
 const Downloads = () => {
   useEffect(() => {
@@ -896,9 +1018,12 @@ const DownloadCard = ({ game, onStop, onRetry, onOpenFolder, isStopping, onDelet
                   </div>
                 </div>
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <div className="flex items-center space-x-2 rounded-md bg-muted/40 px-3 py-1">
-                    <Download className="h-4 w-4" />
-                    <span className="font-medium">
+                  <div className="relative flex items-center space-x-2 rounded-md bg-muted/40 px-3 py-1">
+                    {isHighSpeed(downloadingData.progressDownloadSpeeds) && (
+                      <BackgroundSpeedAnimation />
+                    )}
+                    <Download className="relative z-10 h-4 w-4" />
+                    <span className="relative z-10 font-medium">
                       {downloadingData.progressDownloadSpeeds}
                       {settings.downloadLimit > 0 &&
                         ` (${t("downloads.limitedTo")} ${settings.downloadLimit >= 1024 ? `${Math.round(settings.downloadLimit / 1024)} MB` : `${settings.downloadLimit} KB`}/s)`}
