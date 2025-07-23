@@ -17,10 +17,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TorboxIcon from "./TorboxIcon";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSettings } from "@/context/SettingsContext";
+import torboxService from "@/services/torboxService";
 import { sanitizeText, formatLatestUpdate } from "@/lib/utils";
 import { useImageLoader } from "@/hooks/useImageLoader";
 import { analytics } from "@/services/analyticsService";
@@ -149,6 +152,8 @@ const GameCard = memo(function GameCard({ game, compact }) {
       </div>
     );
   }
+
+  const { settings } = useSettings();
 
   return (
     <Card
@@ -292,34 +297,96 @@ const GameCard = memo(function GameCard({ game, compact }) {
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4">
-        <Button
-          variant="secondary"
-          size="sm"
-          className="w-full bg-accent font-medium text-accent-foreground hover:bg-accent/90"
-          onClick={handleDownload}
-          disabled={isLoading}
-        >
-          {isLoading
-            ? t("gameCard.loading")
+        {(() => {
+          // Determine button state and provider
+          const buttonState = isLoading
+            ? "loading"
             : needsUpdate
-              ? t("gameCard.update")
+              ? "update"
               : isInstalled
-                ? t("gameCard.installed")
-                : t("gameCard.download")}
-          {isLoading ? (
-            <Loader className="ml-2 h-4 w-4 animate-spin" />
-          ) : isInstalled ? (
-            needsUpdate ? (
-              <ArrowUpFromLine className="ml-2 h-4 w-4 stroke-[3]" />
-            ) : (
-              <Gamepad2 className="ml-2 h-3 w-3" />
-            )
-          ) : Object.keys(game.download_links || {}).includes("gofile") ? (
-            <Zap fill="currentColor" className="ml-2 h-3 w-3" />
-          ) : (
-            <ArrowDown className="ml-2 h-3.5 w-3.5 stroke-[4]" />
-          )}
-        </Button>
+                ? "installed"
+                : "download";
+
+          const seamlessHosts = ["gofile", "buzzheavier", "pixeldrain"];
+          const torboxHosts = ["1fichier", "datanodes", "qiwi", "megadb"];
+          const prioritizedTorbox = settings.prioritizeTorboxOverSeamless;
+          const downloadLinks = game.download_links || {};
+          const allHosts = Object.keys(downloadLinks);
+
+          const host =
+            allHosts.find(h =>
+              prioritizedTorbox
+                ? ["gofile", "buzzheavier", "datanodes", ...torboxHosts].includes(h)
+                : seamlessHosts.concat(torboxHosts).includes(h)
+            ) || allHosts[0];
+
+          let provider = "default";
+          if (
+            prioritizedTorbox &&
+            ["gofile", "buzzheavier", "datanodes", "pixeldrain"].includes(host)
+          ) {
+            provider = "torbox";
+          } else if (seamlessHosts.includes(host)) {
+            provider = "seamless";
+          } else if (torboxHosts.includes(host)) {
+            provider = "torbox";
+          }
+
+          // Only show provider badge for download state
+          const showProviderBadge = !isLoading && !isInstalled && provider !== "default";
+          const torboxEnabled =
+            provider === "torbox" && torboxService.isEnabled(settings);
+
+          return (
+            <div className="w-full">
+              <Button
+                variant="secondary"
+                size="sm"
+                className={`w-full bg-accent font-medium text-accent-foreground hover:bg-accent/90 ${showProviderBadge ? "rounded-b-none" : ""}`}
+                onClick={handleDownload}
+                disabled={isLoading}
+              >
+                {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                {!isLoading && needsUpdate && (
+                  <ArrowUpFromLine className="mr-2 h-4 w-4 stroke-[3]" />
+                )}
+                {!isLoading && isInstalled && !needsUpdate && (
+                  <Gamepad2 className="mr-2 h-3 w-3" />
+                )}
+                {!isLoading && !isInstalled && (
+                  <ArrowDown className="mr-2 h-3.5 w-3.5 stroke-[4]" />
+                )}
+
+                {isLoading
+                  ? t("gameCard.loading")
+                  : needsUpdate
+                    ? t("gameCard.update")
+                    : isInstalled
+                      ? t("gameCard.installed")
+                      : t("gameCard.download")}
+              </Button>
+
+              {showProviderBadge && (
+                <div
+                  className={`flex items-center justify-center rounded-b-md py-1 text-xs font-medium ${torboxEnabled ? "bg-primary/10 text-primary" : "text-secondary-foreground bg-secondary/20"}`}
+                >
+                  {torboxEnabled && (
+                    <>
+                      <TorboxIcon className="mr-1 h-6 w-6" />
+                      Seamless with Torbox
+                    </>
+                  )}
+                  {provider === "seamless" && (
+                    <>
+                      <Zap fill="currentColor" className="mr-1 h-3 w-3" />
+                      Seamless
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </CardFooter>
     </Card>
   );

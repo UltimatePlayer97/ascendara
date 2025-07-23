@@ -1,6 +1,8 @@
 /**
  * ImageCacheService - A simplified and robust image caching service
  */
+import gameService from "./gameService";
+
 class ImageCacheService {
   constructor() {
     // Core caching
@@ -338,21 +340,88 @@ class ImageCacheService {
     });
   }
 
-  async clearCache() {
-    // Clear memory cache
+  // Utility methods
+  clearCache() {
+    console.log("[ImageCache] Clearing cache");
     this.memoryCache.clear();
-    // Reset 404 counter on cache clear
-    this.recent404Count = 0;
-    // Clear IndexedDB if available
+    this.memoryCacheOrder = [];
+    this.clearIndexedDB();
+
+    // Clear localStorage cache
+    try {
+      localStorage.removeItem("ascendara_games_cache");
+      localStorage.removeItem("local_ascendara_games_timestamp");
+      localStorage.removeItem("local_ascendara_metadata_cache");
+
+      // Force a refresh of the game data by fetching from API
+      gameService
+        .fetchDataFromAPI()
+        .then(data => {
+          gameService.updateCache(data);
+          console.log("[ImageCache] Game service cache refreshed successfully");
+        })
+        .catch(error => {
+          console.error("[ImageCache] Error refreshing game service cache:", error);
+        });
+    } catch (error) {
+      console.error("[ImageCache] Error clearing game service cache:", error);
+    }
+  }
+
+  clearIndexedDB() {
     if (this.db) {
       try {
         const transaction = this.db.transaction(["images"], "readwrite");
         const store = transaction.objectStore("images");
-        await store.clear();
-        console.log("[ImageCache] Cache cleared successfully");
+        store.clear();
+        console.log("[ImageCache] IndexedDB cleared successfully");
       } catch (error) {
-        console.error("[ImageCache] Error clearing cache:", error);
+        console.error("[ImageCache] Error clearing IndexedDB:", error);
       }
+    }
+  }
+
+  invalidateCache(imgID) {
+    if (!imgID) return;
+
+    console.log(`[ImageCache] Invalidating cache for image ID: ${imgID}`);
+
+    // Remove from memory cache
+    if (this.memoryCache.has(imgID)) {
+      this.memoryCache.delete(imgID);
+      this.memoryCacheOrder = this.memoryCacheOrder.filter(id => id !== imgID);
+    }
+
+    // Remove from IndexedDB if available
+    if (this.db) {
+      try {
+        const transaction = this.db.transaction(["images"], "readwrite");
+        const store = transaction.objectStore("images");
+        store.delete(imgID);
+      } catch (error) {
+        console.error(
+          `[ImageCache] Error removing image ${imgID} from IndexedDB:`,
+          error
+        );
+      }
+    }
+
+    // Also clear from localStorage if it might be there
+    try {
+      // Since we don't know which game this imgID belongs to, we can't target specific keys
+      // This is a best-effort approach to find and clear relevant localStorage items
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("game-cover-") || key.startsWith("game-image-")) {
+          const value = localStorage.getItem(key);
+          // If the value contains the imgID, remove it
+          if (value && value.includes(imgID)) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("[ImageCache] Error clearing localStorage:", e);
     }
   }
 }

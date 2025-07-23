@@ -384,15 +384,32 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    // Load game images
+    // Load game images with localStorage caching
     const loadGameImages = async () => {
       const images = {};
       for (const game of games) {
         try {
           const gameId = game.game || game.name;
+          const localStorageKey = `game-cover-${gameId}`;
+
+          // Try localStorage first
+          const cachedImage = localStorage.getItem(localStorageKey);
+          if (cachedImage) {
+            images[gameId] = cachedImage;
+            continue;
+          }
+
+          // Otherwise fetch from Electron
           const imageBase64 = await window.electron.getGameImage(gameId);
           if (imageBase64) {
-            images[gameId] = `data:image/jpeg;base64,${imageBase64}`;
+            const dataUrl = `data:image/jpeg;base64,${imageBase64}`;
+            images[gameId] = dataUrl;
+            // Cache in localStorage
+            try {
+              localStorage.setItem(localStorageKey, dataUrl);
+            } catch (e) {
+              console.warn("Could not cache game image:", e);
+            }
           }
         } catch (error) {
           console.error("Error loading game image:", error);
@@ -401,9 +418,37 @@ const Profile = () => {
       setGameImages(images);
     };
 
+    // Listen for game cover update events
+    const handleCoverUpdate = event => {
+      const { gameName, dataUrl } = event.detail;
+      if (gameName && dataUrl && games.some(g => (g.game || g.name) === gameName)) {
+        console.log(`[Profile] Received cover update for ${gameName}`);
+        setGameImages(prevImages => {
+          const newImages = { ...prevImages, [gameName]: dataUrl };
+          // Update localStorage cache
+          try {
+            const localStorageKey = `game-cover-${gameName}`;
+            localStorage.setItem(localStorageKey, dataUrl);
+          } catch (e) {
+            console.warn("Could not cache updated game image:", e);
+          }
+          return newImages;
+        });
+      }
+    };
+
+    // Add event listener for cover updates
+    window.addEventListener("game-cover-updated", handleCoverUpdate);
+
+    // Initial load
     if (games.length > 0) {
       loadGameImages();
     }
+
+    // Clean up event listener
+    return () => {
+      window.removeEventListener("game-cover-updated", handleCoverUpdate);
+    };
   }, [games]);
 
   const handleImageUpload = async e => {

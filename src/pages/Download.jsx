@@ -64,6 +64,8 @@ import { toast } from "sonner";
 import TimemachineDialog from "@/components/TimemachineDialog";
 import igdbService from "@/services/gameInfoService";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
+import torboxService from "@/services/torboxService";
+import TorboxIcon from "@/components/TorboxIcon";
 import GameScreenshots from "@/components/GameScreenshots";
 import {
   fetchProviderPatterns,
@@ -81,8 +83,6 @@ const isValidURL = async (url, provider, patterns) => {
   if (!pattern) return false;
   return pattern.test(trimmedUrl);
 };
-
-const VERIFIED_PROVIDERS = ["megadb", "gofile", "datanodes", "buzzheavier", "qiwi"];
 
 const sanitizeGameName = name => {
   return sanitizeText(name);
@@ -287,6 +287,8 @@ export default function DownloadPage() {
   const igdbSectionRef = useRef(null);
   const mainContentRef = useRef(null);
   const scrollThreshold = 30; // Even lower threshold for quicker response
+  const seamlessProviders = ["gofile", "buzzheavier", "pixeldrain"];
+  const VERIFIED_PROVIDERS = ["megadb", "gofile", "buzzheavier", "pixeldrain"];
 
   async function whereToDownload(directUrl = null) {
     // Check if game is wanting to update
@@ -364,20 +366,185 @@ export default function DownloadPage() {
         return;
       }
     }
+    // Determine if this provider should use Torbox
+    const shouldUseTorbox = () => torboxProviders.includes(selectedProvider);
+    if (
+      !directUrl &&
+      (selectedProvider === "gofile" || selectedProvider === "buzzheavier") &&
+      !shouldUseTorbox()
+    ) {
+      let providerLinks = gameData.download_links?.[selectedProvider] || [];
+      const validProviderLink = Array.isArray(providerLinks)
+        ? providerLinks.find(link => link && typeof link === "string")
+        : typeof providerLinks === "string"
+          ? providerLinks
+          : null;
 
-    // Special handling for GoFile when no direct URL is provided
-    if (!directUrl && selectedProvider === "gofile") {
-      const goFileLinks = gameData.download_links?.["gofile"] || [];
-      const validGoFileLink = goFileLinks.find(link => link && typeof link === "string");
-
-      if (!validGoFileLink) {
+      if (!validProviderLink) {
         toast.error(t("download.toast.invalidLink"));
         return;
       }
 
-      // Properly format the GoFile link
-      directUrl = validGoFileLink.replace(/^(?:https?:)?\/\//, "https://");
+      // Properly format the link
+      directUrl = validProviderLink.replace(/^(?:https?:)?\/\//, "https://");
     }
+
+    // Handle providers using Torbox service
+    if (!directUrl && shouldUseTorbox()) {
+      // Get the appropriate link based on the selected provider
+      let providerLink;
+
+      // Get the link array and find a valid one
+      const links = gameData.download_links?.[selectedProvider] || [];
+      providerLink = Array.isArray(links)
+        ? links.find(link => link && typeof link === "string")
+        : links;
+
+      // Ensure the link has proper protocol
+      if (providerLink && !providerLink.startsWith("http")) {
+        providerLink = "https:" + providerLink;
+      }
+
+      if (!providerLink || !isValidLink) {
+        console.log("Invalid link:", providerLink, isValidLink);
+        toast.error(t("download.toast.invalidLink"));
+        return;
+      }
+
+      if (isStartingDownload) {
+        console.log("Download already in progress, skipping");
+        return;
+      }
+
+      setIsStartingDownload(true);
+      toast.info(t("download.toast.processingLink"));
+
+      try {
+        console.log(`Processing ${selectedProvider} link with Torbox:`, providerLink);
+        const apiKey = torboxService.getApiKey(settings);
+
+        // Save comprehensive download data to local storage for TorboxDownloads
+        try {
+          // Get existing torbox data or initialize empty object
+          const torboxData = JSON.parse(localStorage.getItem("torboxGameNames") || "{}");
+
+          // Create a complete download data object with all necessary info
+          const downloadData = {
+            name: gameData.game,
+            timestamp: Date.now(),
+            imgUrl: gameData.imgID || null,
+            provider: selectedProvider,
+            originalUrl: providerLink,
+            // Save all the necessary game data for download processing
+            gameData: {
+              game: gameData.game,
+              version: gameData.version || "",
+              size: gameData.size || "",
+              imgID: gameData.imgID || null,
+              online: gameData.online || false,
+              dlc: gameData.dlc || false,
+              download_links: gameData.download_links || {},
+            },
+          };
+
+          // Store with the URL as key (will be used to match with download ID)
+          torboxData[providerLink] = downloadData;
+
+          // Save back to local storage
+          localStorage.setItem("torboxGameNames", JSON.stringify(torboxData));
+          console.log(
+            "Saved comprehensive download data to local storage:",
+            gameData.game
+          );
+        } catch (err) {
+          console.error("Error saving download data to local storage:", err);
+        }
+
+        const result = await torboxService.getDirectDownloadLinkFromUrl(
+          providerLink,
+          apiKey
+        );
+
+        if (!result) {
+          throw new Error("Failed to process download");
+        }
+
+        console.log("Got Torbox result:", result);
+
+        // If we have a download ID, update the stored data with the ID for better matching
+        if (result.item && result.item.id) {
+          try {
+            const torboxData = JSON.parse(
+              localStorage.getItem("torboxGameNames") || "{}"
+            );
+
+            // Get the existing data for this URL if available
+            const existingData = torboxData[providerLink] || {
+              name: gameData.game,
+              timestamp: Date.now(),
+              imgUrl: gameData.imgID || null,
+              provider: selectedProvider,
+              originalUrl: providerLink,
+              gameData: {
+                game: gameData.game,
+                version: gameData.version || "",
+                size: gameData.size || "",
+                imgID: gameData.imgID || null,
+                online: gameData.online || false,
+                dlc: gameData.dlc || false,
+                download_links: gameData.download_links || {},
+              },
+            };
+
+            // Create a new entry with the download ID as key
+            torboxData[result.item.id] = {
+              ...existingData,
+              downloadId: result.item.id,
+              // Add any additional data from the result
+              files: result.item.files || [],
+              status: result.item.status || result.status || "unknown",
+              size: result.item.size || existingData.gameData.size || "",
+            };
+
+            localStorage.setItem("torboxGameNames", JSON.stringify(torboxData));
+            console.log("Updated download data with ID:", result.item.id);
+          } catch (err) {
+            console.error("Error updating download data with ID:", err);
+          }
+        }
+
+        // Check if the download is cached and ready
+        if (result.status === "ready" && result.item) {
+          toast.dismiss();
+          toast.success(t("download.toast.linkProcessed"));
+
+          // If we have a direct URL, use it
+          if (result.url) {
+            directUrl = result.url;
+          } else {
+            // Otherwise redirect to TorboxDownloads page
+            toast.info(t("download.toast.downloadReady"));
+            navigate("/torboxdownloads");
+            setIsStartingDownload(false);
+            return;
+          }
+        } else {
+          // Download is not cached yet, redirect to TorboxDownloads page
+          toast.dismiss();
+          toast.info(t("download.toast.downloadQueued"));
+          navigate("/torboxdownloads");
+          setIsStartingDownload(false);
+          return;
+        }
+      } catch (error) {
+        console.error(`Error processing ${selectedProvider} link with Torbox:`, error);
+        toast.dismiss();
+        toast.error(t("download.toast.torboxProcessingError"));
+        setIsStartingDownload(false);
+        return;
+      }
+    }
+
     // For manual downloads with other providers, check if we have a valid link
     else if (!directUrl) {
       if (!selectedProvider) {
@@ -905,10 +1072,10 @@ export default function DownloadPage() {
 
     setIsReporting(true);
     try {
-      const token = await window.electron.getAPIKey();
+      const AUTHORIZATION = await window.electron.getAPIKey();
       const response = await fetch("https://api.ascendara.app/auth/token", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: AUTHORIZATION,
         },
       });
 
@@ -937,7 +1104,7 @@ export default function DownloadPage() {
         if (reportResponse.status === 401) {
           const newTokenResponse = await fetch("https://api.ascendara.app/auth/token", {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: AUTHORIZATION,
             },
           });
 
@@ -996,6 +1163,7 @@ export default function DownloadPage() {
 
   const downloadLinks = gameData?.download_links || {};
   const hasProviders = Object.keys(downloadLinks).length > 0;
+
   const providers = hasProviders
     ? Object.entries(downloadLinks)
         .filter(([_, links]) => {
@@ -1005,6 +1173,9 @@ export default function DownloadPage() {
         })
         .map(([provider]) => provider)
     : [];
+
+  const prioritizeTorbox = settings.prioritizeTorboxOverSeamless;
+  const torboxProviders = prioritizeTorbox ? providers : ["1fichier", "megadb"];
 
   console.log("Final Available Providers:", providers);
 
@@ -1016,6 +1187,11 @@ export default function DownloadPage() {
 
       if (availableProviders.includes("gofile")) {
         setSelectedProvider("gofile");
+      } else if (
+        torboxService.isEnabled(settings) &&
+        availableProviders.includes("1fichier")
+      ) {
+        setSelectedProvider("1fichier");
       } else if (availableProviders.includes("buzzheavier")) {
         setSelectedProvider("buzzheavier");
       } else if (availableProviders.length > 0) {
@@ -1152,6 +1328,7 @@ export default function DownloadPage() {
 
                         <AlertDialogFooter className="mt-4 gap-2">
                           <AlertDialogCancel
+                            className="text-primary"
                             onClick={() => {
                               setReportReason("");
                               setReportDetails("");
@@ -1646,36 +1823,125 @@ export default function DownloadPage() {
                 </div>
               </div>
             </div>
-          ) : selectedProvider === "gofile" ? (
+          ) : (torboxProviders.includes(selectedProvider) &&
+              torboxService.isEnabled(settings) &&
+              torboxService.getApiKey(settings)) ||
+            seamlessProviders.includes(selectedProvider) ? (
             <div className="mx-auto max-w-xl">
               <div className="flex flex-col items-center space-y-8 py-6">
                 <div className="flex w-full items-center justify-between">
                   <h2 className="flex items-center gap-2 text-xl font-semibold">
                     <span className="flex items-center gap-1">
-                      Seamless{" "}
-                      <Zap fill="currentColor" className="h-4 w-4 text-primary" />
-                    </span>
-                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      ( GoFile <BadgeCheckIcon className="h-3.5 w-3.5" />)
+                      {torboxProviders.includes(selectedProvider) &&
+                      torboxService.isEnabled(settings) &&
+                      torboxService.getApiKey(settings) ? (
+                        <>
+                          Torbox <TorboxIcon className="h-4 w-4 text-primary" />
+                        </>
+                      ) : seamlessProviders.includes(selectedProvider) ? (
+                        <>
+                          Seamless{" "}
+                          <Zap fill="currentColor" className="h-4 w-4 text-primary" />
+                        </>
+                      ) : (
+                        <>{selectedProvider}</>
+                      )}
                     </span>
                   </h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setSelectedProvider(providers.find(p => p !== "gofile") || "")
-                    }
-                  >
-                    {t("download.switchProvider")}
-                  </Button>
+                  <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder={t("download.switchProvider")} />
+                    </SelectTrigger>
+                    <SelectContent className="border-border bg-background">
+                      {providers.map(provider => {
+                        let displayName;
+                        switch (provider.toLowerCase()) {
+                          case "gofile":
+                            displayName = !settings.prioritizeTorboxOverSeamless
+                              ? "Seamless (GoFile)"
+                              : "GoFile";
+                            break;
+                          case "megadb":
+                            displayName = "MegaDB";
+                            break;
+                          case "buzzheavier":
+                            displayName = !settings.prioritizeTorboxOverSeamless
+                              ? "Seamless (BuzzHeavier)"
+                              : "BuzzHeavier";
+                            break;
+                          case "pixeldrain":
+                            displayName = !settings.prioritizeTorboxOverSeamless
+                              ? "Seamless (PixelDrain)"
+                              : "PixelDrain";
+                            break;
+                          case "qiwi":
+                            displayName = "QIWI";
+                            break;
+                          case "datanodes":
+                            displayName = "DataNodes";
+                            break;
+                          default:
+                            displayName =
+                              provider.charAt(0).toUpperCase() + provider.slice(1);
+                        }
+                        const isVerified = VERIFIED_PROVIDERS.includes(
+                          provider.toLowerCase()
+                        );
+                        return (
+                          <SelectItem
+                            key={provider}
+                            value={provider}
+                            className="hover:bg-muted focus:bg-muted"
+                          >
+                            <div className="flex items-center gap-2">
+                              {displayName}
+                              {isVerified && <BadgeCheckIcon className="h-4 w-4" />}
+                              {provider === "1fichier" &&
+                                torboxService.isEnabled(settings) && (
+                                  <TorboxIcon className="h-4 w-4 text-primary" />
+                                )}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="w-full max-w-md space-y-4 text-center">
                   <h3 className="text-2xl font-semibold">
-                    {t("download.downloadOptions.gofileInstructions.thanks")}
+                    {(() => {
+                      const isTorbox =
+                        torboxProviders.includes(selectedProvider) &&
+                        torboxService.isEnabled(settings) &&
+                        torboxService.getApiKey(settings);
+                      const isSeamless = seamlessProviders.includes(selectedProvider);
+
+                      if (isTorbox)
+                        return t("download.downloadOptions.torboxInstructions.title");
+                      if (isSeamless)
+                        return t("download.downloadOptions.seamlessInstructions.title");
+                      return selectedProvider;
+                    })()}
                   </h3>
                   <p className="text-muted-foreground">
-                    {t("download.downloadOptions.gofileInstructions.description")}
+                    {(() => {
+                      const isTorbox =
+                        torboxProviders.includes(selectedProvider) &&
+                        torboxService.isEnabled(settings) &&
+                        torboxService.getApiKey(settings);
+                      const isSeamless = seamlessProviders.includes(selectedProvider);
+
+                      if (isTorbox)
+                        return t(
+                          "download.downloadOptions.torboxInstructions.description"
+                        );
+                      if (isSeamless)
+                        return t(
+                          "download.downloadOptions.seamlessInstructions.description"
+                        );
+                      return "";
+                    })()}
                   </p>
                 </div>
 
@@ -1744,7 +2010,10 @@ export default function DownloadPage() {
                                   displayName = "MegaDB";
                                   break;
                                 case "buzzheavier":
-                                  displayName = "Default (BuzzHeavier)";
+                                  displayName = "Seamless (BuzzHeavier)";
+                                  break;
+                                case "pixeldrain":
+                                  displayName = "Seamless (PixelDrain)";
                                   break;
                                 case "qiwi":
                                   displayName = "QIWI";
@@ -1767,6 +2036,11 @@ export default function DownloadPage() {
                                 >
                                   <div className="flex items-center gap-2">
                                     {displayName}
+                                    {isVerified && <BadgeCheckIcon className="h-4 w-4" />}
+                                    {provider === "1fichier" &&
+                                      torboxService.isEnabled(settings) && (
+                                        <TorboxIcon className="h-7 w-7" />
+                                      )}
                                   </div>
                                 </SelectItem>
                               );

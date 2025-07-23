@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Package,
   User,
+  ServerIcon,
 } from "lucide-react";
 
 const Navigation = memo(({ items }) => {
@@ -121,6 +122,13 @@ const Navigation = memo(({ items }) => {
         icon: Download,
         color: "from-orange-500 to-amber-400",
       },
+      {
+        path: "/torboxdownloads",
+        label: t("common.torboxDownloads"),
+        icon: ServerIcon,
+        hidden: settings.torboxApiKey === "",
+        color: "from-orange-500 to-amber-400",
+      },
     ];
 
     items.push({
@@ -147,7 +155,7 @@ const Navigation = memo(({ items }) => {
     });
 
     return items;
-  }, [t, settings.viewWorkshopPage]);
+  }, [t, settings.viewWorkshopPage, settings.torboxApiKey]);
 
   useEffect(() => {
     const checkDownloaderStatus = async () => {
@@ -238,49 +246,53 @@ const Navigation = memo(({ items }) => {
             onMouseDown={e => handleMouseDown(e, false)}
           />
 
-          {navItems.map((item, index) => (
-            <React.Fragment key={item.path}>
-              <Link
-                to={item.path}
-                onMouseEnter={() => handleMouseEnter(item)}
-                onMouseLeave={handleMouseLeave}
-                className={`group relative flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 ${
-                  isActive(item.path)
-                    ? "z-10 scale-110 bg-primary text-background"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                } ${hoveredItem === item.path ? "z-10 scale-110" : "z-0 scale-100"} `}
-              >
-                <div
-                  className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} opacity-0 ${isActive(item.path) || hoveredItem === item.path ? "opacity-100" : ""} transition-opacity duration-300`}
-                />
-                <div
-                  className={`relative flex h-12 w-12 items-center justify-center rounded-lg transition-all duration-200 ${
+          {navItems.map((item, index) =>
+            item.hidden ? null : (
+              <React.Fragment key={item.path}>
+                <Link
+                  to={item.path}
+                  onMouseEnter={() => handleMouseEnter(item)}
+                  onMouseLeave={handleMouseLeave}
+                  className={`group relative flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 ${
                     isActive(item.path)
-                      ? "bg-gradient-to-br " + item.color
-                      : "hover:bg-white/10"
-                  }`}
+                      ? "z-10 scale-110 bg-primary text-background"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  } ${hoveredItem === item.path ? "z-10 scale-110" : "z-0 scale-100"} `}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.icon === Download && downloadCount > 0 && (
-                    <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                      <span className="mb-0.5">{downloadCount}</span>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className={`absolute -top-10 transform whitespace-nowrap rounded-lg border border-border bg-background/95 px-3 py-1.5 text-sm font-medium text-foreground transition-all duration-300 ${
-                    hoveredItem === item.path
-                      ? "translate-y-0 opacity-100"
-                      : "pointer-events-none translate-y-2 opacity-0"
-                  }`}
-                >
-                  {item.label}
-                  <ChevronRight className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-90 transform text-border" />
-                </div>
-              </Link>
-              {index === 3 && <div className="h-8 w-px bg-border/50" />}
-            </React.Fragment>
-          ))}
+                  <div
+                    className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} opacity-0 ${isActive(item.path) || hoveredItem === item.path ? "opacity-100" : ""} transition-opacity duration-300`}
+                  />
+                  <div
+                    className={`relative flex h-12 w-12 items-center justify-center rounded-lg transition-all duration-200 ${
+                      isActive(item.path)
+                        ? "bg-gradient-to-br " + item.color
+                        : "hover:bg-white/10"
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    {item.icon === Download && downloadCount > 0 && (
+                      <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                        <span className="mb-0.5">{downloadCount}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className={`absolute -top-10 transform whitespace-nowrap rounded-lg border border-border bg-background/95 px-3 py-1.5 text-sm font-medium text-foreground transition-all duration-300 ${
+                      hoveredItem === item.path
+                        ? "translate-y-0 opacity-100"
+                        : "pointer-events-none translate-y-2 opacity-0"
+                    }`}
+                  >
+                    {item.label}
+                    <ChevronRight className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-90 transform text-border" />
+                  </div>
+                </Link>
+                {index === (settings.torboxApiKey === "" ? 3 : 4) && (
+                  <div className="h-8 w-px bg-border/50" />
+                )}
+              </React.Fragment>
+            )
+          )}
         </div>
       </div>
     </div>

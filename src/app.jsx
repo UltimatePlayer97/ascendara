@@ -11,7 +11,7 @@ import UpdateOverlay from "@/components/UpdateOverlay";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { TourProvider } from "@/context/TourContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
-import { SettingsProvider } from "@/context/SettingsContext";
+import { SettingsProvider, useSettings } from "@/context/SettingsContext";
 import { analytics } from "@/services/analyticsService";
 import gameService from "@/services/gameService";
 import { checkForUpdates } from "@/services/updateCheckingService";
@@ -35,6 +35,7 @@ import ExtraLanguages from "./pages/ExtraLanguages";
 import Home from "./pages/Home";
 import WorkshopDownloader from "./pages/WorkshopDownloader";
 import SidecarAndDependencies from "./pages/SidecarAndDependencies";
+import TorboxDownloads from "./pages/TorboxDownloads";
 import GameScreen from "./pages/GameScreen";
 import Profile from "./pages/Profile";
 import Library from "./pages/Library";
@@ -61,6 +62,7 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const [isAdmin, setIsAdmin] = useState(false);
   const [showWelcome, setShowWelcome] = useState(null);
   const [isNewInstall, setIsNewInstall] = useState(false);
@@ -464,7 +466,8 @@ const AppRoutes = () => {
           left: 0,
           width: "100%",
           height: "100%",
-          background: "linear-gradient(135deg, #fff0f3 0%, #ffffff 100%)",
+          background:
+            "linear-gradient(135deg, rgb(var(--color-primary) / 0.1) 0%, rgb(var(--color-background)) 100%)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -502,6 +505,16 @@ const AppRoutes = () => {
   if (location.pathname === "/" && showWelcome) {
     console.log("Redirecting from home to welcome");
     return <Navigate to="/welcome" replace />;
+  }
+
+  if (
+    location.pathname === "/" &&
+    !showWelcome &&
+    settings?.defaultOpenPage &&
+    settings.defaultOpenPage !== "home"
+  ) {
+    console.log(`Redirecting to default landing page: ${settings.defaultOpenPage}`);
+    return <Navigate to={`/${settings.defaultOpenPage}`} replace />;
   }
 
   console.log("Rendering main routes with location:", location.pathname);
@@ -582,6 +595,16 @@ const AppRoutes = () => {
                 <AnimatePresence mode="wait">
                   <PageTransition key="downloads">
                     <Downloads />
+                  </PageTransition>
+                </AnimatePresence>
+              }
+            />
+            <Route
+              path="torboxdownloads"
+              element={
+                <AnimatePresence mode="wait">
+                  <PageTransition key="torboxdownloads">
+                    <TorboxDownloads />
                   </PageTransition>
                 </AnimatePresence>
               }

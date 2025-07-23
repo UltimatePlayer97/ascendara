@@ -222,7 +222,11 @@ const UsernameDialog = () => {
         </div>
 
         <AlertDialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
+          <Button
+            variant="outline"
+            className="text-primary"
+            onClick={() => setIsOpen(false)}
+          >
             {t("common.cancel")}
           </Button>
           <Button className="text-secondary" onClick={handleSave}>

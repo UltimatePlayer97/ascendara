@@ -11,7 +11,7 @@
  *  Learn more about developing Ascendara at https://ascendara.app/docs/developer/overview
  */
 
-let appVersion = "8.9.8";
+let appVersion = "9.0.0";
 
 const {
   app,
@@ -55,8 +55,8 @@ const TIMESTAMP_FILE = !isWindows
   ? path.join(os.homedir(), "timestamp.ascendara.json")
   : path.join(process.env.USERPROFILE, "timestamp.ascendara.json");
 
-const LANG_DIR = !isWindows
-  ? path.join(app.getPath("userData"), "Ascendara", "languages")
+const LANG_DIR = isWindows
+  ? path.join(process.env.LOCALAPPDATA, "Ascendara", "languages")
   : path.join(os.homedir(), ".ascendara", "languages");
 
 try {
@@ -152,6 +152,12 @@ function initializeDiscordRPC() {
 
   if (isDev) {
     console.log("Discord RPC is disabled in development mode");
+    return;
+  }
+
+  const settings = settingsManager.getSettings();
+  if (settings.rpcEnabled === false) {
+    console.log("Discord RPC is disabled in settings");
     return;
   }
 
@@ -724,10 +730,17 @@ function decrypt(encryptedText) {
 class SettingsManager {
   constructor() {
     this.filePath = path.join(app.getPath("userData"), "ascendarasettings.json");
-    this.sensitiveKeys = ["twitchSecret", "twitchClientId", "giantBombKey"];
+    this.sensitiveKeys = [
+      "twitchSecret",
+      "twitchClientId",
+      "giantBombKey",
+      "torboxApiKey",
+    ];
     this.defaultSettings = {
       downloadDirectory: "",
       additionalDirectories: [],
+      defaultOpenPage: "home",
+      behaviorAfterDownload: "none",
       showOldDownloadLinks: false,
       seeInappropriateContent: false,
       earlyReleasePreview: false,
@@ -735,6 +748,7 @@ class SettingsManager {
       notifications: true,
       downloadHandler: false,
       torrentEnabled: false,
+      rpcEnabled: true,
       gameSource: "steamrip",
       autoCreateShortcuts: true,
       smoothTransitions: true,
@@ -747,10 +761,12 @@ class SettingsManager {
       downloadLimit: 0,
       sideScrollBar: false,
       excludeFolders: false,
+      prioritizeTorboxOverSeamless: false,
       crackDirectory: "",
       twitchSecret: "",
       twitchClientId: "",
       giantBombKey: "",
+      torboxApiKey: "",
       ludusavi: {
         backupLocation: "",
         backupFormat: "zip",
@@ -1124,6 +1140,26 @@ ipcMain.handle("ludusavi", async (event, action, game, backupName) => {
     }
   } catch (error) {
     console.error("Error executing ludusavi command:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle Discord RPC state changes when rpcEnabled setting changes
+ipcMain.handle("toggle-discord-rpc", async (event, enabled) => {
+  try {
+    console.log(`Discord RPC ${enabled ? "enabling" : "disabling"}...`);
+
+    if (enabled) {
+      // Initialize Discord RPC
+      initializeDiscordRPC();
+      return { success: true, message: "Discord RPC enabled" };
+    } else {
+      // Destroy Discord RPC
+      destroyDiscordRPC();
+      return { success: true, message: "Discord RPC disabled" };
+    }
+  } catch (error) {
+    console.error("Error toggling Discord RPC:", error);
     return { success: false, error: error.message };
   }
 });
@@ -3760,18 +3796,39 @@ ipcMain.handle("folder-exclusion", async (event, boolean) => {
 });
 
 // Update a custom game's cover image
-ipcMain.handle("update-game-cover", async (event, game, imgID) => {
+ipcMain.handle("update-game-cover", async (event, game, imgID, imageData) => {
   const settings = settingsManager.getSettings();
+  console.log(
+    "[update-game-cover] Called with:",
+    game,
+    imgID,
+    imageData ? "[image data present]" : "[no image data]"
+  );
   try {
     if (!settings.downloadDirectory) {
       console.error("Download directory not set");
       return false;
     }
     const downloadDirectory = settings.downloadDirectory;
+    console.log(`[update-game-cover] Download directory: ${downloadDirectory}`);
+
     const gamesFilePath = path.join(downloadDirectory, "games.json");
     const gamesDirectory = path.join(downloadDirectory, "games");
+    console.log(`[update-game-cover] Games directory: ${gamesDirectory}`);
 
-    // Download and save the new cover image
+    // Check if the games directory exists
+    const gamesDirExists = fs.existsSync(gamesDirectory);
+    console.log(`[update-game-cover] Games directory exists: ${gamesDirExists}`);
+
+    // Create games directory if it doesn't exist
+    if (!fs.existsSync(gamesDirectory)) {
+      await fs.promises.mkdir(gamesDirectory, { recursive: true });
+    }
+
+    let imageBuffer;
+    let extension = ".jpg"; // Default extension
+
+    // Case 1: Using imgID to fetch image from API
     if (imgID) {
       const imageLink =
         settings.gameSource === "fitgirl"
@@ -3784,18 +3841,103 @@ ipcMain.handle("update-game-cover", async (event, game, imgID) => {
         responseType: "arraybuffer",
       });
 
-      const imageBuffer = Buffer.from(response.data);
+      imageBuffer = Buffer.from(response.data);
       const mimeType = response.headers["content-type"];
-      const extension = getExtensionFromMimeType(mimeType);
+      extension = getExtensionFromMimeType(mimeType);
+    }
+    // Case 2: Using direct image data (custom upload)
+    else if (imageData) {
+      // Extract the base64 data from the data URL
+      const base64Data = imageData.split(",")[1];
+      imageBuffer = Buffer.from(base64Data, "base64");
 
-      // Overwrite the existing image file
-      await fs.promises.writeFile(
-        path.join(gamesDirectory, `${game}.ascendara${extension}`),
-        imageBuffer
-      );
+      // Try to determine the extension from the data URL
+      const mimeMatch = imageData.match(/^data:([\w\/+]+);base64,/);
+      if (mimeMatch && mimeMatch[1]) {
+        extension = getExtensionFromMimeType(mimeMatch[1]) || ".jpg";
+      }
+    } else {
+      console.error("No image data or imgID provided");
+      return false;
     }
 
-    return true;
+    // Determine the correct game directory by checking games.json first
+    let gameDirectory;
+    let customGamePath = null;
+
+    // Check if games.json exists and read it to find custom game paths
+    if (fs.existsSync(gamesFilePath)) {
+      try {
+        const gamesData = JSON.parse(fs.readFileSync(gamesFilePath, "utf8"));
+        console.log(`[update-game-cover] Games data loaded from ${gamesFilePath}`);
+
+        // Check if this game has a custom path in games.json
+        if (gamesData && gamesData[game] && gamesData[game].path) {
+          customGamePath = gamesData[game].path;
+          console.log(
+            `[update-game-cover] Found custom path for ${game}: ${customGamePath}`
+          );
+        }
+      } catch (jsonError) {
+        console.error(
+          `[update-game-cover] Error reading games.json: ${jsonError.message}`
+        );
+        // Continue with default path if there's an error reading the JSON
+      }
+    }
+
+    // Use the custom path if found, otherwise use default path
+    if (customGamePath) {
+      gameDirectory = customGamePath;
+    } else {
+      gameDirectory = path.join(downloadDirectory, game);
+    }
+
+    // The file should be named header.ascendara.jpg
+    const filePath = path.join(gameDirectory, `header.ascendara${extension}`);
+    console.log(`[update-game-cover] Game directory: ${gameDirectory}`);
+    console.log(`[update-game-cover] Writing to file: ${filePath}`);
+
+    // Check if the game directory exists
+    const gameDirExists = fs.existsSync(gameDirectory);
+    console.log(`[update-game-cover] Game directory exists: ${gameDirExists}`);
+
+    // If game directory doesn't exist, try to create it
+    if (!gameDirExists) {
+      try {
+        fs.mkdirSync(gameDirectory, { recursive: true });
+        console.log(`[update-game-cover] Created game directory: ${gameDirectory}`);
+      } catch (mkdirError) {
+        console.error(
+          `[update-game-cover] Error creating game directory: ${mkdirError.message}`
+        );
+        return false;
+      }
+    }
+
+    try {
+      await fs.promises.writeFile(filePath, imageBuffer);
+      console.log(`[update-game-cover] File written successfully: ${filePath}`);
+
+      // Verify the file exists after writing
+      const fileExists = fs.existsSync(filePath);
+      console.log(`[update-game-cover] File exists after write: ${fileExists}`);
+
+      // Notify renderer process that the cover image has been updated
+      if (fileExists) {
+        // Send notification to all renderer processes
+        BrowserWindow.getAllWindows().forEach(win => {
+          if (!win.isDestroyed()) {
+            win.webContents.send("cover-image-updated", { game, success: true });
+          }
+        });
+      }
+
+      return true;
+    } catch (writeError) {
+      console.error(`[update-game-cover] Error writing file: ${writeError.message}`);
+      throw writeError;
+    }
   } catch (error) {
     console.error("Error updating game cover:", error);
     return false;
@@ -4124,7 +4266,13 @@ ipcMain.handle("is-steam-running", () => {
 
 ipcMain.handle(
   "play-game",
-  async (event, game, isCustom = false, backupOnClose = false) => {
+  async (
+    event,
+    game,
+    isCustom = false,
+    backupOnClose = false,
+    launchWithAdmin = false
+  ) => {
     try {
       const settings = settingsManager.getSettings();
       if (!settings.downloadDirectory || !settings.additionalDirectories) {
@@ -4228,11 +4376,17 @@ ipcMain.handle(
       });
 
       const spawnArgs = isWindows
-        ? [executable, isCustom.toString(), ...(backupOnClose ? ["--ludusavi"] : [])]
+        ? [
+            executable,
+            isCustom.toString(),
+            launchWithAdmin.toString(),
+            ...(backupOnClose ? ["--ludusavi"] : []),
+          ]
         : [
             handlerScript,
             executable,
             isCustom.toString(),
+            launchWithAdmin.toString(),
             ...(backupOnClose ? ["--ludusavi"] : []),
           ];
 
@@ -4785,57 +4939,138 @@ let debouncedUpdate = null;
 
 ipcMain.handle("get-drive-space", async (event, directory) => {
   try {
-    const cache = driveSpaceCache.get(directory);
+    const settings = settingsManager.getSettings();
+    const directories = [];
+
+    // Add main directory if provided
+    if (directory) {
+      directories.push(directory);
+    }
+
+    // Add additional directories from settings if they exist
+    if (settings.additionalDirectories && Array.isArray(settings.additionalDirectories)) {
+      directories.push(
+        ...settings.additionalDirectories.filter(dir => dir && dir.trim() !== "")
+      );
+    }
+
+    // If no directories are available, return zeros
+    if (directories.length === 0) {
+      return {
+        directories: [],
+        freeSpace: 0,
+        totalSpace: 0,
+      };
+    }
+
     const now = Date.now();
+    const result = { directories: [] };
+    let totalFreeSpace = 0;
+    let totalSpace = 0;
 
-    // If we have valid cache, return it immediately
-    if (cache && cache.lastCalculated > now - 5 * 60 * 1000) {
-      return {
-        freeSpace: cache.freeSpace,
-        totalSpace: cache.totalSpace,
-      };
-    }
+    // Process each directory
+    for (const dir of directories) {
+      try {
+        const cache = driveSpaceCache.get(dir);
+        let dirInfo;
 
-    // Debounce the actual disk check to prevent multiple rapid checks
-    if (!debouncedUpdate) {
-      debouncedUpdate = setTimeout(async () => {
-        try {
-          const { available, total } = await disk.check(directory);
+        // If we have valid cache, use it
+        if (cache && cache.lastCalculated > now - 5 * 60 * 1000) {
+          dirInfo = {
+            path: dir,
+            freeSpace: cache.freeSpace,
+            totalSpace: cache.totalSpace,
+          };
+        } else {
+          // If no valid cache, check the disk
+          // Debounce the actual disk check to prevent multiple rapid checks
+          if (!debouncedUpdate) {
+            debouncedUpdate = setTimeout(async () => {
+              try {
+                for (const directory of directories) {
+                  try {
+                    const { available, total } = await disk.check(directory);
 
-          driveSpaceCache.set(directory, {
-            freeSpace: available,
-            totalSpace: total,
-            lastCalculated: Date.now(),
-          });
+                    driveSpaceCache.set(directory, {
+                      freeSpace: available,
+                      totalSpace: total,
+                      lastCalculated: Date.now(),
+                    });
+                  } catch (err) {
+                    console.error(`Error updating cache for ${directory}:`, err);
+                  }
+                }
 
-          debouncedUpdate = null;
-        } catch (error) {
-          console.error("Error in debounced drive space update:", error);
+                debouncedUpdate = null;
+              } catch (error) {
+                console.error("Error in debounced drive space update:", error);
+              }
+            }, DEBOUNCE_TIME);
+          }
+
+          // If we have any cached data (even if expired), use it while updating
+          if (cache) {
+            dirInfo = {
+              path: dir,
+              freeSpace: cache.freeSpace,
+              totalSpace: cache.totalSpace,
+            };
+          } else {
+            // If no cache exists at all, we need to wait for the first check
+            try {
+              const { available, total } = await disk.check(dir);
+
+              driveSpaceCache.set(dir, {
+                freeSpace: available,
+                totalSpace: total,
+                lastCalculated: now,
+              });
+
+              dirInfo = {
+                path: dir,
+                freeSpace: available,
+                totalSpace: total,
+              };
+            } catch (err) {
+              console.error(`Error checking disk space for ${dir}:`, err);
+              dirInfo = {
+                path: dir,
+                freeSpace: 0,
+                totalSpace: 0,
+                error: err.message || "Unknown error",
+              };
+            }
+          }
         }
-      }, DEBOUNCE_TIME);
+
+        // Add to result and totals
+        result.directories.push(dirInfo);
+        totalFreeSpace += dirInfo.freeSpace;
+        totalSpace += dirInfo.totalSpace;
+      } catch (dirError) {
+        console.error(`Error processing directory ${dir}:`, dirError);
+        result.directories.push({
+          path: dir,
+          freeSpace: 0,
+          totalSpace: 0,
+          error: dirError.message || "Unknown error",
+        });
+      }
     }
 
-    // If we have any cached data (even if expired), return it while updating
-    if (cache) {
-      return {
-        freeSpace: cache.freeSpace,
-        totalSpace: cache.totalSpace,
-      };
-    }
+    // Add totals to the result
+    result.freeSpace = totalFreeSpace;
+    result.totalSpace = totalSpace;
 
-    // If no cache exists at all, we need to wait for the first check
-    const { available, total } = await disk.check(directory);
-
-    driveSpaceCache.set(directory, {
-      freeSpace: available,
-      totalSpace: total,
-      lastCalculated: now,
-    });
-
-    return { freeSpace: available, totalSpace: total };
+    return result;
   } catch (error) {
     console.error("Error getting drive space:", error);
-    return { freeSpace: 0, totalSpace: 0 };
+    return {
+      directories: [],
+      freeSpace: 0,
+      totalSpace: 0,
+      error: error.message || "Unknown error",
+    };
   }
 });
 
@@ -4880,28 +5115,66 @@ ipcMain.handle("get-installed-games-size", async () => {
         success: true,
         calculating: false,
         totalSize: gamesSizeCache.totalSize,
+        directorySizes: gamesSizeCache.directorySizes || [],
       };
     }
 
-    const downloadDir = settings.downloadDirectory;
-    if (!downloadDir) {
+    const directories = [];
+
+    // Add main download directory if it exists
+    if (settings.downloadDirectory && settings.downloadDirectory.trim() !== "") {
+      directories.push(settings.downloadDirectory);
+    }
+
+    // Add additional directories if they exist
+    if (settings.additionalDirectories && Array.isArray(settings.additionalDirectories)) {
+      directories.push(
+        ...settings.additionalDirectories.filter(dir => dir && dir.trim() !== "")
+      );
+    }
+
+    // If no directories are available, return zero
+    if (directories.length === 0) {
       return {
         success: false,
         calculating: false,
         totalSize: 0,
+        directorySizes: [],
       };
     }
 
-    const totalSize = await getDirectorySize(downloadDir);
+    let totalSize = 0;
+    const directorySizes = [];
+
+    // Calculate size for each directory
+    for (const dir of directories) {
+      try {
+        const size = await getDirectorySize(dir);
+        directorySizes.push({
+          path: dir,
+          size: size,
+        });
+        totalSize += size;
+      } catch (err) {
+        console.error(`Error calculating size for directory ${dir}:`, err);
+        directorySizes.push({
+          path: dir,
+          size: 0,
+          error: err.message || "Unknown error",
+        });
+      }
+    }
 
     // Update cache
     gamesSizeCache.totalSize = totalSize;
+    gamesSizeCache.directorySizes = directorySizes;
     gamesSizeCache.lastCalculated = now;
 
     return {
       success: true,
       calculating: false,
       totalSize: totalSize,
+      directorySizes: directorySizes,
     };
   } catch (error) {
     console.error("Error getting installed games size:", error);
@@ -4909,6 +5182,8 @@ ipcMain.handle("get-installed-games-size", async () => {
       success: false,
       calculating: false,
       totalSize: 0,
+      directorySizes: [],
+      error: error.message || "Unknown error",
     };
   }
 });

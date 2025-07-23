@@ -16,7 +16,7 @@ const WatcherWarnDialog = ({ open, onOpenChange }) => {
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-border">
         <AlertDialogHeader>
           <div className="flex items-center gap-4">
             <AlertTriangle className="mb-2 h-10 w-10 text-red-500" />
@@ -24,9 +24,11 @@ const WatcherWarnDialog = ({ open, onOpenChange }) => {
               {t("app.watchdog.error.title")}
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="space-y-4">
-            <p className="text-foreground">{t("app.watchdog.error.message")}</p>
-            <p className="text-muted-foreground">{t("app.watchdog.error.help")}</p>
+          <AlertDialogDescription asChild>
+            <div className="space-y-4">
+              <div className="text-foreground">{t("app.watchdog.error.message")}</div>
+              <div className="text-foreground">{t("app.watchdog.error.help")}</div>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
 

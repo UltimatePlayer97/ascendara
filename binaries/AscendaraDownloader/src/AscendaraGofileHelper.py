@@ -641,12 +641,14 @@ class GofileDownloader:
         # Create watching file for tracking extracted files
         watching_path = os.path.join(self.download_dir, "filemap.ascendara.json")
         watching_data = {}
-        archive_path = None
+        self.archive_paths = []  # Store archive paths as instance variable
         # First extract all archives
         for root, _, files in os.walk(self.download_dir):
             for file in files:
                 if file.endswith(('.zip', '.rar')):
                     archive_path = os.path.join(root, file)
+                    # Store the archive path for later cleanup
+                    self.archive_paths.append(archive_path)
                     # Always extract to the game directory instead of the archive's directory
                     extract_dir = self.download_dir
                     logging.info(f"[AscendaraGofileHelper] Extracting {archive_path}")
@@ -882,12 +884,20 @@ class GofileDownloader:
                 )
             else:
                 logging.info("[AscendaraGofileHelper] All extracted files verified successfully")
-                try:
-                    os.remove(archive_path)
-                except Exception as e:
-                    logging.error(f"[AscendaraGofileHelper] Error removing original archive: {str(e)}")
+                # Try to remove all archive files that were extracted
+                for archive_path in getattr(self, 'archive_paths', []):
+                    try:
+                        if os.path.exists(archive_path):
+                            os.remove(archive_path)
+                            logging.info(f"[AscendaraGofileHelper] Removed archive file: {archive_path}")
+                    except Exception as e:
+                        logging.error(f"[AscendaraGofileHelper] Error removing archive file {archive_path}: {str(e)}")
                 if "verifyError" in self.game_info["downloadingData"]:
                     del self.game_info["downloadingData"]["verifyError"]
+                
+                # Execute post-download behavior when verification is successful
+                logging.info("[AscendaraGofileHelper] Verification successful, proceeding with post-download behavior")
+                self._handle_post_download_behavior()
 
         except Exception as e:
             error_msg = f"Error during verification: {str(e)}"
@@ -909,11 +919,56 @@ class GofileDownloader:
         # Set verifying to false when done
         self.game_info["downloadingData"]["verifying"] = False
 
-        # Only remove verifyError if verification succeeded
+        # Only remove verifyError if verification succeeded and wasn't already handled
         if "verifyError" in self.game_info["downloadingData"] and not verify_errors:
             del self.game_info["downloadingData"]["verifyError"]
 
         safe_write_json(self.game_info_path, self.game_info)
+
+    def _handle_post_download_behavior(self):
+        try:
+            # Get the settings path
+            settings_path = None
+            if sys.platform == 'win32':
+                appdata = os.environ.get('APPDATA')
+                if appdata:
+                    candidate = os.path.join(appdata, 'Electron', 'ascendarasettings.json')
+                    if os.path.exists(candidate):
+                        settings_path = candidate
+            elif sys.platform == 'darwin':
+                user_data_dir = os.path.expanduser('~/Library/Application Support/ascendara')
+                candidate = os.path.join(user_data_dir, 'ascendarasettings.json')
+                if os.path.exists(candidate):
+                    settings_path = candidate
+            
+            if settings_path and os.path.exists(settings_path):
+                with open(settings_path, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                    behavior = settings.get('behaviorAfterDownload', 'none')
+                    logging.info(f"[AscendaraGofileHelper] Post-download behavior: {behavior}")
+                    
+                    if behavior == 'lock':
+                        logging.info("[AscendaraGofileHelper] Locking computer as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('rundll32.exe user32.dll,LockWorkStation')
+                        elif sys.platform == 'darwin':
+                            os.system('/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend')
+                    elif behavior == 'sleep':
+                        logging.info("[AscendaraGofileHelper] Putting computer to sleep as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('rundll32.exe powrprof.dll,SetSuspendState 0,1,0')
+                        elif sys.platform == 'darwin':
+                            os.system('pmset sleepnow')
+                    elif behavior == 'shutdown':
+                        logging.info("[AscendaraGofileHelper] Shutting down computer as requested in settings")
+                        if sys.platform == 'win32':
+                            os.system('shutdown /s /t 60 /c "Ascendara download complete - shutting down in 60 seconds"')
+                        elif sys.platform == 'darwin':
+                            os.system('osascript -e "tell app \"System Events\" to shut down"')
+                    else:  # 'none' or any other value
+                        logging.info("[AscendaraGofileHelper] No post-download action required")
+        except Exception as e:
+            logging.error(f"[AscendaraGofileHelper] Error in post-download behavior handling: {e}")
 
 def open_console():
     if IS_DEV and sys.platform == "win32":
@@ -965,7 +1020,7 @@ def main():
             _launch_notification(args.withNotification, "Download Complete", f"Successfully downloaded and extracted {args.game}")
         
         logging.info(f"Download process completed successfully for game: {args.game}")
-        logging.info(f"Detailed logs have been saved to: {temp_log_file}")
+        logging.info("Detailed logs have been saved to the application log directory")
         
     except (ArgumentError, SystemExit) as e:
         error_msg = "Invalid or missing arguments. Please provide all required arguments."

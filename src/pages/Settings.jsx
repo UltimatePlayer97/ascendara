@@ -211,6 +211,7 @@ function Settings() {
   const [isTriggering, setIsTriggering] = useState(false);
   const [apiMetadata, setApiMetadata] = useState(null);
   const [fitgirlMetadata, setFitgirlMetadata] = useState(null);
+  const [torboxApiKey, setTorboxApiKey] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOnWindows, setIsOnWindows] = useState(null);
   const [downloadPath, setDownloadPath] = useState("");
@@ -746,6 +747,31 @@ function Settings() {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
+                      <Label>{t("settings.defaultLandingPage")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.defaultLandingPageDescription")}
+                      </p>
+                    </div>
+                    <Select
+                      value={settings.defaultOpenPage || "home"}
+                      onValueChange={value =>
+                        handleSettingChange("defaultOpenPage", value)
+                      }
+                    >
+                      <SelectTrigger className="w-[180px] bg-background">
+                        <SelectValue placeholder="Home" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="home">{t("common.home")}</SelectItem>
+                        <SelectItem value="search">{t("common.search")}</SelectItem>
+                        <SelectItem value="library">{t("common.library")}</SelectItem>
+                        <SelectItem value="downloads">{t("common.downloads")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
                       <Label>{t("settings.ascendaraUpdates")}</Label>
                       <p className="text-sm text-muted-foreground">
                         {t("settings.ascendaraUpdatesDescription")}
@@ -755,6 +781,21 @@ function Settings() {
                       checked={settings.autoUpdate}
                       onCheckedChange={() =>
                         handleSettingChange("autoUpdate", !settings.autoUpdate)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>{t("settings.discordRPC")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.discordRPCDescription")}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.rpcEnabled}
+                      onCheckedChange={() =>
+                        handleSettingChange("rpcEnabled", !settings.rpcEnabled)
                       }
                     />
                   </div>
@@ -876,7 +917,7 @@ function Settings() {
                 )}
                 {isOnWindows ? (
                   <div className="mb-6 flex items-center justify-between">
-                    <div className="space-y-0.5">
+                    <div className="space-y-2">
                       <Label>
                         {t("settings.excludeFolders")}{" "}
                         <TooltipProvider>
@@ -915,8 +956,85 @@ function Settings() {
                     )}
                   </div>
                 ) : null}
+
+                {/* Torbox API Key Config */}
+                <div className="space-y-2">
+                  <Label>{t("settings.torboxApiKey")}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.torboxApiKeyDescription")}&nbsp;
+                    <a
+                      onClick={() =>
+                        window.electron.openURL(
+                          "https://ascendara.app/docs/features/torbox-integration"
+                        )
+                      }
+                      className="cursor inline-flex cursor-pointer items-center text-primary hover:underline"
+                    >
+                      {t("settings.torboxApiKeyLearnHowtoGet")}
+                      <ExternalLink className="ml-1 inline-block h-3 w-3" />
+                    </a>
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    id="torboxApiKey"
+                    type="password"
+                    placeholder={t("settings.torboxApiKeyPlaceholder")}
+                    value={
+                      torboxApiKey !== null ? torboxApiKey : settings.torboxApiKey || ""
+                    }
+                    onChange={e => setTorboxApiKey(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <Button
+                    onClick={() => {
+                      setSettings(s => ({ ...s, torboxApiKey: torboxApiKey }));
+                      toast.success(t("settings.apiKeySaved"));
+                      setTorboxApiKey(null);
+                    }}
+                    disabled={torboxApiKey === null}
+                    variant="none"
+                    className="text-primary"
+                  >
+                    {t("settings.setKey")}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`space-y-2${
+                      !(
+                        (torboxApiKey !== null && torboxApiKey.trim() !== "") ||
+                        (settings.torboxApiKey && settings.torboxApiKey.trim() !== "")
+                      )
+                        ? "pointer-events-none select-none opacity-50"
+                        : ""
+                    }`}
+                  >
+                    <Label>{t("settings.prioritizeTorboxOverSeamless")}</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t("settings.prioritizeTorboxOverSeamlessDesc")}&nbsp;
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.prioritizeTorboxOverSeamless}
+                    onCheckedChange={value => {
+                      setSettings(prev => ({
+                        ...prev,
+                        prioritizeTorboxOverSeamless: value,
+                      }));
+                    }}
+                    disabled={
+                      !(
+                        (torboxApiKey !== null && torboxApiKey.trim() !== "") ||
+                        (settings.torboxApiKey && settings.torboxApiKey.trim() !== "")
+                      )
+                    }
+                  />
+                </div>
+
                 {/* Download Threads Config */}
-                <div className="pb-8">
+                <div className="space-y-2">
                   <Label
                     htmlFor="threadCount"
                     className={isDownloaderRunning ? "opacity-50" : ""}
@@ -932,9 +1050,10 @@ function Settings() {
                       <p className="text-sm">{t("settings.highThreadWarning")}</p>
                     </div>
                   )}
-                  <div className="mt-2 flex w-full justify-center">
+
+                  <div className="flex w-full justify-center">
                     <motion.div
-                      className="flex items-center space-x-4"
+                      className="mt-4 flex items-center space-x-4"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
@@ -1112,8 +1231,43 @@ function Settings() {
                   )}
                 </div>
 
+                <div className="space-y-2 pt-8">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <Label>{t("settings.behaviorAfterDownload")}</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {t("settings.behaviorAfterDownloadDescription")}
+                      </p>
+                    </div>
+                    <Select
+                      value={settings.behaviorAfterDownload || "none"}
+                      onValueChange={value =>
+                        handleSettingChange("behaviorAfterDownload", value)
+                      }
+                    >
+                      <SelectTrigger className="w-[180px] bg-background">
+                        <SelectValue placeholder="None" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          {t("settings.behaviors.none")}
+                        </SelectItem>
+                        <SelectItem value="lock">
+                          {t("settings.behaviors.lock")}
+                        </SelectItem>
+                        <SelectItem value="sleep">
+                          {t("settings.behaviors.sleep")}
+                        </SelectItem>
+                        <SelectItem value="shutdown">
+                          {t("settings.behaviors.shutdown")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 {/* Download Speed Limit Section */}
-                <div className="pt-8">
+                <div className="space-y-2 pt-8">
                   <Label
                     htmlFor="downloadLimit"
                     className={isDownloaderRunning ? "opacity-50" : ""}

@@ -36,6 +36,8 @@ import {
   ArrowDownAZ,
   ImageUp,
   FolderPlus,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -130,6 +132,7 @@ const Library = () => {
   });
   const [totalGamesSize, setTotalGamesSize] = useState(0);
   const [isCalculatingSize, setIsCalculatingSize] = useState(false);
+  const [showStorageDetails, setShowStorageDetails] = useState(false);
   const [folders, setFolders] = useState(() => {
     const savedFolders = localStorage.getItem("library-folders");
     return savedFolders ? JSON.parse(savedFolders) : [];
@@ -276,7 +279,35 @@ const Library = () => {
             window.electron.getInstalledGamesSize(),
           ]);
 
-          setStorageInfo(driveSpace);
+          // Use the actual directory-specific game sizes from the backend
+          if (
+            driveSpace &&
+            driveSpace.directories &&
+            driveSpace.directories.length > 0 &&
+            gamesSize.success &&
+            !gamesSize.calculating &&
+            gamesSize.directorySizes
+          ) {
+            // Map the drive space directories with their corresponding game sizes
+            const directoriesWithGameSizes = driveSpace.directories.map(dir => {
+              // Find the matching directory in the game sizes data
+              const matchingDir = gamesSize.directorySizes.find(
+                gameSizeDir => gameSizeDir.path === dir.path
+              );
+
+              return {
+                ...dir,
+                gamesSize: matchingDir ? matchingDir.size : 0,
+              };
+            });
+
+            setStorageInfo({
+              ...driveSpace,
+              directories: directoriesWithGameSizes,
+            });
+          } else {
+            setStorageInfo(driveSpace);
+          }
 
           if (gamesSize.success) {
             setIsCalculatingSize(gamesSize.calculating);
@@ -721,76 +752,260 @@ const Library = () => {
                             {t("library.availableSpace")}
                           </span>
                         </div>
-                        <span className="text-sm font-medium">
-                          {storageInfo ? (
-                            formatBytes(storageInfo.freeSpace)
-                          ) : (
-                            <Loader className="h-4 w-4 animate-spin" />
-                          )}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">
+                            {storageInfo ? (
+                              formatBytes(storageInfo.freeSpace)
+                            ) : (
+                              <Loader className="h-4 w-4 animate-spin" />
+                            )}
+                          </span>
+                          {storageInfo &&
+                            storageInfo.directories &&
+                            storageInfo.directories.length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={() => setShowStorageDetails(prev => !prev)}
+                              >
+                                {showStorageDetails ? (
+                                  <ChevronUp className="h-4 w-4" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4" />
+                                )}
+                              </Button>
+                            )}
+                        </div>
                       </div>
-                      <div className="relative mb-2">
-                        {/* Ascendara Games Space */}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
-                                style={{
-                                  width: `${storageInfo ? (totalGamesSize / storageInfo.totalSpace) * 100 : 0}%`,
-                                  zIndex: 2,
-                                }}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent className="text-secondary">
-                              {t("library.spaceTooltip.games", {
-                                size: formatBytes(totalGamesSize),
-                              })}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
 
-                        {/* Other Used Space */}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
-                                style={{
-                                  width: `${storageInfo ? ((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100 : 0}%`,
-                                  zIndex: 1,
-                                }}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent className="text-secondary">
-                              {t("library.spaceTooltip.other", {
-                                size: formatBytes(
-                                  storageInfo
-                                    ? storageInfo.totalSpace -
-                                        storageInfo.freeSpace -
-                                        totalGamesSize
-                                    : 0
-                                ),
-                              })}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      {/* If we have multiple directories, show each one */}
+                      {storageInfo &&
+                        storageInfo.directories &&
+                        storageInfo.directories.length > 0 && (
+                          <div className="space-y-2">
+                            {/* Always show the main storage bar */}
+                            <div className="relative mb-2 h-2">
+                              {/* Ascendara Games Space */}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
+                                      style={{
+                                        width: `${storageInfo ? (totalGamesSize / storageInfo.totalSpace) * 100 : 0}%`,
+                                        zIndex: 2,
+                                      }}
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent className="text-secondary">
+                                    {t("library.spaceTooltip.games", {
+                                      size: formatBytes(totalGamesSize),
+                                    })}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
 
-                        {/* Background */}
-                        <div className="h-2 w-full rounded-full bg-muted/30" />
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>
-                          {t("library.gamesSpace")}:{" "}
-                          {isCalculatingSize ? (
-                            t("library.calculatingSize")
-                          ) : storageInfo ? (
-                            formatBytes(totalGamesSize)
-                          ) : (
-                            <Loader className="h-4 w-4 animate-spin" />
-                          )}
-                        </span>
-                      </div>
+                              {/* Other Used Space */}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
+                                      style={{
+                                        width: `${storageInfo ? ((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100 : 0}%`,
+                                        zIndex: 1,
+                                      }}
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent className="text-secondary">
+                                    {t("library.spaceTooltip.other", {
+                                      size: formatBytes(
+                                        storageInfo
+                                          ? storageInfo.totalSpace -
+                                              storageInfo.freeSpace -
+                                              totalGamesSize
+                                          : 0
+                                      ),
+                                    })}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+
+                              {/* Background */}
+                              <div className="h-2 w-full rounded-full bg-muted/30" />
+                            </div>
+
+                            {/* Show detailed directory information when expanded */}
+                            {showStorageDetails && storageInfo.directories.length > 1 && (
+                              <div className="space-y-2 border-t border-secondary/10 pt-1">
+                                <div className="pt-1 text-xs text-muted-foreground">
+                                  {t("library.storageDirectories")}:
+                                </div>
+                                {storageInfo.directories.map((dir, index) => (
+                                  <div key={dir.path} className="space-y-1">
+                                    {/* Directory path label */}
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span
+                                        className="truncate text-muted-foreground"
+                                        style={{ maxWidth: "180px" }}
+                                        title={dir.path}
+                                      >
+                                        {dir.path}
+                                      </span>
+                                      <span className="text-xs font-medium">
+                                        {formatBytes(dir.freeSpace)}{" "}
+                                        {t("library.freeSpace")}
+                                      </span>
+                                    </div>
+
+                                    {/* Storage bar for this directory */}
+                                    <div className="relative h-2">
+                                      {/* Ascendara Games Space */}
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div
+                                              className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
+                                              style={{
+                                                width: `${dir.totalSpace ? ((dir.gamesSize || 0) / dir.totalSpace) * 100 : 0}%`,
+                                                zIndex: 2,
+                                              }}
+                                            />
+                                          </TooltipTrigger>
+                                          <TooltipContent className="text-secondary">
+                                            {t("library.spaceTooltip.games", {
+                                              size: formatBytes(dir.gamesSize || 0),
+                                              path: dir.path,
+                                            })}
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+
+                                      {/* Other Used Space */}
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div
+                                              className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
+                                              style={{
+                                                width: `${dir.totalSpace ? ((dir.totalSpace - dir.freeSpace - (dir.gamesSize || 0)) / dir.totalSpace) * 100 : 0}%`,
+                                                zIndex: 1,
+                                              }}
+                                            />
+                                          </TooltipTrigger>
+                                          <TooltipContent className="text-secondary">
+                                            {t("library.spaceTooltip.other", {
+                                              size: formatBytes(
+                                                dir.totalSpace
+                                                  ? dir.totalSpace -
+                                                      dir.freeSpace -
+                                                      (dir.gamesSize || 0)
+                                                  : 0
+                                              ),
+                                              path: dir.path,
+                                            })}
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+
+                                      {/* Background */}
+                                      <div className="h-2 w-full rounded-full bg-muted/30" />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Total space summary */}
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span>
+                                {t("library.gamesSpace")}:{" "}
+                                {isCalculatingSize ? (
+                                  t("library.calculatingSize")
+                                ) : storageInfo ? (
+                                  formatBytes(totalGamesSize)
+                                ) : (
+                                  <Loader className="h-4 w-4 animate-spin" />
+                                )}
+                              </span>
+                              <span>
+                                {t("library.totalSpace")}:{" "}
+                                {formatBytes(storageInfo.totalSpace)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Fallback to original single storage bar if no directories data */}
+                      {(!storageInfo ||
+                        !storageInfo.directories ||
+                        storageInfo.directories.length === 0) && (
+                        <div className="space-y-2">
+                          <div className="relative mb-2">
+                            {/* Ascendara Games Space */}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className="absolute left-0 top-0 h-2 cursor-help rounded-l-full bg-primary"
+                                    style={{
+                                      width: `${storageInfo ? (totalGamesSize / storageInfo.totalSpace) * 100 : 0}%`,
+                                      zIndex: 2,
+                                    }}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="text-secondary">
+                                  {t("library.spaceTooltip.games", {
+                                    size: formatBytes(totalGamesSize),
+                                  })}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+
+                            {/* Other Used Space */}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className="absolute left-0 top-0 h-2 cursor-help rounded-r-full bg-muted"
+                                    style={{
+                                      width: `${storageInfo ? ((storageInfo.totalSpace - storageInfo.freeSpace) / storageInfo.totalSpace) * 100 : 0}%`,
+                                      zIndex: 1,
+                                    }}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent className="text-secondary">
+                                  {t("library.spaceTooltip.other", {
+                                    size: formatBytes(
+                                      storageInfo
+                                        ? storageInfo.totalSpace -
+                                            storageInfo.freeSpace -
+                                            totalGamesSize
+                                        : 0
+                                    ),
+                                  })}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+
+                            {/* Background */}
+                            <div className="h-2 w-full rounded-full bg-muted/30" />
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>
+                              {t("library.gamesSpace")}:{" "}
+                              {isCalculatingSize ? (
+                                t("library.calculatingSize")
+                              ) : storageInfo ? (
+                                formatBytes(totalGamesSize)
+                              ) : (
+                                <Loader className="h-4 w-4 animate-spin" />
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1016,7 +1231,7 @@ const InstalledGameCard = memo(
     useEffect(() => {
       let isMounted = true;
       const gameId = game.game || game.name;
-      const localStorageKey = `game-image-${gameId}`;
+      const localStorageKey = `game-cover-${gameId}`; // Use consistent key naming
 
       const loadGameImage = async () => {
         // Try localStorage first
@@ -1043,10 +1258,25 @@ const InstalledGameCard = memo(
         }
       };
 
+      // Listen for game cover update events
+      const handleCoverUpdate = event => {
+        const { gameName, dataUrl } = event.detail;
+        if (gameName === gameId && dataUrl && isMounted) {
+          console.log(`Received cover update for ${gameName}`);
+          setImageData(dataUrl);
+        }
+      };
+
+      // Add event listener for cover updates
+      window.addEventListener("game-cover-updated", handleCoverUpdate);
+
+      // Initial load
       loadGameImage();
 
       return () => {
         isMounted = false;
+        // Clean up event listener
+        window.removeEventListener("game-cover-updated", handleCoverUpdate);
       };
     }, [game.game, game.name]); // Only depend on game ID properties
 
@@ -1264,22 +1494,6 @@ const InstalledGameCard = memo(
                     )}
                   />
                 </Button>
-                {game.isCustom && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
-                    style={{ pointerEvents: "auto" }}
-                    title={t("library.editCoverImage")}
-                    tabIndex={0}
-                    onClick={e => {
-                      e.stopPropagation();
-                      setShowEditCoverDialog(true);
-                    }}
-                  >
-                    <ImageUp className="h-5 w-5 fill-none text-white" />
-                  </Button>
-                )}
               </div>
             </div>
           </CardContent>

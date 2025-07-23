@@ -34,9 +34,10 @@ import {
   LetterText,
   BookX,
   LockIcon,
+  ImageUp,
 } from "lucide-react";
 import gameUpdateService from "@/services/gameUpdateService";
-
+import { loadFolders, saveFolders } from "@/lib/folderManager";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
 import { useIgdbConfig } from "@/services/gameInfoConfig";
@@ -65,6 +66,7 @@ import imageCacheService from "@/services/imageCacheService";
 import GameMetadata from "@/components/GameMetadata";
 import igdbService from "@/services/gameInfoService";
 import GameRate from "@/components/GameRate";
+import EditCoverDialog from "@/components/EditCoverDialog";
 
 const ErrorDialog = ({ open, onClose, errorGame, errorMessage, t }) => (
   <AlertDialog open={open} onOpenChange={onClose}>
@@ -225,6 +227,7 @@ export default function GameScreen() {
   });
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [isVerifyingOpen, setIsVerifyingOpen] = useState(false);
@@ -245,6 +248,7 @@ export default function GameScreen() {
   const [igdbData, setIgdbData] = useState(null);
   const [igdbLoading, setIgdbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [showEditCoverDialog, setShowEditCoverDialog] = useState(false);
   const { setTrack, play } = useAudioPlayer();
 
   // Achievements state
@@ -268,6 +272,29 @@ export default function GameScreen() {
   useEffect(() => {
     setAchievementsPage(0);
   }, [achievements]);
+
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.key === "Shift") {
+        setIsShiftKeyPressed(true);
+      }
+    };
+
+    const handleKeyUp = e => {
+      if (e.key === "Shift") {
+        setIsShiftKeyPressed(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -363,8 +390,26 @@ export default function GameScreen() {
       }
     };
 
+    // Handle cover image updates from the main process
+    const handleCoverImageUpdated = (_, data) => {
+      if (data && data.game === (game.game || game.name) && data.success) {
+        console.log(
+          `[GameScreen] Received cover-image-updated IPC event for ${data.game}`
+        );
+        // Reload the game image with cache busting
+        const gameId = game.game || game.name;
+        window.electron.getGameImage(gameId).then(imageBase64 => {
+          if (imageBase64) {
+            const timestamp = new Date().getTime();
+            setImageData(`data:image/jpeg;base64,${imageBase64}?t=${timestamp}`);
+          }
+        });
+      }
+    };
+
     window.electron.ipcRenderer.on("game-launch-error", handleGameLaunchError);
     window.electron.ipcRenderer.on("game-closed", handleGameClosed);
+    window.electron.ipcRenderer.on("cover-image-updated", handleCoverImageUpdated);
 
     return () => {
       window.electron.ipcRenderer.removeListener(
@@ -372,8 +417,12 @@ export default function GameScreen() {
         handleGameLaunchError
       );
       window.electron.ipcRenderer.removeListener("game-closed", handleGameClosed);
+      window.electron.ipcRenderer.removeListener(
+        "cover-image-updated",
+        handleCoverImageUpdated
+      );
     };
-  }, [isInitialized, setShowRateDialog]); // Add required dependencies
+  }, [isInitialized, setShowRateDialog, game]); // Add required dependencies
 
   // Update favorite status when game or favorites change
   useEffect(() => {
@@ -408,36 +457,78 @@ export default function GameScreen() {
     }
   }, [game]);
 
-  // Load game image
+  // Load game image with localStorage cache (similar to Library.jsx)
   useEffect(() => {
     let isMounted = true;
     const gameId = game.game || game.name;
+    const localStorageKey = `game-cover-${gameId}`; // Use consistent key naming
 
     const loadGameImage = async () => {
-      try {
-        // First try to use IGDB cover if available
-        if (igdbData?.cover?.url) {
-          const coverUrl = igdbService.formatImageUrl(igdbData.cover.url, "cover_big");
-          if (coverUrl && isMounted) {
-            setImageData(coverUrl);
-            return;
-          }
-        }
+      // Try localStorage first
+      const cachedImage = localStorage.getItem(localStorageKey);
+      if (cachedImage) {
+        if (isMounted) setImageData(cachedImage);
+        return;
+      }
 
-        // Fall back to local game image if IGDB cover is not available
+      // If IGDB cover is available, use it
+      if (igdbData?.cover?.url) {
+        const coverUrl = igdbService.formatImageUrl(igdbData.cover.url, "cover_big");
+        if (coverUrl && isMounted) {
+          setImageData(coverUrl);
+          // Cache the IGDB cover URL
+          try {
+            localStorage.setItem(localStorageKey, coverUrl);
+          } catch (e) {
+            console.warn("Could not cache game image:", e);
+          }
+          return;
+        }
+      }
+
+      // Otherwise, fetch from Electron
+      try {
         const imageBase64 = await window.electron.getGameImage(gameId);
         if (imageBase64 && isMounted) {
-          setImageData(`data:image/jpeg;base64,${imageBase64}`);
+          const dataUrl = `data:image/jpeg;base64,${imageBase64}`;
+          setImageData(dataUrl);
+          try {
+            localStorage.setItem(localStorageKey, dataUrl);
+          } catch (e) {
+            // If storage quota exceeded, skip caching
+            console.warn("Could not cache game image:", e);
+          }
         }
       } catch (error) {
         console.error("Error loading game image:", error);
       }
     };
 
+    // Listen for game cover update events
+    const handleCoverUpdate = event => {
+      const { gameName, dataUrl } = event.detail;
+      if (gameName === gameId && dataUrl && isMounted) {
+        console.log(`[GameScreen] Received cover update for ${gameName}`);
+        setImageData(dataUrl);
+        // Update localStorage cache
+        try {
+          localStorage.setItem(localStorageKey, dataUrl);
+        } catch (e) {
+          console.warn("Could not cache updated game image:", e);
+        }
+      }
+    };
+
+    // Add event listener for cover updates
+    window.addEventListener("game-cover-updated", handleCoverUpdate);
+
+    // Initial load
     loadGameImage();
 
     return () => {
       isMounted = false;
+      // Clean up event listener
+      window.removeEventListener("game-cover-updated", handleCoverUpdate);
     };
   }, [game.game, game.name, igdbData?.cover?.url]); // Add igdbData.cover.url as dependency
 
@@ -532,7 +623,16 @@ export default function GameScreen() {
       console.log("Launching game: ", gameName);
       // Launch the game
       killAudioAndMiniplayer();
-      await window.electron.playGame(gameName, game.isCustom, game.backups ?? false);
+      // Use the tracked shift key state for admin privileges
+      if (isShiftKeyPressed) {
+        console.log("Launching game with admin privileges");
+      }
+      await window.electron.playGame(
+        gameName,
+        game.isCustom,
+        game.backups ?? false,
+        isShiftKeyPressed
+      );
 
       // Get and cache the game image before saving to recently played
       const imageBase64 = await window.electron.getGameImage(gameName);
@@ -572,17 +672,47 @@ export default function GameScreen() {
   const handleDeleteGame = async () => {
     try {
       setIsUninstalling(true);
-      if (game.isCustom) {
-        await window.electron.removeCustomGame(game.game || game.name);
-      } else {
-        await window.electron.deleteGame(game.game || game.name);
+      const gameId = game.game || game.name;
+
+      // Remove the game from all folders
+      const folders = loadFolders();
+      const updatedFolders = folders.map(folder => ({
+        ...folder,
+        items: (folder.items || []).filter(item => (item.game || item.name) !== gameId),
+      }));
+      saveFolders(updatedFolders);
+
+      // Clean up folder-specific favorites
+      try {
+        const favoritesObj = JSON.parse(localStorage.getItem("folder-favorites") || "{}");
+        let favoritesUpdated = false;
+
+        Object.keys(favoritesObj).forEach(folderKey => {
+          if (favoritesObj[folderKey].includes(gameId)) {
+            favoritesObj[folderKey] = favoritesObj[folderKey].filter(id => id !== gameId);
+            favoritesUpdated = true;
+          }
+        });
+
+        if (favoritesUpdated) {
+          localStorage.setItem("folder-favorites", JSON.stringify(favoritesObj));
+        }
+      } catch (error) {
+        console.error("Error updating folder favorites:", error);
       }
+
+      // Delete the game from the main library
+      if (game.isCustom) {
+        await window.electron.removeCustomGame(gameId);
+      } else {
+        await window.electron.deleteGame(gameId);
+      }
+
       setIsUninstalling(false);
       setIsDeleteDialogOpen(false);
       navigate("/library");
     } catch (error) {
       console.error("Error deleting game:", error);
-      setIsUninstalling(false);
       setIsUninstalling(false);
     }
   };
@@ -783,6 +913,23 @@ export default function GameScreen() {
                     alt={game.game}
                     className="h-full w-full object-cover"
                   />
+                  {/* Edit cover button */}
+                  <div className="absolute left-2 top-2 z-10">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:bg-white/20 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                      style={{ pointerEvents: "auto" }}
+                      title={t("library.editCoverImage")}
+                      tabIndex={0}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setShowEditCoverDialog(true);
+                      }}
+                    >
+                      <ImageUp className="h-5 w-5 fill-none text-white" />
+                    </Button>
+                  </div>
                   {isUninstalling && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                       <div className="w-full max-w-[200px] space-y-2 px-4">
@@ -1701,13 +1848,41 @@ export default function GameScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Error Dialog */}
+      <GamesBackupDialog
+        open={backupDialogOpen}
+        onOpenChange={setBackupDialogOpen}
+        game={game}
+      />
+
       <ErrorDialog
         open={showErrorDialog}
-        onClose={handleCloseErrorDialog}
+        onClose={() => setShowErrorDialog(false)}
         errorGame={errorGame}
         errorMessage={errorMessage}
         t={t}
+      />
+
+      {/* Edit Cover Dialog */}
+      <EditCoverDialog
+        open={showEditCoverDialog}
+        onOpenChange={setShowEditCoverDialog}
+        gameName={game?.game || game?.name}
+        onImageUpdate={(dataUrl, imgId) => {
+          setImageData(dataUrl);
+          // Update the game's imgID if needed
+          if (game) {
+            // Pass both imgId and dataUrl to the updateGameCover function
+            // The IPC handler will decide which one to use based on what's provided
+            window.electron
+              .updateGameCover(game.game || game.name, imgId, dataUrl)
+              .then(() => {
+                console.log("Game image updated successfully");
+              })
+              .catch(error => {
+                console.error("Failed to update game image:", error);
+              });
+          }
+        }}
       />
 
       {/* Uninstall Confirmation Dialog */}
